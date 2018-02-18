@@ -2,8 +2,9 @@
 
 ## Topic models
 The topic model zoo.
-* Overview by David Blei: [Probabilistic Topic Models (2012)](http://delivery.acm.org/10.1145/2140000/2133826/p77-blei.pdf?ip=89.99.242.224&id=2133826&acc=OPEN&key=4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E6D218144511F3437&__acm__=1518968830_1cea7e1bfa5e86d1d3e1cebdcde81c2b).
-* A course on topic models: [Advanced Topic Modeling](https://mimno.infosci.cornell.edu/info6150/)
+* A **review** by David Blei: [Probabilistic Topic Models (2012)](http://delivery.acm.org/10.1145/2140000/2133826/p77-blei.pdf?ip=89.99.242.224&id=2133826&acc=OPEN&key=4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E6D218144511F3437&__acm__=1518968830_1cea7e1bfa5e86d1d3e1cebdcde81c2b).
+* A **course** on topic models: [Advanced Topic Modeling](https://mimno.infosci.cornell.edu/info6150/)
+* A **thesis** dedicated VAE type methods for LDA (supervised by Max Welling): [SGVB Topic Modeling](https://esc.fnwi.uva.nl/thesis/centraal/files/f1573659295.pdf)
 
 ### LDA
 * The model with mean field VI: [Latent Dirichlet Allocation (2003)](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf)
