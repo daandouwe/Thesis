@@ -54,8 +54,9 @@ The word embedding zoo. A nice overview: [Levy & Goldberg (2015)](http://www.acl
 * [Mixing Dirichlet Topic Models and Word Embeddings to Make lda2vec](https://arxiv.org/pdf/1605.02019.pdf)
 * [Blog-post](https://multithreaded.stitchfix.com/blog/2016/05/27/lda2vec/#topic=38&lambda=1&term=)
 
-### +LSTMs (!)
+### +RNN/LSTM (!)
 * [Latent LSTM allocation](http://proceedings.mlr.press/v70/zaheer17a/zaheer17a.pdf)
+* [TopicRNN: A recurrent neural network with long-range semantic dependency](http://www.columbia.edu/~jwp2128/Papers/DiengWangetal2017.pdf)
 
 ### +VAE inference
 * [Discovering Discrete Latent Topics with Neural Variational Inference](https://arxiv.org/pdf/1706.00359.pdf)
@@ -74,7 +75,8 @@ The word embedding zoo. A nice overview: [Levy & Goldberg (2015)](http://www.acl
 
 ## Non-language models
 * Latent switching linear dynamical systems (SLDS), e.g. segmenting video
-* Mixture density networks (e.g. modelling handwriting at [Otoro](http://blog.otoro.net/2015/12/12/handwriting-generation-demo-in-tensorflow/) and [Distill](https://distill.pub/2016/handwriting/))
+    * [A Linear Dynamical System Model for Text](https://arxiv.org/pdf/1502.04081.pdf)
+* Mixture density networks (e.g. modelling handwriting at [Otoro](http://blog.otoro.net/2015/12/12/handwriting-generation-demo-in-tensorflow/) and [Distill](https://distill.pub/2016/handwriting/)).
 
 # Graphical models refresher
 * [Build, Compute, Critique, Repeat: Data Analysis with Latent Variable Models (Blei 2014)](http://www.cs.columbia.edu/~blei/papers/Blei2014b.pdf)
