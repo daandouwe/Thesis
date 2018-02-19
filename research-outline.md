@@ -2,14 +2,14 @@
 
 ## Topic models
 The topic model zoo.
-* A **review** by David Blei: [Probabilistic Topic Models (2012)](http://delivery.acm.org/10.1145/2140000/2133826/p77-blei.pdf?ip=89.99.242.224&id=2133826&acc=OPEN&key=4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E6D218144511F3437&__acm__=1518968830_1cea7e1bfa5e86d1d3e1cebdcde81c2b).
+* `Done` A **review** by David Blei: [Probabilistic Topic Models (2012)](http://delivery.acm.org/10.1145/2140000/2133826/p77-blei.pdf?ip=89.99.242.224&id=2133826&acc=OPEN&key=4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E6D218144511F3437&__acm__=1518968830_1cea7e1bfa5e86d1d3e1cebdcde81c2b).
 * A **course** on topic models: [Advanced Topic Modeling](https://mimno.infosci.cornell.edu/info6150/)
 * A **thesis** dedicated VAE type methods for LDA (supervised by Max Welling): [SGVB Topic Modeling](https://esc.fnwi.uva.nl/thesis/centraal/files/f1573659295.pdf)
 
 ### LDA
-* The model with mean field VI: [Latent Dirichlet Allocation (2003)](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf)
-* With Collapsed Gibbs sampling: [Finding scientific topics](http://www.pnas.org/content/pnas/101/suppl_1/5228.full.pdf)
-* With stochastic mean field VI: [Online Learning for Latent Dirichlet Allocation](https://papers.nips.cc/paper/3902-online-learning-for-latent-dirichlet-allocation.pdf)
+* `Done` The model with mean field VI: [Latent Dirichlet Allocation (2003)](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf)
+* `Done` With Collapsed Gibbs sampling: [Finding scientific topics](http://www.pnas.org/content/pnas/101/suppl_1/5228.full.pdf)
+* `Done` With stochastic mean field VI: [Online Learning for Latent Dirichlet Allocation](https://papers.nips.cc/paper/3902-online-learning-for-latent-dirichlet-allocation.pdf)
 
 ### Correlated LDA
 * [Correlated Topic Models](http://www.cs.columbia.edu/~blei/papers/BleiLafferty2006.pdf)
@@ -29,13 +29,13 @@ The topic model zoo.
 The word embedding zoo. A nice overview: [Levy & Goldberg (2015)](http://www.aclweb.org/anthology/Q15-1016)
 
 ### SGNS
-* [Distributed Representations of Words and Phrases and their Compositionality](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf)
+* `Done` [Distributed Representations of Words and Phrases and their Compositionality](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf)
 
 ### GloVe
-* [GloVe: Global Vectors for Word Representation](https://nlp.stanford.edu/pubs/glove.pdf)
+* `Done` [GloVe: Global Vectors for Word Representation](https://nlp.stanford.edu/pubs/glove.pdf)
 
 ### PPMI-SVD
-* [Improving Distributional Similarity with Lessons Learned from Word Embeddings](http://www.aclweb.org/anthology/Q15-1016)
+* `Done` [Improving Distributional Similarity with Lessons Learned from Word Embeddings](http://www.aclweb.org/anthology/Q15-1016)
 
 ### Gaussian embeddings
 * [Word Representations via Gaussian Embedding](https://arxiv.org/pdf/1412.6623.pdf)
@@ -85,22 +85,22 @@ The word embedding zoo. A nice overview: [Levy & Goldberg (2015)](http://www.acl
 
 # Variational inference (VI)
 Overview:
-* **Review** [Variational Inference: A Review for Statisticians (2017)](https://arxiv.org/pdf/1601.00670.pdf)
-* **Video** [Variational Inference: Foundations and Modern Methods](https://www.youtube.com/watch?v=dGVEtq34jTU)
-* **Blog** [How does physics connect to machine learning?](https://jaan.io/how-does-physics-connect-machine-learning/)
+* `Done` **Review** [Variational Inference: A Review for Statisticians (2017)](https://arxiv.org/pdf/1601.00670.pdf)
+* `Done` **Video** [Variational Inference: Foundations and Modern Methods](https://www.youtube.com/watch?v=dGVEtq34jTU)
+* `Done` **Blog** [How does physics connect to machine learning?](https://jaan.io/how-does-physics-connect-machine-learning/)
 
 ## Mean field coordinate ascent VI
-* [Variational Inference: A Review for Statisticians (2017)](https://arxiv.org/pdf/1601.00670.pdf)
+* `Done` [Variational Inference: A Review for Statisticians (2017)](https://arxiv.org/pdf/1601.00670.pdf)
 * [Build, Compute, Critique, Repeat: Data Analysis with Latent Variable Models (section 4)](http://www.cs.columbia.edu/~blei/papers/Blei2014b.pdf)
 * [Beal's thesis chapter 2: Variational Bayesian Theory](https://www.cse.buffalo.edu//faculty/mbeal/thesis/beal03_2.pdf)
 
 ## Stochastic VI
 * [Stochastic Variational Inference (2013)](https://arxiv.org/pdf/1206.7051.pdf)
-* [Online Learning for Latent Dirichlet Allocation (2010)](https://papers.nips.cc/paper/3902-online-learning-for-latent-dirichlet-allocation.pdf)
+* `Done` [Online Learning for Latent Dirichlet Allocation (2010)](https://papers.nips.cc/paper/3902-online-learning-for-latent-dirichlet-allocation.pdf)
 
 ## Amortized VI
 ### VAE
-* [Auto-Encoding Variational Bayes](https://arxiv.org/pdf/1312.6114.pdf)
+* `Done` [Auto-Encoding Variational Bayes](https://arxiv.org/pdf/1312.6114.pdf)
 * [Stochastic Backpropagation and Approximate Inference in Deep Generative Models](https://arxiv.org/pdf/1401.4082.pdf)
 * Kingma's thesis [chapter 2](https://pure.uva.nl/ws/files/17891313/Thesis.pdf)
 * **Video**: [Kingma talk](https://www.youtube.com/watch?v=rjZL7aguLAs)
@@ -121,6 +121,10 @@ Overview:
 
 ## Automatic differentiation VI
 * [Automatic Differentiation Variational Inference](https://arxiv.org/pdf/1603.00788.pdf)
+
+## Reparametrization
+* [The Generalized Reparameterization Gradient](https://arxiv.org/pdf/1610.02287.pdf)
+* [Doubly Stochastic Variational Bayes for non-Conjugate Inference](http://www2.aueb.gr/users/mtitsias/papers/titsias14.pdf)
 
 ## Normalizing flows
 Not sure yet what this is...
