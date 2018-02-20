@@ -26,7 +26,9 @@ The topic model zoo.
 * [Pachinko Allocation (2006)](https://people.cs.umass.edu/~mccallum/papers/pam-icml06.pdf)
 
 ## Word embeddings
-The word embedding zoo. A nice overview: [Levy & Goldberg (2015)](http://www.aclweb.org/anthology/Q15-1016)
+The word embedding zoo.
+* An **overview**: [Levy & Goldberg (2015)](http://www.aclweb.org/anthology/Q15-1016)
+* Another **overview**: [New Directions in Vector Space Models of Meaning](http://www.cs.ox.ac.uk/files/6605/aclVectorTutorial.pdf)
 
 ### SGNS
 * `Done` [Distributed Representations of Words and Phrases and their Compositionality](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf)
@@ -77,6 +79,7 @@ The word embedding zoo. A nice overview: [Levy & Goldberg (2015)](http://www.acl
 ## Non-language models
 * Latent switching linear dynamical systems (SLDS), e.g. segmenting video
     * [A Linear Dynamical System Model for Text](https://arxiv.org/pdf/1502.04081.pdf)
+    * [Recurrent Switching Linear Dynamical Systems](https://arxiv.org/pdf/1603.00788.pdf)
 * Mixture density networks (e.g. modelling handwriting at [Otoro](http://blog.otoro.net/2015/12/12/handwriting-generation-demo-in-tensorflow/) and [Distill](https://distill.pub/2016/handwriting/)).
 
 # Graphical models refresher
@@ -103,18 +106,22 @@ Overview:
 * `Done` [Auto-Encoding Variational Bayes](https://arxiv.org/pdf/1312.6114.pdf)
 * [Stochastic Backpropagation and Approximate Inference in Deep Generative Models](https://arxiv.org/pdf/1401.4082.pdf)
 * Kingma's thesis [chapter 2](https://pure.uva.nl/ws/files/17891313/Thesis.pdf)
-* **Video**: [Kingma talk](https://www.youtube.com/watch?v=rjZL7aguLAs)
-* **Tutorial** [Tutorial - What is a VAE?](https://jaan.io/what-is-variational-autoencoder-vae-tutorial/)
+* `Done` **Video**: [Kingma talk](https://www.youtube.com/watch?v=rjZL7aguLAs)
+* `Done` **Tutorial** [Tutorial - What is a VAE?](https://jaan.io/what-is-variational-autoencoder-vae-tutorial/)
 * **Blog** Otoro: [Generating Large Images from Latent Vectors Part 1](http://blog.otoro.net/2016/04/01/generating-large-images-from-latent-vectors/) and [Part 2](http://blog.otoro.net/2016/06/02/generating-large-images-from-latent-vectors-part-two/).
 
 ### Discrete VAE
 * [Discrete Variational Autoencoders](https://arxiv.org/pdf/1609.02200.pdf)
+* [Neural Discrete Representation Learning](https://arxiv.org/pdf/1711.00937.pdf)
 
 ### Stick-breaking VAE
 * [Stick-Breaking Variational Autoencoders](https://arxiv.org/pdf/1605.06197.pdf)
 
 ### Structured VAE
 * [Composing graphical models with neural networks for structured representations and fast inference](https://arxiv.org/pdf/1603.06277.pdf)
+
+### Old-school: The Helmholtz Machine
+* [The Helmholtz Machine](http://www.gatsby.ucl.ac.uk/~dayan/papers/hm95.pdf)
 
 ## Black box VI
 * [Black Box Variational Inference](https://arxiv.org/pdf/1401.0118.pdf)
