@@ -98,7 +98,7 @@ Overview:
 * [Beal's thesis chapter 2: Variational Bayesian Theory](https://www.cse.buffalo.edu//faculty/mbeal/thesis/beal03_2.pdf)
 
 ## Stochastic VI
-* [Stochastic Variational Inference (2013)](https://arxiv.org/pdf/1206.7051.pdf)
+* `Done` [Stochastic Variational Inference (2013)](https://arxiv.org/pdf/1206.7051.pdf)
 * `Done` [Online Learning for Latent Dirichlet Allocation (2010)](https://papers.nips.cc/paper/3902-online-learning-for-latent-dirichlet-allocation.pdf)
 
 ## Amortized VI
@@ -115,12 +115,13 @@ Overview:
 * [Neural Discrete Representation Learning](https://arxiv.org/pdf/1711.00937.pdf)
 
 ### Stick-breaking VAE
-* [Stick-Breaking Variational Autoencoders](https://arxiv.org/pdf/1605.06197.pdf)
+* `Done` [Stick-Breaking Variational Autoencoders](https://arxiv.org/pdf/1605.06197.pdf)
 
 ### Structured VAE
 * [Composing graphical models with neural networks for structured representations and fast inference](https://arxiv.org/pdf/1603.06277.pdf)
 
 ### Old-school: The Helmholtz Machine
+* [Density Networks](https://pdfs.semanticscholar.org/8734/b13a74765d4a78ebf15c9c38991a5302d71c.pdf)
 * [The Helmholtz Machine](http://www.gatsby.ucl.ac.uk/~dayan/papers/hm95.pdf)
 
 ## Black box VI
