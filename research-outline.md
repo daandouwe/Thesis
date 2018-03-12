@@ -1,3 +1,21 @@
+# Mini-projects
+
+## LDA++
+* `Done` LDA with collapsed Gibss sampler
+* `In progress` LDA with VI
+* `In progress` LDA with stochastic VI
+* `In progress` LDA with VAE
+* Dynamic LDA with VI
+* Correlated LDA with VI
+* Deep exponential family / Pachinko allocation with Black Box VI
+
+## sLDS
+* Structured VAE
+
+
+##
+
+
 # Models / Applications
 
 ## Topic models
@@ -125,7 +143,7 @@ Overview:
 * [The Helmholtz Machine](http://www.gatsby.ucl.ac.uk/~dayan/papers/hm95.pdf)
 
 ## Black box VI
-* [Black Box Variational Inference](https://arxiv.org/pdf/1401.0118.pdf)
+* `Done` [Black Box Variational Inference](https://arxiv.org/pdf/1401.0118.pdf)
 
 ## Automatic differentiation VI
 * [Automatic Differentiation Variational Inference](https://arxiv.org/pdf/1603.00788.pdf)
