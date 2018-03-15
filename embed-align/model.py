@@ -74,6 +74,17 @@ class EmbedAlign(nn.Module):
         return torch.mean(torch.mean(mask * px, dim=-1))
         # return torch.mean(torch.sum(x_mask * px, dim=-1))
 
+    def log_py_(self, y, py, m):
+        """
+        Computes log P(y|z,a) by marginalizing alignments a.
+        """
+        indices = y.unsqueeze(-1).expand(-1, -1, m).transpose(1, 2) # [batch_size, m, n]
+        selected = torch.gather(py, -1, indices)
+        marginal = torch.log(torch.mean(selected, dim=1)) # Marginalize alignments
+        mask = (y > 0).float()
+        return torch.mean(torch.mean(mask * marginal, dim=-1))
+        # return torch.mean(torch.sum(y_mask * y_marginal, dim=-1))
+
     def log_py(self, y, py, m):
         """
         Computes log P(y|z,a) by marginalizing alignments a.

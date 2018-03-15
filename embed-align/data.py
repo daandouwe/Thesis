@@ -33,7 +33,6 @@ class Dictionary:
                         break
                 line = line.lower().split()
                 vocab.update(line)
-
         w2i, i2w = dict(), dict()
         w2i[PAD_TOKEN] = PAD_INDEX
         w2i[UNK_TOKEN] = UNK_INDEX
@@ -44,10 +43,8 @@ class Dictionary:
             w2i[w] = i
             i2w[i] = w
         del vocab
-
         w2i = defaultdict(lambda : UNK_INDEX, w2i)
         i2w = defaultdict(lambda : UNK_TOKEN, i2w)
-
         return w2i, i2w
 
 class Corpus:
@@ -71,7 +68,7 @@ class Corpus:
 
 class ParallelCorpus:
     """
-    A parallel corpus with holding for two languages: l1 and l2.
+    A parallel corpus that for that holds two languages: l1 and l2.
     """
     def __init__(self, l1_path, l2_path, max_vocab_size, max_lines, ordered=True):
         self.l1 = Corpus(l1_path, max_vocab_size, max_lines)
