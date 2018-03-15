@@ -22,9 +22,9 @@ def pad(batch):
 class Dictionary:
 
     def __init__(self, path, max_vocab_size, max_lines=None):
-        self.w2i, self.i2w = self.make_vocab(path, max_vocab_size, max_lines)
+        self.w2i, self.i2w = self.make_dicts(path, max_vocab_size, max_lines)
 
-    def make_vocab(self, path, max_vocab_size, max_lines):
+    def make_dicts(self, path, max_vocab_size, max_lines):
         vocab = Counter()
         with open(path, 'r') as f:
             for i, line in enumerate(f):

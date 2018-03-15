@@ -65,38 +65,33 @@ class EmbedAlign(nn.Module):
         """
         return torch.mean(torch.mean(0.5 * torch.sum(sigma + mu**2 - 1. - torch.log(sigma), dim=-1), dim=-1))
 
-    def log_px(self, x, px):
+    def log_px(self, x, px, mean_sent=False):
         """
         Computes log P(x|z).
         """
         px = torch.gather(px, -1, x.unsqueeze(-1)).squeeze()
         mask = (x > 0).float()
-        return torch.mean(torch.mean(mask * px, dim=-1))
-        # return torch.mean(torch.sum(x_mask * px, dim=-1))
+        if mean_sent:
+            return torch.mean(torch.mean(mask * px, dim=-1))
+        else:
+            return torch.mean(torch.sum(mask * px, dim=-1))
 
-    def log_py_(self, y, py, m):
+    def log_py(self, y, py, x, mean_sent=False):
         """
         Computes log P(y|z,a) by marginalizing alignments a.
         """
-        indices = y.unsqueeze(-1).expand(-1, -1, m).transpose(1, 2) # [batch_size, m, n]
-        selected = torch.gather(py, -1, indices)
-        marginal = torch.log(torch.mean(selected, dim=1)) # Marginalize alignments
-        mask = (y > 0).float()
-        return torch.mean(torch.mean(mask * marginal, dim=-1))
-        # return torch.mean(torch.sum(y_mask * y_marginal, dim=-1))
+        # Marginalize alignments
+        x_mask = (x > 0).float()
+        x_mask = x_mask.unsqueeze(-1).expand(-1, -1, py.size(-1))
+        marginal = torch.log(torch.mean(x_mask * py, dim=1)) # [batch_size, l2_vocab_size]
+        selected = torch.gather(marginal, -1, y)
+        y_mask = (y > 0).float()
+        if mean_sent:
+            return torch.mean(torch.mean(y_mask * selected, dim=-1))
+        else:
+            return torch.mean(torch.sum(y_mask * selected, dim=-1))
 
-    def log_py(self, y, py, m):
-        """
-        Computes log P(y|z,a) by marginalizing alignments a.
-        """
-        indices = y.unsqueeze(-1).expand(-1, -1, m).transpose(1, 2) # [batch_size, m, n]
-        selected = torch.gather(py, -1, indices)
-        marginal = torch.log(torch.mean(selected, dim=1)) # Marginalize alignments
-        mask = (y > 0).float()
-        return torch.mean(torch.mean(mask * marginal, dim=-1))
-        # return torch.mean(torch.sum(y_mask * y_marginal, dim=-1))
-
-    def forward(self, x, y):
+    def forward(self, x, y, mean_sent=False):
         """
         A full forward pass to compute the Elbo.
         Compute posterior q(z|x) (with 'encoder'), sample one z, and use it to
@@ -105,18 +100,13 @@ class EmbedAlign(nn.Module):
         """
         mu, sigma = self.encoder(x)
         z = self.sample(mu, sigma)
-        print(x.shape)
-        print(y.shape)
-        print(z.shape)
 
         px = self.f(z, log=True) # [batch_size, sent_len, l1_vocab_size]
         py = self.g(z)           # [batch_size, sent_len, l2_vocab_size]
 
-        print(px.shape)
-        print(py.shape)
+        log_px = self.log_px(x, px, mean_sent=mean_sent)
+        log_py = self.log_py(y, py, x, mean_sent=mean_sent)
 
-        log_px = self.log_px(x, px)
-        log_py = self.log_py(y, py, m=x.size(1))
         kl = self.kl(mu, sigma)
 
         return log_px, log_py, kl
