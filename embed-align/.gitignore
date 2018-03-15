@@ -1,0 +1,5 @@
+hansards/*
+models/*
+*.pdf
+*.prof
+__pycache__
