@@ -11,6 +11,7 @@ from model import EmbedAlign
 from util import Timer, AnnealKL, predict_alignments, eval_alignments
 
 np.random.seed(42)
+torch.manual_seed(42)
 
 ########################################
 e_train_path = 'hansards/train/train.e'
@@ -47,7 +48,7 @@ model = EmbedAlign(l1_vocab_size, l2_vocab_size, emb_dim, hidden_dim, z_dim)
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 ########################################
-def save(path='models/model.dict'):
+def save(path='models/model.pt'):
     torch.save(model, path)
 
 def write(path='csv/elbo.csv'):

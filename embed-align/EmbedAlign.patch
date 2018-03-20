@@ -1,0 +1,78 @@
+--- /Users/daan/Documents/Logic/Thesis/embed-align/model.py
++++ /Users/daan/Documents/Logic/Thesis/embed-align/model.py
+@@ -23,59 +23,41 @@
+         """
+         return torch.mean(torch.mean(0.5 * torch.sum(sigma + mu**2 - 1. - torch.log(sigma), dim=-1), dim=-1))
+ 
+-    def log_px(self, x, px, mean_sent=False):
++    def log_px(self, x, px):
+         """
+         Computes log P(x|z).
+         """
+         px = torch.gather(px, -1, x.unsqueeze(-1)).squeeze()
+         mask = (x > 0).float()
+-        if mean_sent:
+-            return torch.mean(torch.mean(mask * px, dim=-1))
+-        else:
+-            return torch.mean(torch.sum(mask * px, dim=-1))
++        return torch.mean(torch.mean(mask * px, dim=-1))
++        # return torch.mean(torch.sum(x_mask * px, dim=-1))
+ 
+-    def log_py(self, y, py, x, mean_sent=False, eps=1e-10):
++    def log_py(self, y, py, m):
+         """
+         Computes log P(y|z,a) by marginalizing alignments a.
+         """
+-        # Marginalize alignments
+-        x_mask = (x > 0).float()                                    # [batch_size, l1_sent_len]
+-        x_mask = x_mask.unsqueeze(-1).expand(-1, -1, py.size(-1))   # [batch_size, l1_sent_len, l2_vocab_size]
+-        sent_lens = torch.sum(x_mask, dim=1) + eps # To avoid division by zero (why are there empty sentences?)
+-        marginal = torch.log(torch.sum(x_mask * py, dim=1) / sent_lens) # [batch_size, l2_vocab_size]
+-        selected = torch.gather(marginal, -1, y)
+-        # print(x_mask)
+-        # print(sent_lens)
+-        # print(marginal)
+-        # print(selected)
+-        # print(x_mask.shape)
+-        # print(marginal.shape)
+-        # print(selected.shape)
+-        # print(selected)
+-        # print(y)
+-        # exit()
+-        y_mask = (y > 0).float()
+-        if mean_sent:
+-            return torch.mean(torch.mean(y_mask * selected, dim=-1))
+-        else:
+-            return torch.mean(torch.sum(y_mask * selected, dim=-1))
++        indices = y.unsqueeze(-1).expand(-1, -1, m).transpose(1,2) # [batch_size, m, n]
++        selected = torch.gather(py, -1, indices)
++        marginal = torch.log(torch.mean(selected, dim=1)) # Marginalize alignments
++        mask = (y > 0).float()
++        return torch.mean(torch.mean(mask * marginal, dim=-1))
++        # return torch.mean(torch.sum(y_mask * y_marginal, dim=-1))
+ 
+-    def forward(self, x, y, mean_sent=False):
++    def forward(self, x, y):
+         """
+         A full forward pass to compute the Elbo.
+-        Compute posterior q(z|x) (with 'encoder'), sample one z, and use it to
++        Compute posterior q(z|x) (with 'encoder'), sample one z, use it to
+         approximate expected log likelihoods p(x|z) and p(y|z) under q(z|x).
+         Compute KL of q(z|x) with prior.
+         """
+         mu, sigma = self.encoder(x)
+         z = self.sample(mu, sigma)
+ 
+-        px = self.f(z, log=True) # [batch_size, l1_sent_len, l1_vocab_size]
+-        py = self.g(z)           # [batch_size, l1_sent_len, l2_vocab_size]
++        px = self.f(z, log=True) # [batch_size, sent_len, l1_vocab_size]
++        py = self.g(z)           # [batch_size, sent_len, l2_vocab_size]
+ 
+-        log_px = self.log_px(x, px, mean_sent=mean_sent)
+-        log_py = self.log_py(y, py, x, mean_sent=mean_sent)
+-
++        log_px = self.log_px(x, px)
++        log_py = self.log_py(y, py, m=x.size(1))
+         kl = self.kl(mu, sigma)
+ 
+         return log_px, log_py, kl
