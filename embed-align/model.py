@@ -21,7 +21,6 @@ class EncoderBoW(nn.Module):
         sigma = self.softplus(self.sigma(h))
         return mu, sigma
 
-
 class Decoder(nn.Module):
     """
     Generative network ('decoder') for EmbedAlign.
@@ -38,7 +37,6 @@ class Decoder(nn.Module):
             return self.logsoftmax(self.linear(z))
         else:
             return self.softmax(self.linear(z))
-
 
 class EmbedAlign(nn.Module):
     """
@@ -76,15 +74,26 @@ class EmbedAlign(nn.Module):
         else:
             return torch.mean(torch.sum(mask * px, dim=-1))
 
-    def log_py(self, y, py, x, mean_sent=False):
+    def log_py(self, y, py, x, mean_sent=False, eps=1e-10):
         """
         Computes log P(y|z,a) by marginalizing alignments a.
         """
         # Marginalize alignments
-        x_mask = (x > 0).float()
-        x_mask = x_mask.unsqueeze(-1).expand(-1, -1, py.size(-1))
-        marginal = torch.log(torch.mean(x_mask * py, dim=1)) # [batch_size, l2_vocab_size]
+        x_mask = (x > 0).float()                                    # [batch_size, l1_sent_len]
+        x_mask = x_mask.unsqueeze(-1).expand(-1, -1, py.size(-1))   # [batch_size, l1_sent_len, l2_vocab_size]
+        sent_lens = torch.sum(x_mask, dim=1) + eps # To avoid division by zero (why are there empty sentences?)
+        marginal = torch.log(torch.sum(x_mask * py, dim=1) / sent_lens) # [batch_size, l2_vocab_size]
         selected = torch.gather(marginal, -1, y)
+        # print(x_mask)
+        # print(sent_lens)
+        # print(marginal)
+        # print(selected)
+        # print(x_mask.shape)
+        # print(marginal.shape)
+        # print(selected.shape)
+        # print(selected)
+        # print(y)
+        # exit()
         y_mask = (y > 0).float()
         if mean_sent:
             return torch.mean(torch.mean(y_mask * selected, dim=-1))
@@ -101,8 +110,8 @@ class EmbedAlign(nn.Module):
         mu, sigma = self.encoder(x)
         z = self.sample(mu, sigma)
 
-        px = self.f(z, log=True) # [batch_size, sent_len, l1_vocab_size]
-        py = self.g(z)           # [batch_size, sent_len, l2_vocab_size]
+        px = self.f(z, log=True) # [batch_size, l1_sent_len, l1_vocab_size]
+        py = self.g(z)           # [batch_size, l1_sent_len, l2_vocab_size]
 
         log_px = self.log_px(x, px, mean_sent=mean_sent)
         log_py = self.log_py(y, py, x, mean_sent=mean_sent)
