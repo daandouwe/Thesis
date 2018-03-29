@@ -1,4 +1,5 @@
 import csv
+import sys
 
 import torch
 import torch.nn as nn
@@ -22,6 +23,9 @@ f_dev_path = 'hansards/dev/dev.f'
 f_test_path = 'hansards/test/test.f'
 
 test = False
+if len(sys.argv) > 1:
+    if sys.argv[1] == '-t':
+        test = True
 train = not test
 
 l1_vocab_size = 10000
@@ -61,9 +65,10 @@ def write(path='csv/elbo.csv'):
         writer = csv.writer(f)
         writer.writerows([['aer']] + [[aer] for aer in AER])
 
-def evaluate():
+def evaluate(gold_path='hansards/dev/dev.wa.nonullalign',
+             pred_path='predicted/dev.align'):
     predict_alignments(model, corpus.dev_batches(batch_size))
-    aer = eval_alignments('hansards/dev/dev.wa.nonullalign', 'predicted/dev.align')
+    aer = eval_alignments(gold_path, pred_path)
     return aer
 
 if test:

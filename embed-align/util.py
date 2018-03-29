@@ -3,6 +3,7 @@ import torch
 from aer import test
 
 class Timer:
+    """A simple timer to track speed of training"""
     def __init__(self):
         self.time0 = time.time()
 
@@ -26,13 +27,16 @@ def align(x, y, py):
     Computes posterior alignment for one batch.
     """
     y = y.unsqueeze(1).expand(-1, x.size(1), -1) # [batch_size, l1_sent_len, l2_sent_len]
-    x_mask = (x > 0).float() # [batch_size, l1_sent_len]
-    x_mask = x_mask.unsqueeze(-1).expand(-1, -1, y.size(-1))   # [batch_size, l1_sent_len, l2_vocab_size]
+    x_mask = (x > 0).float() # [batch_size, l1_sent_len] (0 is padding index)
+    x_mask = x_mask.unsqueeze(-1).expand(-1, -1, y.size(-1)) # [batch_size, l1_sent_len, l2_vocab_size]
     selected = torch.gather(py, -1, y) * x_mask
     _, a = selected.max(dim=1)
     return a.data.numpy()
 
 def eval_alignments(gold_path, pred_path):
+    """
+    A useless wrapper but the name is better.
+    """
     aer = test(gold_path, pred_path)
     return aer
 

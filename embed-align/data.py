@@ -79,25 +79,6 @@ class Corpus:
         self.train = Data(train_path, self.dictionary, max_lines)
         self.dev = Data(dev_path, self.dictionary)
         self.test = Data(test_path, self.dictionary)
-#
-# class Corpus_:
-#
-#     def __init__(self, path, max_vocab_size=None, max_lines=None):
-#         self.dictionary = Dictionary(path, max_vocab_size, max_lines)
-#         self.data = self.load(path, max_lines)
-#         self.lengths = [len(sent) for sent in self.data]
-#
-#     def load(self, path, max_lines):
-#         data = []
-#         with open(path, 'r') as f:
-#             for i, line in enumerate(f):
-#                 if max_lines: # pass if max_lines is not None
-#                     if i > max_lines:
-#                         break
-#                 line = line.lower().split()
-#                 indices = [self.dictionary.w2i[w] for w in line]
-#                 data.append(indices)
-#         return data
 
 class ParallelCorpus:
     """

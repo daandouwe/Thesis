@@ -21,6 +21,12 @@ class EncoderBoW(nn.Module):
         sigma = self.softplus(self.sigma(h))
         return mu, sigma
 
+class EncoderRNN(nn.Module):
+    """
+    RNN inference network ('encoder') for EmbedAlign model.
+    """
+    pass
+
 class Decoder(nn.Module):
     """
     Generative network ('decoder') for EmbedAlign.
@@ -57,11 +63,14 @@ class EmbedAlign(nn.Module):
         z = mu + eps * sigma
         return z
 
-    def kl(self, mu, sigma):
+    def kl(self, mu, sigma, mask, mean_sent=False):
         """
         Computes the KL-divergence between N(mu, sigma*I) and N(0, I)
         """
-        return torch.mean(torch.mean(0.5 * torch.sum(sigma + mu**2 - 1. - torch.log(sigma), dim=-1), dim=-1))
+        if mean_sent:
+            return torch.mean(torch.mean(mask * 0.5 * torch.sum(sigma + mu**2 - 1. - torch.log(sigma), dim=-1), dim=-1))
+        else:
+            return torch.mean(torch.sum(mask * 0.5 * torch.sum(sigma + mu**2 - 1. - torch.log(sigma), dim=-1), dim=-1))
 
     def log_px(self, x, px, mean_sent=False):
         """
@@ -74,14 +83,14 @@ class EmbedAlign(nn.Module):
         else:
             return torch.mean(torch.sum(mask * px, dim=-1))
 
-    def log_py(self, y, py, x, mean_sent=False, eps=1e-10):
+    def log_py(self, y, py, x_mask, mean_sent=False, eps=1e-10):
         """
         Computes log P(y|z,a) by marginalizing alignments a.
         """
         # Marginalize alignments
-        x_mask = (x > 0).float()                                    # [batch_size, l1_sent_len]
         x_mask = x_mask.unsqueeze(-1).expand(-1, -1, py.size(-1))   # [batch_size, l1_sent_len, l2_vocab_size]
-        sent_lens = torch.sum(x_mask, dim=1) + eps # To avoid division by zero (why are there empty sentences?)
+        # +eps to avoid division by zero. Why are there empty sentences?
+        sent_lens = torch.sum(x_mask, dim=1) + eps
         marginal = torch.log(torch.sum(x_mask * py, dim=1) / sent_lens) # [batch_size, l2_vocab_size]
         selected = torch.gather(marginal, -1, y)
         # print(x_mask)
@@ -113,9 +122,10 @@ class EmbedAlign(nn.Module):
         px = self.f(z, log=True) # [batch_size, l1_sent_len, l1_vocab_size]
         py = self.g(z)           # [batch_size, l1_sent_len, l2_vocab_size]
 
+        mask = (x > 0).float()
         log_px = self.log_px(x, px, mean_sent=mean_sent)
-        log_py = self.log_py(y, py, x, mean_sent=mean_sent)
+        log_py = self.log_py(y, py, mask, mean_sent=mean_sent)
 
-        kl = self.kl(mu, sigma)
+        kl = self.kl(mu, sigma, mask, mean_sent=mean_sent)
 
         return log_px, log_py, kl
