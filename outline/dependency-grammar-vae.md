@@ -1,10 +1,10 @@
 # A dependency based grammar VAE
 
-This combines [Grammar VAE](Grammar Variational Autoencoder) with RNNGs.
+This combines [Grammar VAE](Grammar Variational Autoencoder) with RNNGs (or another generative dependency parser).
 
-> Generating trees from a continuous space
+> Generating trees from a continuous space - generating words from another.
 
-A shi
+A shift reduce parser specifies a sequence of actions. Hypothesis: the labeled reduce give the structure of the dependency tree; the `gen(x)` that introduces the words can be thought of as more semantic content of the tree. If we model the actions `a1,...,an` as coming from to different 
 
 
 1. Basis: A generative dependency based language model (shift-reduce)

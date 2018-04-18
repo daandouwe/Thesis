@@ -39,7 +39,8 @@ represented as a sequence of the three types of actions in a transition-based pa
 
 ## Possible other directions:
 
-* Parametrize the RNNG with a different type of neural architecture. For example a transformer.
+* Parametrize the RNNG with a different type of neural architecture, for example the Transformer from [Attention is all you need](https://arxiv.org/pdf/1706.03762.pdf)
+* A followup paper on the RNNG: [What Do Recurrent Neural Network Grammars Learn About Syntax?](https://arxiv.org/pdf/1611.05774.pdf)
 
 * Wilker:
 

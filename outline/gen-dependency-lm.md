@@ -7,7 +7,7 @@ A generative dependency grammar language model that uses a shift-reduce parser t
 ## Some observations
 * A generative parser can be used as a syntactic language model. See RNNGs (Dyer et al. 2016) (constituency grammar) and Buys & Blunsom (2015) (dependency).
 * Dep-arcs can be thought of as linguistically-grounded self-attention, see [Attention is all you need](https://arxiv.org/pdf/1706.03762.pdf)
-* Dep-arcs can take care of long-range dependencies in a transparent way, see "Frustratingly short attention spans"
+* Dep-arcs can take care of long-range dependencies in a transparent way, see [Frustratingly short attention spans](https://arxiv.org/pdf/1702.04521.pdf)
 * Dep-arcs are *hard* attention. Look into ways of training hard attention models, see "Learning Hard Alignments with Variational Inference".
 
 Some ideas for plugging in latent-variables:
