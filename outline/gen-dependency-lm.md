@@ -1,11 +1,12 @@
 # Dependency-based language model.
 
-> This looks a lot 
+> This project is a lot like the RNNG
+
 A generative dependency grammar language model that uses a shift-reduce parser to generate sentences with corresponding trees. This can be used for language modeling or as the decoder in an NMT system.
 
-Some observations:
+## Some observations
 * A generative parser can be used as a syntactic language model. See RNNGs (Dyer et al. 2016) (constituency grammar) and Buys & Blunsom (2015) (dependency).
-* Dep-arcs can be thought of as linguistically-grounded self-attention, see "Attention is all you need"
+* Dep-arcs can be thought of as linguistically-grounded self-attention, see [Attention is all you need](https://arxiv.org/pdf/1706.03762.pdf)
 * Dep-arcs can take care of long-range dependencies in a transparent way, see "Frustratingly short attention spans"
 * Dep-arcs are *hard* attention. Look into ways of training hard attention models, see "Learning Hard Alignments with Variational Inference".
 

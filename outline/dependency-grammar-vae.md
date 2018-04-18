@@ -2,8 +2,9 @@
 
 This combines [Grammar VAE](Grammar Variational Autoencoder) with RNNGs.
 
-"Generating structures from a continuous space"
+> Generating trees from a continuous space
 
+A shi
 
 
 1. Basis: A generative dependency based language model (shift-reduce)
