@@ -1,5 +1,8 @@
 # Outline of ideas
 
+
+## RNNGs
+
 ## Dependency-based language model.
 In summary:
 Generative dependency grammar language model that uses a shift-reduce parser to generate sentences with corresponding trees. This can be used for language modeling or as the decoder in an NMT system.
