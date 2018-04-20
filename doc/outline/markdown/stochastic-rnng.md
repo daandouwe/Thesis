@@ -41,10 +41,17 @@ represented as a sequence of the three types of actions in a transition-based pa
 2. Replace the RNNs that with stochastic RNNs to create the S-RNNG. A good first step to this end is to implement the S-RNNG first as language model.
 3. Use the generative S-RNNG as a decoder for neural NMT.
 
-## Possible other directions:
+
+* A followup paper on the RNNG: [What Do Recurrent Neural Network Grammars Learn About Syntax?](https://arxiv.org/pdf/1611.05774.pdf)
+
+
+## Possible directions:
 
 * Parametrize the RNNG with a different type of neural architecture, for example the Transformer from [Attention is all you need](https://arxiv.org/pdf/1706.03762.pdf)
-* A followup paper on the RNNG: [What Do Recurrent Neural Network Grammars Learn About Syntax?](https://arxiv.org/pdf/1611.05774.pdf)
+
+* [A Generative Parser with a Discriminative Recognition Algorithm](https://arxiv.org/pdf/1708.00415.pdf) continues with the RNNG and proposes a discrete variational method for posterior inference of p(y|x).
+
+
 
 
 
