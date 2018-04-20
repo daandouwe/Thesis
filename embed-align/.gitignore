@@ -1,6 +1,0 @@
-hansards/*
-models/*
-*.pdf
-*.prof
-__pycache__
-.ipynb_checkpoints
