@@ -42,11 +42,11 @@ The planning can also be found [here](doc/outline).
 A list of things to do.
 
 Proposal + outline:
-[ ] Setup minimal latex workspace: figure out bibtex manager, make folder structure, and minimal style-sheet.
-[ ] Write the latex outline. Combine, reorder, and expand the various markdown files that you wrote so far.
-[ ] Send the latex outline to Wilker (maybe an open sharelatex would be best? This way he can incorporate feedback live)
+- [ ] Setup minimal latex workspace: figure out bibtex manager, make folder structure, and minimal style-sheet.
+- [ ] Write the latex outline. Combine, reorder, and expand the various markdown files that you wrote so far.
+- [ ] Send the latex outline to Wilker (maybe an open sharelatex would be best? This way he can incorporate feedback live)
 
 Coding
-[ ] Set up a good work-situation in the `src` folder.
-[ ] Get PTB Data
-[ ] 
+- [ ] Set up a good work-situation in the `src` folder.
+- [ ] Get PTB Data
+- [ ]
