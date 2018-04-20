@@ -14,8 +14,6 @@ The RNN that parametrizes the parse decisions (`gen(x)` and `reduce`) can be rep
 
 
 
-
-
 ## Related work
 
 * In [Generative Incremental Dependency Parsing with Neural Networks](http://www.aclweb.org/anthology/P15-2142) (Buys and Blunsom 2015) it is shown how to make a stack-reduce parser generative. The transitions are parametrized by MLPs that work on dense feature templates similar to Chen and Manning (2014).
@@ -42,16 +40,13 @@ represented as a sequence of the three types of actions in a transition-based pa
 3. Use the generative S-RNNG as a decoder for neural NMT.
 
 
-* A followup paper on the RNNG: [What Do Recurrent Neural Network Grammars Learn About Syntax?](https://arxiv.org/pdf/1611.05774.pdf)
-
-
 ## Possible directions:
 
 * Parametrize the RNNG with a different type of neural architecture, for example the Transformer from [Attention is all you need](https://arxiv.org/pdf/1706.03762.pdf)
 
 * [A Generative Parser with a Discriminative Recognition Algorithm](https://arxiv.org/pdf/1708.00415.pdf) continues with the RNNG and proposes a discrete variational method for posterior inference of p(y|x).
 
-
+* A followup paper on the RNNG, [What Do Recurrent Neural Network Grammars Learn About Syntax?](https://arxiv.org/pdf/1611.05774.pdf), shows possibilities to share the  
 
 
 
@@ -63,4 +58,5 @@ We reimplement the RNNG following strictly following the original paper. This wi
 
 1. A stack, buffer type of representation has to be coded. Perhaps this something that calls for cython for optimization.
 2. Neural network architectures will be implemented in PyTorch.
-3. Data for the constituency parser will be the Penn Treebank
+3. Data for the constituency parser will be the Penn Treebank. (Good toy dataset: arithmetic expressions a la Grammar variational Autoencoder)
+4.
