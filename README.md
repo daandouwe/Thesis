@@ -46,9 +46,9 @@ The RNNG appears to get good perplexity scores. But is this the metric by which 
 
 Hence, we can perhaps better evaluate the model the RNNG on phenomena that are known to be hard to handle for linear RNN-based models. Examples of this are subject-verb agreement with long intervening material:
 > The keys is/are on the table.
-> The keys to the cabinet is/are on the table.
-> The keys to the cabinet in the closet is/are on the table.
-> [Linzen, Dupoux, Goldberg (2016)](https://arxiv.org/pdf/1611.01368.pdf)
+The keys to the cabinet is/are on the table.
+The keys to the cabinet in the closet is/are on the table.
+[Linzen, Dupoux, Goldberg (2016)](https://arxiv.org/pdf/1611.01368.pdf)
 
 
 
