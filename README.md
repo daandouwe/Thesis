@@ -17,11 +17,15 @@ Additionally, the incorporation of latent variables gives us the ability to inco
 An ambitious extension of this project is to incorporate the learning of the posterior distribution q(y|x) during training of the generative parser.
 
 
+## Inductive bias
+
+RNNGs provide the following inductive biases over RNNs (from [Dyer's talk](https://www.youtube.com/watch?v=hIlR7hIAzi8&list=PL9UURLQttNX2Lfs0EoOlIa4ns0bhra8_Y&index=7)):
+* if RNNs have recency bias (closer in linear distance is easier) and the syntactic composition function learns to represent trees by heads, then the RNNGs have **syntactic recency bias** (closer in hierarchical distance is easier).
 
 
 ## Logbook
 
-I will start using a logbook in this google docs. I will share it with Wilker, and perhaps also with Chris. The logbook will help me plan and evaluate my time. Also, it will give me the structure I desire so badly at this moment.
+I will start using a logbook in this google docs. I will share it with Wilker, and perhaps also with Chris. The logbook will help me plan and evaluate my time and thus provide some structure.
 
 [Here's the link to the docs](https://docs.google.com/document/d/131-qsS-20-ZAEMkRGx1XikZoUR9KdCTPKHYoG-GSrTQ/edit?usp=sharing).
 
@@ -50,6 +54,7 @@ The keys to the cabinet is/are on the table.
 The keys to the cabinet in the closet is/are on the table.
 [Linzen, Dupoux, Goldberg (2016)](https://arxiv.org/pdf/1611.01368.pdf)
 
+Check out the [Linzen, Dupoux, Goldberg (2016)](https://arxiv.org/pdf/1611.01368.pdf) for more inspiration
 
 
 
