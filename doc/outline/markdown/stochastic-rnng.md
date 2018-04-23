@@ -33,6 +33,7 @@ represented as a sequence of the three types of actions in a transition-based pa
 3. Can we come up with another way of training the generative parser?
 4. Can we use the (stochastic) generative parser as a decoder (conditional language model) for NMT? E.g. as in [Learning to Parse and Translate Improves Neural Machine Translation](https://arxiv.org/pdf/1702.03525.pdf).
 
+
 ## Outline
 
 1. Replicate the original paper. We focus on the discriminative variant in the beginning, and then continue to the generative model.

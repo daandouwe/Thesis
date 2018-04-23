@@ -14,7 +14,7 @@ This project proposes to replace the RNN in the RNNG with the stochastic RNN wit
 
 Additionally, the incorporation of latent variables gives us the ability to incorporate inductive bias in the priors. A first direction would be to put priors on the latent states of the stochastic decoder that induce sparsity. Replacing the Gaussian prior with a Dirichlet that has a sparsity inducing hyperparameter (inference can be performed using a log-normal approximation to the Dirichlet following [Autoencoding Variational Inference for Topic Models](https://arxiv.org/pdf/1703.01488.pdf)) can result in a posterior on the latent-states that are easier to interpret.
 
-An ambitious extension of this project is to incorporate
+An ambitious extension of this project is to incorporate the learning of the posterior distribution q(y|x) during training of the generative parser.
 
 
 
@@ -38,6 +38,20 @@ The proposal can be read in [here](doc/outline).
 ## Planning
 
 The planning can also be found [here](doc/outline).
+
+## Evaluation
+
+The RNNG appears to get good perplexity scores. But is this the metric by which we want to evaluate the language model? Perplexity measures the average per word surprisal, and thus reflects an average case of succes. But note:
+> NLP people are very happy when we do well on the average case, and linguists are concerned how well we do in the rare, long-tail phenomena. - Chris Dyer [source](https://youtu.be/hIlR7hIAzi8?t=11m12s)
+
+Hence, we can perhaps better evaluate the model the RNNG on phenomena that are known to be hard to handle for linear RNN-based models. Examples of this are subject-verb agreement with long intervening material:
+> The keys is/are on the table.
+> The keys to the cabinet is/are on the table.
+> The keys to the cabinet in the closet is/are on the table.
+> [Linzen, Dupoux, Goldberg (2016)](https://arxiv.org/pdf/1611.01368.pdf)
+
+
+
 
 ## Todo
 
