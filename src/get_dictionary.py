@@ -1,4 +1,5 @@
 # Source: https://github.com/clab/rnng/blob/master/get_dictionary.py
+# Changed print ..  to print(..) for python3 compatibility.
 
 def is_next_open_bracket(line, start_idx):
     for char in line[(start_idx + 1):]:
@@ -49,5 +50,5 @@ if __name__ == '__main__':
     words_list = get_dict(lines)
     #print 'number of words', len(words_list)
     for word in words_list:
-        print word
+        print(word)
     input_file.close()

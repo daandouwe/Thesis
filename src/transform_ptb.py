@@ -4,8 +4,9 @@
 # one sentence per line. Prints to stdout.
 ##################################################################
 
-import re
 import os
+import sys
+import re
 
 def partition(sent, indices):
     parts = []
@@ -14,8 +15,8 @@ def partition(sent, indices):
     return parts
 
 def transform_mrg(path):
-    """Cleans the mrg file. Returns a one-line string in the format
-    given by sample_input_english.txt
+    """Cleans the mrg file. Prints a one-line string to stdout (in the
+    format given by sample_input_english.txt).
     """
     with open(path) as s:
         s = s.read()
@@ -38,13 +39,19 @@ def ptb_folders_iter(corpus_root):
                 yield(os.path.join(subdir, file))
 
 def main():
-    for path in ptb_folders_iter(corpus_root):
+    print(nlines, file=sys.stderr)
+    for i, path in enumerate(ptb_folders_iter(corpus_root)):
+        if nlines is not None and i > nlines:
+            break
         transform_mrg(path)
-
 
 if __name__ == '__main__':
     corpus_root = '../data/ptb/con/treebank3/parsed/mrg/wsj'
-    file_pattern = r'.*/wsj_.*\.mrg'
-    file_path = corpus_root + '/00/wsj_0002.mrg'
-    # transform_mrg(file_path)
+    print(len(sys.argv), file=sys.stderr)
+    if len(sys.argv) > 1:
+        nlines = int(sys.argv[1])
+    else:
+         nlines = None
+    # print(nlines, file=sys.stderr)
+
     main()
