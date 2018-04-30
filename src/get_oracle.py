@@ -1,4 +1,5 @@
 # Source: https://github.com/clab/rnng/blob/master/get_oracle.py
+# Changed print ..  to print(..) for python3 compatibility.
 
 import sys
 import get_dictionary

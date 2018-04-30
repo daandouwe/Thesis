@@ -17,6 +17,6 @@ python transform_ptb.py 10 > train.txt
 
 Then call
 ```
-python get_oracle.py [training file] [training file] > train.oracle
+python get_oracle.py train.txt train.txt > train.oracle
 ```
 to extract the sequence of transitions for the discriminative parser (code taken from the [original RNNG implementation](https://github.com/clab/rnng)).

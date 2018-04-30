@@ -39,19 +39,16 @@ def ptb_folders_iter(corpus_root):
                 yield(os.path.join(subdir, file))
 
 def main():
-    print(nlines, file=sys.stderr)
     for i, path in enumerate(ptb_folders_iter(corpus_root)):
         if nlines is not None and i > nlines:
             break
         transform_mrg(path)
 
 if __name__ == '__main__':
-    corpus_root = '../data/ptb/con/treebank3/parsed/mrg/wsj'
-    print(len(sys.argv), file=sys.stderr)
-    if len(sys.argv) > 1:
-        nlines = int(sys.argv[1])
-    else:
-         nlines = None
-    # print(nlines, file=sys.stderr)
+    assert len(sys.argv) > 1, 'Specify the directory to the WSJ.'
+    corpus_root = sys.argv[1] # '../data/ptb/con/treebank3/parsed/mrg/wsj'
+    nlines = None
+    if len(sys.argv) > 2:
+        nlines = int(sys.argv[2])
 
     main()
