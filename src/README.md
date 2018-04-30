@@ -8,11 +8,13 @@ We use the Penn Treebank. For now, we are only using the WSJ section.
 
 Run the following command to convert the WSJ part of the Penn Treebank from `mrg` files to linearized, stripped, line-by-line format:
 ```
-python transform_ptb.py > train.txt
+python transform_ptb.py [wsj directory] > train.txt
 ```
+In our case, the WSJ directory is located in `../data/ptb/con/treebank3/parsed/mrg/wsj`.
+
 Alternatively, use some integer `n` to limit the number of `mrg` files while developping:
 ```
-python transform_ptb.py 10 > train.txt
+python transform_ptb.py [wsj directory] 10 > train.txt
 ```
 
 Then call
