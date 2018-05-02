@@ -32,6 +32,8 @@ def transform_mrg(path):
 def ptb_folders_iter(corpus_root):
     """Returns an iterator over all paths to the .mrg files
     in the wsj part of the ptb.
+
+    # TODO: edit the iterator to perform stadard train/dev/test splits
     """
     for subdir, dirs, files in os.walk(corpus_root):
         for file in files:

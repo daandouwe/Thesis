@@ -1,12 +1,12 @@
-<EMPTY> || The hungry cat meows . || NT(S)
-(S || The hungry cat meows . || NT(NP)
-(S (NP || The hungry cat meows . || SHIFT
-(S (NP The || hungry cat meows . || SHIFT
-(S (NP The hungry || cat meows . || SHIFT
-(S (NP The hungry cat || meows . || REDUCE
-(S (NP The hungry cat ) || meows . || NT(VP)
-(S (NP The hungry cat ) (VP || meows . || SHIFT
-(S (NP The hungry cat ) (VP meows || . || REDUCE
-(S (NP The hungry cat ) (VP meows ) || . || SHIFT
-(S (NP The hungry cat ) (VP meows ) . || <EMPTY> || REDUCE
+<EMPTY> || The hungry cat meows . || <EMPTY> || NT(S)
+(S || The hungry cat meows . ||  || NT(NP)
+(S (NP || The hungry cat meows . || NT(S) || SHIFT
+(S (NP The || hungry cat meows . || NT(S) NT(NP) || SHIFT
+(S (NP The hungry || cat meows . || NT(S) NT(NP) SHIFT || SHIFT
+(S (NP The hungry cat || meows . || NT(S) NT(NP) SHIFT SHIFT || REDUCE
+(S (NP The hungry cat ) || meows . || NT(S) NT(NP) SHIFT SHIFT SHIFT || NT(VP)
+(S (NP The hungry cat ) (VP || meows . || NT(S) NT(NP) SHIFT SHIFT SHIFT REDUCE || SHIFT
+(S (NP The hungry cat ) (VP meows || . || NT(S) NT(NP) SHIFT SHIFT SHIFT REDUCE NT(VP) || REDUCE
+(S (NP The hungry cat ) (VP meows ) || . || NT(S) NT(NP) SHIFT SHIFT SHIFT REDUCE NT(VP) SHIFT || SHIFT
+(S (NP The hungry cat ) (VP meows ) . || <EMPTY> || NT(S) NT(NP) SHIFT SHIFT SHIFT REDUCE NT(VP) SHIFT REDUCE || REDUCE
 
