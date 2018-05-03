@@ -1,0 +1,9 @@
+2018-05-03 17:50:02 | Step 10 | Avg loss 3.9842 | 113 sents/sec |
+2018-05-03 17:50:05 | Step 20 | Avg loss 3.1850 | 123 sents/sec |
+2018-05-03 17:50:08 | Step 30 | Avg loss 2.9369 | 114 sents/sec |
+2018-05-03 17:50:10 | Step 40 | Avg loss 2.5922 | 125 sents/sec |
+2018-05-03 17:50:13 | Step 50 | Avg loss 2.8245 | 130 sents/sec |
+2018-05-03 17:50:15 | Step 60 | Avg loss 2.7690 | 121 sents/sec |
+2018-05-03 17:50:18 | Step 70 | Avg loss 2.6257 | 130 sents/sec |
+2018-05-03 17:50:21 | Step 80 | Avg loss 2.5119 | 119 sents/sec |
+2018-05-03 17:50:23 | Step 90 | Avg loss 2.4257 | 110 sents/sec |
