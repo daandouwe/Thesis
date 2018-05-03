@@ -15,8 +15,7 @@ EMPTY_INDEX = 1
 
 def pad(batch):
     """
-    Pad a batch of irregular length indices, and return as
-    a Variable so it is ready as input for a PyTorch model.
+    Pad a batch of irregular length indices and wrap it.
     """
     lens = list(map(len, batch))
     max_len = max(lens)
@@ -24,11 +23,19 @@ def pad(batch):
     for k, seq in zip(lens, batch):
         padded =  seq + (max_len - k)*[PAD_INDEX]
         padded_batch.append(padded)
-    return Variable(torch.LongTensor(padded_batch))
+    return wrap(padded_batch)
+
+def wrap(batch):
+    """
+    Packages the batch as a Variable containing a LongTensor
+    so the batch is ready as input for a PyTorch model.
+    """
+    return Variable(torch.LongTensor(batch))
+
 
 class Dictionary:
     """
-    A dependency parse dictionary.
+    A dictionary for stack, buffer, and action symbols.
     """
     def __init__(self, path):
         self.s2i = dict()
@@ -103,7 +110,7 @@ class Data:
                 self.action.append(action)
         self.lengths = [len(l) for l in self.stack]
 
-    def _order(self, new_order):
+    def _reorder(self, new_order):
         self.stack = [self.stack[i] for i in new_order]
         self.buffer = [self.buffer[i] for i in new_order]
         self.history = [self.history[i] for i in new_order]
@@ -113,13 +120,13 @@ class Data:
     def order(self):
         old_order = zip(range(len(self.lengths)), self.lengths)
         new_order, _ = zip(*sorted(old_order, key=lambda t: t[1]))
-        self._order(new_order)
+        self._reorder(new_order)
 
     def shuffle(self):
         n = len(self.stack)
         new_order = list(range(0, n))
         np.random.shuffle(new_order)
-        self._order(new_order)
+        self._reorder(new_order)
 
     def batches(self, batch_size, shuffle=True, length_ordered=False):
         """
@@ -136,7 +143,7 @@ class Data:
             stack = pad(self.stack[i:i+batch_size])
             buffer = pad(self.buffer[i:i+batch_size])
             history = pad(self.history[i:i+batch_size])
-            action = self.action[i:i+batch_size]
+            action = wrap(self.action[i:i+batch_size])
             yield stack, buffer, history, action
 
 class Corpus:
