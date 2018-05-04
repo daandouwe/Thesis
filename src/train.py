@@ -39,12 +39,12 @@ parser.add_argument('--dropout', type=float, default=0.33,
                     help='dropout applied to layers (0 = no dropout)')
 parser.add_argument('--seed', type=int, default=42,
                     help='random seed')
-parser.add_argument('--cuda', action='store_true',
-                    help='use CUDA')
 parser.add_argument('--log_every', type=int, default=10,
                     help='report interval')
 parser.add_argument('--plot_every', type=int, default=100,
                     help='plot interval')
+parser.add_argument('--disable_cuda', action='store_true',
+                    help='disable CUDA')
 args = parser.parse_args()
 
 # Create folders for logging and checkpoints
@@ -62,8 +62,11 @@ logging.basicConfig(format=FORMAT, level=logging.DEBUG, filename=LOGFILE,
                     datefmt='%Y-%m-%d %H:%M:%S')
 logger = logging.getLogger(__name__)
 
+# Set seed for reproducibility
 torch.manual_seed(args.seed)
 
+# Set cuda
+args.cuda = not args.disable_cuda and torch.cuda.is_available()
 ######################################################################
 # Initialize model.
 ######################################################################
@@ -77,10 +80,14 @@ model = RNNG(
     lstm_hidden=args.lstm_hidden,
     lstm_num_layers=args.lstm_num_layers,
     lstm_dropout=args.dropout,
-    mlp_hidden=args.mlp_hidden
+    mlp_hidden=args.mlp_hidden,
+    cuda=args.cuda
 )
 optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 criterion = nn.CrossEntropyLoss()
+
+if args.cuda:
+    model.cuda()
 
 logger.info(
         'VOCAB | words {} | stack {} | actions {}'.format(
@@ -97,7 +104,7 @@ def train():
     Performs one epoch of training.
     """
     for step, batch in enumerate(batches, 1):
-        stack, buffer, history, action = next(batches)
+        stack, buffer, history, action = batch
         out = model(stack, buffer, history)
         loss = criterion(out, action)
 
@@ -109,7 +116,7 @@ def train():
 
         # Logging info
         if step % args.log_every == 0:
-            losses.append(loss.data.numpy()[0])
+            losses.append(loss.cpu().data.numpy()[0])
             logger.info(
                 '| Step {}/{} | Avg loss {:.4f} | {:.0f} sents/sec |'.format(
             step, corpus.train.num_batches,
@@ -117,7 +124,16 @@ def train():
             args.batch_size*args.log_every / timer.elapsed()
                 )
             )
-batches = corpus.train.batches(args.batch_size, length_ordered=True)
+
+            print(
+                '| Step {}/{} | Avg loss {:.4f} | {:.0f} sents/sec |'.format(
+            step, corpus.train.num_batches,
+            np.mean(losses[-args.log_every:]),
+            args.batch_size*args.log_every / timer.elapsed()
+                )
+            )
+
+batches = corpus.train.batches(args.batch_size, length_ordered=True, cuda=args.cuda)
 timer = Timer()
 losses = []
 train()

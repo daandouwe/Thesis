@@ -23,20 +23,20 @@ class MLP(nn.Module):
 
 class BiRecurrentEncoder(nn.Module):
     """A bidirectional RNN encoder."""
-    def __init__(self,input_size, hidden_size, num_layers, dropout, batch_first=True):
+    def __init__(self,input_size, hidden_size, num_layers, dropout, batch_first=True, cuda=False):
         super(BiRecurrentEncoder, self).__init__()
-        self.batch_first = batch_first
         self.forward_rnn = nn.LSTM(input_size=input_size, hidden_size=hidden_size,
                            num_layers=num_layers, batch_first=batch_first,
                            dropout=dropout)
         self.backward_rnn = nn.LSTM(input_size=input_size, hidden_size=hidden_size,
                            num_layers=num_layers, batch_first=batch_first,
                            dropout=dropout)
+        self.cuda = cuda
 
     def _reverse(self, tensor):
         idx = [i for i in range(tensor.size(1) - 1, -1, -1)]
         idx = Variable(torch.LongTensor(idx))
-        # idx = idx.cuda() if use_cuda else idx
+        idx = idx.cuda() if self.cuda else idx
         return tensor.index_select(1, idx)
 
     def _select_final(self, tensor, lens):
@@ -56,7 +56,7 @@ class BiRecurrentEncoder(nn.Module):
 
 class RNNG(nn.Module):
     def __init__(self, vocab_size, stack_size, action_size, emb_dim, emb_dropout,
-                lstm_hidden, lstm_num_layers, lstm_dropout, mlp_hidden):
+                lstm_hidden, lstm_num_layers, lstm_dropout, mlp_hidden, cuda):
         super(RNNG, self).__init__()
 
         # Embeddings
@@ -69,13 +69,13 @@ class RNNG(nn.Module):
         lstm_input = emb_dim
         self.stack_encoder = BiRecurrentEncoder(input_size=lstm_input, hidden_size=lstm_hidden,
                                 num_layers=lstm_num_layers, batch_first=True,
-                                dropout=lstm_dropout)
+                                dropout=lstm_dropout, cuda=cuda)
         self.buffer_encoder = BiRecurrentEncoder(input_size=lstm_input, hidden_size=lstm_hidden,
                                 num_layers=lstm_num_layers, batch_first=True,
-                                dropout=lstm_dropout)
+                                dropout=lstm_dropout, cuda=cuda)
         self.history_encoder = BiRecurrentEncoder(input_size=lstm_input, hidden_size=lstm_hidden,
                                 num_layers=lstm_num_layers, batch_first=True,
-                                dropout=lstm_dropout)
+                                dropout=lstm_dropout, cuda=cuda)
 
         # MLP for action classifiction
         mlp_input = 3 * 2 * lstm_hidden # three bidirectional lstm embeddings

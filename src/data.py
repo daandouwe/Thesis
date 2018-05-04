@@ -13,7 +13,7 @@ PAD_INDEX = 0
 
 EMPTY_INDEX = 1
 
-def pad(batch):
+def pad(batch, cuda=False):
     """
     Pad a batch of irregular length indices and wrap it.
     """
@@ -23,14 +23,17 @@ def pad(batch):
     for k, seq in zip(lens, batch):
         padded =  seq + (max_len - k)*[PAD_INDEX]
         padded_batch.append(padded)
-    return wrap(padded_batch)
+    return wrap(padded_batch, cuda=cuda)
 
-def wrap(batch):
+def wrap(batch, cuda=False):
     """
     Packages the batch as a Variable containing a LongTensor
     so the batch is ready as input for a PyTorch model.
     """
-    return Variable(torch.LongTensor(batch))
+    if cuda:
+        return Variable(torch.cuda.LongTensor(batch))
+    else:
+        return Variable(torch.LongTensor(batch))
 
 
 class Dictionary:
@@ -129,7 +132,8 @@ class Data:
         np.random.shuffle(new_order)
         self._reorder(new_order)
 
-    def batches(self, batch_size, shuffle=True, length_ordered=False):
+    def batches(self, batch_size, shuffle=True,
+                length_ordered=False, cuda=False):
         """
         An iterator over batches.
         """
@@ -142,10 +146,10 @@ class Data:
         if length_ordered:
             self.order()
         for i in batch_order:
-            stack = pad(self.stack[i:i+batch_size])
-            buffer = pad(self.buffer[i:i+batch_size])
-            history = pad(self.history[i:i+batch_size])
-            action = wrap(self.action[i:i+batch_size])
+            stack = pad(self.stack[i:i+batch_size], cuda=cuda)
+            buffer = pad(self.buffer[i:i+batch_size], cuda=cuda)
+            history = pad(self.history[i:i+batch_size], cuda=cuda)
+            action = wrap(self.action[i:i+batch_size], cuda=cuda)
             yield stack, buffer, history, action
 
     @property
