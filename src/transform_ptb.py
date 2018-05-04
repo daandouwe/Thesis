@@ -27,7 +27,7 @@ def transform_mrg(path):
         bounds = [m.start() for m in re.finditer('\(\(', s)]
         parts = partition(s, bounds)
         for line in parts:
-            print(line[1:-1])
+            return line[1:-1]
 
 def ptb_folders_iter(corpus_root):
     """Returns an iterator over all paths to the .mrg files
@@ -41,7 +41,7 @@ def ptb_folders_iter(corpus_root):
                 yield(os.path.join(subdir, file))
 
 def main():
-    assert len(sys.argv) > 1, 'Specify the directory to the WSJ.'
+    assert len(sys.argv) > 1, 'Specify the directory to the PTB.'
     corpus_root = sys.argv[1] # '../data/ptb/con/treebank3/parsed/mrg/wsj'
     if len(sys.argv) > 2:
         nlines = int(sys.argv[2])
@@ -50,7 +50,8 @@ def main():
     for i, path in enumerate(ptb_folders_iter(corpus_root)):
         if nlines is not None and i > nlines:
             break
-        transform_mrg(path)
+        line = transform_mrg(path)
+        print(line)
 
 if __name__ == '__main__':
     main()

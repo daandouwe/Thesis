@@ -96,9 +96,10 @@ class Data:
 
         self.read(path, dictionary)
 
-    def read(self, path, dictionary):
+    def read(self, path, dictionary, print_every=1000):
         with open(path, 'r') as f:
-            for line in f:
+            for i, line in enumerate(f):
+                if i % print_every == 0: print('Reading in line {}.'.format(i), end='\r')
                 stack, buffer, history, action = line.split(SEPARATOR)
                 stack = [dictionary.s2i[s] for s in stack.split()]
                 buffer = [dictionary.w2i[w] for w in buffer.split()]
@@ -132,6 +133,7 @@ class Data:
         """
         An iterator over batches.
         """
+        self.batch_size = batch_size
         n = len(self.stack)
         batch_order = list(range(0, n, batch_size))
         if shuffle:
@@ -145,6 +147,11 @@ class Data:
             history = pad(self.history[i:i+batch_size])
             action = wrap(self.action[i:i+batch_size])
             yield stack, buffer, history, action
+
+    @property
+    def num_batches(self):
+        return len(self.stack) // self.batch_size
+
 
 class Corpus:
     """
@@ -160,6 +167,6 @@ if __name__ == "__main__":
     # Example usage:
     corpus = Corpus(data_path="../tmp/ptb")
     batches = corpus.train.batches(4, length_ordered=True)
-    for _ in range(3):
+    for _ in range(2):
         stack, buffer, history, action = next(batches)
         print(stack, buffer, history, action)

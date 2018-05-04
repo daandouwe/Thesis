@@ -5,6 +5,7 @@ from torch.autograd import Variable
 from data import PAD_INDEX
 
 class MLP(nn.Module):
+    """A simple multilayer perceptron with one hidden layer and dropout."""
     def __init__(self, input_size, hidden_size, output_size, dropout=0.):
         super(MLP, self).__init__()
         self.fc1 = nn.Linear(input_size, hidden_size)
@@ -20,9 +21,10 @@ class MLP(nn.Module):
         out = self.fc2(out)
         return out
 
-class RecurrentEncoder(nn.Module):
+class BiRecurrentEncoder(nn.Module):
+    """A bidirectional RNN encoder."""
     def __init__(self,input_size, hidden_size, num_layers, dropout, batch_first=True):
-        super(RecurrentEncoder, self).__init__()
+        super(BiRecurrentEncoder, self).__init__()
         self.batch_first = batch_first
         self.forward_rnn = nn.LSTM(input_size=input_size, hidden_size=hidden_size,
                            num_layers=num_layers, batch_first=batch_first,
@@ -53,16 +55,8 @@ class RecurrentEncoder(nn.Module):
         return h
 
 class RNNG(nn.Module):
-    def __init__(self,
-                 vocab_size,
-                 stack_size,
-                 action_size,
-                 emb_dim,
-                 emb_dropout,
-                 lstm_hidden,
-                 lstm_num_layers,
-                 lstm_dropout,
-                 mlp_hidden):
+    def __init__(self, vocab_size, stack_size, action_size, emb_dim, emb_dropout,
+                lstm_hidden, lstm_num_layers, lstm_dropout, mlp_hidden):
         super(RNNG, self).__init__()
 
         # Embeddings
@@ -71,19 +65,19 @@ class RNNG(nn.Module):
         self.history_emb = nn.Embedding(action_size, emb_dim, padding_idx=PAD_INDEX)
         self.emb_dropout = nn.Dropout(p=emb_dropout)
 
-        # LSTMs
+        # RNN encoders
         lstm_input = emb_dim
-        self.stack_encoder = RecurrentEncoder(input_size=lstm_input, hidden_size=lstm_hidden,
+        self.stack_encoder = BiRecurrentEncoder(input_size=lstm_input, hidden_size=lstm_hidden,
                                 num_layers=lstm_num_layers, batch_first=True,
                                 dropout=lstm_dropout)
-        self.buffer_encoder = RecurrentEncoder(input_size=lstm_input, hidden_size=lstm_hidden,
+        self.buffer_encoder = BiRecurrentEncoder(input_size=lstm_input, hidden_size=lstm_hidden,
                                 num_layers=lstm_num_layers, batch_first=True,
                                 dropout=lstm_dropout)
-        self.history_encoder = RecurrentEncoder(input_size=lstm_input, hidden_size=lstm_hidden,
+        self.history_encoder = BiRecurrentEncoder(input_size=lstm_input, hidden_size=lstm_hidden,
                                 num_layers=lstm_num_layers, batch_first=True,
                                 dropout=lstm_dropout)
 
-        # MLP for classifiction
+        # MLP for action classifiction
         mlp_input = 3 * 2 * lstm_hidden # three bidirectional lstm embeddings
         self.mlp = MLP(mlp_input, mlp_hidden, action_size)
 
@@ -101,10 +95,11 @@ class RNNG(nn.Module):
         h = self.emb_dropout(self.history_emb(history))
 
         # Bidirectional RNN encoding
-        h_s = self.stack_encoder(s, s_lens)
-        h_b = self.buffer_encoder(b, b_lens)
-        h_h = self.history_encoder(h, h_lens)
+        hs = self.stack_encoder(s, s_lens)
+        hb = self.buffer_encoder(b, b_lens)
+        hh = self.history_encoder(h, h_lens)
 
-        x = torch.cat((h_s, h_b, h_h), dim=-1)
+        # Create representation of configuration
+        x = torch.cat((hs, hb, hh), dim=-1)
         out =  self.mlp(x)
         return out
