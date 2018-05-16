@@ -19,13 +19,15 @@ from utils import Timer, get_subdir_string
 parser = argparse.ArgumentParser(description='Discriminative RNNG parser')
 parser.add_argument('--data', type=str, default='../tmp/ptb',
                     help='location of the data corpus')
-parser.add_argument('--emb_dim', type=int, default=20,
+parser.add_argument('--outdir', type=str, default='',
+                    help='location to make output log and checkpoint folders')
+parser.add_argument('--emb_dim', type=int, default=50,
                     help='size of word embeddings')
-parser.add_argument('--lstm_hidden', type=int, default=20,
+parser.add_argument('--lstm_hidden', type=int, default=50,
                     help='number of hidden units in LSTM')
 parser.add_argument('--lstm_num_layers', type=int, default=3,
                     help='number of layers')
-parser.add_argument('--mlp_hidden', type=int, default=100,
+parser.add_argument('--mlp_hidden', type=int, default=200,
                     help='number of hidden units in arc MLP')
 parser.add_argument('--lr', type=float, default=2e-3,
                     help='initial learning rate')
@@ -49,8 +51,8 @@ args = parser.parse_args()
 
 # Create folders for logging and checkpoints
 SUBDIR = get_subdir_string(args)
-LOGDIR = os.path.join('log', SUBDIR)
-CHECKDIR = os.path.join('checkpoints', SUBDIR)
+LOGDIR = os.path.join(args.outdir, 'log', SUBDIR)
+CHECKDIR = os.path.join(args.outdir, 'checkpoints', SUBDIR)
 LOGFILE = os.path.join(LOGDIR, 'train.log')
 CHECKFILE = os.path.join(CHECKDIR, 'model.pt')
 os.mkdir(LOGDIR)
@@ -90,11 +92,10 @@ if args.cuda:
     model.cuda()
 
 logger.info(
-        'VOCAB | words {} | stack {} | actions {}'.format(
-    len(corpus.dictionary.w2i),
-    len(corpus.dictionary.s2i),
-    len(corpus.dictionary.a2i))
-)
+    'VOCAB:  words {},  stack {},  actions {}'.format(
+        len(corpus.dictionary.w2i),
+        len(corpus.dictionary.s2i),
+        len(corpus.dictionary.a2i)))
 
 ######################################################################
 # The training step.
@@ -125,15 +126,17 @@ def train():
                 )
             )
 
-            print(
-                '| Step {}/{} | Avg loss {:.4f} | {:.0f} sents/sec |'.format(
-            step, corpus.train.num_batches,
-            np.mean(losses[-args.log_every:]),
-            args.batch_size*args.log_every / timer.elapsed()
-                )
-            )
+            # print(
+            #     '| Step {}/{} | Avg loss {:.4f} | {:.0f} sents/sec |'.format(
+            # step, corpus.train.num_batches,
+            # np.mean(losses[-args.log_every:]),
+            # args.batch_size*args.log_every / timer.elapsed()
+            #     )
+            # )
 
-batches = corpus.train.batches(args.batch_size, length_ordered=True, cuda=args.cuda)
 timer = Timer()
 losses = []
-train()
+for epoch in range(args.epochs):
+    batches = corpus.train.batches(args.batch_size, length_ordered=True, cuda=args.cuda)
+    train()
+    torch.save(model, CHECKFILE)

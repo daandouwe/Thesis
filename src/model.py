@@ -44,14 +44,24 @@ class BiRecurrentEncoder(nn.Module):
         lens = lens.expand(-1, -1, tensor.size(2))  # [batch, 1, sent_len]
         return torch.gather(tensor, 1, lens).squeeze(1)
 
-    def forward(self, x, lens):
-        h_f, _ = self.forward_rnn(x)
-        h_b, _ = self.backward_rnn(self._reverse(x))
+    def forward(self, xf, xb, lens):
+        hf, _ = self.forward_rnn(xf)
+        hb, _ = self.backward_rnn(xb)
 
-        h_f = self._select_final(h_f, lens)
-        h_b = self._select_final(h_b, lens) # TODO: flip the selection indices
+        hf = self._select_final(hf, lens)
+        hb = self._select_final(hb, lens)
 
-        h = torch.cat((h_f, h_b), dim=-1)
+        h = torch.cat((hf, hb), dim=-1)
+        return h
+
+    def _forward(self, x, lens):
+        hf, _ = self.forward_rnn(x)
+        hb, _ = self.backward_rnn(self._reverse(x))
+
+        hf = self._select_final(hf, lens)
+        hb = self._select_final(hb, lens) # TODO: flip the selection indices
+
+        h = torch.cat((hf, hb), dim=-1)
         return h
 
 class RNNG(nn.Module):
@@ -85,6 +95,31 @@ class RNNG(nn.Module):
         return (x != PAD_INDEX).long().sum(dim) - 1
 
     def forward(self, stack, buffer, history):
+        """stack, buffer, and history are tuples (forward order, backward order)"""
+        s_lens = self._get_lengths(stack[0])
+        b_lens = self._get_lengths(buffer[0])
+        h_lens = self._get_lengths(history[0])
+
+        # Embed each sequence
+        s_fw = self.emb_dropout(self.stack_emb(stack[0]))
+        b_fw = self.emb_dropout(self.buffer_emb(buffer[0]))
+        h_fw = self.emb_dropout(self.history_emb(history[0]))
+
+        s_bw = self.emb_dropout(self.stack_emb(stack[1]))
+        b_bw = self.emb_dropout(self.buffer_emb(buffer[1]))
+        h_bw = self.emb_dropout(self.history_emb(history[1]))
+
+        # Bidirectional RNN encoding
+        hs = self.stack_encoder(s_fw, s_bw, s_lens)
+        hb = self.buffer_encoder(b_fw, b_bw, b_lens)
+        hh = self.history_encoder(h_fw, h_bw, h_lens)
+
+        # Create representation of configuration
+        x = torch.cat((hs, hb, hh), dim=-1)
+        out =  self.mlp(x)
+        return out
+
+    def _forward(self, stack, buffer, history):
         s_lens = self._get_lengths(stack)
         b_lens = self._get_lengths(buffer)
         h_lens = self._get_lengths(history)

@@ -13,13 +13,15 @@ PAD_INDEX = 0
 
 EMPTY_INDEX = 1
 
-def pad(batch, cuda=False):
+def pad(batch, cuda=False, reverse=False):
     """
     Pad a batch of irregular length indices and wrap it.
     """
     lens = list(map(len, batch))
     max_len = max(lens)
     padded_batch = []
+    if reverse:
+        batch = [l[::-1] for l in batch]
     for k, seq in zip(lens, batch):
         padded =  seq + (max_len - k)*[PAD_INDEX]
         padded_batch.append(padded)
@@ -100,9 +102,11 @@ class Data:
         self.read(path, dictionary)
 
     def read(self, path, dictionary, print_every=1000):
+        nlines = sum(1 for _ in open(path, 'r'))
         with open(path, 'r') as f:
             for i, line in enumerate(f):
-                if i % print_every == 0: print('Reading in line {}.'.format(i), end='\r')
+                if i % print_every == 0:
+                    print('Reading in line {}/{}.'.format(i, nlines), end='\r')
                 stack, buffer, history, action = line.split(SEPARATOR)
                 stack = [dictionary.s2i[s] for s in stack.split()]
                 buffer = [dictionary.w2i[w] for w in buffer.split()]
@@ -163,7 +167,7 @@ class Corpus:
     """
     def __init__(self, data_path="../tmp/ptb"):
         self.dictionary = Dictionary(data_path)
-        self.train = Data(data_path + '.configs', self.dictionary)
+        self.train = Data(data_path + '.oracle', self.dictionary)
         # self.dev = Data(os.path.join(data_path, "dev-stanford-raw.conll"), self.dictionary)
         # self.test = Data(os.path.join(data_path, "test-stanford-raw.conll"), self.dictionary)
 
@@ -173,4 +177,4 @@ if __name__ == "__main__":
     batches = corpus.train.batches(4, length_ordered=True)
     for _ in range(2):
         stack, buffer, history, action = next(batches)
-        print(stack, buffer, history, action)
+        print(stack[0], buffer[0], history[0], action[0])

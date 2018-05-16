@@ -80,9 +80,9 @@ def main():
     stack_symbols = sorted(list(stack_symbols))
     vocab = get_vocab(sentences)
     actions = get_actions(oracle_path)
-    print('\n'.join(stack_symbols), file=open('../tmp/ptb.stack', 'w'))
-    print('\n'.join(actions), file=open('../tmp/ptb.actions', 'w'))
-    print('\n'.join(vocab), file=open('../tmp/ptb.vocab', 'w'))
+    print('\n'.join(stack_symbols), file=open('../../tmp/ptb.stack', 'w'))
+    print('\n'.join(actions), file=open('../../tmp/ptb.actions', 'w'))
+    print('\n'.join(vocab), file=open('../../tmp/ptb.vocab', 'w'))
 
 
 if __name__ == '__main__':
