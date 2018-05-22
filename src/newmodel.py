@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-from data import PAD_INDEX, EMPTY_INDEX, wrap
+from newdata import PAD_INDEX, EMPTY_INDEX, REDUCED_INDEX, wrap
 from stacklstm import StackLSTM
 from parser import Parser
 
@@ -88,6 +88,8 @@ class RNNG(nn.Module):
         mlp_input = (2*2 + 1) * lstm_hidden # two bidirectional lstm embeddings, one unidirectional
         self.mlp = MLP(mlp_input, mlp_hidden, action_size)
 
+        self.criterion = nn.CrossEntropyLoss()
+
         self.cuda = cuda
 
     def encode(self, stack, buffer, history):
@@ -99,7 +101,6 @@ class RNNG(nn.Module):
         # Encode them
         o = self.buffer_encoder(buffer)
         h = self.history_encoder(history)
-        self.stack_lstm.initialize_hidden()
         s = self.stack_lstm(stack) # Encode stack. Returns new hidden state.
 
         # concatenate and apply mlp to obtain output
@@ -108,9 +109,10 @@ class RNNG(nn.Module):
         return out
 
     def loss(self, logits, y):
-        pass
+        y = wrap([y])
+        return self.criterion(logits, y)
 
-    def forward(self, sent, actions, dictionary):
+    def forward(self, sent, actions, dictionary, verbose=False):
         """Forward training pass for RNNG.
 
         Args:
@@ -122,35 +124,43 @@ class RNNG(nn.Module):
         parser = Parser(dictionary, self.embedding, self.history_emb)
         parser.initialize(sent)
 
+        # Reinitialize the hidden state of the StackLSTM
+        self.stack_lstm.initialize_hidden()
+
+        # Cummulator for loss
+        loss = Variable(torch.zeros(1))
+
         for t, action_idx in enumerate(actions): # t is timestep, i the action index
-            print()
-            print(t)
-            print(parser)
 
             action = dictionary.i2a[action_idx] # Get the action as string
             parser.history.push(action_idx)
 
+            if verbose: print('\n{}. '.format(t), parser, action)
+
             # Comput parse representation and prediction.
             stack, buffer, history = parser.get_embedded_input()
             out = self.encode(stack, buffer, history) # encode the parse configuration
-            loss = self.loss(out, action_idx)
+            step_loss = self.loss(out, action_idx)
+            loss += step_loss
 
             if action == 'SHIFT':
-                print('SHIFT')
                 parser.shift()
 
             elif action == 'REDUCE':
                 # Pop all items from the open nonterminal
                 tokens, embeddings = parser.stack.pop()
-                print('REDUCE ', [dictionary.i2s[i] for i in tokens])
                 # Reduce them
                 x = self.stack_lstm.reduce(embeddings)
-                # Recompute the stack representation with the reduced subtree x.
-                s = self.stack_lstm(x) #
+                # Push new representation onto stack
+                parser.stack.push(REDUCED_INDEX, vec=x)
+
+                if verbose: print('REDUCEING', [dictionary.i2s[i] for i in tokens])
 
             elif action.startswith('NT'):
-                print(action)
                 parser.stack.push(action_idx)
 
             else:
                 raise ValueError('Got unknown action {}'.format(a))
+
+        loss /= len(actions)
+        return loss

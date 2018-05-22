@@ -13,6 +13,9 @@ from newdata import Corpus
 from newmodel import RNNG
 from utils import Timer, get_subdir_string
 
+LR = 1e-3
+CLIP = 5.
+
 torch.manual_seed(42)
 
 corpus = Corpus(data_path="../tmp/ptb")
@@ -25,10 +28,16 @@ model = RNNG(vocab_size=len(corpus.dictionary.w2i),
              lstm_hidden=20, lstm_num_layers=1, lstm_dropout=0.3,
              mlp_hidden=50, cuda=False)
 
-# sents = [1, 2, 3]
-# actions = [1, 2, 3]
+optimizer = torch.optim.Adam(model.parameters(), lr=LR)
 
-sent, actions = next(batches)
-print(sent)
+for step in range(100):
+    sent, actions = next(batches)
 
-model(sent, actions, corpus.dictionary)
+    loss = model(sent, actions, corpus.dictionary, verbose=False)
+
+    optimizer.zero_grad()
+    loss.backward()
+    torch.nn.utils.clip_grad_norm(model.parameters(), CLIP)
+    optimizer.step()
+
+    print('Step {} | loss {:.3f}'.format(step, loss.data.numpy()[0]))

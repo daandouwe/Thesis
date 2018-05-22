@@ -19,6 +19,10 @@ class Stack:
         self.dict = dictionary
         self.embedding = embedding
 
+    def __str__(self):
+        stack = [self.dict.i2s[i] for i in self._tokens]
+        return 'Stack : {}'.format(stack)
+
     def _reset(self):
         """Resets the buffer to empty state."""
         self._tokens = []
@@ -53,26 +57,11 @@ class Stack:
         embeddings = torch.cat(embs, 1) # [batch, seq_len, emb_dim]
         return tokens, embeddings
 
-    def _push(self, token):
+    def push(self, token, vec=None):
         self._tokens.append(token)
-        vec = self.embedding(wrap([token]))
+        if vec is None:
+            vec = self.embedding(wrap([token]))
         self._embeddings.append(vec)
-
-    def push(self, token):
-        self._tokens.append(token)
-        vec = self.embedding(wrap([token]))
-        self._embeddings.append(vec)
-
-    def open_bracket(self, nonterminal):
-        """Open a new bracket and start tracking its content.
-
-        :nonterminal (int): the index of the opened nonterminal.
-        """
-        self._open_nonterminal = nonterminal
-
-    def __str__(self):
-        stack = [self.dict.i2s[i] for i in self._tokens]
-        return 'Stack : {}'.format(stack)
 
     @property
     def top_embedded(self):
