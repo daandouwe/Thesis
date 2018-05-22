@@ -48,10 +48,11 @@ class StackLSTM(nn.Module):
                                               num_layers=1, dropout=0.)
 
         self._hidden_states = []
+
         self.initialize_hidden()
 
     def initialize_hidden(self, batch_size=1):
-        """Returns empty initial hidden state for each cell."""
+        """Set initial hidden state to zeros."""
         hx = Variable(torch.zeros(batch_size, self.hidden_size))
         cx = Variable(torch.zeros(batch_size, self.hidden_size))
         if self.cuda:
@@ -60,16 +61,15 @@ class StackLSTM(nn.Module):
         self.hx, self.cx = hx, cx
 
     def _reset_hidden(self, sequence_len):
-        """Reset the hidden state to before the opening of the sequence."""
-        indx = sequence_len
-        self._hidden_states = self._hidden_states[:-indx]
+        """Reset the hidden state to before opening the sequence."""
+        self._hidden_states = self._hidden_states[:-sequence_len]
         self.hx, self.cx = self._hidden_states[-1]
 
     def reduce(self, sequence):
         """Computes a bidirectional rnn represesentation for the sequence"""
-        l = sequence.size(1) - 1 # length of sequence (extra nonterminal at end)
+        length = sequence.size(1) - 1 # length of sequence (minus extra nonterminal at end)
         # Move hidden state back to before the opening of the nonterminal.
-        self._reset_hidden(l)
+        self._reset_hidden(length)
         return self.composition(sequence)
 
     def forward(self, x):

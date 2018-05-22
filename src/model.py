@@ -2,7 +2,9 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-from data import PAD_INDEX
+from data import PAD_INDEX, EMPTY_INDEX, REDUCED_INDEX, wrap
+from stacklstm import StackLSTM
+from parser import Parser
 
 class MLP(nn.Module):
     """A simple multilayer perceptron with one hidden layer and dropout."""
@@ -39,102 +41,179 @@ class BiRecurrentEncoder(nn.Module):
         idx = idx.cuda() if self.cuda else idx
         return tensor.index_select(1, idx)
 
-    def _select_final(self, tensor, lens):
-        lens = lens.unsqueeze(1).unsqueeze(2)       # [batch, 1, 1]
-        lens = lens.expand(-1, -1, tensor.size(2))  # [batch, 1, sent_len]
-        return torch.gather(tensor, 1, lens).squeeze(1)
+    def forward(self, x):
+        hf, _ = self.forward_rnn(x)                 # [batch, seq, hidden_size]
+        hb, _ = self.backward_rnn(self._reverse(x)) # [batch, seq, hidden_size]
 
-    def forward(self, xf, xb, lens):
-        hf, _ = self.forward_rnn(xf)
-        hb, _ = self.backward_rnn(xb)
+        # select final representation
+        hf = hf[:, -1, :] # [batch, hidden_size]
+        hb = hb[:, -1, :] # [batch, hidden_size]
 
-        hf = self._select_final(hf, lens)
-        hb = self._select_final(hb, lens)
-
-        h = torch.cat((hf, hb), dim=-1)
+        h = torch.cat((hf, hb), dim=-1) # [batch, 2*hidden_size]
         return h
 
-    def _forward(self, x, lens):
-        hf, _ = self.forward_rnn(x)
-        hb, _ = self.backward_rnn(self._reverse(x))
-
-        hf = self._select_final(hf, lens)
-        hb = self._select_final(hb, lens) # TODO: flip the selection indices
-
-        h = torch.cat((hf, hb), dim=-1)
-        return h
 
 class RNNG(nn.Module):
-    def __init__(self, vocab_size, stack_size, action_size, emb_dim, emb_dropout,
+    def __init__(self, stack_size, action_size, emb_dim, emb_dropout,
                 lstm_hidden, lstm_num_layers, lstm_dropout, mlp_hidden, cuda):
         super(RNNG, self).__init__()
+        self.lstm_hidden = lstm_hidden
 
         # Embeddings
-        self.stack_emb = nn.Embedding(stack_size, emb_dim, padding_idx=PAD_INDEX)
-        self.buffer_emb = nn.Embedding(vocab_size, emb_dim, padding_idx=PAD_INDEX)
+        self.embedding = nn.Embedding(stack_size, emb_dim, padding_idx=PAD_INDEX)
         self.history_emb = nn.Embedding(action_size, emb_dim, padding_idx=PAD_INDEX)
-        self.emb_dropout = nn.Dropout(p=emb_dropout)
+        self.dropout = nn.Dropout(p=emb_dropout)
 
-        # RNN encoders
-        lstm_input = emb_dim
-        self.stack_encoder = BiRecurrentEncoder(input_size=lstm_input, hidden_size=lstm_hidden,
+        # StackLSTM
+        self.stack_lstm = StackLSTM(input_size=emb_dim, hidden_size=lstm_hidden,
+                                cuda=cuda)
+        # Bidirectional RNN encoders
+        self.buffer_encoder = BiRecurrentEncoder(input_size=emb_dim, hidden_size=lstm_hidden,
                                 num_layers=lstm_num_layers, batch_first=True,
                                 dropout=lstm_dropout, cuda=cuda)
-        self.buffer_encoder = BiRecurrentEncoder(input_size=lstm_input, hidden_size=lstm_hidden,
-                                num_layers=lstm_num_layers, batch_first=True,
-                                dropout=lstm_dropout, cuda=cuda)
-        self.history_encoder = BiRecurrentEncoder(input_size=lstm_input, hidden_size=lstm_hidden,
+        self.history_encoder = BiRecurrentEncoder(input_size=emb_dim, hidden_size=lstm_hidden,
                                 num_layers=lstm_num_layers, batch_first=True,
                                 dropout=lstm_dropout, cuda=cuda)
 
         # MLP for action classifiction
-        mlp_input = 3 * 2 * lstm_hidden # three bidirectional lstm embeddings
+        mlp_input = (2*2 + 1) * lstm_hidden # two bidirectional lstm embeddings, one unidirectional
         self.mlp = MLP(mlp_input, mlp_hidden, action_size)
 
-    def _get_lengths(self, x, dim=1):
-        return (x != PAD_INDEX).long().sum(dim) - 1
+        self.criterion = nn.CrossEntropyLoss()
 
-    def forward(self, stack, buffer, history):
-        """stack, buffer, and history are tuples (forward order, backward order)"""
-        s_lens = self._get_lengths(stack[0])
-        b_lens = self._get_lengths(buffer[0])
-        h_lens = self._get_lengths(history[0])
+        self.cuda = cuda
 
-        # Embed each sequence
-        s_fw = self.emb_dropout(self.stack_emb(stack[0]))
-        b_fw = self.emb_dropout(self.buffer_emb(buffer[0]))
-        h_fw = self.emb_dropout(self.history_emb(history[0]))
+    def encode(self, stack, buffer, history):
+        # Apply dropout
+        stack = self.dropout(stack) # input_stack (batch, input_size)
+        buffer = self.dropout(buffer) # input_stack (batch, input_size)
+        history = self.dropout(history) # input_stack (batch, input_size)
 
-        s_bw = self.emb_dropout(self.stack_emb(stack[1]))
-        b_bw = self.emb_dropout(self.buffer_emb(buffer[1]))
-        h_bw = self.emb_dropout(self.history_emb(history[1]))
+        # Encode them
+        o = self.buffer_encoder(buffer)
+        h = self.history_encoder(history)
+        s = self.stack_lstm(stack) # Encode stack. Returns new hidden state.
 
-        # Bidirectional RNN encoding
-        hs = self.stack_encoder(s_fw, s_bw, s_lens)
-        hb = self.buffer_encoder(b_fw, b_bw, b_lens)
-        hh = self.history_encoder(h_fw, h_bw, h_lens)
-
-        # Create representation of configuration
-        x = torch.cat((hs, hb, hh), dim=-1)
-        out =  self.mlp(x)
+        # concatenate and apply mlp to obtain output
+        x = torch.cat((o, s, h), dim=-1)
+        out = self.mlp(x)
         return out
 
-    def _forward(self, stack, buffer, history):
-        s_lens = self._get_lengths(stack)
-        b_lens = self._get_lengths(buffer)
-        h_lens = self._get_lengths(history)
+    def loss(self, logits, y):
+        y = wrap([y])
+        return self.criterion(logits, y)
 
-        # Embed each sequence
-        s = self.emb_dropout(self.stack_emb(stack))
-        b = self.emb_dropout(self.buffer_emb(buffer))
-        h = self.emb_dropout(self.history_emb(history))
+    def forward(self, sent, actions, dictionary, verbose=False):
+        """Forward training pass for RNNG.
 
-        # Bidirectional RNN encoding
-        hs = self.stack_encoder(s, s_lens)
-        hb = self.buffer_encoder(b, b_lens)
-        hh = self.history_encoder(h, h_lens)
+        Args:
+            sent (list): Input sentence as list of indices.
+            actions (list): Parse action sequence as list of indices.
+            dictionary: an instance of data.Dictionary
+        """
+        # Create a new parser
+        parser = Parser(dictionary, self.embedding, self.history_emb)
+        parser.initialize(sent)
 
-        # Create representation of configuration
-        x = torch.cat((hs, hb, hh), dim=-1)
-        out =  self.mlp(x)
-        return out
+        # Reinitialize the hidden state of the StackLSTM
+        self.stack_lstm.initialize_hidden()
+
+        # Cummulator for loss
+        loss = Variable(torch.zeros(1))
+
+        for t, action_id in enumerate(actions):
+
+            action = dictionary.i2a[action_id] # Get the action as string
+            parser.history.push(action_id)
+
+            if verbose: print('\n{}. '.format(t), parser, action)
+
+            # Comput parse representation and prediction.
+            stack, buffer, history = parser.get_embedded_input()
+            out = self.encode(stack, buffer, history) # encode the parse configuration
+            step_loss = self.loss(out, action_id)
+            loss += step_loss
+
+            if action == 'SHIFT':
+                parser.shift()
+
+            elif action == 'REDUCE':
+                # Pop all items from the open nonterminal
+                tokens, embeddings = parser.stack.pop()
+                # Reduce them
+                x = self.stack_lstm.reduce(embeddings)
+                # Push new representation onto stack
+                parser.stack.push(REDUCED_INDEX, vec=x)
+
+                if verbose: print('REDUCEING', [dictionary.i2s[i] for i in tokens])
+
+            elif action.startswith('NT'):
+                parser.stack.push(action_id, new_nonterminal=True)
+
+            else:
+                raise ValueError('Got unknown action {}'.format(a))
+
+        loss /= len(actions)
+        return loss
+
+
+    def parse(self, sent, dictionary, verbose=False):
+        """Forward training pass for RNNG.
+
+        Args:
+            sent (list): Input sentence as list of indices.
+            actions (list): Parse action sequence as list of indices.
+            dictionary: an instance of data.Dictionary
+        """
+        # Create a new parser
+        parser = Parser(dictionary, self.embedding, self.history_emb)
+        parser.initialize(sent)
+
+        # Reinitialize the hidden state of the StackLSTM
+        self.stack_lstm.initialize_hidden()
+
+        # Cummulator for loss
+        loss = Variable(torch.zeros(1))
+
+        t = 0
+        while not parser.stack.empty:
+
+            # Comput parse representation and prediction.
+            stack, buffer, history = parser.get_embedded_input()
+            out = self.encode(stack, buffer, history) # encode the parse configuration
+
+            # Get highest scoring valid predictions
+            _, idx = out.sort(descending=True)
+            idx = idx.data.squeeze(0)
+            i = 1
+            action_id = idx[-i]
+            action = dictionary.i2a[action_id]
+            while not parser.is_valid_action(action):
+                i += 1
+                action_id = idx[-i]
+                action = dictionary.i2a[action_id]
+            print(i)
+            parser.history.push(action_id)
+
+            t += 1
+
+            if action == 'SHIFT':
+                parser.shift()
+
+            elif action == 'REDUCE':
+                # Pop all items from the open nonterminal
+                tokens, embeddings = parser.stack.pop()
+                # Reduce them
+                x = self.stack_lstm.reduce(embeddings)
+                # Push new representation onto stack
+                parser.stack.push(REDUCED_INDEX, vec=x)
+
+                if verbose: print('REDUCEING', [dictionary.i2s[i] for i in tokens])
+
+            elif action.startswith('NT'):
+                parser.stack.push(action_id)
+
+            else:
+                raise ValueError('Got unknown action {}'.format(a))
+
+            if verbose: print('\n{}. '.format(t), parser, action)
