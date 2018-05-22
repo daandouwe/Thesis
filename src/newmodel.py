@@ -1,11 +1,10 @@
-from copy import deepcopy
-
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-from data import PAD_INDEX, EMPTY_INDEX
+from data import PAD_INDEX, EMPTY_INDEX, wrap
 from stacklstm import StackLSTM
+from parser import Parser
 
 class MLP(nn.Module):
     """A simple multilayer perceptron with one hidden layer and dropout."""
@@ -61,6 +60,8 @@ class RNNG(nn.Module):
         self.lstm_hidden = lstm_hidden
 
         # Embeddings
+        self.embedding = nn.Embedding(stack_size, emb_dim, padding_idx=PAD_INDEX)
+        # OLD
         self.stack_emb = nn.Embedding(stack_size, emb_dim, padding_idx=PAD_INDEX)
         self.buffer_emb = nn.Embedding(vocab_size, emb_dim, padding_idx=PAD_INDEX)
         self.history_emb = nn.Embedding(action_size, emb_dim, padding_idx=PAD_INDEX)
@@ -89,63 +90,67 @@ class RNNG(nn.Module):
 
         self.cuda = cuda
 
-    def wrap(self, x):
-        if self.cuda:
-            return Variable(torch.cuda.LongTensor(x))
-        else:
-            return Variable(torch.LongTensor(x))
-
-    def forward(self, sent, actions):
-        """
-        sent = [2, 4, 6, 2]
-        actions = [2, 4, 6, 2]
-        """
-        # Start with full buffer, and empyt history and empty stack
-        buffer = [w for w in sent[::-1]] # buffer is sentence reversed
-        history = [EMPTY_INDEX]
-        stack = [EMPTY_INDEX]
-
-        # Package the lists
-        input_stack = self.wrap(stack) # (batch, seq_len)
-        input_buffer = self.wrap([buffer]) # the entire buffer (batch, 1, seq_len)
-        input_history = self.wrap([history]) # the entire stack (batch, 1, seq_len)
-        # Embed them
-        input_stack = self.stack_emb(input_stack) # input_stack (batch, input_size)
-        input_buffer = self.buffer_emb(input_buffer) # input_stack (batch, input_size)
-        input_history = self.history_emb(input_history) # input_stack (batch, input_size)
+    def encode(self, stack, buffer, history):
         # Apply dropout
-        input_stack = self.dropout(input_stack) # input_stack (batch, input_size)
-        input_buffer = self.dropout(input_buffer) # input_stack (batch, input_size)
-        input_history = self.dropout(input_history) # input_stack (batch, input_size)
-        # Encode them
-        o = self.buffer_encoder(input_buffer)
-        h = self.history_encoder(input_history)
-        self.stack_lstm.initialize_hidden()
-        s = self.stack_lstm(input_stack) # Encode stack. Returns latest new state.
-        print(o.shape, s.shape, h.shape)
+        stack = self.dropout(stack) # input_stack (batch, input_size)
+        buffer = self.dropout(buffer) # input_stack (batch, input_size)
+        history = self.dropout(history) # input_stack (batch, input_size)
 
+        # Encode them
+        o = self.buffer_encoder(buffer)
+        h = self.history_encoder(history)
+        self.stack_lstm.initialize_hidden()
+        s = self.stack_lstm(stack) # Encode stack. Returns new hidden state.
+
+        # concatenate and apply mlp to obtain output
         x = torch.cat((o, s, h), dim=-1)
         out = self.mlp(x)
-        print(out.shape)
-        exit()
+        return out
 
-        history.pop() # Remove EMPTY_INDEX from list
-        stack.pop() # Remove EMPTY_INDEX from list
-        for i, a in enumerate(actions):
-            # a is an integer
-            if i2a[a] == 'SHIFT':
-                stack.append(buffer.pop()) # move top word from buffer to stack
-                self.stack_lstm.stack
-                print(stack)
+    def loss(self, logits, y):
+        pass
 
-            elif a == REDUCE:
-                # This is the hardest
-                raise NotImplementedError
-                # self.reduce()
+    def forward(self, sent, actions, dictionary):
+        """Forward training pass for RNNG.
+
+        Args:
+            sent (list): Input sentence as list of indices.
+            actions (list): Parse action sequence as list of indices.
+            dictionary: an instance of data.Dictionary
+        """
+        # Create a parser
+        parser = Parser(dictionary, self.embedding, self.history_emb)
+        parser.initialize(sent)
+
+        for t, action_idx in enumerate(actions): # t is timestep, i the action index
+            print()
+            print(t)
+            print(parser)
+
+            action = dictionary.i2a[action_idx] # Get the action as string
+            parser.history.push(action_idx)
+
+            # Comput parse representation and prediction.
+            stack, buffer, history = parser.get_embedded_input()
+            out = self.encode(stack, buffer, history) # encode the parse configuration
+            loss = self.loss(out, action_idx)
+
+            if action == 'SHIFT':
+                print('SHIFT')
+                parser.shift()
+
+            elif action == 'REDUCE':
+                # Pop all items from the open nonterminal
+                tokens, embeddings = parser.stack.pop()
+                print('REDUCE ', [dictionary.i2s[i] for i in tokens])
+                # Reduce them
+                x = self.stack_lstm.reduce(embeddings)
+                # Recompute the stack representation with the reduced subtree x.
+                s = self.stack_lstm(x) #
+
+            elif action.startswith('NT'):
+                print(action)
+                parser.stack.push(action_idx)
 
             else:
-                raise NotImplementedError
-
-            # Create representation of configuration
-            x = torch.cat((o, s, h), dim=-1)
-            out = mlp(x)
+                raise ValueError('Got unknown action {}'.format(a))
