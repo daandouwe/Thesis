@@ -10,8 +10,11 @@ from new_get_configs import get_sentences
 
 PAD_TOKEN = '-PAD-'
 EMPTY_TOKEN = '-EMPTY-'
+REDUCED_TOKEN = '-REDUCED-' # used as dummy for reduced sequences
 PAD_INDEX = 0
 EMPTY_INDEX = 1
+REDUCED_INDEX = 2
+START = 3 # index from which vocabulary starts
 
 def pad(batch, cuda=False, reverse=False):
     """Pad a batch of irregular length indices and wrap it."""
@@ -56,6 +59,10 @@ class Dictionary:
         self.w2i[EMPTY_TOKEN] = 1
         self.a2i[EMPTY_TOKEN] = 1
 
+        self.s2i[REDUCED_TOKEN] = 2
+        self.w2i[REDUCED_TOKEN] = 2
+        self.a2i[REDUCED_TOKEN] = 2
+
         self.i2s.append(PAD_TOKEN)
         self.i2w.append(PAD_TOKEN)
         self.i2a.append(PAD_TOKEN)
@@ -64,7 +71,11 @@ class Dictionary:
         self.i2w.append(EMPTY_TOKEN)
         self.i2a.append(EMPTY_TOKEN)
 
-    def read(self, path, start=2):
+        self.i2s.append(REDUCED_TOKEN)
+        self.i2w.append(REDUCED_TOKEN)
+        self.i2a.append(REDUCED_TOKEN)
+
+    def read(self, path, start=START):
         with open(path + '.stack', 'r') as f:
             for i, line in enumerate(f, start):
                 s = line.rstrip()
