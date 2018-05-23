@@ -103,7 +103,7 @@ class RNNG(nn.Module):
         y = wrap([y])
         return self.criterion(logits, y)
 
-    def forward(self, sent, actions, dictionary, verbose=False):
+    def forward(self, sent, actions, dictionary, verbose=False, file=None):
         """Forward training pass for RNNG.
 
         Args:
@@ -126,13 +126,22 @@ class RNNG(nn.Module):
             action = dictionary.i2a[action_id] # Get the action as string
             parser.history.push(action_id)
 
-            if verbose: print('\n{}. '.format(t), parser, action)
-
             # Comput parse representation and prediction.
             stack, buffer, history = parser.get_embedded_input()
             out = self.encode(stack, buffer, history) # encode the parse configuration
             step_loss = self.loss(out, action_id)
             loss += step_loss
+
+            if verbose:
+                # Log parser state
+                print(t, file=file)
+                print(str(parser), file=file)
+                vals, ids = out.sort(descending=True)
+                vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
+                print('Values : ', vals.numpy()[:10], file=file)
+                print('Ids : ', ids.numpy()[:10], file=file)
+                print('Action : ', action_id, action, file=file)
+                print(file=file)
 
             if action == 'SHIFT':
                 parser.shift()
@@ -144,8 +153,6 @@ class RNNG(nn.Module):
                 x = self.stack_lstm.reduce(embeddings)
                 # Push new representation onto stack
                 parser.stack.push(REDUCED_INDEX, vec=x)
-
-                if verbose: print('REDUCEING', [dictionary.i2s[i] for i in tokens])
 
             elif action.startswith('NT'):
                 parser.stack.push(action_id, new_nonterminal=True)
@@ -178,13 +185,6 @@ class RNNG(nn.Module):
         while not parser.stack.empty:
             t += 1
 
-            # # Avoid endless loop
-            # if t > 300:
-            #     break
-
-            # Log parser state
-            print(t, file=file)
-            print(str(parser), file=file)
 
             # Comput parse representation and prediction.
             stack, buffer, history = parser.get_embedded_input()
@@ -193,19 +193,22 @@ class RNNG(nn.Module):
             # Get highest scoring valid predictions
             vals, ids = out.sort(descending=True)
             vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
-            i = 1
-            action_id = ids[-i]
+            i = 0
+            action_id = ids[i]
             action = dictionary.i2a[action_id]
             while not parser.is_valid_action(action):
                 i += 1
-                action_id = ids[-i]
+                action_id = ids[i]
                 action = dictionary.i2a[action_id]
             parser.history.push(action_id)
 
+            # Log info
+            print(t, file=file)
+            print(str(parser), file=file)
             print('Values : ', vals.numpy()[:10], file=file)
             print('Ids : ', ids.numpy()[:10], file=file)
             print('Action : ', action_id, action, file=file)
-            print('Recalls : ', i-1, file=file)
+            print('Recalls : ', i, file=file)
             print(file=file)
 
             if action == 'SHIFT':

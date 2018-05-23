@@ -58,12 +58,13 @@ if args.mode == 'test':
 
 if args.mode == 'train':
     sent, actions = next(batches)
-
     try:
-        for step in range(100):
+        for step in range(200):
             # sent, actions = next(batches)
-
-            loss = model(sent, actions, corpus.dictionary, verbose=False)
+            print('*' * 80, file=logfile)
+            print('EPOCH ', step, file=logfile)
+            print('*' * 80, file=logfile)
+            loss = model(sent, actions, corpus.dictionary, verbose=True, file=logfile)
 
             optimizer.zero_grad()
             loss.backward()
@@ -75,14 +76,17 @@ if args.mode == 'train':
     except KeyboardInterrupt:
         print('Exiting training early.')
 
+    print('*' * 80, file=logfile)
+    print('PARSING ', step, file=logfile)
+    print('*' * 80, file=logfile)
+
+    model.eval()
     parser = model.parse(sent, corpus.dictionary, file=logfile)
     torch.save(model, CHECKFILE)
+
     print('Finished parsing.', file=logfile)
     print(parser, file=logfile)
 
 if args.mode == 'parse':
     sent, actions = next(batches)
     parser = model.parse(sent, corpus.dictionary, file=logfile)
-
-    print('Finished parsing.', file=logfile)
-    print(parser, file=logfile)
