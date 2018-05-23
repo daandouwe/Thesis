@@ -157,12 +157,11 @@ class RNNG(nn.Module):
         return loss
 
 
-    def parse(self, sent, dictionary, verbose=False):
+    def parse(self, sent, dictionary, file):
         """Forward training pass for RNNG.
 
         Args:
-            sent (list): Input sentence as list of indices.
-            actions (list): Parse action sequence as list of indices.
+            sent (list): input sentence as list of indices
             dictionary: an instance of data.Dictionary
         """
         # Create a new parser
@@ -177,25 +176,37 @@ class RNNG(nn.Module):
 
         t = 0
         while not parser.stack.empty:
+            t += 1
+
+            # # Avoid endless loop
+            # if t > 300:
+            #     break
+
+            # Log parser state
+            print(t, file=file)
+            print(str(parser), file=file)
 
             # Comput parse representation and prediction.
             stack, buffer, history = parser.get_embedded_input()
             out = self.encode(stack, buffer, history) # encode the parse configuration
 
             # Get highest scoring valid predictions
-            _, idx = out.sort(descending=True)
-            idx = idx.data.squeeze(0)
+            vals, ids = out.sort(descending=True)
+            vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
             i = 1
-            action_id = idx[-i]
+            action_id = ids[-i]
             action = dictionary.i2a[action_id]
             while not parser.is_valid_action(action):
                 i += 1
-                action_id = idx[-i]
+                action_id = ids[-i]
                 action = dictionary.i2a[action_id]
-            print(i)
             parser.history.push(action_id)
 
-            t += 1
+            print('Values : ', vals.numpy()[:10], file=file)
+            print('Ids : ', ids.numpy()[:10], file=file)
+            print('Action : ', action_id, action, file=file)
+            print('Recalls : ', i-1, file=file)
+            print(file=file)
 
             if action == 'SHIFT':
                 parser.shift()
@@ -208,12 +219,12 @@ class RNNG(nn.Module):
                 # Push new representation onto stack
                 parser.stack.push(REDUCED_INDEX, vec=x)
 
-                if verbose: print('REDUCEING', [dictionary.i2s[i] for i in tokens])
+                print('Reducing : ', [dictionary.i2s[i] for i in tokens], file=file)
 
             elif action.startswith('NT'):
-                parser.stack.push(action_id)
+                parser.stack.push(action_id, new_nonterminal=True)
 
             else:
-                raise ValueError('Got unknown action {}'.format(a))
+                raise ValueError('got unknown action: {}'.format(a))
 
-            if verbose: print('\n{}. '.format(t), parser, action)
+        return parser

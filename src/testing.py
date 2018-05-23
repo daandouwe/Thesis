@@ -50,6 +50,7 @@ model = RNNG(stack_size=len(corpus.dictionary.s2i),
 
 optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
+logfile = open(LOGFILE, 'w')
 
 if args.mode == 'test':
     sent, actions = next(batches)
@@ -74,9 +75,14 @@ if args.mode == 'train':
     except KeyboardInterrupt:
         print('Exiting training early.')
 
-    model.parse(sent, corpus.dictionary, verbose=True)
+    parser = model.parse(sent, corpus.dictionary, file=logfile)
     torch.save(model, CHECKFILE)
+    print('Finished parsing.', file=logfile)
+    print(parser, file=logfile)
 
 if args.mode == 'parse':
     sent, actions = next(batches)
-    model.parse(sent, corpus.dictionary, verbose=True)
+    parser = model.parse(sent, corpus.dictionary, file=logfile)
+
+    print('Finished parsing.', file=logfile)
+    print(parser, file=logfile)

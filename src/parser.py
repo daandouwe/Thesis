@@ -1,6 +1,7 @@
 import torch
 
-from data import EMPTY_INDEX, REDUCED_INDEX, wrap
+from data import EMPTY_INDEX, REDUCED_INDEX, PAD_TOKEN, EMPTY_TOKEN, REDUCED_TOKEN
+from data import wrap
 
 class Stack:
     """The stack"""
@@ -31,9 +32,9 @@ class Stack:
         self.push(EMPTY_INDEX)
 
     def push(self, token, vec=None, new_nonterminal=False):
-        if new_nonterminal:
+        if new_nonterminal: # if we push a nonterminal onto the stack
             self._num_open_nonterminals += 1
-        if vec is None:
+        if vec is None: # if we did not provide a vector embedding for the token
             vec = self.embedding(wrap([token]))
         self._tokens.append(token)
         self._embeddings.append(vec)
@@ -72,7 +73,7 @@ class Stack:
 
     @property
     def empty(self):
-        return self._tokens == [REDUCED_INDEX]
+        return self._tokens == [EMPTY_INDEX, REDUCED_INDEX]
 
     @property
     def num_open_nonterminals(self):
@@ -165,7 +166,7 @@ class History:
 
     @property
     def last_action(self):
-        i = self._tokens[-1]
+        i = self._actions[-1]
         return self.dict.i2a[i]
 
 class Parser:
@@ -212,6 +213,9 @@ class Parser:
             cond1 = not self.buffer.empty
             cond2 = self.stack.num_open_nonterminals < 100
             return cond1 and cond2
+        # TODO: Fix this in the Dictionary class in data.py
+        elif action in [PAD_TOKEN, EMPTY_TOKEN, REDUCED_TOKEN]:
+            return False
         else:
             raise ValueError('got illegal action: {}'.format(action))
 
