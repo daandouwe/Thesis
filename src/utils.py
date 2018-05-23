@@ -37,8 +37,8 @@ def get_parameter_string(args):
 def get_subdir_string(args):
     """Returns a concatenation of a date and timestamp and parameters.
 
-     Follows the convention 20170524_192314_batch_size_25_lr_1e-4/
-     """
+    Follows the convention 20170524_192314_batch_size_25_lr_1e-4/
+    """
     date = time.strftime('%Y%m%d')
     timestamp = time.strftime('%H%M%S')
     params = get_parameter_string(args)

@@ -58,8 +58,9 @@ if args.mode == 'test':
 
 if args.mode == 'train':
     sent, actions = next(batches)
+    sent, actions = next(batches)
     try:
-        for step in range(200):
+        for step in range(100):
             # sent, actions = next(batches)
             print('*' * 80, file=logfile)
             print('EPOCH ', step, file=logfile)
@@ -77,7 +78,7 @@ if args.mode == 'train':
         print('Exiting training early.')
 
     print('*' * 80, file=logfile)
-    print('PARSING ', step, file=logfile)
+    print('PARSING ', file=logfile)
     print('*' * 80, file=logfile)
 
     model.eval()

@@ -76,11 +76,13 @@ class RNNG(nn.Module):
                                 dropout=lstm_dropout, cuda=cuda)
 
         # MLP for action classifiction
-        mlp_input = (2*2 + 1) * lstm_hidden # two bidirectional lstm embeddings, one unidirectional
+        mlp_input = (2 + 2 + 1) * lstm_hidden # buffer and history are bidirectional, StackLSTM is unidirectional
         self.mlp = MLP(mlp_input, mlp_hidden, action_size)
 
+        # Training objective
         self.criterion = nn.CrossEntropyLoss()
 
+        # To cuda or not to cuda
         self.cuda = cuda
 
     def encode(self, stack, buffer, history):
@@ -100,7 +102,11 @@ class RNNG(nn.Module):
         return out
 
     def loss(self, logits, y):
-        y = wrap([y])
+        """Compute the loss given the criterion.
+
+        Logits is a PyTorch tensor, y is an integer.
+        """
+        y = wrap([y]) # returns a pytorch Variable
         return self.criterion(logits, y)
 
     def forward(self, sent, actions, dictionary, verbose=False, file=None):
@@ -160,7 +166,8 @@ class RNNG(nn.Module):
             else:
                 raise ValueError('Got unknown action {}'.format(a))
 
-        loss /= len(actions)
+        loss /= len(actions) # average over the sentence
+
         return loss
 
 
