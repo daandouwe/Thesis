@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-# from newmodel import BiRecurrentEncoder
+from model import BiRecurrentEncoder
 
 class BiRecurrentEncoder(nn.Module):
     """A bidirectional RNN encoder."""
@@ -51,6 +51,11 @@ class StackLSTM(nn.Module):
 
         self.initialize_hidden()
 
+    def _reset_hidden(self, sequence_len):
+        """Reset the hidden state to before opening the sequence."""
+        self._hidden_states = self._hidden_states[:-sequence_len]
+        self.hx, self.cx = self._hidden_states[-1]
+
     def initialize_hidden(self, batch_size=1):
         """Set initial hidden state to zeros."""
         hx = Variable(torch.zeros(batch_size, self.hidden_size))
@@ -60,20 +65,15 @@ class StackLSTM(nn.Module):
             cx = cx.cuda()
         self.hx, self.cx = hx, cx
 
-    def _reset_hidden(self, sequence_len):
-        """Reset the hidden state to before opening the sequence."""
-        self._hidden_states = self._hidden_states[:-sequence_len]
-        self.hx, self.cx = self._hidden_states[-1]
-
     def reduce(self, sequence):
         """Computes a bidirectional rnn represesentation for the sequence"""
         length = sequence.size(1) - 1 # length of sequence (minus extra nonterminal at end)
-        # Move hidden state back to before the opening of the nonterminal.
+        # Move hidden state back to before we opened the nonterminal.
         self._reset_hidden(length)
         return self.composition(sequence)
 
     def forward(self, x):
-        # x (batch, input_size)
+        # x is shape (batch, input_size)
         self.hx, self.cx = self.rnn(x, (self.hx, self.cx))
         self._hidden_states.append((self.hx, self.cx)) # add cell states to memory
         return self.hx

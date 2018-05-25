@@ -1,6 +1,6 @@
 import torch
 
-from data import EMPTY_INDEX, REDUCED_INDEX, PAD_TOKEN, EMPTY_TOKEN, REDUCED_TOKEN
+from data import EMPTY_INDEX, REDUCED_INDEX, EMPTY_TOKEN, REDUCED_TOKEN
 from data import wrap
 
 class Stack:
@@ -187,15 +187,15 @@ class Parser:
 
     def shift(self):
         idx, _ = self.buffer.pop()
-        # translate between dictionaries
-        token = self.dict.i2w[idx]
-        idx = self.dict.s2i[token]
+        # Translate between dictionaries.
+        token = self.dict.i2w[idx] # buffer dictionary
+        idx = self.dict.s2i[token] # stack dictionary
         self.stack.push(idx)
 
     def get_embedded_input(self):
-        stack = self.stack.top_embedded # the input on top [batch, emb_size]
-        buffer = self.buffer.embedded # the entire buffer [batch, seq_len, emb_size]
-        history = self.history.embedded # the entire stack [batch, seq_len, emb_size]
+        stack = self.stack.top_embedded # input on top [batch, emb_size]
+        buffer = self.buffer.embedded # entire buffer [batch, seq_len, emb_size]
+        history = self.history.embedded # entire history [batch, seq_len, emb_size]
         return stack, buffer, history
 
     def is_valid_action(self, action):
@@ -218,8 +218,3 @@ class Parser:
             return False
         else:
             raise ValueError('got illegal action: {}'.format(action))
-
-if __name__ == '__main__':
-    from data import Dictionary
-
-    dictionary = Dictionary("../tmp/ptb")

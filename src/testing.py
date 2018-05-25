@@ -20,7 +20,7 @@ parser.add_argument('--data', type=str, default='../tmp/ptb',
                     help='location of the data corpus')
 parser.add_argument('--outdir', type=str, default='',
                     help='location to make output log and checkpoint folders')
-parser.add_argument('--lr', type=float, default=1e-2,
+parser.add_argument('--lr', type=float, default=1e-1,
                     help='initial learning rate')
 parser.add_argument('--clip', type=float, default=5.,
                     help='clipping gradient norm at this value')
@@ -57,7 +57,6 @@ if args.mode == 'test':
     loss = model(sent, actions, corpus.dictionary, verbose=True)
 
 if args.mode == 'train':
-    sent, actions = next(batches)
     sent, actions = next(batches)
     try:
         for step in range(100):

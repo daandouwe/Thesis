@@ -192,8 +192,7 @@ class RNNG(nn.Module):
         while not parser.stack.empty:
             t += 1
 
-
-            # Comput parse representation and prediction.
+            # Compute parse representation and prediction.
             stack, buffer, history = parser.get_embedded_input()
             out = self.encode(stack, buffer, history) # encode the parse configuration
 
@@ -226,7 +225,8 @@ class RNNG(nn.Module):
                 tokens, embeddings = parser.stack.pop()
                 # Reduce them
                 x = self.stack_lstm.reduce(embeddings)
-                # Push new representation onto stack
+                # Push new representation onto stack:
+                # the computed vector x and a dummy index.
                 parser.stack.push(REDUCED_INDEX, vec=x)
 
                 print('Reducing : ', [dictionary.i2s[i] for i in tokens], file=file)
@@ -235,6 +235,6 @@ class RNNG(nn.Module):
                 parser.stack.push(action_id, new_nonterminal=True)
 
             else:
-                raise ValueError('got unknown action: {}'.format(a))
+                raise ValueError('got illegal action: {}'.format(a))
 
         return parser
