@@ -50,7 +50,6 @@ def get_vocab(sentences, text_line='unked'):
 def main(args):
     # Partition the oracle file into sentences
     sentences = get_sentences(args.oracle_path)
-    print(args.oracle_path)
 
     # Collect desired symbols for our dictionaries
     actions = get_actions(sentences)

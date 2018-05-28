@@ -1,12 +1,10 @@
-##################################################################
-# Transform the Penn Treebank from a collections of folders with
-# mrg files into one long document with linearized parse trees,
-# one sentence per line. Prints to stdout.
-##################################################################
+"""Transform the Penn Treebank from a collections of folders with
+mrg files into one long document with linearized parse trees,
+one sentence per line. Prints to stdout."""
 
 import os
-import sys
 import re
+import argparse
 
 def partition(sent, indices):
     parts = []
@@ -15,8 +13,10 @@ def partition(sent, indices):
     return parts
 
 def transform_mrg(path):
-    """Cleans the mrg file. Prints a one-line string to stdout in the
-    format given by sample_input_english.txt
+    """Clean the mrg file.
+
+    Prints a one-line string to stdout in the format given
+    by sample_input_english.txt
     """
     with open(path) as s:
         s = s.read()
@@ -30,8 +30,7 @@ def transform_mrg(path):
             return line[1:-1]
 
 def ptb_folders_iter(corpus_root):
-    """Returns an iterator over all paths to the .mrg files
-    in the wsj part of the ptb.
+    """Iterator over all mrg filepaths in the wsj part of the ptb.
 
     # TODO: edit the iterator to perform stadard train/dev/test splits
     """
@@ -40,18 +39,20 @@ def ptb_folders_iter(corpus_root):
             if file.endswith('.mrg'):
                 yield(os.path.join(subdir, file))
 
-def main():
-    assert len(sys.argv) > 1, 'Specify the directory to the PTB.'
-    corpus_root = sys.argv[1] # '../data/ptb/con/treebank3/parsed/mrg/wsj'
-    if len(sys.argv) > 2:
-        nlines = int(sys.argv[2])
-    else:
-        nlines = None
-    for i, path in enumerate(ptb_folders_iter(corpus_root)):
-        if nlines is not None and i > nlines:
-            break
+def main(args):
+    for i, path in enumerate(ptb_folders_iter(args.path)):
+        if args.nlines > -1: # If we put a maximum on the number of lines
+            if i > args.nlines:
+                break
         line = transform_mrg(path)
         print(line)
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('path', type=str,
+                        help='the directory to the PTB')
+    parser.add_argument('--nlines', type=int, default=-1,
+                        help='maximum number of lines to process')
+    args = parser.parse_args()
+
+    main(args)

@@ -51,18 +51,22 @@ class BiRecurrentEncoder(nn.Module):
         return h
 
 class StackLSTM(nn.Module):
+    """A Stack-LSTM used to encode the stack of a transition based parser."""
     def __init__(self, input_size, hidden_size, cuda=False):
         super(StackLSTM, self).__init__()
-        self.cuda = cuda
         self.input_size = input_size
-        self.hidden_size = hidden_size
+        self.hidden_size = hidden_size # Must be even number, see composition function.
+        self.cuda = cuda
 
         self.rnn = nn.LSTMCell(input_size, hidden_size)
-        # hidden_size//2 because the output of the composition function
+        # BiRNN ecoder used as composition function.
+        # NOTE: we use hidden_size//2 because the output of the composition function
         # is a concatenation of two hidden vectors.
         self.composition = BiRecurrentEncoder(input_size, hidden_size//2,
                                               num_layers=1, dropout=0.)
 
+        # Were we store all intermediate computed hidden states.
+        # Top of this list is used as the stack embedding
         self._hidden_states = []
 
         self.initialize_hidden()
@@ -82,14 +86,22 @@ class StackLSTM(nn.Module):
         self.hx, self.cx = hx, cx
 
     def reduce(self, sequence):
-        """Computes a bidirectional rnn represesentation for the sequence"""
+        """Reduce a nonterminal sequence.
+
+        Computes a BiRNN represesentation for the sequence, then replaces
+        the reduced sequence of hidden states with this one representation.
+        """
         length = sequence.size(1) - 1 # length of sequence (minus extra nonterminal at end)
         # Move hidden state back to before we opened the nonterminal.
         self._reset_hidden(length)
         return self.composition(sequence)
 
     def forward(self, x):
-        # x is shape (batch, input_size)
+        """Compute the next hidden state with input x and the previous hidden state.
+
+        Args: x is shape (batch, input_size).
+        """
         self.hx, self.cx = self.rnn(x, (self.hx, self.cx))
-        self._hidden_states.append((self.hx, self.cx)) # add cell states to memory
+        # Add cell states to memory.
+        self._hidden_states.append((self.hx, self.cx))
         return self.hx
