@@ -3,57 +3,12 @@ import torch.nn as nn
 from torch.autograd import Variable
 
 from data import PAD_INDEX, EMPTY_INDEX, REDUCED_INDEX, wrap
-from stacklstm import StackLSTM
+from nn import MLP, BiRecurrentEncoder, StackLSTM
+
 from parser import Parser
 
-class MLP(nn.Module):
-    """A simple multilayer perceptron with one hidden layer and dropout."""
-    def __init__(self, input_size, hidden_size, output_size, dropout=0.):
-        super(MLP, self).__init__()
-        self.fc1 = nn.Linear(input_size, hidden_size)
-        self.fc2 = nn.Linear(hidden_size, output_size)
-
-        self.dropout = nn.Dropout(p=dropout)
-        self.relu = nn.ReLU()
-
-    def forward(self, x):
-        out = self.fc1(x)
-        out = self.relu(out)
-        out = self.dropout(out)
-        out = self.fc2(out)
-        return out
-
-class BiRecurrentEncoder(nn.Module):
-    """A bidirectional RNN encoder."""
-    def __init__(self,input_size, hidden_size, num_layers, dropout, batch_first=True, cuda=False):
-        super(BiRecurrentEncoder, self).__init__()
-        self.forward_rnn = nn.LSTM(input_size=input_size, hidden_size=hidden_size,
-                           num_layers=num_layers, batch_first=batch_first,
-                           dropout=dropout)
-        self.backward_rnn = nn.LSTM(input_size=input_size, hidden_size=hidden_size,
-                           num_layers=num_layers, batch_first=batch_first,
-                           dropout=dropout)
-        self.cuda = cuda
-
-    def _reverse(self, tensor):
-        idx = [i for i in range(tensor.size(1) - 1, -1, -1)]
-        idx = Variable(torch.LongTensor(idx))
-        idx = idx.cuda() if self.cuda else idx
-        return tensor.index_select(1, idx)
-
-    def forward(self, x):
-        hf, _ = self.forward_rnn(x)                 # [batch, seq, hidden_size]
-        hb, _ = self.backward_rnn(self._reverse(x)) # [batch, seq, hidden_size]
-
-        # select final representation
-        hf = hf[:, -1, :] # [batch, hidden_size]
-        hb = hb[:, -1, :] # [batch, hidden_size]
-
-        h = torch.cat((hf, hb), dim=-1) # [batch, 2*hidden_size]
-        return h
-
-
 class RNNG(nn.Module):
+    """Recurrent Neural Network Grammar model."""
     def __init__(self, stack_size, action_size, emb_dim, emb_dropout,
                 lstm_hidden, lstm_num_layers, lstm_dropout, mlp_hidden, cuda):
         super(RNNG, self).__init__()
@@ -166,13 +121,13 @@ class RNNG(nn.Module):
             else:
                 raise ValueError('Got unknown action {}'.format(a))
 
-        loss /= len(actions) # average over the sentence
+        loss /= len(actions) # average loss over the action sequence
 
         return loss
 
 
     def parse(self, sent, dictionary, file):
-        """Forward training pass for RNNG.
+        """Parse an input sequence.
 
         Args:
             sent (list): input sentence as list of indices
