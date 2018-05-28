@@ -66,7 +66,7 @@ def main(args):
             file=open(path + '.vocab', 'w'))
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Data for RNNG parser.')
+    parser = argparse.ArgumentParser(description='data for RNNG parser.')
     parser.add_argument('oracle_path', type=str, help='location of the oracle path')
 
     args = parser.parse_args()

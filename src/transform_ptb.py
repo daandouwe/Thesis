@@ -1,6 +1,8 @@
-"""Transform the Penn Treebank from a collections of folders with
+"""
+Transform the Penn Treebank from a collections of folders with
 mrg files into one long document with linearized parse trees,
-one sentence per line. Prints to stdout."""
+one sentence per line. Prints to stdout.
+"""
 
 import os
 import re

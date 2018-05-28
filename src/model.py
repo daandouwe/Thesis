@@ -72,11 +72,11 @@ class RNNG(nn.Module):
             actions (list): Parse action sequence as list of indices.
             dictionary: an instance of data.Dictionary
         """
-        # Create a new parser
+        # Create a new parser.
         parser = Parser(dictionary, self.embedding, self.history_emb)
         parser.initialize(sent)
 
-        # Reinitialize the hidden state of the StackLSTM
+        # Reinitialize the hidden state of the StackLSTM.
         self.stack_lstm.initialize_hidden()
 
         # Cummulator for loss
@@ -85,16 +85,15 @@ class RNNG(nn.Module):
         for t, action_id in enumerate(actions):
 
             action = dictionary.i2a[action_id] # Get the action as string
-            parser.history.push(action_id)
 
-            # Comput parse representation and prediction.
+            # Compute parse representation and prediction.
             stack, buffer, history = parser.get_embedded_input()
             out = self.encode(stack, buffer, history) # encode the parse configuration
             step_loss = self.loss(out, action_id)
             loss += step_loss
-
+            
             if verbose:
-                # Log parser state
+                # Log parser state.
                 print(t, file=file)
                 print(str(parser), file=file)
                 vals, ids = out.sort(descending=True)
@@ -104,15 +103,17 @@ class RNNG(nn.Module):
                 print('Action : ', action_id, action, file=file)
                 print(file=file)
 
+            parser.history.push(action_id)
+
             if action == 'SHIFT':
                 parser.shift()
 
             elif action == 'REDUCE':
-                # Pop all items from the open nonterminal
+                # Pop all items from the open nonterminal.
                 tokens, embeddings = parser.stack.pop()
-                # Reduce them
+                # Reduce them.
                 x = self.stack_lstm.reduce(embeddings)
-                # Push new representation onto stack
+                # Push new representation onto stack.
                 parser.stack.push(REDUCED_INDEX, vec=x)
 
             elif action.startswith('NT'):
@@ -121,7 +122,7 @@ class RNNG(nn.Module):
             else:
                 raise ValueError('Got unknown action {}'.format(a))
 
-        loss /= len(actions) # average loss over the action sequence
+        loss /= len(actions) # Average loss over the action sequence
 
         return loss
 
@@ -133,14 +134,14 @@ class RNNG(nn.Module):
             sent (list): input sentence as list of indices
             dictionary: an instance of data.Dictionary
         """
-        # Create a new parser
+        # Create a new parser.
         parser = Parser(dictionary, self.embedding, self.history_emb)
         parser.initialize(sent)
 
-        # Reinitialize the hidden state of the StackLSTM
+        # Reinitialize the hidden state of the StackLSTM.
         self.stack_lstm.initialize_hidden()
 
-        # Cummulator for loss
+        # Cummulator for loss.
         loss = Variable(torch.zeros(1))
 
         t = 0
@@ -151,7 +152,7 @@ class RNNG(nn.Module):
             stack, buffer, history = parser.get_embedded_input()
             out = self.encode(stack, buffer, history) # encode the parse configuration
 
-            # Get highest scoring valid predictions
+            # Get highest scoring valid predictions.
             vals, ids = out.sort(descending=True)
             vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
             i = 0
@@ -176,7 +177,7 @@ class RNNG(nn.Module):
                 parser.shift()
 
             elif action == 'REDUCE':
-                # Pop all items from the open nonterminal
+                # Pop all items from the open nonterminal.
                 tokens, embeddings = parser.stack.pop()
                 # Reduce them
                 x = self.stack_lstm.reduce(embeddings)

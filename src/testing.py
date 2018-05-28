@@ -51,6 +51,8 @@ model = RNNG(stack_size=len(corpus.dictionary.s2i),
 optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
 logfile = open(LOGFILE, 'w')
+trainfile = open(LOGFILE + 'train.txt', 'w')
+parsefile = open(LOGFILE + 'parse.txt', 'w')
 
 if args.mode == 'test':
     sent, actions = next(batches)
@@ -62,10 +64,10 @@ if args.mode == 'train':
     try:
         for step in range(100):
             # sent, actions = next(batches)
-            print('*' * 80, file=logfile)
-            print('EPOCH ', step, file=logfile)
-            print('*' * 80, file=logfile)
-            loss = model(sent, actions, corpus.dictionary, verbose=True, file=logfile)
+            print('*' * 80, file=trainfile)
+            print('EPOCH ', step, file=trainfile)
+            print('*' * 80, file=trainfile)
+            loss = model(sent, actions, corpus.dictionary, verbose=False, file=trainfile)
 
             optimizer.zero_grad()
             loss.backward()
@@ -74,19 +76,21 @@ if args.mode == 'train':
 
             print('Step {} | loss {:.3f} | {:.3f}s'.format(step, loss.data[0], timer.elapsed()))
 
+        loss = model(sent, actions, corpus.dictionary, verbose=True, file=trainfile)
+
     except KeyboardInterrupt:
         print('Exiting training early.')
 
-    print('*' * 80, file=logfile)
-    print('PARSING ', file=logfile)
-    print('*' * 80, file=logfile)
+    print('*' * 80, file=parsefile)
+    print('PARSING', file=parsefile)
+    print('*' * 80, file=parsefile)
 
     model.eval()
-    parser = model.parse(sent, corpus.dictionary, file=logfile)
+    parser = model.parse(sent, corpus.dictionary, file=parsefile)
     torch.save(model, CHECKFILE)
 
-    print('Finished parsing.', file=logfile)
-    print(parser, file=logfile)
+    print('Finished parsing.', file=parsefile)
+    print(parser, file=parsefile)
 
 if args.mode == 'parse':
     sent, actions = next(batches)

@@ -1,6 +1,6 @@
 import torch
 
-from data import EMPTY_INDEX, REDUCED_INDEX, EMPTY_TOKEN, REDUCED_TOKEN
+from data import EMPTY_INDEX, REDUCED_INDEX, EMPTY_TOKEN, REDUCED_TOKEN, PAD_TOKEN
 from data import wrap
 
 class Stack:
