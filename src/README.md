@@ -10,4 +10,12 @@ To extract trainable parse configurations from the ptb, run the `ptb2configs.sh`
 
 ## Run
 
-To run the RNNG call `testing.py`.
+To run the RNNG call `testing.py` with arguments `[test, train, parse]`.
+
+
+## Todo
+
+- [ ] Incorporate dropout
+- [ ] Enable multilayered LSTMs
+- [ ] Load pre-trained vectors (e.g. Glove)
+- [ ] Turn list of transitions into tree

@@ -12,4 +12,4 @@ python3 $SRC_DIR/transform_ptb.py $PTB_IN --nlines $MAX_LINES > $PTB_OUT.txt
 
 python3 $SRC_DIR/get_oracle.py $PTB_OUT.txt $PTB_OUT.txt > $PTB_OUT.oracle
 
-python3 $SRC_DIR/get_configs.py $PTB_OUT.oracle > $PTB_OUT.configs
+python3 $SRC_DIR/new_get_configs.py $PTB_OUT.oracle

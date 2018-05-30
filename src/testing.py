@@ -9,21 +9,23 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-from data import Corpus
-from model import RNNG
+from newdata import Corpus, load_glove
+from newmodel import RNNG
 from utils import Timer, get_subdir_string
 
 parser = argparse.ArgumentParser(description='Discriminative RNNG parser')
-parser.add_argument('mode', choices=['test', 'train', 'parse'],
+parser.add_argument('mode', choices=['dev', 'test', 'train', 'parse'],
                     help='type')
 parser.add_argument('--data', type=str, default='../tmp/ptb',
                     help='location of the data corpus')
 parser.add_argument('--outdir', type=str, default='',
                     help='location to make output log and checkpoint folders')
-parser.add_argument('--lr', type=float, default=1e-2,
+parser.add_argument('--lr', type=float, default=2e-3,
                     help='initial learning rate')
 parser.add_argument('--clip', type=float, default=5.,
                     help='clipping gradient norm at this value')
+parser.add_argument('--print_every', type=int, default=10,
+                    help='when to print training progress')
 args = parser.parse_args()
 
 # Create folders for logging and checkpoints
@@ -42,56 +44,87 @@ torch.manual_seed(42)
 corpus = Corpus(data_path=args.data)
 batches = corpus.train.batches(length_ordered=False, shuffle=False)
 
-model = RNNG(stack_size=len(corpus.dictionary.s2i),
-             action_size=len(corpus.dictionary.a2i),
-             emb_dim=20, emb_dropout=0.3,
-             lstm_hidden=20, lstm_num_layers=1, lstm_dropout=0.3,
-             mlp_hidden=50, cuda=False)
+model = RNNG(dictionary=corpus.dictionary,
+             emb_dim=100,
+             emb_dropout=0.3,
+             lstm_hidden=100,
+             lstm_num_layers=1,
+             lstm_dropout=0.3,
+             mlp_hidden=500,
+             cuda=False,
+             use_glove=True)
 
-optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+parameters = filter(lambda p: p.requires_grad, model.parameters())
+optimizer = torch.optim.Adam(parameters, lr=args.lr)
 
 logfile = open(LOGFILE, 'w')
-trainfile = open(LOGFILE + 'train.txt', 'w')
-parsefile = open(LOGFILE + 'parse.txt', 'w')
+trainfile = open(LOGFILE + '.train.txt', 'w')
+parsefile = open(LOGFILE + '.parse.txt', 'w')
+
+if args.mode == 'dev':
+    sent, indices, actions = next(batches)
+    loss = model(sent, indices, actions, verbose=True)
 
 if args.mode == 'test':
-    sent, actions = next(batches)
-    loss = model(sent, actions, corpus.dictionary, verbose=True)
-
-if args.mode == 'train':
-    sent, actions = next(batches)
+    sent, indices, actions = next(batches)
     timer = Timer()
     try:
         for step in range(100):
-            # sent, actions = next(batches)
-            print('*' * 80, file=trainfile)
-            print('EPOCH ', step, file=trainfile)
-            print('*' * 80, file=trainfile)
-            loss = model(sent, actions, corpus.dictionary, verbose=False, file=trainfile)
+            loss = model(sent, indices, actions)
 
             optimizer.zero_grad()
             loss.backward()
             torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
             optimizer.step()
 
-            print('Step {} | loss {:.3f} | {:.3f}s'.format(step, loss.data[0], timer.elapsed()))
+            time = timer.elapsed()
+            print('Step {} | loss {:.3f} | {:.3f}s/sent '.format(step, loss.data[0], time/args.print_every))
+    except KeyboardInterrupt:
+        print('Exiting training early.')
 
-        loss = model(sent, actions, corpus.dictionary, verbose=True, file=trainfile)
+    model.eval()
+    loss = model(sent, indices, actions, verbose=True, file=trainfile)
+    parser = model.parse(sent, indices, file=parsefile)
+    torch.save(model, CHECKFILE)
+
+    print('Finished parsing.', file=parsefile)
+    print(parser, file=parsefile)
+
+if args.mode == 'train':
+    losses = []
+    timer = Timer()
+    sent, indices, actions = next(batches)
+    try:
+        for step, batch in enumerate(batches, 1):
+            sent, indices, actions = batch
+            loss = model(sent, indices, actions)
+
+            optimizer.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
+            optimizer.step()
+
+            loss = loss.data[0]
+            losses.append(loss)
+            if step % args.print_every == 0:
+                time = timer.elapsed()
+                avg_loss = np.mean(losses[:-args.print_every])
+                print('Step {} | loss {:.3f} | {:.3f}s/sent '.format(step, avg_loss, time/args.print_every))
 
     except KeyboardInterrupt:
         print('Exiting training early.')
 
-    print('*' * 80, file=parsefile)
-    print('PARSING', file=parsefile)
-    print('*' * 80, file=parsefile)
-
     model.eval()
-    parser = model.parse(sent, corpus.dictionary, file=parsefile)
+    parser = model.parse(sent, indices, file=parsefile)
     torch.save(model, CHECKFILE)
 
     print('Finished parsing.', file=parsefile)
     print(parser, file=parsefile)
 
 if args.mode == 'parse':
+    model = torch.load(CHECKFILE)
     sent, actions = next(batches)
-    parser = model.parse(sent, corpus.dictionary, file=logfile)
+    parser = model.parse(sent, file=logfile)
+    print(parser)
+    print('ACTIONS')
+    print([model.dictionary.i2a[i] for i in actions])

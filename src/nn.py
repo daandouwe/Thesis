@@ -78,6 +78,7 @@ class StackLSTM(nn.Module):
 
     def initialize_hidden(self, batch_size=1):
         """Set initial hidden state to zeros."""
+        self._hidden_states = []
         hx = Variable(torch.zeros(batch_size, self.hidden_size))
         cx = Variable(torch.zeros(batch_size, self.hidden_size))
         if self.cuda:
@@ -95,6 +96,43 @@ class StackLSTM(nn.Module):
         # Move hidden state back to before we opened the nonterminal.
         self._reset_hidden(length)
         return self.composition(sequence)
+
+    def forward(self, x):
+        """Compute the next hidden state with input x and the previous hidden state.
+
+        Args: x is shape (batch, input_size).
+        """
+        self.hx, self.cx = self.rnn(x, (self.hx, self.cx))
+        # Add cell states to memory.
+        self._hidden_states.append((self.hx, self.cx))
+        return self.hx
+
+
+class HistoryLSTM(nn.Module):
+    """A LSTM used to encode the history of actions of a transition based parser."""
+    def __init__(self, input_size, hidden_size, cuda=False):
+        super(HistoryLSTM, self).__init__()
+        self.input_size = input_size
+        self.hidden_size = hidden_size # Must be even number, see composition function.
+        self.cuda = cuda
+
+        self.rnn = nn.LSTMCell(input_size, hidden_size)
+
+        # Were we store all intermediate computed hidden states.
+        # Top of this list is used as the stack embedding
+        self._hidden_states = []
+
+        self.initialize_hidden()
+
+    def initialize_hidden(self, batch_size=1):
+        """Set initial hidden state to zeros."""
+        self._hidden_states = []
+        hx = Variable(torch.zeros(batch_size, self.hidden_size))
+        cx = Variable(torch.zeros(batch_size, self.hidden_size))
+        if self.cuda:
+            hx = hx.cuda()
+            cx = cx.cuda()
+        self.hx, self.cx = hx, cx
 
     def forward(self, x):
         """Compute the next hidden state with input x and the previous hidden state.
