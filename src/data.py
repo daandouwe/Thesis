@@ -5,6 +5,7 @@ from collections import defaultdict
 import torch
 from torch.autograd import Variable
 import numpy as np
+from gensim.models import KeyedVectors
 
 from get_configs import get_sentences
 
@@ -14,19 +15,6 @@ REDUCED_TOKEN = '-REDUCED-' # used as dummy for reduced sequences
 PAD_INDEX = 0
 EMPTY_INDEX = 1
 REDUCED_INDEX = 2
-START = 3 # index from which vocabulary starts
-
-def pad(batch, cuda=False, reverse=False):
-    """Pad a batch of irregular length indices and wrap it."""
-    lens = list(map(len, batch))
-    max_len = max(lens)
-    padded_batch = []
-    if reverse:
-        batch = [l[::-1] for l in batch]
-    for k, seq in zip(lens, batch):
-        padded =  seq + (max_len - k)*[PAD_INDEX]
-        padded_batch.append(padded)
-    return wrap(padded_batch, cuda=cuda)
 
 def wrap(batch, cuda=False):
     """Packages the batch as a Variable containing a LongTensor."""
@@ -35,15 +23,30 @@ def wrap(batch, cuda=False):
     else:
         return Variable(torch.LongTensor(batch))
 
+def load_glove(dictionary, dim=100, dir='~/glove'):
+    assert dim in (50, 100, 200, 300), 'invalid dim: choose from (50, 100, 200, 300).'
+    path = os.path.join(dir, 'glove.6B.{}d.gensim.txt'.format(dim))
+    glove = KeyedVectors.load_word2vec_format(path, binary=False)
+    vectors = []
+    for w in dictionary.i2w:
+        try:
+            v = glove[w]
+            vectors.append(v)
+        except KeyError:
+            print('word `{}` not found.'.format(w))
+            vectors.append(np.zeros(dim)) # NOTE: Find better fix
+    vectors = np.vstack(vectors)
+    vectors = torch.FloatTensor(vectors)
+    return vectors
 
 class Dictionary:
     """A dictionary for stack, buffer, and action symbols."""
     def __init__(self, path):
-        self.s2i = dict()
-        self.w2i = dict()
-        self.a2i = dict()
+        self.n2i = dict() # nonterminals
+        self.w2i = dict() # words
+        self.a2i = dict() # actions
 
-        self.i2s = []
+        self.i2n = []
         self.i2w = []
         self.i2a = []
 
@@ -51,82 +54,70 @@ class Dictionary:
         self.read(path)
 
     def initialize(self):
-        self.s2i[PAD_TOKEN] = 0
         self.w2i[PAD_TOKEN] = 0
-        self.a2i[PAD_TOKEN] = 0
-
-        self.s2i[EMPTY_TOKEN] = 1
         self.w2i[EMPTY_TOKEN] = 1
-        self.a2i[EMPTY_TOKEN] = 1
-
-        self.s2i[REDUCED_TOKEN] = 2
         self.w2i[REDUCED_TOKEN] = 2
-        self.a2i[REDUCED_TOKEN] = 2
 
-        self.i2s.append(PAD_TOKEN)
         self.i2w.append(PAD_TOKEN)
-        self.i2a.append(PAD_TOKEN)
-
-        self.i2s.append(EMPTY_TOKEN)
         self.i2w.append(EMPTY_TOKEN)
-        self.i2a.append(EMPTY_TOKEN)
-
-        self.i2s.append(REDUCED_TOKEN)
         self.i2w.append(REDUCED_TOKEN)
-        self.i2a.append(REDUCED_TOKEN)
 
-    def read(self, path, start=START):
-        with open(path + '.stack', 'r') as f:
-            for i, line in enumerate(f, start):
-                s = line.rstrip()
-                self.s2i[s] = i
-                self.i2s.append(s)
+    def read(self, path):
         with open(path + '.vocab', 'r') as f:
+            start = len(self.w2i)
             for i, line in enumerate(f, start):
                 w = line.rstrip()
                 self.w2i[w] = i
                 self.i2w.append(w)
+        with open(path + '.nonterminals', 'r') as f:
+            for i, line in enumerate(f):
+                s = line.rstrip()
+                self.n2i[s] = i
+                self.i2n.append(s)
         with open(path + '.actions', 'r') as f:
-            for i, line in enumerate(f, start):
+            for i, line in enumerate(f):
                 a = line.rstrip()
                 self.a2i[a] = i
                 self.i2a.append(a)
 
 class Data:
     """A dataset with parse configurations."""
-    def __init__(self, path, dictionary):
-        self.sentences = []
-        self.actions = []
+    def __init__(self, path, dictionary, textline):
+        self.sentences = [] # each sentence as list of words
+        self.indices = [] # each sentence as list of indices
+        self.actions = [] # each sequence of actions as list of indices
 
-        self.read(path, dictionary)
+        self.read(path, dictionary, textline)
 
-    def read(self, path, dictionary, print_every=1000):
+    def read(self, path, dictionary, textline):
         sents = get_sentences(path)
         nlines = len(sents)
         for i, sent_dict in enumerate(sents):
-            sent = sent_dict['unked'].split()
+            sent = sent_dict[textline].split()
             actions = sent_dict['actions']
-
-            sent = [dictionary.w2i[w] for w in sent]
+            ids = [dictionary.w2i[w] for w in sent]
             actions = [dictionary.a2i[w] for w in actions]
             self.sentences.append(sent)
+            self.indices.append(ids)
             self.actions.append(actions)
+
         self.lengths = [len(sent) for sent in self.sentences]
 
-    def _reorder(self, new_order):
+    def _order(self, new_order):
         self.sentences = [self.sentences[i] for i in new_order]
+        self.indices = [self.indices[i] for i in new_order]
         self.actions = [self.actions[i] for i in new_order]
 
     def order(self):
         old_order = zip(range(len(self.lengths)), self.lengths)
         new_order, _ = zip(*sorted(old_order, key=lambda t: t[1]))
-        self._reorder(new_order)
+        self._order(new_order)
 
     def shuffle(self):
         n = len(self.sentences)
         new_order = list(range(0, n))
         np.random.shuffle(new_order)
-        self._reorder(new_order)
+        self._order(new_order)
 
     def batches(self, shuffle=True,
                 length_ordered=False, cuda=False):
@@ -138,16 +129,16 @@ class Data:
             self.order()
         for i in range(n):
             sentence = self.sentences[i]
+            ids = self.indices[i]
             actions = self.actions[i]
-            yield sentence, actions
+            yield sentence, ids, actions
 
 
 class Corpus:
     """A corpus of three datasets (train, development, and test) and a dictionary."""
-    def __init__(self, data_path="../tmp/ptb"):
+    def __init__(self, data_path="../tmp/ptb", textline='unked'):
         self.dictionary = Dictionary(data_path)
-        self.train = Data(data_path + '.oracle', self.dictionary)
-
+        self.train = Data(data_path + '.oracle', self.dictionary, textline)
         # self.dev = Data(os.path.join(data_path, "dev-stanford-raw.conll"), self.dictionary)
         # self.test = Data(os.path.join(data_path, "test-stanford-raw.conll"), self.dictionary)
 

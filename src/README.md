@@ -17,5 +17,5 @@ To run the RNNG call `testing.py` with arguments `[test, train, parse]`.
 
 - [ ] Incorporate dropout
 - [ ] Enable multilayered LSTMs
-- [ ] Load pre-trained vectors (e.g. Glove)
+- [X] Load pre-trained vectors (e.g. Glove)
 - [ ] Turn list of transitions into tree

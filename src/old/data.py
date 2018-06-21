@@ -6,17 +6,18 @@ import torch
 from torch.autograd import Variable
 import numpy as np
 
-from get_configs import EMPTY_TOKEN, SEPARATOR
+from get_configs import get_sentences
 
 PAD_TOKEN = '-PAD-'
+EMPTY_TOKEN = '-EMPTY-'
+REDUCED_TOKEN = '-REDUCED-' # used as dummy for reduced sequences
 PAD_INDEX = 0
-
 EMPTY_INDEX = 1
+REDUCED_INDEX = 2
+START = 3 # index from which vocabulary starts
 
 def pad(batch, cuda=False, reverse=False):
-    """
-    Pad a batch of irregular length indices and wrap it.
-    """
+    """Pad a batch of irregular length indices and wrap it."""
     lens = list(map(len, batch))
     max_len = max(lens)
     padded_batch = []
@@ -28,10 +29,7 @@ def pad(batch, cuda=False, reverse=False):
     return wrap(padded_batch, cuda=cuda)
 
 def wrap(batch, cuda=False):
-    """
-    Packages the batch as a Variable containing a LongTensor
-    so the batch is ready as input for a PyTorch model.
-    """
+    """Packages the batch as a Variable containing a LongTensor."""
     if cuda:
         return Variable(torch.cuda.LongTensor(batch))
     else:
@@ -39,9 +37,7 @@ def wrap(batch, cuda=False):
 
 
 class Dictionary:
-    """
-    A dictionary for stack, buffer, and action symbols.
-    """
+    """A dictionary for stack, buffer, and action symbols."""
     def __init__(self, path):
         self.s2i = dict()
         self.w2i = dict()
@@ -63,6 +59,10 @@ class Dictionary:
         self.w2i[EMPTY_TOKEN] = 1
         self.a2i[EMPTY_TOKEN] = 1
 
+        self.s2i[REDUCED_TOKEN] = 2
+        self.w2i[REDUCED_TOKEN] = 2
+        self.a2i[REDUCED_TOKEN] = 2
+
         self.i2s.append(PAD_TOKEN)
         self.i2w.append(PAD_TOKEN)
         self.i2a.append(PAD_TOKEN)
@@ -71,59 +71,51 @@ class Dictionary:
         self.i2w.append(EMPTY_TOKEN)
         self.i2a.append(EMPTY_TOKEN)
 
-    def read(self, path):
+        self.i2s.append(REDUCED_TOKEN)
+        self.i2w.append(REDUCED_TOKEN)
+        self.i2a.append(REDUCED_TOKEN)
+
+    def read(self, path, start=START):
         with open(path + '.stack', 'r') as f:
-            for i, line in enumerate(f):
+            for i, line in enumerate(f, start):
                 s = line.rstrip()
                 self.s2i[s] = i
                 self.i2s.append(s)
         with open(path + '.vocab', 'r') as f:
-            for i, line in enumerate(f):
+            for i, line in enumerate(f, start):
                 w = line.rstrip()
                 self.w2i[w] = i
                 self.i2w.append(w)
         with open(path + '.actions', 'r') as f:
-            for i, line in enumerate(f):
+            for i, line in enumerate(f, start):
                 a = line.rstrip()
                 self.a2i[a] = i
                 self.i2a.append(a)
 
 class Data:
-    """
-    A dataset with parse configurations.
-    """
+    """A dataset with parse configurations."""
     def __init__(self, path, dictionary):
-        self.stack = []
-        self.buffer = []
-        self.history = []
-        self.action = []
-        self.lengths = []
+        self.sentences = []
+        self.actions = []
 
         self.read(path, dictionary)
 
     def read(self, path, dictionary, print_every=1000):
-        nlines = sum(1 for _ in open(path, 'r'))
-        with open(path, 'r') as f:
-            for i, line in enumerate(f):
-                if i % print_every == 0:
-                    print('Reading in line {}/{}.'.format(i, nlines), end='\r')
-                stack, buffer, history, action = line.split(SEPARATOR)
-                stack = [dictionary.s2i[s] for s in stack.split()]
-                buffer = [dictionary.w2i[w] for w in buffer.split()]
-                history = [dictionary.a2i[a] for a in history.split()]
-                action = dictionary.a2i[action.strip()]
-                self.stack.append(stack)
-                self.buffer.append(buffer)
-                self.history.append(history)
-                self.action.append(action)
-        self.lengths = [len(l) for l in self.stack]
+        sents = get_sentences(path)
+        nlines = len(sents)
+        for i, sent_dict in enumerate(sents):
+            sent = sent_dict['unked'].split()
+            actions = sent_dict['actions']
+
+            sent = [dictionary.w2i[w] for w in sent]
+            actions = [dictionary.a2i[w] for w in actions]
+            self.sentences.append(sent)
+            self.actions.append(actions)
+        self.lengths = [len(sent) for sent in self.sentences]
 
     def _reorder(self, new_order):
-        self.stack = [self.stack[i] for i in new_order]
-        self.buffer = [self.buffer[i] for i in new_order]
-        self.history = [self.history[i] for i in new_order]
-        self.action = [self.action[i] for i in new_order]
-        self.lengths = [self.lengths[i] for i in new_order]
+        self.sentences = [self.sentences[i] for i in new_order]
+        self.actions = [self.actions[i] for i in new_order]
 
     def order(self):
         old_order = zip(range(len(self.lengths)), self.lengths)
@@ -131,50 +123,38 @@ class Data:
         self._reorder(new_order)
 
     def shuffle(self):
-        n = len(self.stack)
+        n = len(self.sentences)
         new_order = list(range(0, n))
         np.random.shuffle(new_order)
         self._reorder(new_order)
 
-    def batches(self, batch_size, shuffle=True,
+    def batches(self, shuffle=True,
                 length_ordered=False, cuda=False):
-        """
-        An iterator over batches.
-        """
-        self.batch_size = batch_size
-        n = len(self.stack)
-        batch_order = list(range(0, n, batch_size))
+        """An iterator over batches."""
+        n = len(self.sentences)
         if shuffle:
             self.shuffle()
-            np.random.shuffle(batch_order)
         if length_ordered:
             self.order()
-        for i in batch_order:
-            stack = pad(self.stack[i:i+batch_size], cuda=cuda)
-            buffer = pad(self.buffer[i:i+batch_size], cuda=cuda)
-            history = pad(self.history[i:i+batch_size], cuda=cuda)
-            action = wrap(self.action[i:i+batch_size], cuda=cuda)
-            yield stack, buffer, history, action
-
-    @property
-    def num_batches(self):
-        return len(self.stack) // self.batch_size
+        for i in range(n):
+            sentence = self.sentences[i]
+            actions = self.actions[i]
+            yield sentence, actions
 
 
 class Corpus:
-    """
-    A corpus of three datasets (train, development, and test) and a dictionary.
-    """
+    """A corpus of three datasets (train, development, and test) and a dictionary."""
     def __init__(self, data_path="../tmp/ptb"):
         self.dictionary = Dictionary(data_path)
         self.train = Data(data_path + '.oracle', self.dictionary)
+
         # self.dev = Data(os.path.join(data_path, "dev-stanford-raw.conll"), self.dictionary)
         # self.test = Data(os.path.join(data_path, "test-stanford-raw.conll"), self.dictionary)
 
 if __name__ == "__main__":
     # Example usage:
     corpus = Corpus(data_path="../tmp/ptb")
-    batches = corpus.train.batches(4, length_ordered=True)
+    batches = corpus.train.batches(1, length_ordered=True)
     for _ in range(2):
-        stack, buffer, history, action = next(batches)
-        print(stack[0], buffer[0], history[0], action[0])
+        sentence, actions = next(batches)
+        print(sentence, actions)

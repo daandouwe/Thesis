@@ -9,8 +9,8 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-from newdata import Corpus, load_glove
-from newmodel import RNNG
+from data import Corpus, load_glove
+from model import RNNG
 from utils import Timer, get_subdir_string
 
 parser = argparse.ArgumentParser(description='Discriminative RNNG parser')
@@ -26,6 +26,8 @@ parser.add_argument('--clip', type=float, default=5.,
                     help='clipping gradient norm at this value')
 parser.add_argument('--print_every', type=int, default=10,
                     help='when to print training progress')
+parser.add_argument('--use_glove', type=bool, default=False,
+                    help='using pretrained glove embeddings')
 args = parser.parse_args()
 
 # Create folders for logging and checkpoints
@@ -41,7 +43,7 @@ if not os.path.exists(CHECKDIR):
 
 torch.manual_seed(42)
 
-corpus = Corpus(data_path=args.data)
+corpus = Corpus(data_path=args.data, textline='lower')
 batches = corpus.train.batches(length_ordered=False, shuffle=False)
 
 model = RNNG(dictionary=corpus.dictionary,
@@ -52,7 +54,7 @@ model = RNNG(dictionary=corpus.dictionary,
              lstm_dropout=0.3,
              mlp_hidden=500,
              cuda=False,
-             use_glove=True)
+             use_glove=args.use_glove)
 
 parameters = filter(lambda p: p.requires_grad, model.parameters())
 optimizer = torch.optim.Adam(parameters, lr=args.lr)
@@ -68,6 +70,7 @@ if args.mode == 'dev':
 if args.mode == 'test':
     sent, indices, actions = next(batches)
     timer = Timer()
+    model.train()
     try:
         for step in range(100):
             loss = model(sent, indices, actions)

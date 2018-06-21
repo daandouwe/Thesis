@@ -3,12 +3,12 @@ import argparse
 def get_sent_dict(sent):
     """Organize a sentence from the oracle file  as a dictionary."""
     d = {
-        'tree'    : sent[0],
-        'tags'    : sent[1],
-        'upper'   : sent[2],
-        'lower'   : sent[3],
-        'unked'   : sent[4],
-        'actions' : sent[5:]
+            'tree'    : sent[0],
+            'tags'    : sent[1],
+            'upper'   : sent[2],
+            'lower'   : sent[3],
+            'unked'   : sent[4],
+            'actions' : sent[5:]
         }
     return d
 
@@ -31,13 +31,15 @@ def get_sentences(path):
         # sentences is of type [[str]]
         return [get_sent_dict(sent) for sent in sentences]
 
-def get_actions(sentences):
-    """Returns the set of actions used in the oracle file."""
-    actions = set()
+def get_vocab(sentences, textline='unked'):
+    """Returns the vocabulary used in the oracle file."""
+    textline_options = sentences[0].keys()
+    assert textline in textline_options, 'invalid choice of textline: choose from {}'.format(list(textline_options))
+    vocab = set()
     for sent_dict in sentences:
-        actions.update(sent_dict['actions'])
-    actions = sorted(list(actions))
-    return actions
+        vocab.update(set(sent_dict[textline].split()))
+    vocab = sorted(list(vocab))
+    return vocab
 
 def get_nonterminals(sentences):
     """Returns the set of actions used in the oracle file."""
@@ -48,13 +50,14 @@ def get_nonterminals(sentences):
     nonterminals = sorted(list(nonterminals))
     return nonterminals
 
-def get_vocab(sentences, text_line='unked'):
-    """Returns the vocabulary used in the oracle file."""
-    vocab = set()
+def get_actions(sentences):
+    """Returns the set of actions used in the oracle file."""
+    actions = set()
     for sent_dict in sentences:
-        vocab.update(set(sent_dict[text_line].split()))
-    vocab = sorted(list(vocab))
-    return vocab
+        actions.update(sent_dict['actions'])
+    actions = sorted(list(actions))
+    return actions
+
 
 def main(args):
     # Partition the oracle file into sentences
@@ -62,7 +65,7 @@ def main(args):
 
     # Collect desired symbols for our dictionaries
     actions = get_actions(sentences)
-    vocab = get_vocab(sentences)
+    vocab = get_vocab(sentences, textline='lower')
     nonterminals = get_nonterminals(sentences)
 
     # Write out vocabularies
