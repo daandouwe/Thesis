@@ -172,6 +172,12 @@ class RNNG(nn.Module):
 
         t = 0
         while not self.parser.stack.empty:
+            print(t)
+            print(len(self.parser.buffer._tokens))
+            print(len(self.parser.buffer._hiddens))
+            print(self.parser.buffer._tokens)
+            print(self.parser.buffer.empty)
+
             t += 1
 
             # Compute parse representation and prediction.

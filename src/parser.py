@@ -82,7 +82,7 @@ class Stack:
 
     @property
     def empty(self):
-        return self._tokens == [EMPTY_INDEX, REDUCED_INDEX]
+        return self._tokens == [EMPTY_TOKEN, REDUCED_TOKEN]
 
     @property
     def num_open_nonterminals(self):
@@ -121,6 +121,7 @@ class Buffer:
         self._indices.append(index)
         vec = self.embedding(wrap([index]))
         self._embeddings.append(vec)
+        self._hiddens.append(vec)
 
     def pop(self):
         if self.empty:
@@ -155,7 +156,7 @@ class Buffer:
 
     @property
     def empty(self):
-        return self._tokens == [EMPTY_INDEX]
+        return self._tokens == [EMPTY_TOKEN]
 
 class History:
     def __init__(self, dictionary, embedding):

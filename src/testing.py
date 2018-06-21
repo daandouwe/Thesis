@@ -45,7 +45,7 @@ torch.manual_seed(42)
 
 corpus = Corpus(data_path=args.data, textline='lower')
 batches = corpus.train.batches(length_ordered=False, shuffle=False)
-
+print(corpus)
 model = RNNG(dictionary=corpus.dictionary,
              emb_dim=100,
              emb_dropout=0.3,
@@ -112,7 +112,7 @@ if args.mode == 'train':
             if step % args.print_every == 0:
                 time = timer.elapsed()
                 avg_loss = np.mean(losses[:-args.print_every])
-                print('Step {} | loss {:.3f} | {:.3f}s/sent '.format(step, avg_loss, time/args.print_every))
+                print('Step {} | loss {:.3f} | {:.3f} sents/sec '.format(step, avg_loss, args.print_every/time))
 
     except KeyboardInterrupt:
         print('Exiting training early.')

@@ -9,134 +9,126 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-from data import Corpus
+from data import Corpus, load_glove
 from model import RNNG
 from utils import Timer, get_subdir_string
 
-######################################################################
-# Parse command line arguments.
-######################################################################
 parser = argparse.ArgumentParser(description='Discriminative RNNG parser')
+parser.add_argument('mode', choices=['dev', 'test', 'train', 'parse'],
+                    help='type')
 parser.add_argument('--data', type=str, default='../tmp/ptb',
                     help='location of the data corpus')
 parser.add_argument('--outdir', type=str, default='',
                     help='location to make output log and checkpoint folders')
-parser.add_argument('--emb_dim', type=int, default=50,
-                    help='size of word embeddings')
-parser.add_argument('--lstm_hidden', type=int, default=50,
-                    help='number of hidden units in LSTM')
-parser.add_argument('--lstm_num_layers', type=int, default=3,
-                    help='number of layers')
-parser.add_argument('--mlp_hidden', type=int, default=200,
-                    help='number of hidden units in arc MLP')
 parser.add_argument('--lr', type=float, default=2e-3,
                     help='initial learning rate')
 parser.add_argument('--clip', type=float, default=5.,
                     help='clipping gradient norm at this value')
-parser.add_argument('--epochs', type=int, default=10,
-                    help='upper epoch limit')
-parser.add_argument('--batch_size', type=int, default=32,
-                    help='batch size')
-parser.add_argument('--dropout', type=float, default=0.33,
-                    help='dropout applied to layers (0 = no dropout)')
-parser.add_argument('--seed', type=int, default=42,
-                    help='random seed')
-parser.add_argument('--log_every', type=int, default=10,
-                    help='report interval')
-parser.add_argument('--plot_every', type=int, default=100,
-                    help='plot interval')
-parser.add_argument('--disable_cuda', action='store_true',
-                    help='disable CUDA')
+parser.add_argument('--print_every', type=int, default=10,
+                    help='when to print training progress')
+parser.add_argument('--use_glove', type=bool, default=False,
+                    help='using pretrained glove embeddings')
 args = parser.parse_args()
 
 # Create folders for logging and checkpoints
 SUBDIR = get_subdir_string(args)
 LOGDIR = os.path.join(args.outdir, 'log', SUBDIR)
-CHECKDIR = os.path.join(args.outdir, 'checkpoints', SUBDIR)
+CHECKDIR = os.path.join(args.outdir, 'checkpoints')
+# CHECKDIR = os.path.join(args.outdir, 'checkpoints', SUBDIR)
 LOGFILE = os.path.join(LOGDIR, 'train.log')
 CHECKFILE = os.path.join(CHECKDIR, 'model.pt')
 os.mkdir(LOGDIR)
-os.mkdir(CHECKDIR)
+if not os.path.exists(CHECKDIR):
+    os.mkdir(CHECKDIR)
 
-# Create a logger
-FORMAT = '%(asctime)-15s %(message)s'
-logging.basicConfig(format=FORMAT, level=logging.DEBUG, filename=LOGFILE,
-                    datefmt='%Y-%m-%d %H:%M:%S')
-logger = logging.getLogger(__name__)
+torch.manual_seed(42)
 
-# Set seed for reproducibility
-torch.manual_seed(args.seed)
+corpus = Corpus(data_path=args.data, textline='lower')
+batches = corpus.train.batches(length_ordered=False, shuffle=False)
+print(corpus)
+model = RNNG(dictionary=corpus.dictionary,
+             emb_dim=100,
+             emb_dropout=0.3,
+             lstm_hidden=100,
+             lstm_num_layers=1,
+             lstm_dropout=0.3,
+             mlp_hidden=500,
+             cuda=False,
+             use_glove=args.use_glove)
 
-# Set cuda
-args.cuda = not args.disable_cuda and torch.cuda.is_available()
-######################################################################
-# Initialize model.
-######################################################################
-corpus = Corpus(data_path=args.data)
-model = RNNG(
-    vocab_size=len(corpus.dictionary.w2i),
-    stack_size=len(corpus.dictionary.s2i),
-    action_size=len(corpus.dictionary.a2i),
-    emb_dim=args.emb_dim,
-    emb_dropout=args.dropout,
-    lstm_hidden=args.lstm_hidden,
-    lstm_num_layers=args.lstm_num_layers,
-    lstm_dropout=args.dropout,
-    mlp_hidden=args.mlp_hidden,
-    cuda=args.cuda
-)
-optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-criterion = nn.CrossEntropyLoss()
+parameters = filter(lambda p: p.requires_grad, model.parameters())
+optimizer = torch.optim.Adam(parameters, lr=args.lr)
 
-if args.cuda:
-    model.cuda()
+logfile = open(LOGFILE, 'w')
+trainfile = open(LOGFILE + '.train.txt', 'w')
+parsefile = open(LOGFILE + '.parse.txt', 'w')
 
-logger.info(
-    'VOCAB:  words {},  stack {},  actions {}'.format(
-        len(corpus.dictionary.w2i),
-        len(corpus.dictionary.s2i),
-        len(corpus.dictionary.a2i)))
+if args.mode == 'dev':
+    sent, indices, actions = next(batches)
+    loss = model(sent, indices, actions, verbose=True)
 
-######################################################################
-# The training step.
-######################################################################
-def train():
-    """
-    Performs one epoch of training.
-    """
-    for step, batch in enumerate(batches, 1):
-        stack, buffer, history, action = batch
-        out = model(stack, buffer, history)
-        loss = criterion(out, action)
+if args.mode == 'test':
+    sent, indices, actions = next(batches)
+    timer = Timer()
+    model.train()
+    try:
+        for step in range(100):
+            loss = model(sent, indices, actions)
 
-        # Update parameters
-        optimizer.zero_grad()
-        loss.backward()
-        torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
-        optimizer.step()
+            optimizer.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
+            optimizer.step()
 
-        # Logging info
-        if step % args.log_every == 0:
-            losses.append(loss.cpu().data.numpy()[0])
-            logger.info(
-                '| Step {}/{} | Avg loss {:.4f} | {:.0f} sents/sec |'.format(
-            step, corpus.train.num_batches,
-            np.mean(losses[-args.log_every:]),
-            args.batch_size*args.log_every / timer.elapsed()
-                )
-            )
+            time = timer.elapsed()
+            print('Step {} | loss {:.3f} | {:.3f}s/sent '.format(step, loss.data[0], time/args.print_every))
+    except KeyboardInterrupt:
+        print('Exiting training early.')
 
-            # print(
-            #     '| Step {}/{} | Avg loss {:.4f} | {:.0f} sents/sec |'.format(
-            # step, corpus.train.num_batches,
-            # np.mean(losses[-args.log_every:]),
-            # args.batch_size*args.log_every / timer.elapsed()
-            #     )
-            # )
-
-timer = Timer()
-losses = []
-for epoch in range(args.epochs):
-    batches = corpus.train.batches(args.batch_size, length_ordered=True, cuda=args.cuda)
-    train()
+    model.eval()
+    loss = model(sent, indices, actions, verbose=True, file=trainfile)
+    parser = model.parse(sent, indices, file=parsefile)
     torch.save(model, CHECKFILE)
+
+    print('Finished parsing.', file=parsefile)
+    print(parser, file=parsefile)
+
+if args.mode == 'train':
+    losses = []
+    timer = Timer()
+    sent, indices, actions = next(batches)
+    try:
+        for step, batch in enumerate(batches, 1):
+            sent, indices, actions = batch
+            loss = model(sent, indices, actions)
+
+            optimizer.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
+            optimizer.step()
+
+            loss = loss.data[0]
+            losses.append(loss)
+            if step % args.print_every == 0:
+                time = timer.elapsed()
+                avg_loss = np.mean(losses[:-args.print_every])
+                print('Step {} | loss {:.3f} | {:.3f} sents/sec '.format(step, avg_loss, args.print_every/time))
+
+    except KeyboardInterrupt:
+        print('Exiting training early.')
+
+    model.eval()
+    parser = model.parse(sent, indices, file=parsefile)
+    torch.save(model, CHECKFILE)
+
+    print('Finished parsing.', file=parsefile)
+    print(parser, file=parsefile)
+
+if args.mode == 'parse':
+    model = torch.load(CHECKFILE)
+    sent, actions = next(batches)
+    parser = model.parse(sent, file=logfile)
+    print(parser)
+    print('ACTIONS')
+    print([model.dictionary.i2a[i] for i in actions])
+s

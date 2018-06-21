@@ -83,11 +83,19 @@ class Dictionary:
 class Data:
     """A dataset with parse configurations."""
     def __init__(self, path, dictionary, textline):
+        self.dictionary = dictionary
+
         self.sentences = [] # each sentence as list of words
         self.indices = [] # each sentence as list of indices
         self.actions = [] # each sequence of actions as list of indices
 
         self.read(path, dictionary, textline)
+
+    def __str__(self):
+        num_words = len(self.dictionary.w2i)
+        num_sents = len(self.sentences)
+        string = 'DATA\nvocab size: {0}\nsentences: {1}'.format(num_words, num_sents)
+        return string
 
     def read(self, path, dictionary, textline):
         sents = get_sentences(path)
@@ -141,6 +149,9 @@ class Corpus:
         self.train = Data(data_path + '.oracle', self.dictionary, textline)
         # self.dev = Data(os.path.join(data_path, "dev-stanford-raw.conll"), self.dictionary)
         # self.test = Data(os.path.join(data_path, "test-stanford-raw.conll"), self.dictionary)
+
+    def __str__(self):
+        return str(self.train)
 
 if __name__ == "__main__":
     # Example usage:
