@@ -98,7 +98,7 @@ class Data:
         return string
 
     def read(self, path, dictionary, textline):
-        sents = get_sentences(path)
+        sents = get_sentences(path) # a list of `sent_dict` objects
         nlines = len(sents)
         for i, sent_dict in enumerate(sents):
             sent = sent_dict[textline].split()
@@ -147,11 +147,13 @@ class Corpus:
     def __init__(self, data_path="../tmp/ptb", textline='unked'):
         self.dictionary = Dictionary(data_path)
         self.train = Data(data_path + '.oracle', self.dictionary, textline)
-        # self.dev = Data(os.path.join(data_path, "dev-stanford-raw.conll"), self.dictionary)
-        # self.test = Data(os.path.join(data_path, "test-stanford-raw.conll"), self.dictionary)
+        # TODO: dev and test splits
+        # self.dev = Data(data_path + '.oracle', self.dictionary, textline)
+        # self.test = Data(data_path + '.oracle', self.dictionary, textline)
 
     def __str__(self):
         return str(self.train)
+
 
 if __name__ == "__main__":
     # Example usage:

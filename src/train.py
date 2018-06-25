@@ -9,13 +9,12 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
+from get_configs import get_sentences
 from data import Corpus, load_glove
 from model import RNNG
 from utils import Timer, get_subdir_string
 
 parser = argparse.ArgumentParser(description='Discriminative RNNG parser')
-parser.add_argument('mode', choices=['dev', 'test', 'train', 'parse'],
-                    help='type')
 parser.add_argument('--data', type=str, default='../tmp/ptb',
                     help='location of the data corpus')
 parser.add_argument('--outdir', type=str, default='',
@@ -30,22 +29,28 @@ parser.add_argument('--use_glove', type=bool, default=False,
                     help='using pretrained glove embeddings')
 args = parser.parse_args()
 
+torch.manual_seed(42)
+
 # Create folders for logging and checkpoints
 SUBDIR = get_subdir_string(args)
+
 LOGDIR = os.path.join(args.outdir, 'log', SUBDIR)
-CHECKDIR = os.path.join(args.outdir, 'checkpoints')
-# CHECKDIR = os.path.join(args.outdir, 'checkpoints', SUBDIR)
+CHECKDIR = os.path.join(args.outdir, 'checkpoints', SUBDIR)
+OUTDIR = os.path.join(args.outdir, 'out', SUBDIR)
+
+os.mkdir(LOGDIR)
+os.mkdir(CHECKDIR)
+os.mkdir(OUTDIR)
+
 LOGFILE = os.path.join(LOGDIR, 'train.log')
 CHECKFILE = os.path.join(CHECKDIR, 'model.pt')
-os.mkdir(LOGDIR)
-if not os.path.exists(CHECKDIR):
-    os.mkdir(CHECKDIR)
+OUTFILE = os.path.join(OUTDIR, 'train.predict.txt')
 
-torch.manual_seed(42)
 
 corpus = Corpus(data_path=args.data, textline='lower')
 batches = corpus.train.batches(length_ordered=False, shuffle=False)
 print(corpus)
+
 model = RNNG(dictionary=corpus.dictionary,
              emb_dim=100,
              emb_dropout=0.3,
@@ -59,76 +64,59 @@ model = RNNG(dictionary=corpus.dictionary,
 parameters = filter(lambda p: p.requires_grad, model.parameters())
 optimizer = torch.optim.Adam(parameters, lr=args.lr)
 
-logfile = open(LOGFILE, 'w')
-trainfile = open(LOGFILE + '.train.txt', 'w')
-parsefile = open(LOGFILE + '.parse.txt', 'w')
+losses = []
+timer = Timer()
+sent, indices, actions = next(batches)
+try:
+    for step, batch in enumerate(batches, 1):
+        sent, indices, actions = batch
+        loss = model(sent, indices, actions)
 
-if args.mode == 'dev':
-    sent, indices, actions = next(batches)
-    loss = model(sent, indices, actions, verbose=True)
+        optimizer.zero_grad()
+        loss.backward()
+        torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
+        optimizer.step()
 
-if args.mode == 'test':
-    sent, indices, actions = next(batches)
-    timer = Timer()
-    model.train()
-    try:
-        for step in range(100):
-            loss = model(sent, indices, actions)
-
-            optimizer.zero_grad()
-            loss.backward()
-            torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
-            optimizer.step()
-
+        loss = loss.data[0]
+        losses.append(loss)
+        if step % args.print_every == 0:
             time = timer.elapsed()
-            print('Step {} | loss {:.3f} | {:.3f}s/sent '.format(step, loss.data[0], time/args.print_every))
-    except KeyboardInterrupt:
-        print('Exiting training early.')
+            avg_loss = np.mean(losses[-args.print_every:])
+            print('Step {} | loss {:.3f} | {:.3f} sents/sec '.format(step, avg_loss, args.print_every/time))
 
+except KeyboardInterrupt:
+    print('Exiting training early.')
+
+print('Evaluating.')
+
+def predict(verbose=False, max_lines=None):
     model.eval()
-    loss = model(sent, indices, actions, verbose=True, file=trainfile)
-    parser = model.parse(sent, indices, file=parsefile)
-    torch.save(model, CHECKFILE)
+    sentences = get_sentences(args.data + '.oracle')
+    batches = corpus.train.batches(length_ordered=False, shuffle=False)
+    for i, batch in enumerate(batches):
+        if verbose:
+            print(i, end='\r')
+        if i is not None:
+            if i >= max_lines:
+                break
+        sent, indices, actions = batch
+        parser = model.parse(sent, indices)
+        sentences[i]['actions'] = parser.actions
+    return sentences[:i]
 
-    print('Finished parsing.', file=parsefile)
-    print(parser, file=parsefile)
+def write(outfile, verbose=False):
+    with open(outfile, 'w') as f:
+        for i, sent_dict in enumerate(sentences):
+            if verbose: print(i, end='\r')
+            print(sent_dict['tree'], file=f)
+            print(sent_dict['tags'], file=f)
+            print(sent_dict['upper'], file=f)
+            print(sent_dict['lower'], file=f)
+            print(sent_dict['unked'], file=f)
+            print('\n'.join(sent_dict['actions']), file=f)
+            print(file=f)
 
-if args.mode == 'train':
-    losses = []
-    timer = Timer()
-    sent, indices, actions = next(batches)
-    try:
-        for step, batch in enumerate(batches, 1):
-            sent, indices, actions = batch
-            loss = model(sent, indices, actions)
+sentences = predict(verbose=True, max_lines=3)
+write(OUTFILE, verbose=True)
 
-            optimizer.zero_grad()
-            loss.backward()
-            torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
-            optimizer.step()
-
-            loss = loss.data[0]
-            losses.append(loss)
-            if step % args.print_every == 0:
-                time = timer.elapsed()
-                avg_loss = np.mean(losses[:-args.print_every])
-                print('Step {} | loss {:.3f} | {:.3f} sents/sec '.format(step, avg_loss, args.print_every/time))
-
-    except KeyboardInterrupt:
-        print('Exiting training early.')
-
-    model.eval()
-    parser = model.parse(sent, indices, file=parsefile)
-    torch.save(model, CHECKFILE)
-
-    print('Finished parsing.', file=parsefile)
-    print(parser, file=parsefile)
-
-if args.mode == 'parse':
-    model = torch.load(CHECKFILE)
-    sent, actions = next(batches)
-    parser = model.parse(sent, file=logfile)
-    print(parser)
-    print('ACTIONS')
-    print([model.dictionary.i2a[i] for i in actions])
-s
+torch.save(model, CHECKFILE)

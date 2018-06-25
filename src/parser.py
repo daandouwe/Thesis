@@ -167,7 +167,7 @@ class History:
         self.embedding = embedding
 
     def __str__(self):
-        history = [self.dict.i2a[i] for i in self._actions]
+        history = self.actions
         return 'History : {}'.format(history)
 
     def _reset(self):
@@ -199,6 +199,10 @@ class History:
     def last_action(self):
         i = self._actions[-1]
         return self.dict.i2a[i]
+
+    @property
+    def actions(self):
+        return [self.dict.i2a[i] for i in self._actions]
 
 class Parser:
     """The parse configuration."""
@@ -247,3 +251,7 @@ class Parser:
             # return False
         else:
             raise ValueError('got illegal action: {}'.format(action))
+
+    @property
+    def actions(self):
+        return self.history.actions

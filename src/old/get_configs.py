@@ -1,28 +1,24 @@
-import sys
+import argparse
 
-EMPTY_TOKEN = '-EMPTY-'
-SEPARATOR = ' || '
+def get_sent_dict(sent):
+    """Organize a sentence from the oracle file  as a dictionary."""
+    d = {
+        'tree'    : sent[0],
+        'tags'    : sent[1],
+        'upper'   : sent[2],
+        'lower'   : sent[3],
+        'unked'   : sent[4],
+        'actions' : sent[5:]
+        }
+    return d
 
-def get_actions(path):
-    """Returns the set of actions used in the oracle file."""
-    actions = {'SHIFT', 'REDUCE'}
-    with open(path) as f:
-        for line in f:
-            line = line.rstrip()
-            if line.startswith('NT('):
-                actions.add(line)
-    actions = sorted(list(actions))
-    return actions
+def get_sentences(path):
+    """Chunks the oracle file into sentences.
 
-def get_vocab(sentences):
-    """Returns the vocabulary used in the oracle file."""
-    vocab = set()
-    for sent in sentences:
-        vocab.update(set(sent[4].split()))
-    vocab = sorted(list(vocab))
-    return vocab
-
-def chunk_oracle_file(path):
+    Returns:
+        A list of sentences. Each sentence is dictionary as returned by
+        get_sent_dict.
+    """
     sentences = []
     with open(path) as f:
         sent = []
@@ -32,58 +28,47 @@ def chunk_oracle_file(path):
                 sent = []
             else:
                 sent.append(line.rstrip())
-        return sentences
+        # sentences is of type [[str]]
+        return [get_sent_dict(sent) for sent in sentences]
 
-def get_configurations(sent, separator=SEPARATOR):
-    tree, tags, words = sent[0].split(), sent[1].split(), sent[4].split()
-    actions = sent[5:]
-    # First configuration
-    prev_a = actions[0]
-    stack = []
-    buffer = words
-    print(EMPTY_TOKEN, ' '.join(buffer), EMPTY_TOKEN, prev_a, sep=separator)
-    # Rest of the configurations
-    for i, a in enumerate(actions[1:], 1):
-        if prev_a == 'SHIFT':
-            # move first element of buffer to stack
-            stack.append(buffer[0])
-            buffer = buffer[1:]
-            # start of the sentence
-            if buffer == []:
-                buffer = [EMPTY_TOKEN]
-        elif prev_a == 'REDUCE':
-             # close bracket
-            stack.append(')')
-        elif prev_a.startswith('NT('):
-            # select `X` from `NT(X)`
-            stack.append(prev_a[2:-1])
-        else:
-            raise NotImplementedError('Caught illegitimate action: {}'.format(prev_a))
-        # print the configuration
-        print(' '.join(stack), ' '.join(buffer), ' '.join(actions[:i]), a,
-                sep=separator)
-        prev_a = a
-    return stack
+def get_actions(sentences):
+    """Returns the set of actions used in the oracle file."""
+    actions = set()
+    for sent_dict in sentences:
+        actions.update(sent_dict['actions'])
+    actions = sorted(list(actions))
+    return actions
 
+def get_vocab(sentences, text_line='unked'):
+    """Returns the vocabulary used in the oracle file."""
+    vocab = set()
+    for sent_dict in sentences:
+        vocab.update(set(sent_dict[text_line].split()))
+    vocab = sorted(list(vocab))
+    return vocab
 
-def main():
-    assert len(sys.argv) > 1, 'Specify an oracle file.'
-    oracle_path = sys.argv[1]
-    sentences = chunk_oracle_file(oracle_path)
+def main(args):
+    # Partition the oracle file into sentences
+    sentences = get_sentences(args.oracle_path)
 
-    stack_symbols = set()
-    for sent in sentences:
-        # prints the configurations, and returns the final stack content
-        stack = get_configurations(sent)
-        stack_symbols.update(set(stack))
-
-    stack_symbols = sorted(list(stack_symbols))
+    # Collect desired symbols for our dictionaries
+    actions = get_actions(sentences)
     vocab = get_vocab(sentences)
-    actions = get_actions(oracle_path)
-    print('\n'.join(stack_symbols), file=open('../../tmp/ptb.stack', 'w'))
-    print('\n'.join(actions), file=open('../../tmp/ptb.actions', 'w'))
-    print('\n'.join(vocab), file=open('../../tmp/ptb.vocab', 'w'))
+    stack = actions + vocab
 
+    # Write out vocabularies
+    path, extension = args.oracle_path.split('.oracle')
+    print('\n'.join(stack),
+            file=open(path + '.stack', 'w'))
+    print('\n'.join(actions),
+            file=open(path + '.actions', 'w'))
+    print('\n'.join(vocab),
+            file=open(path + '.vocab', 'w'))
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='data for RNNG parser.')
+    parser.add_argument('oracle_path', type=str, help='location of the oracle path')
+
+    args = parser.parse_args()
+
+    main(args)

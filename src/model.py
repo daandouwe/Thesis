@@ -153,7 +153,7 @@ class RNNG(nn.Module):
         return loss
 
 
-    def parse(self, sentence, indices, file):
+    def parse(self, sentence, indices, file=None):
         """Parse an input sequence.
 
         Args:
@@ -172,12 +172,6 @@ class RNNG(nn.Module):
 
         t = 0
         while not self.parser.stack.empty:
-            print(t)
-            print(len(self.parser.buffer._tokens))
-            print(len(self.parser.buffer._hiddens))
-            print(self.parser.buffer._tokens)
-            print(self.parser.buffer.empty)
-
             t += 1
 
             # Compute parse representation and prediction.
@@ -197,13 +191,14 @@ class RNNG(nn.Module):
             self.parser.history.push(action_id)
 
             # Log info
-            print(t, file=file)
-            print(str(self.parser), file=file)
-            print('Values : ', vals.numpy()[:10], file=file)
-            print('Ids : ', ids.numpy()[:10], file=file)
-            print('Action : ', action_id, action, file=file)
-            print('Recalls : ', i, file=file)
-            print(file=file)
+            if file:
+                print(t, file=file)
+                print(str(self.parser), file=file)
+                print('Values : ', vals.numpy()[:10], file=file)
+                print('Ids : ', ids.numpy()[:10], file=file)
+                print('Action : ', action_id, action, file=file)
+                print('Recalls : ', i, file=file)
+                print(file=file)
 
             if action == 'SHIFT':
                 self.parser.shift()
@@ -217,7 +212,7 @@ class RNNG(nn.Module):
                 # the computed vector x and a dummy index.
                 self.parser.stack.push(REDUCED_TOKEN, REDUCED_INDEX, x)
 
-                print('Reducing : ', tokens, file=file)
+                if file: print('Reducing : ', tokens, file=file)
 
             elif action.startswith('NT'):
                 self.parser.stack.open_nonterminal(action, action_id)
