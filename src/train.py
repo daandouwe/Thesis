@@ -44,7 +44,8 @@ os.mkdir(OUTDIR)
 
 LOGFILE = os.path.join(LOGDIR, 'train.log')
 CHECKFILE = os.path.join(CHECKDIR, 'model.pt')
-OUTFILE = os.path.join(OUTDIR, 'train.predict.txt')
+# OUTFILE = os.path.join(OUTDIR, 'train.predict.txt')
+OUTFILE = 'out/train.predict.txt'
 
 
 corpus = Corpus(data_path=args.data, textline='lower')
@@ -104,7 +105,7 @@ def predict(verbose=False, max_lines=None):
         sentences[i]['actions'] = parser.actions
     return sentences[:i]
 
-def write(outfile, verbose=False):
+def write_pred(sentences, outfile, verbose=False):
     with open(outfile, 'w') as f:
         for i, sent_dict in enumerate(sentences):
             if verbose: print(i, end='\r')
@@ -116,7 +117,7 @@ def write(outfile, verbose=False):
             print('\n'.join(sent_dict['actions']), file=f)
             print(file=f)
 
-sentences = predict(verbose=True, max_lines=3)
-write(OUTFILE, verbose=True)
+sentences = predict(verbose=True, max_lines=1)
+write_pred(sentences, OUTFILE, verbose=True)
 
 torch.save(model, CHECKFILE)
