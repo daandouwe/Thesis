@@ -37,20 +37,17 @@ SUBDIR = get_subdir_string(args)
 LOGDIR = os.path.join(args.outdir, 'log', SUBDIR)
 CHECKDIR = os.path.join(args.outdir, 'checkpoints', SUBDIR)
 OUTDIR = os.path.join(args.outdir, 'out', SUBDIR)
-
 os.mkdir(LOGDIR)
 os.mkdir(CHECKDIR)
 os.mkdir(OUTDIR)
-
 LOGFILE = os.path.join(LOGDIR, 'train.log')
 CHECKFILE = os.path.join(CHECKDIR, 'model.pt')
 # OUTFILE = os.path.join(OUTDIR, 'train.predict.txt')
 OUTFILE = 'out/train.predict.txt'
 
-
 corpus = Corpus(data_path=args.data, textline='lower')
 batches = corpus.train.batches(length_ordered=False, shuffle=False)
-print(corpus)
+num_batches = len(batches)
 
 model = RNNG(dictionary=corpus.dictionary,
              emb_dim=100,
@@ -67,7 +64,7 @@ optimizer = torch.optim.Adam(parameters, lr=args.lr)
 
 losses = []
 timer = Timer()
-sent, indices, actions = next(batches)
+# sent, indices, actions = next(batches)
 try:
     for step, batch in enumerate(batches, 1):
         sent, indices, actions = batch
@@ -83,7 +80,7 @@ try:
         if step % args.print_every == 0:
             time = timer.elapsed()
             avg_loss = np.mean(losses[-args.print_every:])
-            print('Step {} | loss {:.3f} | {:.3f} sents/sec '.format(step, avg_loss, args.print_every/time))
+            print('Step {}/{} | loss {:.3f} | {:.3f} sents/sec '.format(step, num_batches, avg_loss, args.print_every/time))
 
 except KeyboardInterrupt:
     print('Exiting training early.')
@@ -117,7 +114,7 @@ def write_pred(sentences, outfile, verbose=False):
             print('\n'.join(sent_dict['actions']), file=f)
             print(file=f)
 
-sentences = predict(verbose=True, max_lines=1)
-write_pred(sentences, OUTFILE, verbose=True)
+pred_sentences = predict(verbose=True, max_lines=10)
+write_pred(pred_sentences, OUTFILE, verbose=True)
 
 torch.save(model, CHECKFILE)

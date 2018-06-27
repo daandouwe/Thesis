@@ -1,7 +1,5 @@
 import spacy
 
-
-
 from newdata import Corpus
 
 nlp = spacy.load('en')

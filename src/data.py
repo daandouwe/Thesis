@@ -135,12 +135,13 @@ class Data:
             self.shuffle()
         if length_ordered:
             self.order()
+        batches = []
         for i in range(n):
             sentence = self.sentences[i]
             ids = self.indices[i]
             actions = self.actions[i]
-            yield sentence, ids, actions
-
+            batches.append((sentence, ids, actions))
+        return batches
 
 class Corpus:
     """A corpus of three datasets (train, development, and test) and a dictionary."""
