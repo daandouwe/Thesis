@@ -5,9 +5,9 @@ from collections import defaultdict
 import torch
 from torch.autograd import Variable
 import numpy as np
-from gensim.models import KeyedVectors
+# from gensim.models import KeyedVectors
 
-from get_configs import get_sentences
+from get_vocab import get_sentences
 
 PAD_TOKEN = '-PAD-'
 EMPTY_TOKEN = '-EMPTY-'
@@ -145,12 +145,14 @@ class Data:
 
 class Corpus:
     """A corpus of three datasets (train, development, and test) and a dictionary."""
-    def __init__(self, data_path="../tmp/ptb", textline='unked'):
-        self.dictionary = Dictionary(data_path)
-        self.train = Data(data_path + '.oracle', self.dictionary, textline)
-        # TODO: dev and test splits
-        # self.dev = Data(data_path + '.oracle', self.dictionary, textline)
-        # self.test = Data(data_path + '.oracle', self.dictionary, textline)
+    def __init__(self, data_path="../tmp", textline='unked'):
+        self.dictionary = Dictionary(os.path.join(data_path,  'train', 'ptb.train'))
+        self.train = Data(os.path.join(data_path, 'train', 'ptb.train.oracle'),
+                        self.dictionary, textline)
+        self.dev = Data(os.path.join(data_path, 'dev', 'ptb.dev.oracle'),
+                        self.dictionary, textline)
+        self.test = Data(os.path.join(data_path, 'test', 'ptb.test.oracle'),
+                        self.dictionary, textline)
 
     def __str__(self):
         return str(self.train)
@@ -158,7 +160,7 @@ class Corpus:
 
 if __name__ == "__main__":
     # Example usage:
-    corpus = Corpus(data_path="../tmp/ptb")
+    corpus = Corpus(data_path="../tmp")
     batches = corpus.train.batches(1, length_ordered=True)
     for _ in range(2):
         sentence, actions = next(batches)

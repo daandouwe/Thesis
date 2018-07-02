@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-from get_configs import get_sentences
+from get_vocab import get_sentences
 from data import Corpus, load_glove
 from model import RNNG
 from utils import Timer, get_subdir_string
@@ -85,8 +85,6 @@ try:
 except KeyboardInterrupt:
     print('Exiting training early.')
 
-print('Evaluating.')
-
 def predict(verbose=False, max_lines=None):
     model.eval()
     sentences = get_sentences(args.data + '.oracle')
@@ -114,7 +112,9 @@ def write_pred(sentences, outfile, verbose=False):
             print('\n'.join(sent_dict['actions']), file=f)
             print(file=f)
 
+print('Predicting.')
 pred_sentences = predict(verbose=True, max_lines=10)
-write_pred(pred_sentences, OUTFILE, verbose=True)
+write_pred(pred_sentences, OUTFILE)
+print('Finished')
 
 torch.save(model, CHECKFILE)
