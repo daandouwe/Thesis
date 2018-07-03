@@ -1,4 +1,5 @@
 import argparse
+import os
 
 def get_sent_dict(sent):
     """Organize a sentence from the oracle file  as a dictionary."""
@@ -60,16 +61,19 @@ def get_actions(sentences):
 
 
 def main(args):
-    # Partition the oracle file into sentences
-    sentences = get_sentences(args.oracle_path)
+    # Partition the oracle files into sentences
+    train = get_sentences(os.path.join(args.oracle_path, 'train', 'ptb.train.oracle'))
+    dev = get_sentences(os.path.join(args.oracle_path, 'dev', 'ptb.dev.oracle'))
+    test = get_sentences(os.path.join(args.oracle_path, 'test', 'ptb.test.oracle'))
+    sentences = train + dev + test
 
     # Collect desired symbols for our dictionaries
     actions = get_actions(sentences)
-    vocab = get_vocab(sentences, textline='lower')
+    vocab = get_vocab(sentences, textline=args.textline)
     nonterminals = get_nonterminals(sentences)
 
     # Write out vocabularies
-    path, extension = args.oracle_path.split('.oracle')
+    path = os.path.join(args.oracle_path, 'ptb')
     print('\n'.join(nonterminals),
             file=open(path + '.nonterminals', 'w'))
     print('\n'.join(actions),
@@ -79,8 +83,10 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='data for RNNG parser.')
-    parser.add_argument('oracle_path', type=str, help='location of the oracle path')
-
+    parser.add_argument('oracle_path', type=str,
+                        help='location of the oracle path')
+    parser.add_argument('--textline', type=str, default='unked',
+                        help='location of the oracle path')
     args = parser.parse_args()
 
     main(args)

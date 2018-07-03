@@ -1,5 +1,7 @@
-from PYEVALB import scorer
-from get_configs import get_sentences
+import os
+
+from PYEVALB.scorer import Scorer
+from get_vocab import get_sentences
 
 def oracle2tree(sent):
     """Returns a linearize tree from a list of actions in an oracle file.
@@ -28,19 +30,32 @@ def oracle2tree(sent):
     return tree, gold_tree
 
 if __name__ == '__main__':
-    pred_oracle_path = 'out/train.predict.txt'
-    pred = get_sentences(pred_oracle_path)
+    outdir = 'out'
 
-    pred_path = 'out/ptb.pred'
-    gold_path = 'out/ptb.gold'
-    result_path = 'out/ptb.result'
-    f = open(pred_path, 'w')
-    g = open(gold_path, 'w')
-    for sent in pred:
-        pred_tree, gold_tree = oracle2tree(sent)
-        print(pred_tree, file=f)
-        print(gold_tree, file=g)
-    f.close()
-    g.close()
-    scorer = scorer.Scorer()
+    dev_path = os.path.join(outdir, 'dev')
+    dev_pred = get_sentences(dev_path + '.pred.oracle')
+    pred_path = dev_path + '.pred.trees'
+    gold_path = dev_path + '.gold.trees'
+    result_path = dev_path + '.result'
+    with open(dev_path + '.pred.trees', 'w') as f:
+        with open(dev_path + '.gold.trees', 'w') as g:
+            for sent in dev_pred:
+                pred_tree, gold_tree = oracle2tree(sent)
+                print(pred_tree, file=f)
+                print(gold_tree, file=g)
+    scorer = Scorer()
+    scorer.evalb(gold_path, pred_path, result_path)
+
+    test_path = os.path.join(outdir, 'test')
+    test_pred = get_sentences(test_path + '.pred.oracle')
+    pred_path = test_path + '.pred.trees'
+    gold_path = test_path + '.gold.trees'
+    result_path = test_path + '.result'
+    with open(test_path + '.pred.trees', 'w') as f:
+        with open(test_path + '.gold.trees', 'w') as g:
+            for sent in test_pred:
+                pred_tree, gold_tree = oracle2tree(sent)
+                print(pred_tree, file=f)
+                print(gold_tree, file=g)
+    scorer = Scorer()
     scorer.evalb(gold_path, pred_path, result_path)

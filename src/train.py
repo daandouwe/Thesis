@@ -15,12 +15,16 @@ from model import RNNG
 from utils import Timer, get_subdir_string
 
 parser = argparse.ArgumentParser(description='Discriminative RNNG parser')
-parser.add_argument('--data', type=str, default='../tmp/ptb',
+parser.add_argument('--data', type=str, default='../tmp',
                     help='location of the data corpus')
+parser.add_argument('--textline', type=str, choices=['unked', 'lower', 'upper'], default='unked',
+                    help='textline to use from the oracle file')
 parser.add_argument('--outdir', type=str, default='',
                     help='location to make output log and checkpoint folders')
 parser.add_argument('--lr', type=float, default=2e-3,
                     help='initial learning rate')
+parser.add_argument('--epochs', type=int, default=10,
+                    help='number of epochs')
 parser.add_argument('--clip', type=float, default=5.,
                     help='clipping gradient norm at this value')
 parser.add_argument('--print_every', type=int, default=10,
@@ -33,40 +37,39 @@ torch.manual_seed(42)
 
 # Create folders for logging and checkpoints
 SUBDIR = get_subdir_string(args)
-
 LOGDIR = os.path.join(args.outdir, 'log', SUBDIR)
 CHECKDIR = os.path.join(args.outdir, 'checkpoints', SUBDIR)
-OUTDIR = os.path.join(args.outdir, 'out', SUBDIR)
+# OUTDIR = os.path.join(args.outdir, 'out', SUBDIR)
+OUTDIR = 'out'
 os.mkdir(LOGDIR)
 os.mkdir(CHECKDIR)
-os.mkdir(OUTDIR)
+# os.mkdir(OUTDIR)
 LOGFILE = os.path.join(LOGDIR, 'train.log')
 CHECKFILE = os.path.join(CHECKDIR, 'model.pt')
 # OUTFILE = os.path.join(OUTDIR, 'train.predict.txt')
-OUTFILE = 'out/train.predict.txt'
 
-corpus = Corpus(data_path=args.data, textline='lower')
-batches = corpus.train.batches(length_ordered=False, shuffle=False)
-num_batches = len(batches)
+corpus = Corpus(data_path=args.data, textline=args.textline)
+train_batches =  corpus.train.batches(length_ordered=False, shuffle=False)
+dev_batches   =  corpus.dev.batches(length_ordered=False, shuffle=False)
+test_batches  =  corpus.test.batches(length_ordered=False, shuffle=False)
+num_batches = len(train_batches)
 
 model = RNNG(dictionary=corpus.dictionary,
-             emb_dim=100,
+             emb_dim=10,
              emb_dropout=0.3,
-             lstm_hidden=100,
+             lstm_hidden=10,
              lstm_num_layers=1,
              lstm_dropout=0.3,
-             mlp_hidden=500,
+             mlp_hidden=50,
              cuda=False,
              use_glove=args.use_glove)
-
 parameters = filter(lambda p: p.requires_grad, model.parameters())
 optimizer = torch.optim.Adam(parameters, lr=args.lr)
 
-losses = []
-timer = Timer()
-# sent, indices, actions = next(batches)
-try:
-    for step, batch in enumerate(batches, 1):
+def train():
+    """One epoch of training."""
+    model.train()
+    for step, batch in enumerate(train_batches, 1):
         sent, indices, actions = batch
         loss = model(sent, indices, actions)
 
@@ -82,39 +85,71 @@ try:
             avg_loss = np.mean(losses[-args.print_every:])
             print('Step {}/{} | loss {:.3f} | {:.3f} sents/sec '.format(step, num_batches, avg_loss, args.print_every/time))
 
+def evaluate():
+    model.eval()
+    dev_loss = 0.
+    for step, batch in enumerate(dev_batches, 1):
+        sent, indices, actions = batch
+        loss = model(sent, indices, actions)
+        dev_loss += loss.data[0]
+    dev_loss /= step
+    return dev_loss
+
+
+def write_prediction(dev_sentences, test_sentences, outdir, verbose=False):
+
+    def print_sent_dict(sent_dict, file):
+        print(sent_dict['tree'], file=file)
+        print(sent_dict['tags'], file=file)
+        print(sent_dict['upper'], file=file)
+        print(sent_dict['lower'], file=file)
+        print(sent_dict['unked'], file=file)
+        print('\n'.join(sent_dict['actions']), file=file)
+        print(file=file)
+
+    dev_path = os.path.join(outdir, 'dev.pred.oracle')
+    test_path = os.path.join(outdir, 'test.pred.oracle')
+    with open(dev_path, 'w') as f:
+        for i, sent_dict in enumerate(dev_sentences):
+            if verbose: print(i, end='\r')
+            print_sent_dict(sent_dict, f)
+    with open(test_path, 'w') as f:
+        for i, sent_dict in enumerate(test_sentences):
+            if verbose: print(i, end='\r')
+            print_sent_dict(sent_dict, f)
+
+def predict():
+    model.eval()
+    dev_sentences = get_sentences(os.path.join(args.data, 'dev', 'ptb.dev.oracle'))
+    for i, batch in enumerate(dev_batches):
+        sent, indices, actions = batch
+        parser = model.parse(sent, indices)
+        dev_sentences[i]['actions'] = parser.actions
+
+    test_sentences = get_sentences(os.path.join(args.data, 'test', 'ptb.test.oracle'))
+    for i, batch in enumerate(test_batches):
+        sent, indices, actions = batch
+        parser = model.parse(sent, indices)
+        test_sentences[i]['actions'] = parser.actions
+
+    write_prediction(dev_sentences, test_sentences, OUTDIR)
+
+try:
+    losses = []
+    timer = Timer()
+    for epoch in range(args.epochs):
+        train()
+        dev_loss = evaluate()
+        print('-'*79)
+        print('End of epoch {}/{} | avg dev loss : {}'.format(epoch, args.epochs, dev_loss))
+        print('')
+        print('-'*79)
+
 except KeyboardInterrupt:
     print('Exiting training early.')
 
-def predict(verbose=False, max_lines=None):
-    model.eval()
-    sentences = get_sentences(args.data + '.oracle')
-    batches = corpus.train.batches(length_ordered=False, shuffle=False)
-    for i, batch in enumerate(batches):
-        if verbose:
-            print(i, end='\r')
-        if i is not None:
-            if i >= max_lines:
-                break
-        sent, indices, actions = batch
-        parser = model.parse(sent, indices)
-        sentences[i]['actions'] = parser.actions
-    return sentences[:i]
-
-def write_pred(sentences, outfile, verbose=False):
-    with open(outfile, 'w') as f:
-        for i, sent_dict in enumerate(sentences):
-            if verbose: print(i, end='\r')
-            print(sent_dict['tree'], file=f)
-            print(sent_dict['tags'], file=f)
-            print(sent_dict['upper'], file=f)
-            print(sent_dict['lower'], file=f)
-            print(sent_dict['unked'], file=f)
-            print('\n'.join(sent_dict['actions']), file=f)
-            print(file=f)
-
 print('Predicting.')
-pred_sentences = predict(verbose=True, max_lines=10)
-write_pred(pred_sentences, OUTFILE)
+predict()
 print('Finished')
 
 torch.save(model, CHECKFILE)

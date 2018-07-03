@@ -146,7 +146,8 @@ class Data:
 class Corpus:
     """A corpus of three datasets (train, development, and test) and a dictionary."""
     def __init__(self, data_path="../tmp", textline='unked'):
-        self.dictionary = Dictionary(os.path.join(data_path,  'train', 'ptb.train'))
+        # self.dictionary = Dictionary(os.path.join(data_path,  'train', 'ptb.train'))
+        self.dictionary = Dictionary(os.path.join(data_path,  'ptb'))
         self.train = Data(os.path.join(data_path, 'train', 'ptb.train.oracle'),
                         self.dictionary, textline)
         self.dev = Data(os.path.join(data_path, 'dev', 'ptb.dev.oracle'),
@@ -162,6 +163,4 @@ if __name__ == "__main__":
     # Example usage:
     corpus = Corpus(data_path="../tmp")
     batches = corpus.train.batches(1, length_ordered=True)
-    for _ in range(2):
-        sentence, actions = next(batches)
-        print(sentence, actions)
+    print(batches[0])
