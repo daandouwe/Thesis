@@ -21,7 +21,7 @@ parser.add_argument('--textline', type=str, choices=['unked', 'lower', 'upper'],
                     help='textline to use from the oracle file')
 parser.add_argument('--outdir', type=str, default='',
                     help='location to make output log and checkpoint folders')
-parser.add_argument('--lr', type=float, default=2e-3,
+parser.add_argument('--lr', type=float, default=1e-3,
                     help='initial learning rate')
 parser.add_argument('--epochs', type=int, default=10,
                     help='number of epochs')
@@ -47,24 +47,6 @@ os.mkdir(CHECKDIR)
 LOGFILE = os.path.join(LOGDIR, 'train.log')
 CHECKFILE = os.path.join(CHECKDIR, 'model.pt')
 # OUTFILE = os.path.join(OUTDIR, 'train.predict.txt')
-
-corpus = Corpus(data_path=args.data, textline=args.textline)
-train_batches =  corpus.train.batches(length_ordered=False, shuffle=False)
-dev_batches   =  corpus.dev.batches(length_ordered=False, shuffle=False)
-test_batches  =  corpus.test.batches(length_ordered=False, shuffle=False)
-num_batches = len(train_batches)
-
-model = RNNG(dictionary=corpus.dictionary,
-             emb_dim=10,
-             emb_dropout=0.3,
-             lstm_hidden=10,
-             lstm_num_layers=1,
-             lstm_dropout=0.3,
-             mlp_hidden=50,
-             cuda=False,
-             use_glove=args.use_glove)
-parameters = filter(lambda p: p.requires_grad, model.parameters())
-optimizer = torch.optim.Adam(parameters, lr=args.lr)
 
 def train():
     """One epoch of training."""
@@ -95,9 +77,7 @@ def evaluate():
     dev_loss /= step
     return dev_loss
 
-
 def write_prediction(dev_sentences, test_sentences, outdir, verbose=False):
-
     def print_sent_dict(sent_dict, file):
         print(sent_dict['tree'], file=file)
         print(sent_dict['tags'], file=file)
@@ -106,7 +86,6 @@ def write_prediction(dev_sentences, test_sentences, outdir, verbose=False):
         print(sent_dict['unked'], file=file)
         print('\n'.join(sent_dict['actions']), file=file)
         print(file=file)
-
     dev_path = os.path.join(outdir, 'dev.pred.oracle')
     test_path = os.path.join(outdir, 'test.pred.oracle')
     with open(dev_path, 'w') as f:
@@ -125,31 +104,49 @@ def predict():
         sent, indices, actions = batch
         parser = model.parse(sent, indices)
         dev_sentences[i]['actions'] = parser.actions
-
     test_sentences = get_sentences(os.path.join(args.data, 'test', 'ptb.test.oracle'))
     for i, batch in enumerate(test_batches):
         sent, indices, actions = batch
         parser = model.parse(sent, indices)
         test_sentences[i]['actions'] = parser.actions
-
     write_prediction(dev_sentences, test_sentences, OUTDIR)
 
-try:
-    losses = []
-    timer = Timer()
-    for epoch in range(args.epochs):
-        train()
-        dev_loss = evaluate()
-        print('-'*79)
-        print('End of epoch {}/{} | avg dev loss : {}'.format(epoch, args.epochs, dev_loss))
-        print('')
-        print('-'*79)
 
-except KeyboardInterrupt:
-    print('Exiting training early.')
+if __name__ == '__main__':
+    corpus = Corpus(data_path=args.data, textline=args.textline)
+    train_batches =  corpus.train.batches(length_ordered=False, shuffle=False)
+    dev_batches   =  corpus.dev.batches(length_ordered=False, shuffle=False)
+    test_batches  =  corpus.test.batches(length_ordered=False, shuffle=False)
+    num_batches = len(train_batches)
 
-print('Predicting.')
-predict()
-print('Finished')
+    model = RNNG(dictionary=corpus.dictionary,
+                 emb_dim=100,
+                 emb_dropout=0.3,
+                 lstm_hidden=100,
+                 lstm_num_layers=1,
+                 lstm_dropout=0.3,
+                 mlp_hidden=500,
+                 cuda=False,
+                 use_glove=args.use_glove)
+    parameters = filter(lambda p: p.requires_grad, model.parameters())
+    optimizer = torch.optim.Adam(parameters, lr=args.lr)
 
-torch.save(model, CHECKFILE)
+    try:
+        losses = []
+        timer = Timer()
+        for epoch in range(args.epochs):
+            train()
+            dev_loss = evaluate()
+            print('-'*79)
+            print('End of epoch {}/{} | avg dev loss : {}'.format(epoch, args.epochs, dev_loss))
+            print('')
+            print('-'*79)
+
+    except KeyboardInterrupt:
+        print('Exiting training early.')
+
+    print('Predicting.')
+    predict()
+    print('Finished')
+
+    torch.save(model, CHECKFILE)
