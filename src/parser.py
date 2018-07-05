@@ -5,7 +5,7 @@ from data import wrap
 
 class Stack:
     """The stack"""
-    def __init__(self, dictionary, word_embedding, nt_embedding):
+    def __init__(self, dictionary, word_embedding, nt_embedding, use_cuda=False):
         """Initialize the Stack.
 
         Args:
@@ -19,6 +19,8 @@ class Stack:
         self.word_embedding = word_embedding
         self.nt_embedding = nt_embedding
 
+        self.use_cuda = use_cuda
+
     def __str__(self):
         return 'Stack ({} open NTs): {}'.format(self.num_open_nonterminals, self._tokens)
 
@@ -30,8 +32,8 @@ class Stack:
 
     def initialize(self):
         self._reset()
-        emb = self.word_embedding(wrap([EMPTY_INDEX]))
-        self.push(EMPTY_TOKEN, EMPTY_INDEX, emb)
+        empty_embedding = self.word_embedding(wrap([EMPTY_INDEX], self.use_cuda))
+        self.push(EMPTY_TOKEN, EMPTY_INDEX, empty_embedding)
 
     def push(self, token, index, emb):
         self._tokens.append(token)
@@ -42,7 +44,7 @@ class Stack:
         self._num_open_nonterminals += 1
         self._tokens.append(token)
         self._indices.append(index)
-        emb = self.nt_embedding(wrap([index]))
+        emb = self.nt_embedding(wrap([index], self.use_cuda))
         self._embeddings.append(emb)
 
     def pop(self):
@@ -90,7 +92,7 @@ class Stack:
 
 class Buffer:
     """The buffer."""
-    def __init__(self, dictionary, embedding):
+    def __init__(self, dictionary, embedding, use_cuda=False):
         self._tokens = []
         self._indices = []
         self._embeddings = []
@@ -98,6 +100,8 @@ class Buffer:
 
         self.dict = dictionary
         self.embedding = embedding
+
+        self.use_cuda = use_cuda
 
     def __str__(self):
         return 'Buffer : {}'.format(self._tokens)
@@ -119,9 +123,9 @@ class Buffer:
         """Push action index and vector embedding onto buffer."""
         self._tokens.append(token)
         self._indices.append(index)
-        vec = self.embedding(wrap([index]))
-        self._embeddings.append(vec)
-        self._hiddens.append(vec)
+        emb = self.embedding(wrap([index], self.use_cuda))
+        self._embeddings.append(emb)
+        self._hiddens.append(emb)
 
     def pop(self):
         if self.empty:
@@ -129,13 +133,13 @@ class Buffer:
         else:
             token = self._tokens.pop()
             index = self._indices.pop()
-            vec = self._embeddings.pop()
+            emb = self._embeddings.pop()
             _ = self._hiddens.pop() # We do not need this one
-            # If this pop makes the buffer empty, push
+            # If pop makes the buffer empty, push
             # the empty token to signal that it is empty.
             if not self._tokens:
                 self.push(EMPTY_TOKEN, EMPTY_INDEX)
-            return token, index, vec
+            return token, index, emb
 
     def encode(self, lstm_encoder):
         """Use the encoder to make a list of encodings for the """
@@ -159,12 +163,14 @@ class Buffer:
         return self._tokens == [EMPTY_TOKEN]
 
 class History:
-    def __init__(self, dictionary, embedding):
+    def __init__(self, dictionary, embedding, use_cuda=False):
         self._actions = []
         self._embeddings = []
 
         self.dict = dictionary
         self.embedding = embedding
+
+        self.use_cuda = use_cuda
 
     def __str__(self):
         history = self.actions
@@ -182,7 +188,7 @@ class History:
     def push(self, action):
         """Push action index and vector embedding onto history."""
         self._actions.append(action)
-        self._embeddings.append(self.embedding(wrap([action])))
+        self._embeddings.append(self.embedding(wrap([action], self.use_cuda)))
 
     @property
     def embedded(self):
@@ -206,10 +212,10 @@ class History:
 
 class Parser:
     """The parse configuration."""
-    def __init__(self, dictionary, word_embedding, nt_embedding, action_embedding):
-        self.stack = Stack(dictionary, word_embedding, nt_embedding)
-        self.buffer = Buffer(dictionary, word_embedding)
-        self.history = History(dictionary, action_embedding)
+    def __init__(self, dictionary, word_embedding, nt_embedding, action_embedding, use_cuda=False):
+        self.stack = Stack(dictionary, word_embedding, nt_embedding, use_cuda)
+        self.buffer = Buffer(dictionary, word_embedding, use_cuda)
+        self.history = History(dictionary, action_embedding, use_cuda)
         self.dict = dictionary
 
     def __str__(self):

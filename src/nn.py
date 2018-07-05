@@ -23,7 +23,7 @@ class MLP(nn.Module):
 
 class BiRecurrentEncoder(nn.Module):
     """A bidirectional RNN encoder."""
-    def __init__(self,input_size, hidden_size, num_layers, dropout, batch_first=True, cuda=False):
+    def __init__(self,input_size, hidden_size, num_layers, dropout, batch_first=True, use_cuda=False):
         super(BiRecurrentEncoder, self).__init__()
         self.forward_rnn = nn.LSTM(input_size=input_size, hidden_size=hidden_size,
                            num_layers=num_layers, batch_first=batch_first,
@@ -31,12 +31,12 @@ class BiRecurrentEncoder(nn.Module):
         self.backward_rnn = nn.LSTM(input_size=input_size, hidden_size=hidden_size,
                            num_layers=num_layers, batch_first=batch_first,
                            dropout=dropout)
-        self.cuda = cuda
+        self.use_cuda = use_cuda
 
     def _reverse(self, tensor):
         idx = [i for i in range(tensor.size(1) - 1, -1, -1)]
         idx = Variable(torch.LongTensor(idx))
-        idx = idx.cuda() if self.cuda else idx
+        idx = idx.cuda() if self.use_cuda else idx
         return tensor.index_select(1, idx)
 
     def forward(self, x):
@@ -52,24 +52,27 @@ class BiRecurrentEncoder(nn.Module):
 
 class StackLSTM(nn.Module):
     """A Stack-LSTM used to encode the stack of a transition based parser."""
-    def __init__(self, input_size, hidden_size, cuda=False):
+    def __init__(self, input_size, hidden_size, use_cuda=False):
         super(StackLSTM, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size # Must be even number, see composition function.
-        self.cuda = cuda
+        self.use_cuda = use_cuda
 
         self.rnn = nn.LSTMCell(input_size, hidden_size)
         # BiRNN ecoder used as composition function.
         # NOTE: we use hidden_size//2 because the output of the composition function
         # is a concatenation of two hidden vectors.
         self.composition = BiRecurrentEncoder(input_size, hidden_size//2,
-                                              num_layers=1, dropout=0.)
+                                              num_layers=1, dropout=0., use_cuda=use_cuda)
 
         # Were we store all intermediate computed hidden states.
         # Top of this list is used as the stack embedding
         self._hidden_states = []
 
         self.initialize_hidden()
+
+        if self.use_cuda:
+            self.cuda()
 
     def _reset_hidden(self, sequence_len):
         """Reset the hidden state to before opening the sequence."""
@@ -81,7 +84,7 @@ class StackLSTM(nn.Module):
         self._hidden_states = []
         hx = Variable(torch.zeros(batch_size, self.hidden_size))
         cx = Variable(torch.zeros(batch_size, self.hidden_size))
-        if self.cuda:
+        if self.use_cuda:
             hx = hx.cuda()
             cx = cx.cuda()
         self.hx, self.cx = hx, cx
@@ -110,11 +113,11 @@ class StackLSTM(nn.Module):
 
 class HistoryLSTM(nn.Module):
     """A LSTM used to encode the history of actions of a transition based parser."""
-    def __init__(self, input_size, hidden_size, cuda=False):
+    def __init__(self, input_size, hidden_size, use_cuda=False):
         super(HistoryLSTM, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size # Must be even number, see composition function.
-        self.cuda = cuda
+        self.use_cuda = use_cuda
 
         self.rnn = nn.LSTMCell(input_size, hidden_size)
 
@@ -124,12 +127,15 @@ class HistoryLSTM(nn.Module):
 
         self.initialize_hidden()
 
+        if self.use_cuda:
+            self.cuda()
+
     def initialize_hidden(self, batch_size=1):
         """Set initial hidden state to zeros."""
         self._hidden_states = []
         hx = Variable(torch.zeros(batch_size, self.hidden_size))
         cx = Variable(torch.zeros(batch_size, self.hidden_size))
-        if self.cuda:
+        if self.use_cuda:
             hx = hx.cuda()
             cx = cx.cuda()
         self.hx, self.cx = hx, cx

@@ -146,7 +146,6 @@ class Data:
 class Corpus:
     """A corpus of three datasets (train, development, and test) and a dictionary."""
     def __init__(self, data_path="../tmp", textline='unked'):
-        # self.dictionary = Dictionary(os.path.join(data_path,  'train', 'ptb.train'))
         self.dictionary = Dictionary(os.path.join(data_path,  'ptb'))
         self.train = Data(os.path.join(data_path, 'train', 'ptb.train.oracle'),
                         self.dictionary, textline)

@@ -10,10 +10,11 @@ class RNNG(nn.Module):
     """Recurrent Neural Network Grammar model."""
     def __init__(self, dictionary, emb_dim, emb_dropout,
                 lstm_hidden, lstm_num_layers, lstm_dropout, mlp_hidden,
-                cuda, use_glove=False):
+                use_cuda=False, use_glove=False):
         super(RNNG, self).__init__()
         self.dictionary = dictionary
         self.lstm_hidden = lstm_hidden
+        self.use_cuda = use_cuda # To cuda or not to cuda
 
         ## Embeddings
         vocab_size = len(dictionary.w2i)
@@ -30,9 +31,9 @@ class RNNG(nn.Module):
 
         # Parser encoders
         self.stack_lstm = StackLSTM(input_size=emb_dim, hidden_size=lstm_hidden,
-                                cuda=cuda)
+                                use_cuda=use_cuda)
         self.history_lstm = HistoryLSTM(input_size=emb_dim, hidden_size=lstm_hidden,
-                                    cuda=cuda)
+                                    use_cuda=use_cuda)
         self.buffer_encoder = nn.LSTM(input_size=emb_dim, hidden_size=lstm_hidden,
                                     batch_first=True, dropout=lstm_dropout)
 
@@ -42,13 +43,11 @@ class RNNG(nn.Module):
 
         # Create an internal parser.
         self.parser = Parser(self.dictionary, self.word_embedding,
-                             self.nt_embedding, self.action_embedding)
+                             self.nt_embedding, self.action_embedding,
+                             use_cuda=use_cuda)
 
         # Training objective
         self.criterion = nn.CrossEntropyLoss()
-
-        # To cuda or not to cuda
-        self.cuda = cuda
 
         if use_glove:
             self.load_glove()
@@ -77,12 +76,12 @@ class RNNG(nn.Module):
         logits = self.mlp(x)
         return logits
 
-    def loss(self, logits, y):
+    def get_loss(self, logits, y):
         """Compute the loss given the criterion.
 
         Logits is a PyTorch tensor, y is an integer.
         """
-        y = wrap([y]) # returns a pytorch Variable
+        y = wrap([y], self.use_cuda) # returns a pytorch Variable
         return self.criterion(logits, y)
 
     def forward(self, sentence, indices, actions, verbose=False, file=None):
@@ -106,6 +105,8 @@ class RNNG(nn.Module):
 
         # Cummulator variable for loss
         loss = Variable(torch.zeros(1))
+        if self.use_cuda:
+            loss = loss.cuda()
 
         for t, action_id in enumerate(actions):
 
@@ -115,7 +116,7 @@ class RNNG(nn.Module):
             # Compute parse representation and prediction.
             stack, buffer, history = self.parser.get_embedded_input()
             logits = self.encode(stack, buffer, history) # encode the parse configuration
-            step_loss = self.loss(logits, action_id)
+            step_loss = self.get_loss(logits, action_id)
             loss += step_loss
 
             if verbose:
@@ -153,7 +154,7 @@ class RNNG(nn.Module):
         return loss
 
 
-    def parse(self, sentence, indices, file=None):
+    def parse(self, sentence, indices, verbose=False, file=None):
         """Parse an input sequence.
 
         Args:
@@ -191,7 +192,7 @@ class RNNG(nn.Module):
             self.parser.history.push(action_id)
 
             # Log info
-            if file:
+            if verbose:
                 print(t, file=file)
                 print(str(self.parser), file=file)
                 print('Values : ', vals.numpy()[:10], file=file)

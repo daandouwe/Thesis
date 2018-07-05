@@ -16,8 +16,12 @@ from utils import Timer, get_subdir_string
 parser = argparse.ArgumentParser(description='Discriminative RNNG parser')
 parser.add_argument('mode', choices=['dev', 'test', 'train', 'parse'],
                     help='type')
-parser.add_argument('--data', type=str, default='../tmp/ptb',
+parser.add_argument('-v', '--verbose', type=bool, default=False,
+                    help='print out parser states')
+parser.add_argument('--data', type=str, default='../tmp',
                     help='location of the data corpus')
+parser.add_argument('--textline', type=str, choices=['unked', 'lower', 'upper'], default='unked',
+                    help='textline to use from the oracle file')
 parser.add_argument('--outdir', type=str, default='',
                     help='location to make output log and checkpoint folders')
 parser.add_argument('--lr', type=float, default=2e-3,
@@ -43,9 +47,11 @@ if not os.path.exists(CHECKDIR):
 
 torch.manual_seed(42)
 
-corpus = Corpus(data_path=args.data, textline='lower')
-batches = corpus.train.batches(length_ordered=False, shuffle=False)
-print(corpus)
+corpus = Corpus(data_path=args.data, textline=args.textline)
+train_batches =  corpus.train.batches(length_ordered=False, shuffle=False)
+dev_batches   =  corpus.dev.batches(length_ordered=False, shuffle=False)
+test_batches  =  corpus.test.batches(length_ordered=False, shuffle=False)
+num_batches = len(train_batches)
 model = RNNG(dictionary=corpus.dictionary,
              emb_dim=100,
              emb_dropout=0.3,
@@ -64,11 +70,11 @@ trainfile = open(LOGFILE + '.train.txt', 'w')
 parsefile = open(LOGFILE + '.parse.txt', 'w')
 
 if args.mode == 'dev':
-    sent, indices, actions = next(batches)
-    loss = model(sent, indices, actions, verbose=True)
+    sent, indices, actions = train_batches[0]
+    loss = model(sent, indices, actions, verbose=args.verbose)
 
 if args.mode == 'test':
-    sent, indices, actions = next(batches)
+    sent, indices, actions = train_batches[0]
     timer = Timer()
     model.train()
     try:
@@ -86,8 +92,8 @@ if args.mode == 'test':
         print('Exiting training early.')
 
     model.eval()
-    loss = model(sent, indices, actions, verbose=True, file=trainfile)
-    parser = model.parse(sent, indices, file=parsefile)
+    loss = model(sent, indices, actions, verbose=args.verbose, file=trainfile)
+    parser = model.parse(sent, indices, verbose=args.verbose, file=parsefile)
     torch.save(model, CHECKFILE)
 
     print('Finished parsing.', file=parsefile)
@@ -96,9 +102,8 @@ if args.mode == 'test':
 if args.mode == 'train':
     losses = []
     timer = Timer()
-    sent, indices, actions = next(batches)
     try:
-        for step, batch in enumerate(batches, 1):
+        for step, batch in enumerate(train_batches, 1):
             sent, indices, actions = batch
             loss = model(sent, indices, actions)
 
@@ -118,7 +123,7 @@ if args.mode == 'train':
         print('Exiting training early.')
 
     model.eval()
-    parser = model.parse(sent, indices, file=parsefile)
+    parser = model.parse(sent, indices, verbose=args.verbose, file=parsefile)
     torch.save(model, CHECKFILE)
 
     print('Finished parsing.', file=parsefile)
@@ -126,7 +131,7 @@ if args.mode == 'train':
 
 if args.mode == 'parse':
     model = torch.load(CHECKFILE)
-    sent, actions = next(batches)
+    sent, actions = next(train_batches)
     parser = model.parse(sent, file=logfile)
     print(parser)
     print('ACTIONS')
