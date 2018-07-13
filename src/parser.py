@@ -22,7 +22,7 @@ class Stack:
         self.use_cuda = use_cuda
 
     def __str__(self):
-        return 'Stack ({} open NTs): {}'.format(self.num_open_nonterminals, self._tokens)
+        return 'Stack ({self.num_open_nonterminals} open NTs): {self._tokens}'.format(self=self)
 
     def _reset(self):
         """Resets the buffer to empty state."""
@@ -104,7 +104,7 @@ class Buffer:
         self.use_cuda = use_cuda
 
     def __str__(self):
-        return 'Buffer : {}'.format(self._tokens)
+        return 'Buffer : {self._tokens}'.format(self=self)
 
     def _reset(self):
         """Resets the buffer to empty state."""
@@ -173,8 +173,7 @@ class History:
         self.use_cuda = use_cuda
 
     def __str__(self):
-        history = self.actions
-        return 'History : {}'.format(history)
+        return 'History : {self.actions}'.format(self=self)
 
     def _reset(self):
         """Resets the buffer to empty state."""
@@ -219,7 +218,7 @@ class Parser:
         self.dict = dictionary
 
     def __str__(self):
-        return 'PARSER STATE\n{}\n{}\n{}'.format(self.stack, self.buffer, self.history)
+        return '\n'.join(('PARSER STATE', str(self.stack), str(self.buffer), str(self.history)))
 
     def initialize(self, sentence, indices):
         """Initialize all the components of the parser."""
@@ -256,8 +255,15 @@ class Parser:
         # elif action in [PAD_TOKEN, EMPTY_TOKEN, REDUCED_TOKEN]:
             # return False
         else:
-            raise ValueError('got illegal action: {}'.format(action))
+            raise ValueError('got illegal action: {action}'.format(action=action))
 
     @property
     def actions(self):
         return self.history.actions
+
+
+if __name__ == '__main__':
+    stack = Stack(10, 10, 10, use_cuda=False)
+    parser = Parser(10, 10, 10, 10, use_cuda=False)
+    print(stack)
+    print(parser)

@@ -128,12 +128,17 @@ def predict():
         test_sentences[i]['actions'] = parser.actions
     write_prediction(dev_sentences, test_sentences, OUTDIR)
 
+def write_losses():
+    path = os.path.join(LOGDIR, 'loss.csv')
+    with open(path, 'w') as f:
+        for loss in losses:
+            print(loss, file=f)
 
 if __name__ == '__main__':
     corpus = Corpus(data_path=args.data, textline=args.textline)
-    train_batches =  corpus.train.batches(length_ordered=False, shuffle=False)
-    dev_batches   =  corpus.dev.batches(length_ordered=False, shuffle=False)
-    test_batches  =  corpus.test.batches(length_ordered=False, shuffle=False)
+    train_batches = corpus.train.batches(length_ordered=False, shuffle=False)
+    dev_batches   = corpus.dev.batches(length_ordered=False, shuffle=False)
+    test_batches  = corpus.test.batches(length_ordered=False, shuffle=False)
     num_batches = len(train_batches)
 
     model = RNNG(dictionary=corpus.dictionary,
@@ -150,22 +155,23 @@ if __name__ == '__main__':
     parameters = filter(lambda p: p.requires_grad, model.parameters())
     optimizer = torch.optim.Adam(parameters, lr=args.lr)
 
+    # Training
     try:
         losses = []
         timer = Timer()
-        for epoch in range(args.epochs):
+        for epoch in range(args.epochs, 1):
             train()
             dev_loss = evaluate()
             print('-'*79)
             print('End of epoch {}/{} | avg dev loss : {}'.format(epoch, args.epochs, dev_loss))
             print('')
             print('-'*79)
+            torch.save(model, CHECKFILE)
 
     except KeyboardInterrupt:
         print('Exiting training early.')
 
+    write_losses()
     print('Predicting.')
     predict()
     print('Finished')
-
-    torch.save(model, CHECKFILE)

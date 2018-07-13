@@ -2,7 +2,8 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-from data import PAD_INDEX, EMPTY_INDEX, REDUCED_INDEX, REDUCED_TOKEN, wrap, load_glove
+from data import (PAD_INDEX, EMPTY_INDEX, REDUCED_INDEX, REDUCED_TOKEN,
+    wrap, load_glove)
 from nn import MLP, BiRecurrentEncoder, StackLSTM, HistoryLSTM
 from parser import Parser
 

@@ -24,7 +24,7 @@ mkdir -p $TMPDIR/$OUTPUT_DIR/checkpoints
 mkdir -p $TMPDIR/$OUTPUT_DIR/out
 
 # Execute the Python program with data from the scratch directory
-python3 $SRCDIR/train.py --data $TMPDIR/tmp --outdir $TMPDIR/$OUTPUT_DIR --cuda
+python3 $SRCDIR/train.py --data $TMPDIR/tmp --outdir $TMPDIR/$OUTPUT_DIR
 
 # Copy output directory from scratch to home
 cp -r $TMPDIR/$OUTPUT_DIR/log/* $SRCDIR/log
