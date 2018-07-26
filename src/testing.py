@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import argparse
 import logging
 import os
@@ -59,7 +60,7 @@ model = RNNG(dictionary=corpus.dictionary,
              lstm_num_layers=1,
              lstm_dropout=0.3,
              mlp_hidden=500,
-             cuda=False,
+             use_cuda=False,
              use_glove=args.use_glove)
 
 parameters = filter(lambda p: p.requires_grad, model.parameters())

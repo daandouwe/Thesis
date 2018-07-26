@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import argparse
 import logging
 import os
@@ -15,14 +17,14 @@ from model import RNNG
 from utils import Timer, get_subdir_string
 
 parser = argparse.ArgumentParser(description='Discriminative RNNG parser')
-# Data
+# Data arguments
 parser.add_argument('--data', type=str, default='../tmp',
                     help='location of the data corpus')
 parser.add_argument('--textline', type=str, choices=['unked', 'lower', 'upper'], default='unked',
                     help='textline to use from the oracle file')
 parser.add_argument('--outdir', type=str, default='',
                     help='location to make output log and checkpoint folders')
-# Model
+# Model arguments
 parser.add_argument('--emb_dim', type=int, default=100,
                     help='dim of embeddings (word, action, and nonterminal)')
 parser.add_argument('--lstm_dim', type=int, default=100,
@@ -35,7 +37,7 @@ parser.add_argument('--dropout', type=float, default=0.3,
                     help='dropout rate for embeddings, lstm, and mlp')
 parser.add_argument('--use_glove', type=bool, default=False,
                     help='using pretrained glove embeddings')
-# Training
+# Training arguments
 parser.add_argument('--lr', type=float, default=1e-3,
                     help='initial learning rate')
 parser.add_argument('--epochs', type=int, default=10,

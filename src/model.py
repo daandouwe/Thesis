@@ -80,7 +80,9 @@ class RNNG(nn.Module):
     def get_loss(self, logits, y):
         """Compute the loss given the criterion.
 
-        Logits is a PyTorch tensor, y is an integer.
+        Arguments:
+            Logits: PyTorch tensor
+            y: integer value for correct index
         """
         y = wrap([y], self.use_cuda) # returns a pytorch Variable
         return self.criterion(logits, y)
@@ -88,7 +90,7 @@ class RNNG(nn.Module):
     def forward(self, sentence, indices, actions, verbose=False, file=None):
         """Forward training pass for RNNG.
 
-        Args:
+        Arguments:
             sentence (list): Input sentence as list of words.
             indices (list): Input sentence as list of indices.
             actions (list): Parse action sequence as list of indices.
@@ -148,7 +150,7 @@ class RNNG(nn.Module):
                 self.parser.stack.open_nonterminal(action, action_id)
 
             else:
-                raise ValueError('Got unknown action {}'.format(a))
+                raise ValueError(f'got unknown action {a}')
 
         loss /= len(actions) # Average loss over the action sequence
 
@@ -208,10 +210,10 @@ class RNNG(nn.Module):
             elif action == 'REDUCE':
                 # Pop all items from the open nonterminal.
                 tokens, indices, embeddings = self.parser.stack.pop()
-                # Reduce them
+                # Reduce these items.
                 x = self.stack_lstm.reduce(embeddings)
-                # Push new representation onto stack:
-                # the computed vector x and a dummy index.
+                # Push the new representation onto stack: the computed vector x
+                # and a dummy index.
                 self.parser.stack.push(REDUCED_TOKEN, REDUCED_INDEX, x)
 
                 if file: print('Reducing : ', tokens, file=file)
@@ -220,6 +222,6 @@ class RNNG(nn.Module):
                 self.parser.stack.open_nonterminal(action, action_id)
 
             else:
-                raise ValueError('got illegal action: {}'.format(a))
+                raise ValueError(f'got illegal action: {a}')
 
         return self.parser

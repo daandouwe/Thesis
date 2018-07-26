@@ -1,7 +1,6 @@
-"""
-Transform the Penn Treebank from a collections of folders with
+"""Transform the Penn Treebank from a collections of folders with
 mrg files into one long document with linearized parse trees,
-one sentence per line. Prints to stdout.
+one sentence per line.
 """
 
 import os
@@ -29,25 +28,7 @@ def transform_mrg(path):
         bounds = [m.start() for m in re.finditer('\(\(', s)]
         parts = partition(s, bounds)
         for line in parts:
-            return line[1:-1]
-
-def _ptb_folders_iter(corpus_root):
-    """Iterator over all mrg filepaths in the wsj part of the ptb.
-
-    # TODO: edit the iterator to perform stadard train/dev/test splits
-    """
-    for subdir, dirs, files in os.walk(corpus_root):
-        for file in files:
-            if file.endswith('.mrg'):
-                yield(os.path.join(subdir, file))
-
-def _main(args):
-    for i, path in enumerate(ptb_folders_iter(args.path)):
-        if args.nlines > -1: # If we put a maximum on the number of lines
-            if i > args.nlines:
-                break
-        line = transform_mrg(path)
-        print(line)
+            yield line[1:-1]
 
 def ptb_folders_iter(corpus_root):
     """Iterator over all mrg filepaths in the wsj part of the ptb."""
@@ -80,20 +61,23 @@ def main(args):
     train_path = os.path.join(args.out_path, 'train', args.name + '.train.trees')
     with open(train_path, 'w') as f:
         for path in train:
-            line = transform_mrg(path)
-            print(line, file=f)
+            lines = transform_mrg(path)
+            for line in lines:
+                print(line, file=f)
 
     dev_path = os.path.join(args.out_path, 'dev', args.name + '.dev.trees')
     with open(dev_path, 'w') as f:
         for path in dev:
-            line = transform_mrg(path)
-            print(line, file=f)
+            lines = transform_mrg(path)
+            for line in lines:
+                print(line, file=f)
 
     test_path = os.path.join(args.out_path, 'test', args.name + '.test.trees')
     with open(test_path, 'w') as f:
         for path in test:
-            line = transform_mrg(path)
-            print(line, file=f)
+            lines = transform_mrg(path)
+            for line in lines:
+                print(line, file=f)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
