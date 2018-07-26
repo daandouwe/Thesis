@@ -150,7 +150,7 @@ class RNNG(nn.Module):
                 self.parser.stack.open_nonterminal(action, action_id)
 
             else:
-                raise ValueError(f'got unknown action {a}')
+                raise ValueError('got unknown action {}'.format(a))
 
         loss /= len(actions) # Average loss over the action sequence
 
@@ -222,6 +222,6 @@ class RNNG(nn.Module):
                 self.parser.stack.open_nonterminal(action, action_id)
 
             else:
-                raise ValueError(f'got illegal action: {a}')
+                raise ValueError('got illegal action: {}'.format(a))
 
         return self.parser

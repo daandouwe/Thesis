@@ -25,7 +25,7 @@ def wrap(batch, cuda=False):
 
 def load_glove(dictionary, dim=100, dir='~/glove'):
     assert dim in (50, 100, 200, 300), 'invalid dim: choose from (50, 100, 200, 300).'
-    path = os.path.join(dir, f'glove.6B.{dim}d.gensim.txt')
+    path = os.path.join(dir, 'glove.6B.{}d.gensim.txt'.format(dim))
     glove = KeyedVectors.load_word2vec_format(path, binary=False)
     vectors = []
     for w in dictionary.i2w:
@@ -33,7 +33,7 @@ def load_glove(dictionary, dim=100, dir='~/glove'):
             v = glove[w]
             vectors.append(v)
         except KeyError:
-            print(f'word `{w}` not found.')
+            print('word `{}` not found.'.format(w))
             vectors.append(np.zeros(dim)) # NOTE: Find better fix
     vectors = np.vstack(vectors)
     vectors = torch.FloatTensor(vectors)
@@ -92,9 +92,7 @@ class Data:
         self.read(path, dictionary, textline)
 
     def __str__(self):
-        num_sents = len(self.sentences)
-        string = f'sentences: {num_sents}'
-        return string
+        return 'sentences: {}'.format(len(self.sentences))
 
     def read(self, path, dictionary, textline):
         sents = get_sentences(path) # a list of `sent_dict` objects
@@ -155,7 +153,7 @@ class Corpus:
 
     def __str__(self):
         items = ['CORPUS',
-                 f'vocab size: {len(self.dictionary.w2i)}',
+                 'vocab size: '.format(len(self.dictionary.w2i)),
                  'Train:', str(self.train),
                  'Dev:', str(self.dev),
                  'Test:', str(self.test)]

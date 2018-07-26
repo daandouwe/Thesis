@@ -161,7 +161,7 @@ if __name__ == '__main__':
     try:
         losses = []
         timer = Timer()
-        for epoch in range(args.epochs, 1):
+        for epoch in range(1, args.epochs+1):
             train()
             dev_loss = evaluate()
             print('-'*79)

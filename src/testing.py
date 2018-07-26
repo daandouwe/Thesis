@@ -10,7 +10,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-from data import Corpus, load_glove
+from data import Corpus
 from model import RNNG
 from utils import Timer, get_subdir_string
 
@@ -88,7 +88,7 @@ if args.mode == 'test':
             optimizer.step()
 
             time = timer.elapsed()
-            print('Step {} | loss {:.3f} | {:.3f}s/sent '.format(step, loss.data[0], time/args.print_every))
+            print('Step {} | loss {:.3f} | {:.3f}s/sent '.format(step, loss.data[0], args.print_every/time))
     except KeyboardInterrupt:
         print('Exiting training early.')
 

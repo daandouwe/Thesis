@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 
 from PYEVALB.scorer import Scorer
