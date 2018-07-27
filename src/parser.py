@@ -263,7 +263,7 @@ class Parser:
 
 
 if __name__ == '__main__':
-    stack = Stack(10, 10, 10, use_cuda=False)
-    parser = Parser(10, 10, 10, 10, use_cuda=False)
+    stack = Stack(None, None, None, use_cuda=False)
+    parser = Parser(None, None, None, None, use_cuda=False)
     print(stack)
     print(parser)

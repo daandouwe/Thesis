@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import glob
 import argparse
 
 from PYEVALB.scorer import Scorer
@@ -52,10 +53,18 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('outdir', type=str,
+    parser.add_argument('--folder', type=str, default='latest',
+                        help='the folder in outdir to look for')
+    parser.add_argument('--outdir', type=str, default='out',
                         help='directory where predictions are written to')
     parser.add_argument('--data', type=str, choices=['train', 'dev', 'test'], default='test',
                         help='directory where predictions are written to')
     args = parser.parse_args()
+
+    if args.folder == 'latest':
+        latest_dir = max(glob.glob(os.path.join(args.outdir, '*/')), key=os.path.getmtime)
+        args.outdir = latest_dir
+    else:
+        args.outdir = args.folder
 
     main(args)
