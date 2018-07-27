@@ -48,11 +48,10 @@ if __name__ == '__main__':
     optimizer = torch.optim.Adam(parameters, lr=1e-3)
 
     # Initialize parallel stuff.
-    num_processes = 3
+    num_processes = 4
     batch_chunk = num_batches // num_processes
 
-    # NOTE: this is required for the ``fork`` method to work
-    model.share_memory()
+    model.share_memory() # This is required for the ``fork`` method to work
     processes = []
     for rank in range(num_processes):
         p = mp.Process(target=train, args=(model, rank, batch_chunk))

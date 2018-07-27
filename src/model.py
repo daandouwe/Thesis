@@ -102,8 +102,8 @@ class RNNG(nn.Module):
         self.stack_lstm.initialize_hidden()
         self.history_lstm.initialize_hidden()
 
-        # We encode the buffer just ones, at the beginning, using the lstm
-        # buffer_encoder. The resulting representations are stored inside the parser.
+        # We encode the buffer just ones. The hidden representations are
+        # stored inside the parser.
         self.parser.buffer.encode(self.buffer_encoder)
 
         # Cummulator variable for loss
@@ -171,7 +171,7 @@ class RNNG(nn.Module):
         self.history_lstm.initialize_hidden()
 
         # We encode the buffer just ones. The hidden representations are
-        # stored in the parser.
+        # stored inside the parser.
         self.parser.buffer.encode(self.buffer_encoder)
 
         t = 0

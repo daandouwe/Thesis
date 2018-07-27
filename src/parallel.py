@@ -4,7 +4,6 @@ import pickle
 
 import torch
 import torch.nn as nn
-import torch.multiprocessing as mp
 from torch.autograd import Variable
 
 class MLP(nn.Module):
@@ -24,12 +23,14 @@ class MLP(nn.Module):
 if __name__ == '__main__':
     model = MLP(10, 10, 10)
     model.cuda()
-    input = Variable(torch.arange(0, 10).cuda())
+    input = Variable(torch.zeros(17, 10).uniform_()).cuda()
+    print(input)
 
     print('GPUs availlable: {}'.format(torch.cuda.device_count()))
 
     devices = [0, 1, 2, 3]
     replicas = nn.parallel.replicate(model, devices=devices)
     # input = [[input] for i in range(len(devices))]
-    # inputs = nn.parallel.scatter(input, devices)
+    inputs = nn.parallel.scatter(input, devices)
     outputs = nn.parallel.parallel_apply(replicas, inputs)
+    print(outputs)

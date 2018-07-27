@@ -10,25 +10,41 @@ from data import Corpus
 from model import RNNG
 from utils import Timer, get_subdir_string
 
-def forward(model, batch, queue):
+## Method 1 ##
+
+def forward(model, batch, output):
     sent, indices, actions = batch
     loss = model(sent, indices, actions)
-    queue.put(loss)
+    output.put(loss)
 
-def parallel_forward(batches):
-    # assert len(batches) == NUM_PROCESSES
-    queue = mp.Queue()
-    processes = []
-    for rank in range(NUM_PROCESSES):
-        p = mp.Process(target=forward, args=(model, batches[rank], queue))
+def parallel_forward(model, batches):
+    # Define an output queue.
+    output = mp.Queue()
+    # Setup a list of processes that we want to run.
+    processes = [mp.Process(target=forward, args=(model, batch, output))
+                        for batch in batches]
+    # Run the processes.
+    for p in processes:
         p.start()
-        processes.append(p)
-    loss = Variable(torch.zeros(1))
-    for _ in processes:
-        loss += queue.get()
+    # Exit the completed processes.
     for p in processes:
         p.join()
+    # Get the results.
+    losses = [output.get() for p in processes]
+    return losses
+
+## Method 2 ##
+
+def forward_pool(model, batch):
+    sent, indices, actions = batch
+    loss = model(sent, indices, actions)
     return loss
+
+def pool(batches):
+    pool = mp.Pool(processes=NUM_PROCESSES)
+    results = [pool.apply(forward_pool, args=(model, batch))
+                        for batch in batches]
+    return results
 
 if __name__ == '__main__':
     # Initialize model and data.
@@ -52,14 +68,19 @@ if __name__ == '__main__':
 
     # NOTE: this is required for the ``fork`` method to work
     model.share_memory()
+
     timer = Timer()
     print_every = 10
     for i in range(len(train_batches) // 3):
         batches = train_batches[i*NUM_PROCESSES : (i+1)*NUM_PROCESSES]
-        loss = parallel_forward(batches)
+        losses = parallel_forward(model, batches)
+        # losses = pool(batches) # also working
+        loss = sum(losses)
+
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        # NOTE: model parameters are not updated. Why?
 
         if i % print_every == 1:
             print('step {}, loss {:.3f}, {:.3f}sents/sec'.format(i, loss.data[0], print_every*NUM_PROCESSES/timer.elapsed()))
