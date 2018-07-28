@@ -12,6 +12,7 @@ def predict(args, model, batches, name='test'):
         sentences[i]['actions'] = parser.actions
         if i % 100 == 0:
             print('Predicting: sentence {}/{}.'.format(i, nsents), end='\r')
+    print()
     write_prediction(sentences, args.outdir, name='test')
 
 def print_sent_dict_as_config(sent_dict, file):
