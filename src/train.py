@@ -110,6 +110,7 @@ def main(args):
     except KeyboardInterrupt:
         print('Exiting training early.')
 
+    torch.save(model, checkfile)
     write_losses(args, LOSSES)
     predict(args, model, test_batches, name='test')
     print('Finished')

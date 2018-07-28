@@ -5,7 +5,6 @@ import argparse
 
 import train
 import predict
-from util import write_args
 
 def main():
 

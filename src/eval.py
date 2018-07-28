@@ -12,12 +12,12 @@ def oracle2tree(sent):
     """Returns a linearize tree from a list of actions in an oracle file.
 
     Arguments:
-        sent: a dictionary as returned by get_sent_dict in get_configs.py
+        sent (dictionary): format returned by get_sent_dict from get_vocab.py
     """
-    actions = sent['actions']
-    words = sent['upper'].split()
-    tags = sent['tags'].split()
-    gold_tree = sent['tree'][2:] # remove the hash
+    actions   = sent['actions']
+    words     = sent['upper'].split()
+    tags      = sent['tags'].split()
+    gold_tree = sent['tree'][2:] # remove the hash at the beginning
     pred_tree = ''
     # reverse words:
     words = words[::-1]
@@ -35,11 +35,10 @@ def oracle2tree(sent):
     return pred_tree, gold_tree
 
 def main(args):
-    path = os.path.join(args.outdir, args.data)
-    oracle_path = path + '.pred.oracle'
-    pred_path   = path + '.pred.trees'
-    gold_path   = path + '.gold.trees'
-    result_path = path + '.result'
+    oracle_path = os.path.join(args.preddir, args.data + '.pred.oracle')
+    pred_path   = os.path.join(args.preddir, args.data + '.pred.trees')
+    gold_path   = os.path.join(args.preddir, args.data + '.gold.trees')
+    result_path = os.path.join(args.preddir, args.data + '.result')
 
     predicted_sents = get_sentences(oracle_path)
     with open(pred_path, 'w') as f:
@@ -51,20 +50,30 @@ def main(args):
     scorer = Scorer()
     scorer.evalb(gold_path, pred_path, result_path)
 
+    if args.verbose:
+        with open(result_path) as f:
+            print(f.read())
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--folder', type=str, default='latest',
-                        help='the folder in outdir to look for')
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='verbose')
+    parser.add_argument('-l', '--use_latest', action='store_true',
+                        help='use the latest predictions')
     parser.add_argument('--outdir', type=str, default='out',
                         help='directory where predictions are written to')
+    parser.add_argument('--folder', type=str, default='',
+                        help='the folder in outdir to look for')
     parser.add_argument('--data', type=str, choices=['train', 'dev', 'test'], default='test',
                         help='directory where predictions are written to')
     args = parser.parse_args()
 
-    if args.folder == 'latest':
-        latest_dir = max(glob.glob(os.path.join(args.outdir, '*/')), key=os.path.getmtime)
-        args.outdir = latest_dir
+    if args.use_latest:
+        # folder names start with a timestamp
+        latest_dir = max(glob.glob(os.path.join(args.outdir, '*/')))
+        args.preddir = latest_dir
     else:
-        args.outdir = args.folder
+        assert args.folder, 'if not using latest a folder must be specified.'
+        args.preddir = os.path.join(args.outdir, args.folder)
 
     main(args)

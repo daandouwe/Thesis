@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import sys
 
 import torch
 import torch.nn as nn
@@ -8,7 +9,7 @@ from torch.autograd import Variable
 
 from data import Corpus
 from model import RNNG
-from utils import Timer, get_subdir_string
+from util import Timer, get_subdir_string
 
 ## Method 1 ##
 
@@ -63,7 +64,8 @@ if __name__ == '__main__':
     optimizer = torch.optim.Adam(parameters, lr=1e-3)
 
     # Initialize parallel stuff.
-    NUM_PROCESSES = 8
+    NUM_PROCESSES = int(sys.argv[1])
+    print('Using {} processors'.format(NUM_PROCESSES))
     batch_chunk = num_batches // NUM_PROCESSES
 
     # NOTE: this is required for the ``fork`` method to work
