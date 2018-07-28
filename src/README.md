@@ -14,6 +14,8 @@ Run `./main.py train`
 
 ## Todo
 
+For the discriminative model:
+
 - [ ] Incorporate dropout
 - [ ] Enable multilayered LSTMs
 - [X] Load *all* sentences from training set
@@ -25,3 +27,5 @@ Run `./main.py train`
   * Very large speedups! Can work on e.g. 16 processors = batches of 16 sentences
   * Tried but not working: no backprop of loss accross CPUs
 - [ ] Beam search decoding
+
+For the generative model
