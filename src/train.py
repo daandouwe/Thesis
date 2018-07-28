@@ -75,6 +75,7 @@ def main(args):
     args.logfile = logfile
     args.checkdir = checkdir
     args.checkfile = checkfile
+    # Save the arguments.
     write_args(args)
 
     corpus = Corpus(data_path=args.data, textline=args.textline)
@@ -90,7 +91,8 @@ def main(args):
                  lstm_dropout=args.dropout,
                  mlp_hidden=args.mlp_dim,
                  use_cuda=args.cuda,
-                 use_glove=args.use_glove)
+                 use_glove=args.use_glove,
+                 glove_error_dir=args.logdir)
     if args.cuda:
         model.cuda()
     parameters = filter(lambda p: p.requires_grad, model.parameters())
@@ -130,6 +132,7 @@ def main(args):
             best_dev_epoch = epoch
             best_dev_loss = dev_loss
 
+    # Save the losses for plotting and diagnostics.
     write_losses(args, LOSSES)
 
     # Load best saved model.

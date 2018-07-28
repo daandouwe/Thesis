@@ -30,7 +30,7 @@ def main():
                         help='size of mlp hidden state')
     parser.add_argument('--dropout', type=float, default=0.3,
                         help='dropout rate for embeddings, lstm, and mlp')
-    parser.add_argument('--use_glove', type=bool, default=False,
+    parser.add_argument('--use_glove', action='store_true',
                         help='using pretrained glove embeddings')
     parser.add_argument('--seed', type=int, default=42,
                         help='random seed to use')

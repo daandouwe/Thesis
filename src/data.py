@@ -5,7 +5,7 @@ from collections import defaultdict
 import torch
 from torch.autograd import Variable
 import numpy as np
-# from gensim.models import KeyedVectors
+
 
 from get_vocab import get_sentences
 
@@ -23,18 +23,32 @@ def wrap(batch, cuda=False):
     else:
         return Variable(torch.LongTensor(batch))
 
-def load_glove(dictionary, dim=100, dir='~/glove'):
+def load_glove(dictionary, dim=100, dir='~/glove', logdir=''):
     assert dim in (50, 100, 200, 300), 'invalid dim: choose from (50, 100, 200, 300).'
-    path = os.path.join(dir, 'glove.6B.{}d.gensim.txt'.format(dim))
-    glove = KeyedVectors.load_word2vec_format(path, binary=False)
+    # Load the glove file.
+    try:
+        from gensim.models import KeyedVectors
+        path = os.path.join(dir, 'glove.6B.{}d.gensim.txt'.format(dim))
+        glove = KeyedVectors.load_word2vec_format(path, binary=False)
+    except ImportError:
+        path = os.path.join(dir, 'glove.6B.{}d.txt'.format(dim))
+        glove = dict()
+        with open(path) as f:
+            for line in f:
+                line = line.strip().split()
+                word, vec = line[0], line[1:]
+                vec = np.array([float(val) for val in vec])
+                glove[word] = vec
     vectors = []
-    for w in dictionary.i2w:
+    logfile = open(os.path.join(logdir, 'glove.error.txt'), 'w')
+    for word in dictionary.i2w:
         try:
-            v = glove[w]
-            vectors.append(v)
+            vec = glove[word]
         except KeyError:
-            print('word `{}` not found.'.format(w))
-            vectors.append(np.zeros(dim)) # NOTE: Find better fix
+            print(word, file=logfile) # print word to logfile
+            vec = np.zeros(dim) # NOTE: Find better fix
+        vectors.append(vec)
+    logfile.close()
     vectors = np.vstack(vectors)
     vectors = torch.FloatTensor(vectors)
     return vectors

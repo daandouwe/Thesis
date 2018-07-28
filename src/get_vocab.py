@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import argparse
 import os
 
@@ -83,10 +85,10 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='data for RNNG parser.')
-    parser.add_argument('oracle_path', type=str,
+    parser.add_argument('--oracle_path', type=str, default='../tmp',
                         help='location of the oracle path')
-    parser.add_argument('--textline', type=str, default='unked',
-                        help='location of the oracle path')
+    parser.add_argument('--textline', type=str, choices=['unked', 'lower', 'upper'], default='unked',
+                        help='textline to use from the oracle file')
     args = parser.parse_args()
 
     main(args)

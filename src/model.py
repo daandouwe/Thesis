@@ -11,7 +11,7 @@ class RNNG(nn.Module):
     """Recurrent Neural Network Grammar model."""
     def __init__(self, dictionary, emb_dim, emb_dropout,
                 lstm_hidden, lstm_num_layers, lstm_dropout, mlp_hidden,
-                use_cuda=False, use_glove=False):
+                use_cuda=False, use_glove=False, glove_path='~/glove', glove_error_dir=''):
         super(RNNG, self).__init__()
         self.dictionary = dictionary
         self.lstm_hidden = lstm_hidden
@@ -51,13 +51,13 @@ class RNNG(nn.Module):
         self.criterion = nn.CrossEntropyLoss()
 
         if use_glove:
-            self.load_glove()
+            self.load_glove(glove_path, logdir=glove_error_dir)
 
-    def load_glove(self, path='~/glove'):
+    def load_glove(self, path, logdir):
         """Load pretrained glove embeddings that are fixed during training.
 
         TODO: Far too much of our vocabulary does not have pretrained embeddings."""
-        embeddings = load_glove(self.dictionary)
+        embeddings = load_glove(self.dictionary, logdir=logdir)
         self.word_embedding.weight = nn.Parameter(embeddings)
         self.word_embedding.weight.requires_grad = False
 

@@ -53,14 +53,16 @@ def get_subdir_string(args):
     return '{}_{}_{}'.format(date, timestamp, params)
 
 
-
 def write_args(args, positional=('mode',)):
     """Writes args to a file to be later used as input in the command line.
 
     Only works for arguments with double dash, e.g. --verbose, and
     positional arguments are not printed.
 
-        TODO: There should be a more robust way to do this!
+    Arguments:
+        positional (tuple): the positional arguments in args that are skipped
+
+    TODO: There should be a more robust way to do this!
     """
     with open(os.path.join(args.logdir, 'args.txt'), 'w') as f:
         for k, v in vars(args).items():
