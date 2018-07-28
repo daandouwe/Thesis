@@ -106,7 +106,7 @@ class Data:
         self.read(path, dictionary, textline)
 
     def __str__(self):
-        return 'sentences: {}'.format(len(self.sentences))
+        return '{} sentences'.format(len(self.sentences))
 
     def read(self, path, dictionary, textline):
         sents = get_sentences(path) # a list of `sent_dict` objects
@@ -167,16 +167,15 @@ class Corpus:
 
     def __str__(self):
         items = ['CORPUS',
-                 'vocab size: '.format(len(self.dictionary.w2i)),
-                 'Train:', str(self.train),
-                 'Dev:', str(self.dev),
-                 'Test:', str(self.test)]
+                 'vocab size: {}'.format(len(self.dictionary.w2i)),
+                 'train', str(self.train),
+                 'dev', str(self.dev),
+                 'test', str(self.test)]
         return '\n'.join(items)
 
 if __name__ == "__main__":
     # Example usage:
-    corpus = Corpus(data_path="../tmp")
+    corpus = Corpus(data_path="../tmp", textline='lower')
     batches = corpus.train.batches(1, length_ordered=False)
-
     print(corpus)
     print(batches[0])

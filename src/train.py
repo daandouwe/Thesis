@@ -82,6 +82,7 @@ def main(args):
     train_batches = corpus.train.batches(length_ordered=False, shuffle=False)
     dev_batches   = corpus.dev.batches(length_ordered=False, shuffle=False)
     test_batches  = corpus.test.batches(length_ordered=False, shuffle=False)
+    print('{!s}'.format(corpus))
 
     model = RNNG(dictionary=corpus.dictionary,
                  emb_dim=args.emb_dim,
