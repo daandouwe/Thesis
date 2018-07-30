@@ -35,10 +35,10 @@ def oracle2tree(sent):
     return pred_tree, gold_tree
 
 def main(args):
-    oracle_path = os.path.join(args.preddir, args.data + '.pred.oracle')
-    pred_path   = os.path.join(args.preddir, args.data + '.pred.trees')
-    gold_path   = os.path.join(args.preddir, args.data + '.gold.trees')
-    result_path = os.path.join(args.preddir, args.data + '.result')
+    oracle_path = os.path.join(args.preddir, args.name + '.pred.oracle')
+    pred_path   = os.path.join(args.preddir, args.name + '.pred.trees')
+    gold_path   = os.path.join(args.preddir, args.name + '.gold.trees')
+    result_path = os.path.join(args.preddir, args.name + '.result')
 
     predicted_sents = get_sentences(oracle_path)
     with open(pred_path, 'w') as f:
@@ -64,8 +64,8 @@ if __name__ == '__main__':
                         help='directory where predictions are written to')
     parser.add_argument('--folder', type=str, default='',
                         help='the folder in outdir to look for')
-    parser.add_argument('--data', type=str, choices=['train', 'dev', 'test'], default='test',
-                        help='directory where predictions are written to')
+    parser.add_argument('--name', type=str, choices=['train', 'dev', 'test'], default='test',
+                        help='name of the data set used')
     args = parser.parse_args()
 
     if args.use_latest:

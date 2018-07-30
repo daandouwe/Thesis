@@ -1,8 +1,5 @@
-import argparse
 import logging
 import os
-import csv
-import time
 
 import numpy as np
 import torch
@@ -36,7 +33,7 @@ def train(args, model, batches, optimizer):
             sents_per_sec = args.print_every / timer.elapsed()
             avg_loss = np.mean(LOSSES[-args.print_every:])
             eta = clock_time((num_batches - step) / sents_per_sec)
-            print('| step {:3d}/{:3d} | loss {:2.4f} | {:4.3f} sents/sec | eta {:2d}h:{:2d}m:{:2d}s'.format(
+            print('| step {:6d}/{:6d} | loss {:2.4f} | {:4.3f} sents/sec | eta {:2d}h:{:2d}m:{:2d}s'.format(
                         step, num_batches, avg_loss, sents_per_sec, *eta))
 
 def evaluate(model, batches):
@@ -57,9 +54,9 @@ def main(args):
 
     # Create folders for logging and checkpoints
     subdir = get_subdir_string(args)
-    logdir = os.path.join(args.outdir, 'log', subdir)
-    checkdir = os.path.join(args.outdir, 'checkpoints', subdir)
-    outdir = os.path.join(args.outdir, 'out', subdir)
+    logdir = os.path.join(args.root, 'log', subdir)
+    checkdir = os.path.join(args.root, 'checkpoints', subdir)
+    outdir = os.path.join(args.root, 'out', subdir)
     # outdir = 'out'
     os.mkdir(logdir)
     os.mkdir(checkdir)
@@ -78,11 +75,11 @@ def main(args):
     # Save the arguments.
     write_args(args)
 
-    corpus = Corpus(data_path=args.data, textline=args.textline)
+    corpus = Corpus(data_path=args.data, textline=args.textline, char=args.char)
     train_batches = corpus.train.batches(length_ordered=False, shuffle=False)
     dev_batches   = corpus.dev.batches(length_ordered=False, shuffle=False)
     test_batches  = corpus.test.batches(length_ordered=False, shuffle=False)
-    print('{!s}'.format(corpus))
+    print(corpus)
 
     model = RNNG(dictionary=corpus.dictionary,
                  emb_dim=args.emb_dim,
@@ -93,7 +90,8 @@ def main(args):
                  mlp_hidden=args.mlp_dim,
                  use_cuda=args.cuda,
                  use_glove=args.use_glove,
-                 glove_error_dir=args.logdir)
+                 glove_error_dir=args.logdir,
+                 char=args.char)
     if args.cuda:
         model.cuda()
     parameters = filter(lambda p: p.requires_grad, model.parameters())

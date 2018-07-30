@@ -12,12 +12,12 @@ from torch.autograd import Variable
 
 from data import Corpus
 from model import RNNG
-from utils import Timer, get_subdir_string
+from util import Timer, get_subdir_string
 
 parser = argparse.ArgumentParser(description='Discriminative RNNG parser')
 parser.add_argument('mode', choices=['dev', 'test', 'train', 'parse'],
                     help='type')
-parser.add_argument('-v', '--verbose', type=bool, default=False,
+parser.add_argument('-v', '--verbose', action='store_true',
                     help='print out parser states')
 parser.add_argument('--data', type=str, default='../tmp',
                     help='location of the data corpus')
@@ -31,7 +31,9 @@ parser.add_argument('--clip', type=float, default=5.,
                     help='clipping gradient norm at this value')
 parser.add_argument('--print_every', type=int, default=10,
                     help='when to print training progress')
-parser.add_argument('--use_glove', type=bool, default=False,
+parser.add_argument('--use_glove', action='store_true',
+                    help='using pretrained glove embeddings')
+parser.add_argument('--char', action='store_true',
                     help='using pretrained glove embeddings')
 args = parser.parse_args()
 
@@ -48,7 +50,7 @@ if not os.path.exists(CHECKDIR):
 
 torch.manual_seed(42)
 
-corpus = Corpus(data_path=args.data, textline=args.textline)
+corpus = Corpus(data_path=args.data, textline=args.textline, char=args.char)
 train_batches =  corpus.train.batches(length_ordered=False, shuffle=False)
 dev_batches   =  corpus.dev.batches(length_ordered=False, shuffle=False)
 test_batches  =  corpus.test.batches(length_ordered=False, shuffle=False)
@@ -61,7 +63,8 @@ model = RNNG(dictionary=corpus.dictionary,
              lstm_dropout=0.3,
              mlp_hidden=500,
              use_cuda=False,
-             use_glove=args.use_glove)
+             use_glove=args.use_glove,
+             char=args.char)
 
 parameters = filter(lambda p: p.requires_grad, model.parameters())
 optimizer = torch.optim.Adam(parameters, lr=args.lr)
@@ -88,7 +91,8 @@ if args.mode == 'test':
             optimizer.step()
 
             time = timer.elapsed()
-            print('Step {} | loss {:.3f} | {:.3f}s/sent '.format(step, loss.data[0], args.print_every/time))
+            if step % args.print_every == 0:
+                print('Step {} | loss {:.3f} | {:.3f}s/sent '.format(step, loss.data[0], args.print_every/time))
     except KeyboardInterrupt:
         print('Exiting training early.')
 

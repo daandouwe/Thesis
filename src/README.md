@@ -16,16 +16,25 @@ Run `./main.py train`
 
 For the discriminative model:
 
-- [ ] Incorporate dropout
-- [ ] Enable multilayered LSTMs
+Data:
 - [X] Load *all* sentences from training set
 - [X] Make train/dev/test splits
 - [X] Load pre-trained glove vectors
   * Too many words are not in glove: 7476 when `lower` is used; 9457 when `unked` is used.
+
+Model:
+- [ ] Incorporate dropout
+- [ ] Enable multilayered LSTMs
+- [ ] Character level embeddings
+  * See how Joost did it.
+
+Training:
+- [X] Parallel training: multi-cpu training: one loss per cpu.
+  * Haven't tested yet on large machine: lisa is troubled
+
+Prediction
 - [X] Turn list of transitions into tree
-- [ ] Parallel training: multi-cpu training: one loss per cpu.
-  * Very large speedups! Can work on e.g. 16 processors = batches of 16 sentences
-  * Tried but not working: no backprop of loss accross CPUs
 - [ ] Beam search decoding
 
 For the generative model
+- [ ] Everything

@@ -44,8 +44,11 @@ def init_processes(fn, *args, backend='tcp'):
     fn(*args)
 
 if __name__ == "__main__":
-    # Number of processes requested
-    size = int(sys.argv[1])
+    if len(sys.argv) > 1:
+        # Number of processes requested
+        size = int(sys.argv[1])
+    else:
+        exit('Specify number of processors.')
 
     # Initialize model and data.
     corpus = Corpus(data_path='../tmp', textline='unked')

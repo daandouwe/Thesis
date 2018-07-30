@@ -1,11 +1,11 @@
 import sys
 import os
+import string
 from collections import defaultdict
 
 import torch
 from torch.autograd import Variable
 import numpy as np
-
 
 from get_vocab import get_sentences
 
@@ -15,6 +15,16 @@ REDUCED_TOKEN = '-REDUCED-' # used as dummy for reduced sequences
 PAD_INDEX = 0
 EMPTY_INDEX = 1
 REDUCED_INDEX = 2
+
+def pad(batch):
+    """Pad a batch of irregular length indices."""
+    lens = list(map(len, batch))
+    max_len = max(lens)
+    padded_batch = []
+    for k, seq in zip(lens, batch):
+        padded =  seq + (max_len - k)*[PAD_INDEX]
+        padded_batch.append(padded)
+    return padded_batch
 
 def wrap(batch, cuda=False):
     """Packages the batch as a Variable containing a LongTensor."""
@@ -55,7 +65,7 @@ def load_glove(dictionary, dim=100, dir='~/glove', logdir=''):
 
 class Dictionary:
     """A dictionary for stack, buffer, and action symbols."""
-    def __init__(self, path):
+    def __init__(self, path, char=False):
         self.n2i = dict() # nonterminals
         self.w2i = dict() # words
         self.a2i = dict() # actions
@@ -63,6 +73,8 @@ class Dictionary:
         self.i2n = []
         self.i2w = []
         self.i2a = []
+
+        self.char = char
 
         self.initialize()
         self.read(path)
@@ -79,10 +91,18 @@ class Dictionary:
     def read(self, path):
         with open(path + '.vocab', 'r') as f:
             start = len(self.w2i)
-            for i, line in enumerate(f, start):
-                w = line.rstrip()
-                self.w2i[w] = i
-                self.i2w.append(w)
+            if self.char:
+                chars = set(f.read())
+                printable = set(string.printable)
+                chars = list(chars | printable)
+                for i, w in enumerate(chars):
+                    self.w2i[w] = i
+                    self.i2w.append(w)
+            else:
+                for i, line in enumerate(f, start):
+                    w = line.rstrip()
+                    self.w2i[w] = i
+                    self.i2w.append(w)
         with open(path + '.nonterminals', 'r') as f:
             for i, line in enumerate(f):
                 s = line.rstrip()
@@ -96,17 +116,23 @@ class Dictionary:
 
 class Data:
     """A dataset with parse configurations."""
-    def __init__(self, path, dictionary, textline):
+    def __init__(self, path, dictionary, textline, char=False):
         self.dictionary = dictionary
 
         self.sentences = [] # each sentence as list of words
         self.indices = [] # each sentence as list of indices
         self.actions = [] # each sequence of actions as list of indices
 
+        self.char = char
         self.read(path, dictionary, textline)
 
     def __str__(self):
         return '{} sentences'.format(len(self.sentences))
+
+    def _order(self, new_order):
+        self.sentences = [self.sentences[i] for i in new_order]
+        self.indices = [self.indices[i] for i in new_order]
+        self.actions = [self.actions[i] for i in new_order]
 
     def read(self, path, dictionary, textline):
         sents = get_sentences(path) # a list of `sent_dict` objects
@@ -114,18 +140,15 @@ class Data:
         for i, sent_dict in enumerate(sents):
             sent = sent_dict[textline].split()
             actions = sent_dict['actions']
-            ids = [dictionary.w2i[w] for w in sent]
+            if self.char:
+                ids = [[dictionary.w2i[char] for char in w] for w in sent]
+            else:
+                ids = [dictionary.w2i[w] for w in sent]
             actions = [dictionary.a2i[w] for w in actions]
             self.sentences.append(sent)
             self.indices.append(ids)
             self.actions.append(actions)
-
         self.lengths = [len(sent) for sent in self.sentences]
-
-    def _order(self, new_order):
-        self.sentences = [self.sentences[i] for i in new_order]
-        self.indices = [self.indices[i] for i in new_order]
-        self.actions = [self.actions[i] for i in new_order]
 
     def order(self):
         old_order = zip(range(len(self.lengths)), self.lengths)
@@ -150,20 +173,21 @@ class Data:
         for i in range(n):
             sentence = self.sentences[i]
             ids = self.indices[i]
+            ids = pad(ids) if self.char else ids
             actions = self.actions[i]
             batches.append((sentence, ids, actions))
         return batches
 
 class Corpus:
     """A corpus of three datasets (train, development, and test) and a dictionary."""
-    def __init__(self, data_path="../tmp", textline='unked'):
-        self.dictionary = Dictionary(os.path.join(data_path,  'ptb'))
+    def __init__(self, data_path="../tmp", textline='unked', char=False):
+        self.dictionary = Dictionary(os.path.join(data_path,  'ptb'), char=char)
         self.train = Data(os.path.join(data_path, 'train', 'ptb.train.oracle'),
-                        self.dictionary, textline)
+                        self.dictionary, textline, char=char)
         self.dev = Data(os.path.join(data_path, 'dev', 'ptb.dev.oracle'),
-                        self.dictionary, textline)
+                        self.dictionary, textline, char=char)
         self.test = Data(os.path.join(data_path, 'test', 'ptb.test.oracle'),
-                        self.dictionary, textline)
+                        self.dictionary, textline, char=char)
 
     def __str__(self):
         items = ['CORPUS',
@@ -175,7 +199,8 @@ class Corpus:
 
 if __name__ == "__main__":
     # Example usage:
-    corpus = Corpus(data_path="../tmp", textline='lower')
+    corpus = Corpus(data_path="../tmp", textline='unked', char=True)
     batches = corpus.train.batches(1, length_ordered=False)
+    print(corpus.dictionary.w2i)
     print(corpus)
     print(batches[0])

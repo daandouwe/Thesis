@@ -149,3 +149,56 @@ class HistoryLSTM(nn.Module):
         # Add cell states to memory.
         self._hidden_states.append((self.hx, self.cx))
         return self.hx
+
+class RecurrentCharEmbedding(nn.Module):
+    """Simple model for character-level word embeddings
+
+    Source: https://github.com/bastings/parser/blob/extended_parser/parser/nn.py
+    """
+    def __init__(self, nchars, emb_dim, hidden_size, output_dim, dropout=0.33, bi=True):
+        super(RecurrentCharEmbedding, self).__init__()
+
+        self.embedding = nn.Embedding(nchars, emb_dim)
+        self.dropout = nn.Dropout(p=dropout)
+
+        self.rnn = nn.LSTM(input_size=emb_dim, hidden_size=hidden_size, num_layers=1,
+                            batch_first=True, dropout=dropout, bidirectional=bi)
+
+        rnn_dim = hidden_size * 2 if bi else hidden_size
+        self.linear = nn.Linear(rnn_dim, output_dim, bias=False)
+
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        cuda = torch.cuda.is_available()
+
+        # For single token words
+        if len(x.shape) == 1:
+            x = x.unsqueeze(0)
+
+        # Sort x by length.
+        lengths = (x != PAD_INDEX).long().sum(-1)
+        sorted_lengths, sort_idx = torch.sort(lengths, descending=True)
+        sort_idx = sort_idx.cuda() if cuda else sort_idx
+        x = x.index_select(0, sort_idx)
+
+        # embed chars
+        x = self.embedding(x)
+        x = self.dropout(x)
+        sorted_lengths = [i for i in sorted_lengths.data]
+        x = nn.utils.rnn.pack_padded_sequence(x, sorted_lengths, batch_first=True)
+
+        out, _ = self.rnn(x)
+
+        out, _ = nn.utils.rnn.pad_packed_sequence(out, batch_first=True)
+        sorted_lengths = wrap(sorted_lengths) - 1
+        sorted_lengths = sorted_lengths.unsqueeze(-1).unsqueeze(-1).repeat(1, 1, out.size(-1))
+        sorted_lengths = sorted_lengths.cuda() if cuda else sorted_lengths
+        out = torch.gather(out, 1, sorted_lengths).squeeze(1) # keep only final embedding
+
+        out = self.relu(out)
+        out = self.linear(out)
+
+        # PUT BACK INTO ORIGINAL ORDER!!!
+
+        return out

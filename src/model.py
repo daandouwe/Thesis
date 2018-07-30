@@ -4,14 +4,15 @@ from torch.autograd import Variable
 
 from data import (PAD_INDEX, EMPTY_INDEX, REDUCED_INDEX, REDUCED_TOKEN,
     wrap, load_glove)
-from nn import MLP, BiRecurrentEncoder, StackLSTM, HistoryLSTM
+from nn import MLP, BiRecurrentEncoder, StackLSTM, HistoryLSTM, RecurrentCharEmbedding
 from parser import Parser
 
 class RNNG(nn.Module):
     """Recurrent Neural Network Grammar model."""
     def __init__(self, dictionary, emb_dim, emb_dropout,
                 lstm_hidden, lstm_num_layers, lstm_dropout, mlp_hidden,
-                use_cuda=False, use_glove=False, glove_path='~/glove', glove_error_dir=''):
+                use_cuda=False, use_glove=False, glove_path='~/glove', glove_error_dir='',
+                char=False):
         super(RNNG, self).__init__()
         self.dictionary = dictionary
         self.lstm_hidden = lstm_hidden
@@ -22,7 +23,11 @@ class RNNG(nn.Module):
         nt_size = len(dictionary.n2i)
         action_size = len(dictionary.a2i)
         # For words...
-        self.word_embedding = nn.Embedding(vocab_size, emb_dim, padding_idx=PAD_INDEX)
+        if char:
+            self.word_embedding = RecurrentCharEmbedding(nchars=vocab_size, output_dim=emb_dim,
+                                            emb_dim=emb_dim, hidden_size=emb_dim)
+        else:
+            self.word_embedding = nn.Embedding(vocab_size, emb_dim, padding_idx=PAD_INDEX)
         # nonterminals...
         self.nt_embedding = nn.Embedding(nt_size, emb_dim, padding_idx=PAD_INDEX)
         # and actions.

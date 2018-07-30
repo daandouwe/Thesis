@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import os
 import argparse
 
@@ -17,9 +16,11 @@ def main():
                         help='location of the data corpus')
     parser.add_argument('--textline', type=str, choices=['unked', 'lower', 'upper'], default='unked',
                         help='textline to use from the oracle file')
-    parser.add_argument('--outdir', type=str, default='',
-                        help='location to make output log and checkpoint folders')
+    parser.add_argument('--root', type=str, default='.',
+                        help='root dir to make output log and checkpoint folders')
     # Model arguments
+    parser.add_argument('--char', action='store_true',
+                        help='use character-level word embeddings')
     parser.add_argument('--emb_dim', type=int, default=100,
                         help='dim of embeddings (word, action, and nonterminal)')
     parser.add_argument('--lstm_dim', type=int, default=100,

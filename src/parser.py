@@ -1,7 +1,7 @@
 import torch
 
-from data import EMPTY_INDEX, REDUCED_INDEX, EMPTY_TOKEN, REDUCED_TOKEN, PAD_TOKEN
-from data import wrap
+from data import (EMPTY_INDEX, REDUCED_INDEX, EMPTY_TOKEN, REDUCED_TOKEN, PAD_TOKEN,
+                    wrap, pad)
 
 class Stack:
     """The stack"""
@@ -116,16 +116,19 @@ class Buffer:
     def initialize(self, sentence, indices):
         """Initialize buffer by loading in the sentence in reverse order."""
         self._reset()
-        for token, index in zip(sentence[::-1], indices[::-1]):
-            self.push(token, index)
+        self._tokens = sentence[::-1]
+        self._indices = indices[::-1]
+        embeddings = self.embedding(wrap(self._indices))
+        self._embedded = embeddings.unsqueeze(0)
+        self._embeddings = [embeddings[i, :].unsqueeze(0)
+                                for i in range(embeddings.size(0))]
 
     def push(self, token, index):
         """Push action index and vector embedding onto buffer."""
         self._tokens.append(token)
         self._indices.append(index)
-        emb = self.embedding(wrap([index], self.use_cuda))
+        emb = self.embedding(wrap([index]))
         self._embeddings.append(emb)
-        self._hiddens.append(emb)
 
     def pop(self):
         if self.empty:
@@ -143,9 +146,10 @@ class Buffer:
 
     def encode(self, lstm_encoder):
         """Use the encoder to make a list of encodings for the """
-        x = self.embedded # [batch, seq, hidden_size]
+        x = self._embedded # [batch, seq, hidden_size]
         h, _ = lstm_encoder(x) # [batch, seq, hidden_size]
         self._hiddens = [h[:, i ,:] for i in range(h.size(1))]
+        del self._embedded
 
     @property
     def embedded(self):
@@ -222,8 +226,9 @@ class Parser:
 
     def initialize(self, sentence, indices):
         """Initialize all the components of the parser."""
-        self.stack.initialize()
+        # self.stack.initialize()
         self.buffer.initialize(sentence, indices)
+        self.stack.initialize()
         self.history.initialize()
 
     def shift(self):
