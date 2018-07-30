@@ -176,29 +176,39 @@ class RecurrentCharEmbedding(nn.Module):
         if len(x.shape) == 1:
             x = x.unsqueeze(0)
 
-        # Sort x by length.
+        # Sort x by word length.
         lengths = (x != PAD_INDEX).long().sum(-1)
-        sorted_lengths, sort_idx = torch.sort(lengths, descending=True)
+        sorted_lengths, sort_idx = lengths.sort(0, descending=True)
         sort_idx = sort_idx.cuda() if cuda else sort_idx
-        x = x.index_select(0, sort_idx)
+        x = x[sort_idx]
 
-        # embed chars
+        # Embed chars and pack for rnn input.
         x = self.embedding(x)
         x = self.dropout(x)
         sorted_lengths = [i for i in sorted_lengths.data]
         x = nn.utils.rnn.pack_padded_sequence(x, sorted_lengths, batch_first=True)
 
+        # TODO Fix this:
+        # ValueError: length of all samples has to be greater than 0, but found an element in 'lengths' that is <=0
+
+        # RNN computation.
         out, _ = self.rnn(x)
 
+        # Unpack and keep only final embedding.
         out, _ = nn.utils.rnn.pad_packed_sequence(out, batch_first=True)
         sorted_lengths = wrap(sorted_lengths) - 1
         sorted_lengths = sorted_lengths.unsqueeze(-1).unsqueeze(-1).repeat(1, 1, out.size(-1))
         sorted_lengths = sorted_lengths.cuda() if cuda else sorted_lengths
         out = torch.gather(out, 1, sorted_lengths).squeeze(1) # keep only final embedding
 
+        # Project rnn output states to proper embedding dimension.
         out = self.relu(out)
         out = self.linear(out)
 
-        # PUT BACK INTO ORIGINAL ORDER!!!
+        # Put everything back into the original order.
+        pairs = list(zip(sort_idx.data, range(sort_idx.size(0))))
+        undo_sort_idx = [pair[1] for pair in sorted(pairs, key=lambda t: t[0])]
+        undo_sort_idx = wrap(undo_sort_idx)
+        out = out[undo_sort_idx]
 
         return out
