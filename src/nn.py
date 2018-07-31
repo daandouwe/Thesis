@@ -52,7 +52,7 @@ class BiRecurrentEncoder(nn.Module):
 
 class StackLSTM(nn.Module):
     """A Stack-LSTM used to encode the stack of a transition based parser."""
-    def __init__(self, input_size, hidden_size, device=None):
+    def __init__(self, input_size, hidden_size, dropout, device=None):
         super(StackLSTM, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size # Must be even number, see composition function.
@@ -60,10 +60,7 @@ class StackLSTM(nn.Module):
 
         self.rnn = nn.LSTMCell(input_size, hidden_size)
         # BiRNN ecoder used as composition function.
-        # NOTE: we use hidden_size//2 because the output of the composition function
-        # is a concatenation of two hidden vectors.
-        self.composition = BiRecurrentEncoder(input_size, hidden_size//2,
-                                              num_layers=1, dropout=0., device=device)
+        self.composition = BiRecurrentEncoder(input_size, hidden_size//2, 2, dropout, device=device)
 
         # Were we store all intermediate computed hidden states.
         # Top of this list is used as the stack embedding
@@ -108,7 +105,7 @@ class StackLSTM(nn.Module):
 
 class HistoryLSTM(nn.Module):
     """A LSTM used to encode the history of actions of a transition based parser."""
-    def __init__(self, input_size, hidden_size, device=None):
+    def __init__(self, input_size, hidden_size, dropout, device=None):
         super(HistoryLSTM, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size # Must be even number, see composition function.
@@ -140,6 +137,18 @@ class HistoryLSTM(nn.Module):
         # Add cell states to memory.
         self._hidden_states.append((self.hx, self.cx))
         return self.hx
+
+
+class BufferLSTM(nn.Module):
+    def __init__(self, input_size, hidden_size, num_layers, dropout, device):
+        super(BufferLSTM, self).__init__()
+        self.rnn = nn.LSTM(input_size, hidden_size, dropout=dropout, num_layers=num_layers,
+                           batch_first=True, bidirectional=False)
+
+    def forward(self, x):
+        h, _ = self.rnn(x)
+        return h
+
 
 class RecurrentCharEmbedding(nn.Module):
     """Simple model for character-level word embeddings
@@ -186,7 +195,7 @@ class RecurrentCharEmbedding(nn.Module):
 
         # Unpack and keep only final embedding.
         out, _ = nn.utils.rnn.pad_packed_sequence(out, batch_first=True)
-        sorted_lengths = wrap(sorted_lengths) - 1
+        sorted_lengths = wrap(sorted_lengths, device=self.device) - 1
         sorted_lengths = sorted_lengths.unsqueeze(-1).unsqueeze(-1).repeat(1, 1, out.size(-1))
         sorted_lengths.to(self.device)
         out = torch.gather(out, 1, sorted_lengths).squeeze(1) # keep only final embedding
@@ -198,7 +207,7 @@ class RecurrentCharEmbedding(nn.Module):
         # Put everything back into the original order.
         pairs = list(zip(sort_idx.data, range(sort_idx.size(0))))
         undo_sort_idx = [pair[1] for pair in sorted(pairs, key=lambda t: t[0])]
-        undo_sort_idx = wrap(undo_sort_idx)
+        undo_sort_idx = wrap(undo_sort_idx, device=self.device)
         out = out[undo_sort_idx]
 
         return out

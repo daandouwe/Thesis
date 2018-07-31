@@ -29,7 +29,7 @@ def main():
                         help='size of lstm hidden states for StackLSTM and BufferLSTM')
     parser.add_argument('--action_lstm_hidden', type=int, default=100,
                         help='size of lstm hidden states for history encoder')
-    parser.add_argument('--lstm_num_layers', type=int, default=1,
+    parser.add_argument('--lstm_num_layers', type=int, default=2,
                         help='number of layers in lstm')
     parser.add_argument('--mlp_dim', type=int, default=100,
                         help='size of mlp hidden state')

@@ -3,8 +3,8 @@ import torch.nn as nn
 from torch.autograd import Variable
 
 from data import (PAD_INDEX, EMPTY_INDEX, REDUCED_INDEX, REDUCED_TOKEN,
-    wrap, load_glove)
-from nn import MLP, BiRecurrentEncoder, StackLSTM, HistoryLSTM, RecurrentCharEmbedding
+                    wrap, load_glove)
+from nn import MLP, BiRecurrentEncoder, StackLSTM, HistoryLSTM, BufferLSTM, RecurrentCharEmbedding
 from parser import Parser
 
 class RNNG(nn.Module):
@@ -13,12 +13,11 @@ class RNNG(nn.Module):
                  dictionary,
                  word_emb_dim,
                  action_emb_dim,
-                 emb_dropout,
                  word_lstm_hidden,
                  action_lstm_hidden,
                  lstm_num_layers,
-                 lstm_dropout,
                  mlp_hidden,
+                 dropout,
                  device=None,
                  use_glove=False,
                  glove_path='~/glove',
@@ -26,41 +25,33 @@ class RNNG(nn.Module):
                  char=False):
         super(RNNG, self).__init__()
         self.dictionary = dictionary
-        self.device = device # To cuda or not to cuda
+        self.device = device
 
         ## Embeddings
         num_words = len(dictionary.w2i)
         num_nonterminals = len(dictionary.n2i)
         num_actions = len(dictionary.a2i)
-        # For words...
         if char:
-            self.word_embedding = RecurrentCharEmbedding(nchars=num_words, output_dim=word_emb_dim,
-                                            emb_dim=word_emb_dim, hidden_size=word_emb_dim, device=device)
+            self.word_embedding = RecurrentCharEmbedding(num_words, word_emb_dim, word_emb_dim, word_emb_dim, dropout, device=device)
         else:
             self.word_embedding = nn.Embedding(num_words, word_emb_dim, padding_idx=PAD_INDEX)
-        # nonterminals...
-        self.nt_embedding = nn.Embedding(num_nonterminals, word_emb_dim, padding_idx=PAD_INDEX)
-        # and actions.
+        self.nonterminal_embedding = nn.Embedding(num_nonterminals, word_emb_dim, padding_idx=PAD_INDEX)
         self.action_embedding = nn.Embedding(num_actions, action_emb_dim, padding_idx=PAD_INDEX)
 
-        self.dropout = nn.Dropout(p=emb_dropout)
-
         # Parser encoders
-        self.buffer_encoder = nn.LSTM(input_size=word_emb_dim, hidden_size=word_lstm_hidden,
-                                    batch_first=True, dropout=lstm_dropout)
-        self.stack_encoder = StackLSTM(input_size=word_emb_dim, hidden_size=word_lstm_hidden,
-                                device=device)
-        self.history_encoder = HistoryLSTM(input_size=action_emb_dim, hidden_size=action_lstm_hidden,
-                                   device=device)
-
+        self.buffer_encoder  = BufferLSTM(word_emb_dim, word_lstm_hidden, lstm_num_layers, dropout, device)
+        self.stack_encoder   = StackLSTM(word_emb_dim, word_lstm_hidden, dropout, device)
+        self.history_encoder = HistoryLSTM(action_emb_dim, action_lstm_hidden, dropout, device)
 
         # MLP for action classifiction
         mlp_input = 2 * word_lstm_hidden + action_lstm_hidden
-        self.mlp = MLP(mlp_input, mlp_hidden, num_actions)
+        self.mlp = MLP(mlp_input, mlp_hidden, num_actions, dropout)
+
+        self.dropout = nn.Dropout(p=dropout)
 
         # Create an internal parser.
         self.parser = Parser(self.dictionary, self.word_embedding,
-                             self.nt_embedding, self.action_embedding,
+                             self.nonterminal_embedding, self.action_embedding,
                              self.buffer_encoder, device=device)
 
         # Training objective
@@ -95,8 +86,8 @@ class RNNG(nn.Module):
         """Compute the loss given the criterion.
 
         Arguments:
-            Logits: PyTorch tensor
-            y: integer value for correct index
+            logits: model predictions.
+            y (int): the correct index.
         """
         y = wrap([y], self.device) # returns a pytorch Variable
         return self.criterion(logits, y)
@@ -105,9 +96,9 @@ class RNNG(nn.Module):
         """Forward training pass for RNNG.
 
         Arguments:
-            sentence (list): Input sentence as list of words.
-            indices (list): Input sentence as list of indices.
-            actions (list): Parse action sequence as list of indices.
+            sentence (list): input sentence as list of words (str).
+            indices (list): input sentence as list of indices (int).
+            actions (list): parse action sequence as list of indices (int).
         """
         # Initialize the parser with the sentence.
         self.parser.initialize(sentence, indices)
@@ -116,7 +107,7 @@ class RNNG(nn.Module):
         self.stack_encoder.initialize_hidden()
         self.history_encoder.initialize_hidden()
 
-        # We encode the buffer just ones. The hidden representations are
+        # Encode the buffer just ones. The hidden representations are
         # stored inside the parser.
         self.parser.buffer.encode()
 
@@ -170,8 +161,10 @@ class RNNG(nn.Module):
     def parse(self, sentence, indices, verbose=False, file=None):
         """Parse an input sequence.
 
-        Args:
-            sent (list): input sentence as list of indices
+        Arguments:
+            sentence (list): input sentence as list of words (str).
+            indices (list): input sentence as list of indices (int).
+            actions (list): parse action sequence as list of indices (int).
         """
         # Initialize the parser with the sentence.
         self.parser.initialize(sentence, indices)

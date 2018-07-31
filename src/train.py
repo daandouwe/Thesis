@@ -24,7 +24,7 @@ def train(args, model, batches, optimizer):
 
         optimizer.zero_grad()
         loss.backward()
-        torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
+        torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
         optimizer.step()
 
         loss = loss.item()
@@ -85,12 +85,11 @@ def main(args):
     model = RNNG(dictionary=corpus.dictionary,
                  word_emb_dim=args.word_emb_dim,
                  action_emb_dim=args.action_emb_dim,
-                 emb_dropout=args.dropout,
                  word_lstm_hidden=args.word_lstm_hidden,
                  action_lstm_hidden=args.action_lstm_hidden,
                  lstm_num_layers=args.lstm_num_layers,
-                 lstm_dropout=args.dropout,
                  mlp_hidden=args.mlp_dim,
+                 dropout=args.dropout,
                  device=args.device,
                  use_glove=args.use_glove,
                  glove_error_dir=args.logdir,
