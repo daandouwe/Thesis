@@ -21,10 +21,14 @@ def main():
     # Model arguments
     parser.add_argument('--char', action='store_true',
                         help='use character-level word embeddings')
-    parser.add_argument('--emb_dim', type=int, default=100,
-                        help='dim of embeddings (word, action, and nonterminal)')
-    parser.add_argument('--lstm_dim', type=int, default=100,
-                        help='size of lstm hidden states')
+    parser.add_argument('--word_emb_dim', type=int, default=100,
+                        help='dim of embeddings for word')
+    parser.add_argument('--action_emb_dim', type=int, default=100,
+                        help='dim of embeddings for actions')
+    parser.add_argument('--word_lstm_hidden', type=int, default=100,
+                        help='size of lstm hidden states for StackLSTM and BufferLSTM')
+    parser.add_argument('--action_lstm_hidden', type=int, default=100,
+                        help='size of lstm hidden states for history encoder')
     parser.add_argument('--lstm_num_layers', type=int, default=1,
                         help='number of layers in lstm')
     parser.add_argument('--mlp_dim', type=int, default=100,

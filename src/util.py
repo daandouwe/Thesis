@@ -19,7 +19,7 @@ def clock_time(s):
 
 
 
-def get_parameter_string(args):
+def get_parameter_string(args, max=10):
     """Returns an identification string based on arguments in args.
 
     Example:
@@ -32,7 +32,9 @@ def get_parameter_string(args):
     """
     keys = []
     args = vars(args)
-    for key in args:
+    for i, key in enumerate(args):
+        if i > max:
+            break
         val = args[key]
         if isinstance(val, str):
             if not '/' in val: # filter out paths

@@ -5,21 +5,19 @@ from data import (EMPTY_INDEX, REDUCED_INDEX, EMPTY_TOKEN, REDUCED_TOKEN, PAD_TO
 
 class Stack:
     """The stack"""
-    def __init__(self, dictionary, word_embedding, nt_embedding, use_cuda=False):
+    def __init__(self, dictionary, word_embedding, nt_embedding, device):
         """Initialize the Stack.
 
         Args:
             dictionary: an instance of data.Dictionary
         """
         self._tokens = [] # list of strings
-        self._indices = [] # list on indices
+        self._indices = [] # list of indices
         self._embeddings = [] # list of embeddings (pytorch vectors)
         self._num_open_nonterminals = 0
-
         self.word_embedding = word_embedding
         self.nt_embedding = nt_embedding
-
-        self.use_cuda = use_cuda
+        self.device = device
 
     def __str__(self):
         return 'Stack ({self.num_open_nonterminals} open NTs): {self._tokens}'.format(self=self)
@@ -32,7 +30,7 @@ class Stack:
 
     def initialize(self):
         self._reset()
-        empty_embedding = self.word_embedding(wrap([EMPTY_INDEX], self.use_cuda))
+        empty_embedding = self.word_embedding(wrap([EMPTY_INDEX], self.device))
         self.push(EMPTY_TOKEN, EMPTY_INDEX, empty_embedding)
 
     def push(self, token, index, emb):
@@ -41,11 +39,10 @@ class Stack:
         self._embeddings.append(emb)
 
     def open_nonterminal(self, token, index):
+        """Open a new nonterminal in the tree."""
         self._num_open_nonterminals += 1
-        self._tokens.append(token)
-        self._indices.append(index)
-        emb = self.nt_embedding(wrap([index], self.use_cuda))
-        self._embeddings.append(emb)
+        emb = self.nt_embedding(wrap([index], self.device))
+        self.push(token, index, emb)
 
     def pop(self):
         """Pop tokens and vectors from the stack until first open nonterminal."""
@@ -92,16 +89,15 @@ class Stack:
 
 class Buffer:
     """The buffer."""
-    def __init__(self, dictionary, embedding, use_cuda=False):
+    def __init__(self, dictionary, embedding, encoder, device):
         self._tokens = []
         self._indices = []
         self._embeddings = []
         self._hiddens = []
-
         self.dict = dictionary
         self.embedding = embedding
-
-        self.use_cuda = use_cuda
+        self.encoder = encoder
+        self.device = device
 
     def __str__(self):
         return 'Buffer : {self._tokens}'.format(self=self)
@@ -118,7 +114,7 @@ class Buffer:
         self._reset()
         self._tokens = sentence[::-1]
         self._indices = indices[::-1]
-        embeddings = self.embedding(wrap(self._indices))
+        embeddings = self.embedding(wrap(self._indices, self.device))
         self._embedded = embeddings.unsqueeze(0)
         self._embeddings = [embeddings[i, :].unsqueeze(0)
                                 for i in range(embeddings.size(0))]
@@ -127,7 +123,7 @@ class Buffer:
         """Push action index and vector embedding onto buffer."""
         self._tokens.append(token)
         self._indices.append(index)
-        emb = self.embedding(wrap([index]))
+        emb = self.embedding(wrap([index], self.device))
         self._embeddings.append(emb)
 
     def pop(self):
@@ -144,10 +140,10 @@ class Buffer:
                 self.push(EMPTY_TOKEN, EMPTY_INDEX)
             return token, index, emb
 
-    def encode(self, lstm_encoder):
+    def encode(self):
         """Use the encoder to make a list of encodings for the """
         x = self._embedded # [batch, seq, hidden_size]
-        h, _ = lstm_encoder(x) # [batch, seq, hidden_size]
+        h, _ = self.encoder(x) # [batch, seq, hidden_size]
         self._hiddens = [h[:, i ,:] for i in range(h.size(1))]
         del self._embedded
 
@@ -167,14 +163,12 @@ class Buffer:
         return self._tokens == [EMPTY_TOKEN]
 
 class History:
-    def __init__(self, dictionary, embedding, use_cuda=False):
+    def __init__(self, dictionary, embedding, device):
         self._actions = []
         self._embeddings = []
-
         self.dict = dictionary
         self.embedding = embedding
-
-        self.use_cuda = use_cuda
+        self.device = device
 
     def __str__(self):
         return 'History : {self.actions}'.format(self=self)
@@ -191,7 +185,7 @@ class History:
     def push(self, action):
         """Push action index and vector embedding onto history."""
         self._actions.append(action)
-        self._embeddings.append(self.embedding(wrap([action], self.use_cuda)))
+        self._embeddings.append(self.embedding(wrap([action], self.device)))
 
     @property
     def embedded(self):
@@ -215,10 +209,11 @@ class History:
 
 class Parser:
     """The parse configuration."""
-    def __init__(self, dictionary, word_embedding, nt_embedding, action_embedding, use_cuda=False):
-        self.stack = Stack(dictionary, word_embedding, nt_embedding, use_cuda)
-        self.buffer = Buffer(dictionary, word_embedding, use_cuda)
-        self.history = History(dictionary, action_embedding, use_cuda)
+    def __init__(self, dictionary, word_embedding, nt_embedding, action_embedding,
+                 buffer_encoder, device):
+        self.stack = Stack(dictionary, word_embedding, nt_embedding, device)
+        self.buffer = Buffer(dictionary, word_embedding, buffer_encoder, device)
+        self.history = History(dictionary, action_embedding, device)
         self.dict = dictionary
 
     def __str__(self):
@@ -226,7 +221,6 @@ class Parser:
 
     def initialize(self, sentence, indices):
         """Initialize all the components of the parser."""
-        # self.stack.initialize()
         self.buffer.initialize(sentence, indices)
         self.stack.initialize()
         self.history.initialize()
@@ -236,9 +230,9 @@ class Parser:
         self.stack.push(token, index, emb)
 
     def get_embedded_input(self):
-        stack = self.stack.top_embedded # input on top [batch, emb_size]
-        buffer = self.buffer.top_embedded # input on top [batch, emb_size]
-        history = self.history.top_embedded # input on top [batch, emb_size]
+        stack = self.stack.top_embedded     # [batch, emb_size]
+        buffer = self.buffer.top_embedded   # [batch, emb_size]
+        history = self.history.top_embedded # [batch, emb_size]
         return stack, buffer, history
 
     def is_valid_action(self, action):
@@ -256,9 +250,6 @@ class Parser:
             cond1 = not self.buffer.empty
             cond2 = self.stack.num_open_nonterminals < 100
             return cond1 and cond2
-        # TODO: Fix this in the Dictionary class in data.py
-        # elif action in [PAD_TOKEN, EMPTY_TOKEN, REDUCED_TOKEN]:
-            # return False
         else:
             raise ValueError('got illegal action: {action}'.format(action=action))
 
@@ -268,7 +259,7 @@ class Parser:
 
 
 if __name__ == '__main__':
-    stack = Stack(None, None, None, use_cuda=False)
-    parser = Parser(None, None, None, None, use_cuda=False)
+    stack = Stack(None, None, None, device=None)
+    parser = Parser(None, None, None, None, None, device=None)
     print(stack)
     print(parser)

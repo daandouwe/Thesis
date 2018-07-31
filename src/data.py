@@ -26,12 +26,9 @@ def pad(batch):
         padded_batch.append(padded)
     return padded_batch
 
-def wrap(batch, cuda=False):
+def wrap(batch, device):
     """Packages the batch as a Variable containing a LongTensor."""
-    if cuda:
-        return Variable(torch.cuda.LongTensor(batch))
-    else:
-        return Variable(torch.LongTensor(batch))
+    return Variable(torch.LongTensor(batch, device=device))
 
 def load_glove(dictionary, dim=100, dir='~/glove', logdir=''):
     assert dim in (50, 100, 200, 300), 'invalid dim: choose from (50, 100, 200, 300).'

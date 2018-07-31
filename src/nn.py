@@ -23,7 +23,7 @@ class MLP(nn.Module):
 
 class BiRecurrentEncoder(nn.Module):
     """A bidirectional RNN encoder."""
-    def __init__(self,input_size, hidden_size, num_layers, dropout, batch_first=True, use_cuda=False):
+    def __init__(self,input_size, hidden_size, num_layers, dropout, batch_first=True, device=None):
         super(BiRecurrentEncoder, self).__init__()
         self.forward_rnn = nn.LSTM(input_size=input_size, hidden_size=hidden_size,
                            num_layers=num_layers, batch_first=batch_first,
@@ -31,12 +31,12 @@ class BiRecurrentEncoder(nn.Module):
         self.backward_rnn = nn.LSTM(input_size=input_size, hidden_size=hidden_size,
                            num_layers=num_layers, batch_first=batch_first,
                            dropout=dropout)
-        self.use_cuda = use_cuda
+        self.device = device # GPU or CPU
+        self.to(device)
 
     def _reverse(self, tensor):
         idx = [i for i in range(tensor.size(1) - 1, -1, -1)]
-        idx = Variable(torch.LongTensor(idx))
-        idx = idx.cuda() if self.use_cuda else idx
+        idx = Variable(torch.LongTensor(idx, device=self.device))
         return tensor.index_select(1, idx)
 
     def forward(self, x):
@@ -52,27 +52,25 @@ class BiRecurrentEncoder(nn.Module):
 
 class StackLSTM(nn.Module):
     """A Stack-LSTM used to encode the stack of a transition based parser."""
-    def __init__(self, input_size, hidden_size, use_cuda=False):
+    def __init__(self, input_size, hidden_size, device=None):
         super(StackLSTM, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size # Must be even number, see composition function.
-        self.use_cuda = use_cuda
+        self.device = device # GPU or CPU
 
         self.rnn = nn.LSTMCell(input_size, hidden_size)
         # BiRNN ecoder used as composition function.
         # NOTE: we use hidden_size//2 because the output of the composition function
         # is a concatenation of two hidden vectors.
         self.composition = BiRecurrentEncoder(input_size, hidden_size//2,
-                                              num_layers=1, dropout=0., use_cuda=use_cuda)
+                                              num_layers=1, dropout=0., device=device)
 
         # Were we store all intermediate computed hidden states.
         # Top of this list is used as the stack embedding
         self._hidden_states = []
 
         self.initialize_hidden()
-
-        if self.use_cuda:
-            self.cuda()
+        self.to(device)
 
     def _reset_hidden(self, sequence_len):
         """Reset the hidden state to before opening the sequence."""
@@ -82,11 +80,8 @@ class StackLSTM(nn.Module):
     def initialize_hidden(self, batch_size=1):
         """Set initial hidden state to zeros."""
         self._hidden_states = []
-        hx = Variable(torch.zeros(batch_size, self.hidden_size))
-        cx = Variable(torch.zeros(batch_size, self.hidden_size))
-        if self.use_cuda:
-            hx = hx.cuda()
-            cx = cx.cuda()
+        hx = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
+        cx = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
         self.hx, self.cx = hx, cx
 
     def reduce(self, sequence):
@@ -113,11 +108,11 @@ class StackLSTM(nn.Module):
 
 class HistoryLSTM(nn.Module):
     """A LSTM used to encode the history of actions of a transition based parser."""
-    def __init__(self, input_size, hidden_size, use_cuda=False):
+    def __init__(self, input_size, hidden_size, device=None):
         super(HistoryLSTM, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size # Must be even number, see composition function.
-        self.use_cuda = use_cuda
+        self.device = device # GPU or CPU
 
         self.rnn = nn.LSTMCell(input_size, hidden_size)
 
@@ -127,17 +122,13 @@ class HistoryLSTM(nn.Module):
 
         self.initialize_hidden()
 
-        if self.use_cuda:
-            self.cuda()
+        self.to(device)
 
     def initialize_hidden(self, batch_size=1):
         """Set initial hidden state to zeros."""
         self._hidden_states = []
-        hx = Variable(torch.zeros(batch_size, self.hidden_size))
-        cx = Variable(torch.zeros(batch_size, self.hidden_size))
-        if self.use_cuda:
-            hx = hx.cuda()
-            cx = cx.cuda()
+        hx = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
+        cx = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
         self.hx, self.cx = hx, cx
 
     def forward(self, x):
@@ -155,7 +146,7 @@ class RecurrentCharEmbedding(nn.Module):
 
     Source: https://github.com/bastings/parser/blob/extended_parser/parser/nn.py
     """
-    def __init__(self, nchars, emb_dim, hidden_size, output_dim, dropout=0.33, bi=True):
+    def __init__(self, nchars, emb_dim, hidden_size, output_dim, dropout=0.33, bi=True, device=None):
         super(RecurrentCharEmbedding, self).__init__()
 
         self.embedding = nn.Embedding(nchars, emb_dim)
@@ -168,10 +159,9 @@ class RecurrentCharEmbedding(nn.Module):
         self.linear = nn.Linear(rnn_dim, output_dim, bias=False)
 
         self.relu = nn.ReLU()
+        self.device = device
 
     def forward(self, x):
-        cuda = torch.cuda.is_available()
-
         # For single token words
         if len(x.shape) == 1:
             x = x.unsqueeze(0)
@@ -179,7 +169,7 @@ class RecurrentCharEmbedding(nn.Module):
         # Sort x by word length.
         lengths = (x != PAD_INDEX).long().sum(-1)
         sorted_lengths, sort_idx = lengths.sort(0, descending=True)
-        sort_idx = sort_idx.cuda() if cuda else sort_idx
+        sort_idx.to(self.device)
         x = x[sort_idx]
 
         # Embed chars and pack for rnn input.
@@ -198,7 +188,7 @@ class RecurrentCharEmbedding(nn.Module):
         out, _ = nn.utils.rnn.pad_packed_sequence(out, batch_first=True)
         sorted_lengths = wrap(sorted_lengths) - 1
         sorted_lengths = sorted_lengths.unsqueeze(-1).unsqueeze(-1).repeat(1, 1, out.size(-1))
-        sorted_lengths = sorted_lengths.cuda() if cuda else sorted_lengths
+        sorted_lengths.to(self.device)
         out = torch.gather(out, 1, sorted_lengths).squeeze(1) # keep only final embedding
 
         # Project rnn output states to proper embedding dimension.

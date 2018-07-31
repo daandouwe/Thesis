@@ -27,7 +27,7 @@ def train(args, model, batches, optimizer):
         torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
         optimizer.step()
 
-        loss = loss.data[0]
+        loss = loss.item()
         LOSSES.append(loss)
         if step % args.print_every == 0:
             sents_per_sec = args.print_every / timer.elapsed()
@@ -42,15 +42,16 @@ def evaluate(model, batches):
     for step, batch in enumerate(batches, 1):
         sent, indices, actions = batch
         loss = model(sent, indices, actions)
-        total_loss += loss.data[0]
+        total_loss += loss.item()
     return total_loss / step
 
 def main(args):
     # Set random seed.
     torch.manual_seed(args.seed)
     # Set cuda.
-    args.cuda = not args.disable_cuda and torch.cuda.is_available()
-    print('Using CUDA: {}'.format(args.cuda))
+    use_cuda = not args.disable_cuda and torch.cuda.is_available()
+    args.device = torch.device("cuda" if use_cuda else "cpu")
+    print('Using CUDA: {}.'.format(use_cuda))
 
     # Create folders for logging and checkpoints
     subdir = get_subdir_string(args)
@@ -82,18 +83,20 @@ def main(args):
     print(corpus)
 
     model = RNNG(dictionary=corpus.dictionary,
-                 emb_dim=args.emb_dim,
+                 word_emb_dim=args.word_emb_dim,
+                 action_emb_dim=args.action_emb_dim,
                  emb_dropout=args.dropout,
-                 lstm_hidden=args.lstm_dim,
+                 word_lstm_hidden=args.word_lstm_hidden,
+                 action_lstm_hidden=args.action_lstm_hidden,
                  lstm_num_layers=args.lstm_num_layers,
                  lstm_dropout=args.dropout,
                  mlp_hidden=args.mlp_dim,
-                 use_cuda=args.cuda,
+                 device=args.device,
                  use_glove=args.use_glove,
                  glove_error_dir=args.logdir,
                  char=args.char)
-    if args.cuda:
-        model.cuda()
+    model.to(args.device)
+
     parameters = filter(lambda p: p.requires_grad, model.parameters())
     optimizer = torch.optim.Adam(parameters, lr=args.lr)
 
