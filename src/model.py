@@ -103,13 +103,13 @@ class RNNG(nn.Module):
         # Initialize the parser with the sentence.
         self.parser.initialize(sentence, indices)
 
-        # Initialize the hidden state of the StackLSTM and the HistoryLSTM.
-        self.stack_encoder.initialize_hidden()
-        self.history_encoder.initialize_hidden()
-
         # Encode the buffer just ones. The hidden representations are
         # stored inside the parser.
         self.parser.buffer.encode()
+
+        # Initialize the hidden state of the StackLSTM and the HistoryLSTM.
+        self.stack_encoder.initialize_hidden()
+        self.history_encoder.initialize_hidden()
 
         # Cummulator variable for loss
         loss = Variable(torch.zeros(1, device=self.device))
@@ -169,13 +169,13 @@ class RNNG(nn.Module):
         # Initialize the parser with the sentence.
         self.parser.initialize(sentence, indices)
 
-        # Initialize the hidden state of the StackLSTM and the HistoryLSTM.
-        self.stack_encoder.initialize_hidden()
-        self.history_encoder.initialize_hidden()
-
         # We encode the buffer just ones. The hidden representations are
         # stored inside the parser.
         self.parser.buffer.encode()
+
+        # Initialize the hidden state of the StackLSTM and the HistoryLSTM.
+        self.stack_encoder.initialize_hidden()
+        self.history_encoder.initialize_hidden()
 
         t = 0
         while not self.parser.stack.empty:

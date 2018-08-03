@@ -32,7 +32,7 @@ def get_sentences(path):
             else:
                 sent.append(line.rstrip())
         # sentences is of type [[str]]
-        return [get_sent_dict(sent) for sent in sentences]
+        return [get_sent_dict(sent) for sent in sentences if sent]
 
 def get_vocab(sentences, textline='unked'):
     """Returns the vocabulary used in the oracle file."""

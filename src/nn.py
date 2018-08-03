@@ -1,3 +1,5 @@
+import copy
+
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
@@ -36,7 +38,7 @@ class BiRecurrentEncoder(nn.Module):
 
     def _reverse(self, tensor):
         idx = [i for i in range(tensor.size(1) - 1, -1, -1)]
-        idx = Variable(torch.LongTensor(idx, device=self.device))
+        idx = wrap(idx, device=self.device)
         return tensor.index_select(1, idx)
 
     def forward(self, x):
@@ -50,36 +52,63 @@ class BiRecurrentEncoder(nn.Module):
         h = torch.cat((hf, hb), dim=-1) # [batch, 2*hidden_size]
         return h
 
-class StackLSTM(nn.Module):
-    """A Stack-LSTM used to encode the stack of a transition based parser."""
+class LSTM(nn.Module):
+    """A simple two-layered LSTM used for StackLSTM and HistoryLSTM."""
     def __init__(self, input_size, hidden_size, dropout, device=None):
-        super(StackLSTM, self).__init__()
+        super(LSTM, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size # Must be even number, see composition function.
         self.device = device # GPU or CPU
 
-        self.rnn = nn.LSTMCell(input_size, hidden_size)
-        # BiRNN ecoder used as composition function.
-        self.composition = BiRecurrentEncoder(input_size, hidden_size//2, 2, dropout, device=device)
+        self.rnn1 = nn.LSTMCell(input_size, hidden_size)
+        self.rnn2 = nn.LSTMCell(hidden_size, hidden_size)
 
         # Were we store all intermediate computed hidden states.
         # Top of this list is used as the stack embedding
-        self._hidden_states = []
+        self._hidden_states1 = [] # layer 1
+        self._hidden_states2 = [] # layer 2
 
         self.initialize_hidden()
         self.to(device)
 
-    def _reset_hidden(self, sequence_len):
-        """Reset the hidden state to before opening the sequence."""
-        self._hidden_states = self._hidden_states[:-sequence_len]
-        self.hx, self.cx = self._hidden_states[-1]
-
     def initialize_hidden(self, batch_size=1):
         """Set initial hidden state to zeros."""
-        self._hidden_states = []
+        c = copy.deepcopy
+        self._hidden_states1 = []
+        self._hidden_states2 = []
         hx = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
         cx = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
-        self.hx, self.cx = hx, cx
+        self.hx1, self.cx1 = hx, cx
+        self.hx2, self.cx2 = c(hx), c(cx)
+
+    def forward(self, x):
+        """Compute the next hidden state with input x and the previous hidden state.
+
+        Args: x is shape (batch, input_size).
+        """
+        self.hx1, self.cx1 = self.rnn1(x, (self.hx1, self.cx1))
+        self.hx2, self.cx2 = self.rnn2(self.hx1, (self.hx2, self.cx2))
+        # Add cell states to memory.
+        self._hidden_states1.append((self.hx1, self.cx1))
+        self._hidden_states2.append((self.hx2, self.cx2))
+        return self.hx2
+
+
+
+class StackLSTM(LSTM):
+    """A Stack-LSTM used to encode the stack of a transition based parser."""
+    def __init__(self, input_size, hidden_size, dropout, device=None):
+        super(StackLSTM, self).__init__(input_size, hidden_size, dropout, device)
+        # BiRNN ecoder used as composition function.
+        assert hidden_size % 2 == 0
+        self.composition = BiRecurrentEncoder(input_size, hidden_size//2, 2, dropout, device=device)
+
+    def _reset_hidden(self, sequence_len):
+        """Reset the hidden state to before opening the sequence."""
+        self._hidden_states1 = self._hidden_states1[:-sequence_len]
+        self._hidden_states2 = self._hidden_states2[:-sequence_len]
+        self.hx1, self.cx1 = self._hidden_states1[-1]
+        self.hx2, self.cx2 = self._hidden_states2[-1]
 
     def reduce(self, sequence):
         """Reduce a nonterminal sequence.
@@ -92,51 +121,115 @@ class StackLSTM(nn.Module):
         self._reset_hidden(length)
         return self.composition(sequence)
 
-    def forward(self, x):
-        """Compute the next hidden state with input x and the previous hidden state.
 
-        Args: x is shape (batch, input_size).
-        """
-        self.hx, self.cx = self.rnn(x, (self.hx, self.cx))
-        # Add cell states to memory.
-        self._hidden_states.append((self.hx, self.cx))
-        return self.hx
-
-
-class HistoryLSTM(nn.Module):
-    """A LSTM used to encode the history of actions of a transition based parser."""
+class HistoryLSTM(LSTM):
+    """An LSTM used to encode the history of actions of a transition based parser."""
     def __init__(self, input_size, hidden_size, dropout, device=None):
-        super(HistoryLSTM, self).__init__()
-        self.input_size = input_size
-        self.hidden_size = hidden_size # Must be even number, see composition function.
-        self.device = device # GPU or CPU
+        super(HistoryLSTM, self).__init__(input_size, hidden_size, dropout, device)
 
-        self.rnn = nn.LSTMCell(input_size, hidden_size)
 
-        # Were we store all intermediate computed hidden states.
-        # Top of this list is used as the stack embedding
-        self._hidden_states = []
-
-        self.initialize_hidden()
-
-        self.to(device)
-
-    def initialize_hidden(self, batch_size=1):
-        """Set initial hidden state to zeros."""
-        self._hidden_states = []
-        hx = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
-        cx = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
-        self.hx, self.cx = hx, cx
-
-    def forward(self, x):
-        """Compute the next hidden state with input x and the previous hidden state.
-
-        Args: x is shape (batch, input_size).
-        """
-        self.hx, self.cx = self.rnn(x, (self.hx, self.cx))
-        # Add cell states to memory.
-        self._hidden_states.append((self.hx, self.cx))
-        return self.hx
+# class StackLSTM(nn.Module):
+#     """A Stack-LSTM used to encode the stack of a transition based parser."""
+#     def __init__(self, input_size, hidden_size, dropout, device=None):
+#         super(StackLSTM, self).__init__()
+#         self.input_size = input_size
+#         self.hidden_size = hidden_size # Must be even number, see composition function.
+#         self.device = device # GPU or CPU
+#
+#         self.rnn1 = nn.LSTMCell(input_size, hidden_size)
+#         self.rnn2 = nn.LSTMCell(hidden_size, hidden_size)
+#         # BiRNN ecoder used as composition function.
+#         assert hidden_size % 2 == 0
+#         self.composition = BiRecurrentEncoder(input_size, hidden_size//2, 2, dropout, device=device)
+#
+#         # Were we store all intermediate computed hidden states.
+#         # Top of this list is used as the stack embedding
+#         self._hidden_states1 = [] # layer 1
+#         self._hidden_states2 = [] # layer 2
+#
+#         self.initialize_hidden()
+#         self.to(device)
+#
+#     def _reset_hidden(self, sequence_len):
+#         """Reset the hidden state to before opening the sequence."""
+#         self._hidden_states1 = self._hidden_states1[:-sequence_len]
+#         self._hidden_states2 = self._hidden_states2[:-sequence_len]
+#         self.hx1, self.cx1 = self._hidden_states1[-1]
+#         self.hx2, self.cx2 = self._hidden_states2[-1]
+#
+#     def initialize_hidden(self, batch_size=1):
+#         """Set initial hidden state to zeros."""
+#         c = copy.deepcopy
+#         self._hidden_states1 = []
+#         self._hidden_states2 = []
+#         hx = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
+#         cx = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
+#         self.hx1, self.cx1 = hx, cx
+#         self.hx2, self.cx2 = c(hx), c(cx)
+#
+#     def reduce(self, sequence):
+#         """Reduce a nonterminal sequence.
+#
+#         Computes a BiRNN represesentation for the sequence, then replaces
+#         the reduced sequence of hidden states with this one representation.
+#         """
+#         length = sequence.size(1) - 1 # length of sequence (minus extra nonterminal at end)
+#         # Move hidden state back to before we opened the nonterminal.
+#         self._reset_hidden(length)
+#         return self.composition(sequence)
+#
+#     def forward(self, x):
+#         """Compute the next hidden state with input x and the previous hidden state.
+#
+#         Args: x is shape (batch, input_size).
+#         """
+#         self.hx1, self.cx1 = self.rnn1(x, (self.hx1, self.cx1))
+#         self.hx2, self.cx2 = self.rnn2(self.hx1, (self.hx2, self.cx2))
+#         # Add cell states to memory.
+#         self._hidden_states1.append((self.hx1, self.cx1))
+#         self._hidden_states2.append((self.hx2, self.cx2))
+#         return self.hx2
+#
+#
+# class HistoryLSTM(nn.Module):
+#     """A LSTM used to encode the history of actions of a transition based parser."""
+#     def __init__(self, input_size, hidden_size, dropout, device=None):
+#         super(HistoryLSTM, self).__init__()
+#         self.input_size = input_size
+#         self.hidden_size = hidden_size # Must be even number, see composition function.
+#         self.device = device # GPU or CPU
+#
+#         self.rnn = nn.LSTMCell(input_size, hidden_size)
+#
+#         # Were we store all intermediate computed hidden states.
+#         # Top of this list is used as the stack embedding
+#         self._hidden_states = []
+#
+#         self.initialize_hidden()
+#
+#         self.to(device)
+#
+#     def initialize_hidden(self, batch_size=1):
+#         """Set initial hidden state to zeros."""
+#         c = copy.deepcopy
+#         self._hidden_states1 = []
+#         self._hidden_states2 = []
+#         hx = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
+#         cx = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
+#         self.hx1, self.cx1 = hx, cx
+#         self.hx2, self.cx2 = c(hx), c(cx)
+#
+#     def forward(self, x):
+#         """Compute the next hidden state with input x and the previous hidden state.
+#
+#         Args: x is shape (batch, input_size).
+#         """
+#         self.hx1, self.cx1 = self.rnn1(x, (self.hx1, self.cx1))
+#         self.hx2, self.cx2 = self.rnn2(self.hx1, (self.hx2, self.cx2))
+#         # Add cell states to memory.
+#         self._hidden_states1.append((self.hx1, self.cx1))
+#         self._hidden_states2.append((self.hx2, self.cx2))
+#         return self.hx2
 
 
 class BufferLSTM(nn.Module):

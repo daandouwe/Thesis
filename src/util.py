@@ -77,3 +77,27 @@ def write_losses(args, losses):
     with open(path, 'w') as f:
         for loss in losses:
             print(loss, file=f)
+
+def make_folders(args):
+    # Create folders for logging and checkpoints
+    subdir = get_subdir_string(args)
+    logdir = os.path.join(args.root, 'log', subdir)
+    checkdir = os.path.join(args.root, 'checkpoints', subdir)
+    outdir = os.path.join(args.root, 'out', subdir)
+    # outdir = 'out'
+    os.mkdir(logdir)
+    os.mkdir(checkdir)
+    os.mkdir(outdir)
+    logfile = os.path.join(logdir, 'train.log')
+    checkfile = os.path.join(checkdir, 'model.pt')
+    outfile = os.path.join(outdir, 'train.predict.txt')
+
+    # Add folders and dirs to args
+    args.outdir = outdir
+    args.outfile = outfile
+    args.logdir = logdir
+    args.logfile = logfile
+    args.checkdir = checkdir
+    args.checkfile = checkfile
+    # Save the arguments.
+    write_args(args)

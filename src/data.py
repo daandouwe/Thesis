@@ -12,6 +12,7 @@ from get_vocab import get_sentences
 PAD_TOKEN = '-PAD-'
 EMPTY_TOKEN = '-EMPTY-'
 REDUCED_TOKEN = '-REDUCED-' # used as dummy for reduced sequences
+
 PAD_INDEX = 0
 EMPTY_INDEX = 1
 REDUCED_INDEX = 2
@@ -28,7 +29,9 @@ def pad(batch):
 
 def wrap(batch, device):
     """Packages the batch as a Variable containing a LongTensor."""
-    return Variable(torch.LongTensor(batch, device=device))
+    # x = torch.LongTensor(batch, device=device) # somehow not working?!
+    x = torch.LongTensor(batch)
+    return x.to(device)
 
 def load_glove(dictionary, dim=100, dir='~/glove', logdir=''):
     assert dim in (50, 100, 200, 300), 'invalid dim: choose from (50, 100, 200, 300).'

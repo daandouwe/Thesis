@@ -50,17 +50,22 @@ if __name__ == "__main__":
     else:
         exit('Specify number of processors.')
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    torch.set_num_threads(size)
+
     # Initialize model and data.
     corpus = Corpus(data_path='../tmp', textline='unked')
     train_batches =  corpus.train.batches(length_ordered=False, shuffle=False)
     model = RNNG(dictionary=corpus.dictionary,
-                 emb_dim=100,
-                 emb_dropout=0.3,
-                 lstm_hidden=100,
-                 lstm_num_layers=1,
-                 lstm_dropout=0.3,
+                 word_emb_dim=100,
+                 action_emb_dim=100,
+                 word_lstm_hidden=100,
+                 action_lstm_hidden=100,
+                 lstm_num_layers=2,
                  mlp_hidden=500,
-                 use_cuda=False)
+                 dropout=0.3,
+                 device=device)
     parameters = filter(lambda p: p.requires_grad, model.parameters())
     optimizer = torch.optim.Adam(parameters, lr=1e-3)
 

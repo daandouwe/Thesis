@@ -9,7 +9,8 @@ from torch.autograd import Variable
 from data import Corpus, load_glove
 from model import RNNG
 from predict import predict, write_prediction
-from util import Timer, clock_time, get_subdir_string, write_args, write_losses
+from util import (Timer, clock_time, get_subdir_string,
+                    write_losses, make_folders)
 
 LOSSES = []
 
@@ -33,7 +34,7 @@ def train(args, model, batches, optimizer):
             sents_per_sec = args.print_every / timer.elapsed()
             avg_loss = np.mean(LOSSES[-args.print_every:])
             eta = clock_time((num_batches - step) / sents_per_sec)
-            print('| step {:6d}/{:6d} | loss {:2.4f} | {:4.3f} sents/sec | eta {:2d}h:{:2d}m:{:2d}s'.format(
+            print('| step {:6d}/{:5d} | loss {:3.4f} | {:4.3f} sents/sec | eta {:2d}h:{:2d}m:{:2d}s'.format(
                         step, num_batches, avg_loss, sents_per_sec, *eta))
 
 def evaluate(model, batches):
@@ -51,30 +52,9 @@ def main(args):
     # Set cuda.
     use_cuda = not args.disable_cuda and torch.cuda.is_available()
     args.device = torch.device("cuda" if use_cuda else "cpu")
-    print('Using CUDA: {}.'.format(use_cuda))
+    print('Device: {}.'.format(args.device))
 
-    # Create folders for logging and checkpoints
-    subdir = get_subdir_string(args)
-    logdir = os.path.join(args.root, 'log', subdir)
-    checkdir = os.path.join(args.root, 'checkpoints', subdir)
-    outdir = os.path.join(args.root, 'out', subdir)
-    # outdir = 'out'
-    os.mkdir(logdir)
-    os.mkdir(checkdir)
-    os.mkdir(outdir)
-    logfile = os.path.join(logdir, 'train.log')
-    checkfile = os.path.join(checkdir, 'model.pt')
-    outfile = os.path.join(outdir, 'train.predict.txt')
-
-    # Add folders and dirs to args
-    args.outdir = outdir
-    args.outfile = outfile
-    args.logdir = logdir
-    args.logfile = logfile
-    args.checkdir = checkdir
-    args.checkfile = checkfile
-    # Save the arguments.
-    write_args(args)
+    make_folders(args)
 
     corpus = Corpus(data_path=args.data, textline=args.textline, char=args.char)
     train_batches = corpus.train.batches(length_ordered=False, shuffle=False)
