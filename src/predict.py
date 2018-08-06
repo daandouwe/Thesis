@@ -6,7 +6,7 @@ import glob
 import torch
 
 from data import Corpus
-from get_vocab import get_sentences
+from scripts.get_vocab import get_sentences
 
 def predict(args, model, batches, name='test'):
     model.eval()
@@ -68,5 +68,5 @@ if __name__ == '__main__':
         args.checkdir = os.path.join('checkpoints', args.folder)
         args.outdir = os.path.join('out', args.folder)
     else:
-        exit('Either -l (--use_latest) or a --folder must be specified.')
+        exit('Either pass -l (--use_latest) or --folder must be specified.')
     main(args)

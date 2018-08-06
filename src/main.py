@@ -3,7 +3,7 @@ import os
 import argparse
 
 import train
-import predict
+import predict_input
 
 def main():
 
@@ -18,25 +18,33 @@ def main():
                         help='textline to use from the oracle file')
     parser.add_argument('--root', type=str, default='.',
                         help='root dir to make output log and checkpoint folders')
+    parser.add_argument('--logdir', default=None,
+                        help='to be constructed by util.make_folders')
+    parser.add_argument('--logfile', default=None,
+                        help='to be constructed by util.make_folders')
+    parser.add_argument('--disable_folders', action='store_true',
+                        help='do not make output folders (debug)')
     # Model arguments
-    parser.add_argument('--char', action='store_true',
+    parser.add_argument('--use_char', action='store_true',
                         help='use character-level word embeddings')
     parser.add_argument('--word_emb_dim', type=int, default=100,
                         help='dim of embeddings for word')
-    parser.add_argument('--action_emb_dim', type=int, default=100,
+    parser.add_argument('--action_emb_dim', type=int, default=20,
                         help='dim of embeddings for actions')
-    parser.add_argument('--word_lstm_hidden', type=int, default=100,
+    parser.add_argument('--word_lstm_hidden', type=int, default=128,
                         help='size of lstm hidden states for StackLSTM and BufferLSTM')
-    parser.add_argument('--action_lstm_hidden', type=int, default=100,
+    parser.add_argument('--action_lstm_hidden', type=int, default=128,
                         help='size of lstm hidden states for history encoder')
     parser.add_argument('--lstm_num_layers', type=int, default=2,
                         help='number of layers in lstm')
-    parser.add_argument('--mlp_dim', type=int, default=100,
+    parser.add_argument('--mlp_dim', type=int, default=128,
                         help='size of mlp hidden state')
-    parser.add_argument('--dropout', type=float, default=0.3,
+    parser.add_argument('--dropout', type=float, default=0.2,
                         help='dropout rate for embeddings, lstm, and mlp')
     parser.add_argument('--use_glove', action='store_true',
                         help='using pretrained glove embeddings')
+    parser.add_argument('--glovedir', type=str, default='~/glove',
+                        help='to be constructed by util.make_folders')
     parser.add_argument('--seed', type=int, default=42,
                         help='random seed to use')
     # Training arguments
@@ -55,7 +63,7 @@ def main():
     if args.mode == 'train':
         train.main(args)
     elif args.mode == 'predict':
-        predict.main(args)
+        predict_input.main(args)
 
 if __name__ == '__main__':
     main()

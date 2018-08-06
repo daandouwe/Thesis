@@ -17,13 +17,13 @@ class Stack:
         self._tokens = [] # list of str
         self._indices = [] # list of int
         self._embeddings = [] # list of embeddings (pytorch Variables)
-        self._num_open_nonterminals = 0
+        self._num_open_nonterminals = 0 # Keep track of the nonterminals opened.
         self.word_embedding = word_embedding
         self.nonterminal_embedding = nonterminal_embedding
         self.device = device
 
     def __str__(self):
-        return 'Stack ({self.num_open_nonterminals} open NTs): {self._tokens}'.format(self=self)
+        return f'Stack ({self.num_open_nonterminals} open NTs): {self._tokens}'
 
     def _reset(self):
         """Resets the buffer to empty state."""
@@ -115,7 +115,7 @@ class Buffer:
         self.device = device
 
     def __str__(self):
-        return 'Buffer : {self._tokens}'.format(self=self)
+        return f'Buffer : {self._tokens}'
 
     def _reset(self):
         """Resets the buffer to empty state."""
@@ -130,7 +130,7 @@ class Buffer:
         self._tokens = sentence[::-1]
         self._indices = indices[::-1]
         embeddings = self.embedding(wrap(self._indices, self.device))
-        self._embedded = embeddings.unsqueeze(0)
+        self._encoder_input = embeddings.unsqueeze(0)
         self._embeddings = [embeddings[i, :].unsqueeze(0)
                                 for i in range(embeddings.size(0))]
 
@@ -140,6 +140,9 @@ class Buffer:
         self._indices.append(index)
         emb = self.embedding(wrap([index], self.device))
         self._embeddings.append(emb)
+        # NOTE: this is a bit hacky! LSTM encoding of empty state...
+        emb = self.embedding(wrap([[index]], self.device))
+        self._hiddens.append(self.encoder(emb).squeeze(0))
 
     def pop(self):
         if self.empty:
@@ -157,10 +160,10 @@ class Buffer:
 
     def encode(self):
         """Encode the buffer with the provided encoder and store these internally."""
-        x = self._embedded # [batch, seq, hidden_size]
+        x = self._encoder_input # [batch, seq, hidden_size]
         h = self.encoder(x) # [batch, seq, hidden_size]
         self._hiddens = [h[:, i ,:] for i in range(h.size(1))]
-        del self._embedded
+        del self._encoder_input
 
     @property
     def embedded(self):
@@ -172,6 +175,11 @@ class Buffer:
     def top_embedded(self):
         """Returns the embedding of the symbol on the top of the buffer."""
         return self._embeddings[-1]
+
+    @property
+    def top_encoded(self):
+        """Returns the hidden state on the top of the buffer."""
+        return self._hiddens[-1]
 
     @property
     def empty(self):
@@ -195,7 +203,7 @@ class History:
         self.device = device
 
     def __str__(self):
-        return 'History : {self.actions}'.format(self=self)
+        return f'History : {self.actions}'
 
     def _reset(self):
         """Resets the buffer to empty state."""
@@ -268,9 +276,11 @@ class Parser:
         self.stack.push(token, index, emb)
 
     def get_embedded_input(self):
-        """Return the representations of the stack buffer and history."""
+        """Return the representations of the stack buffer and history.
+
+        Note: `buffer` is already the lstm encoding of the buffer."""
         stack = self.stack.top_embedded     # [batch, emb_size]
-        buffer = self.buffer.top_embedded   # [batch, emb_size]
+        buffer = self.buffer.top_encoded    # [batch, word_lstm_hidden]
         history = self.history.top_embedded # [batch, emb_size]
         return stack, buffer, history
 
@@ -290,7 +300,7 @@ class Parser:
             cond2 = self.stack.num_open_nonterminals < 100
             return cond1 and cond2
         else:
-            raise ValueError('got illegal action: {action}'.format(action=action))
+            raise ValueError(f'got illegal action: {action}')
 
     @property
     def actions(self):

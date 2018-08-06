@@ -6,11 +6,11 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-from data import Corpus, load_glove
+from data import Corpus
 from model import RNNG
 from predict import predict, write_prediction
-from util import (Timer, clock_time, get_subdir_string,
-                    write_losses, make_folders)
+from eval import eval
+from util import Timer, clock_time, get_subdir_string, write_losses, make_folders
 
 LOSSES = []
 
@@ -21,6 +21,9 @@ def train(args, model, batches, optimizer):
     num_batches = len(batches)
     for step, batch in enumerate(batches, 1):
         sent, indices, actions = batch
+        # Idea: make sent and actions a list of Vocab items:
+        # word = vocab.word, index = vocab.index
+        # action = vocab.word, action_index = vocab.index https://github.com/nikitakit/self-attentive-parser/blob/master/src/vocabulary.py
         loss = model(sent, indices, actions)
 
         optimizer.zero_grad()
@@ -54,9 +57,10 @@ def main(args):
     args.device = torch.device("cuda" if use_cuda else "cpu")
     print('Device: {}.'.format(args.device))
 
-    make_folders(args)
+    if not args.disable_folders:
+        make_folders(args)
 
-    corpus = Corpus(data_path=args.data, textline=args.textline, char=args.char)
+    corpus = Corpus(data_path=args.data, textline=args.textline, char=args.use_char)
     train_batches = corpus.train.batches(length_ordered=False, shuffle=False)
     dev_batches   = corpus.dev.batches(length_ordered=False, shuffle=False)
     test_batches  = corpus.test.batches(length_ordered=False, shuffle=False)
@@ -72,8 +76,9 @@ def main(args):
                  dropout=args.dropout,
                  device=args.device,
                  use_glove=args.use_glove,
+                 glove_dir=args.glovedir,
                  glove_error_dir=args.logdir,
-                 char=args.char)
+                 use_char=args.use_char)
     model.to(args.device)
 
     parameters = filter(lambda p: p.requires_grad, model.parameters())
@@ -90,13 +95,14 @@ def main(args):
             dev_loss = evaluate(model, dev_batches)
             # Save the model if the validation loss is the best we've seen so far.
             if not best_dev_loss or dev_loss < best_dev_loss:
-                with open(checkfile, 'wb') as f:
+                with open(args.checkfile, 'wb') as f:
                     torch.save(model, f)
                 best_dev_epoch = epoch
                 best_dev_loss = dev_loss
             else:
                 # Anneal the learning rate if no improvement has been seen in the validation dataset.
                 lr /= 4.0
+                parameters = filter(lambda p: p.requires_grad, model.parameters())
                 optimizer = torch.optim.Adam(parameters, lr=lr)
             print('-'*89)
             print('| End of epoch {:3d}/{:3d} | dev loss {:2.4f}| best dev epoch {:2d} | best dev loss {:2.4f} | lr {:2.4f}'.format(
@@ -108,7 +114,7 @@ def main(args):
         dev_loss = evaluate(model, dev_batches)
         # Save the model if the validation loss is the best we've seen so far.
         if not best_dev_loss or dev_loss < best_dev_loss:
-            with open(checkfile, 'wb') as f:
+            with open(args.checkfile, 'wb') as f:
                 torch.save(model, f)
             best_dev_epoch = epoch
             best_dev_loss = dev_loss
@@ -117,7 +123,7 @@ def main(args):
     write_losses(args, LOSSES)
 
     # Load best saved model.
-    with open(checkfile, 'rb') as f:
+    with open(args.checkfile, 'rb') as f:
         model = torch.load(f)
 
     # Evaluate on test set.
@@ -130,3 +136,4 @@ def main(args):
     # Predict with best model on test set.
     predict(args, model, test_batches, name='test')
     print('Finished predicting')
+    eval(args.outdir)

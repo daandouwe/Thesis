@@ -2,7 +2,10 @@
 # Changed print ..  to print(..) for python3 compatibility.
 
 import sys
-import get_dictionary
+try:
+    import get_dictionary
+except:
+    pass
 
 # tokens is a list of tokens, so no need to split it again
 def unkify(tokens, words_dict):
@@ -175,6 +178,8 @@ def main():
     line_ctr = 0
     # get the oracle for the train file
     for line in dev_lines:
+        if not line.strip():
+            break
         line_ctr += 1
         # assert that the parenthesis are balanced
         if line.count('(') != line.count(')'):

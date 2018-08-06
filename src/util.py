@@ -17,9 +17,7 @@ def clock_time(s):
     m, s = divmod(s, 60)
     return int(h), int(m), int(s)
 
-
-
-def get_parameter_string(args, max=10):
+def get_parameter_string(args):
     """Returns an identification string based on arguments in args.
 
     Example:
@@ -33,27 +31,30 @@ def get_parameter_string(args, max=10):
     keys = []
     args = vars(args)
     for i, key in enumerate(args):
-        if i > max:
-            break
         val = args[key]
         if isinstance(val, str):
             if not '/' in val: # filter out paths
                 keys.append(key)
         else:
             keys.append(key)
-    params = ['{}_{}'.format(key, args[key]) for key in sorted(keys)]
+    params = [f'{key}_{args[key]}' for key in sorted(keys)]
     return '_'.join(params)
 
-def get_subdir_string(args):
+def get_subdir_string(args, with_params=False):
     """Returns a concatenation of a date and timestamp and parameters.
 
-    Follows the convention 20170524_192314_batch_size_25_lr_1e-4/
+    if with_params:
+        20170524_192314_batch_size_25_lr_1e-4/
+    else:
+        20170524_192314
     """
     date = time.strftime('%Y%m%d')
     timestamp = time.strftime('%H%M%S')
-    params = get_parameter_string(args)
-    return '{}_{}_{}'.format(date, timestamp, params)
-
+    if with_params:
+        params = get_parameter_string(args)
+        return f'{date}_{timestamp}_{params}'
+    else:
+        return f'{date}_{timestamp}'
 
 def write_args(args, positional=('mode',)):
     """Writes args to a file to be later used as input in the command line.
@@ -71,33 +72,34 @@ def write_args(args, positional=('mode',)):
             if k not in positional: # skip positional arguments
                 print(f'--{k}={v}', file=f)
 
-
 def write_losses(args, losses):
     path = os.path.join(args.logdir, 'loss.csv')
     with open(path, 'w') as f:
+        print('loss', file=f)
         for loss in losses:
             print(loss, file=f)
 
 def make_folders(args):
     # Create folders for logging and checkpoints
     subdir = get_subdir_string(args)
-    logdir = os.path.join(args.root, 'log', subdir)
+    logdir   = os.path.join(args.root, 'log', subdir)
     checkdir = os.path.join(args.root, 'checkpoints', subdir)
-    outdir = os.path.join(args.root, 'out', subdir)
-    # outdir = 'out'
+    outdir   = os.path.join(args.root, 'out', subdir)
+
     os.mkdir(logdir)
     os.mkdir(checkdir)
     os.mkdir(outdir)
-    logfile = os.path.join(logdir, 'train.log')
+
+    logfile   = os.path.join(logdir, 'train.log')
     checkfile = os.path.join(checkdir, 'model.pt')
-    outfile = os.path.join(outdir, 'train.predict.txt')
+    outfile   = os.path.join(outdir, 'train.predict.txt')
 
     # Add folders and dirs to args
-    args.outdir = outdir
-    args.outfile = outfile
-    args.logdir = logdir
-    args.logfile = logfile
-    args.checkdir = checkdir
-    args.checkfile = checkfile
+    args.outdir     = outdir
+    args.outfile    = outfile
+    args.logdir     = logdir
+    args.logfile    = logfile
+    args.checkdir   = checkdir
+    args.checkfile  = checkfile
     # Save the arguments.
     write_args(args)

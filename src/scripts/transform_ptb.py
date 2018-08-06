@@ -81,7 +81,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--in_path', type=str, default='../data/ptb/con/treebank3/parsed/mrg/wsj',
+    parser.add_argument('--in_path', type=str, default='~/data/ptb/con/treebank3/parsed/mrg/wsj',
                         help='the directory to the PTB')
     parser.add_argument('--out_path', type=str, default='../tmp',
                         help='path to write the transformed mrg files')

@@ -2,9 +2,10 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-from data import (PAD_INDEX, EMPTY_INDEX, REDUCED_INDEX, REDUCED_TOKEN,
-                    wrap, load_glove)
-from nn import MLP, BiRecurrentEncoder, StackLSTM, HistoryLSTM, BufferLSTM, RecurrentCharEmbedding
+from data import PAD_INDEX, EMPTY_INDEX, REDUCED_INDEX, REDUCED_TOKEN, wrap
+from glove import load_glove
+from embedding import ConvolutionalCharEmbedding
+from nn import MLP, StackLSTM, HistoryLSTM, BufferLSTM
 from parser import Parser
 
 class RNNG(nn.Module):
@@ -20,19 +21,22 @@ class RNNG(nn.Module):
                  dropout,
                  device=None,
                  use_glove=False,
-                 glove_path='~/glove',
-                 glove_error_dir='',
-                 char=False):
+                 glove_dir=None,
+                 glove_error_dir=None,
+                 use_char=False):
         super(RNNG, self).__init__()
         self.dictionary = dictionary
         self.device = device
 
-        ## Embeddings
+        # Embeddings
         num_words = len(dictionary.w2i)
         num_nonterminals = len(dictionary.n2i)
         num_actions = len(dictionary.a2i)
-        if char:
-            self.word_embedding = RecurrentCharEmbedding(num_words, word_emb_dim, word_emb_dim, word_emb_dim, dropout, device=device)
+        if use_char:
+            # In this case, num_words is the number of characters.
+            self.word_embedding = ConvolutionalCharEmbedding(
+                    num_words, word_emb_dim, padding_idx=PAD_INDEX,
+                    dropout=dropout, device=device)
         else:
             self.word_embedding = nn.Embedding(num_words, word_emb_dim, padding_idx=PAD_INDEX)
         self.nonterminal_embedding = nn.Embedding(num_nonterminals, word_emb_dim, padding_idx=PAD_INDEX)
@@ -58,27 +62,38 @@ class RNNG(nn.Module):
         self.criterion = nn.CrossEntropyLoss()
 
         if use_glove:
-            self.load_glove(glove_path, logdir=glove_error_dir)
+            self.load_glove(word_emb_dim, glove_dir, glove_error_dir)
 
-    def load_glove(self, path, logdir):
+        self.initialize_parameters()
+
+    def initialize_parameters(self):
+        """Initialize parameters with Glorot."""
+        for p in self.parameters():
+            if p.dim() > 1 and p.requires_grad:
+                nn.init.xavier_uniform_(p)
+
+    def load_glove(self, dim, glovedir, logdir):
         """Load pretrained glove embeddings that are fixed during training."""
-        embeddings = load_glove(self.dictionary, logdir=logdir)
+        # Make sure to get words by order of index.
+        words = [self.dictionary.i2w[i] for i in range(len(self.dictionary.w2i))]
+        embeddings = load_glove(words, dim, glovedir, logdir)
         self.word_embedding.weight = nn.Parameter(embeddings)
         self.word_embedding.weight.requires_grad = False
 
     def encode(self, stack, buffer, history):
-        # Apply dropout
+        # Apply dropout.
         stack = self.dropout(stack)     # (batch, input_size)
         buffer = self.dropout(buffer)   # (batch, input_size)
         history = self.dropout(history) # (batch, input_size)
 
         # Encode
-        b = buffer # buffer is already the lstm hidden state.
-        h = self.history_encoder(history) # Returns top hidden state.
-        s = self.stack_encoder(stack) # Returns top hidden state.
+        b = buffer # buffer is already the top hidden state
+        h = self.history_encoder(history) # returns top hidden state
+        s = self.stack_encoder(stack) # returns top hidden state
 
-        # concatenate and apply mlp to obtain logits
+        # Concatenate and apply mlp to obtain logits.
         x = torch.cat((b, h, s), dim=-1)
+
         logits = self.mlp(x)
         return logits
 
@@ -89,7 +104,7 @@ class RNNG(nn.Module):
             logits: model predictions.
             y (int): the correct index.
         """
-        y = wrap([y], self.device) # returns a pytorch Variable
+        y = wrap([y], self.device)
         return self.criterion(logits, y)
 
     def forward(self, sentence, indices, actions, verbose=False, file=None):
@@ -107,7 +122,7 @@ class RNNG(nn.Module):
         # stored inside the parser.
         self.parser.buffer.encode()
 
-        # Initialize the hidden state of the StackLSTM and the HistoryLSTM.
+        # Reset the hidden states of the StackLSTM and the HistoryLSTM.
         self.stack_encoder.initialize_hidden()
         self.history_encoder.initialize_hidden()
 
@@ -146,7 +161,8 @@ class RNNG(nn.Module):
                 tokens, indices, embeddings = self.parser.stack.pop()
                 # Reduce these items using the composition function.
                 x = self.stack_encoder.reduce(embeddings)
-                # Push new representation onto stack.
+                # Push the new representation onto stack: the computed vector x
+                # and a dummy index.
                 self.parser.stack.push(REDUCED_TOKEN, REDUCED_INDEX, x)
 
             elif action.startswith('NT'):

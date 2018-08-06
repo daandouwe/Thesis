@@ -14,9 +14,9 @@ def simplify(s):
     # and then any number of characters that is not a space: \S
     # and then exactly one space: \s{1}
     # and then keep only nt: \g<nt>
-    # NOTE: this is safe, because in the trees no word ever
+    # Note: this is safe, because in the trees no word ever
     # starts with `(` followed by capitals.
-    pattern = r'(?P<nt>\([A-Z]+)[-=]{1}\S*\s{1}'
+    pattern = r'(?P<nt>\([A-Z]+)[-=]{1}\S+\s{1}'
     sub = r'\g<nt> '
     return re.sub(pattern, sub, s)
 
@@ -25,7 +25,7 @@ def main(path):
         text = f.read()
     text = simplify(text)
     with open(path, 'w') as f:
-        print(text, file=f)
+        print(text, file=f, end='')
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

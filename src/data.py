@@ -7,11 +7,11 @@ import torch
 from torch.autograd import Variable
 import numpy as np
 
-from get_vocab import get_sentences
+from scripts.get_vocab import get_sentences
 
-PAD_TOKEN = '-PAD-'
-EMPTY_TOKEN = '-EMPTY-'
-REDUCED_TOKEN = '-REDUCED-' # used as dummy for reduced sequences
+PAD_TOKEN = '_PAD_'
+EMPTY_TOKEN = '_EMPTY_'
+REDUCED_TOKEN = '_REDUCED_' # used as dummy for reduced sequences
 
 PAD_INDEX = 0
 EMPTY_INDEX = 1
@@ -33,35 +33,12 @@ def wrap(batch, device):
     x = torch.LongTensor(batch)
     return x.to(device)
 
-def load_glove(dictionary, dim=100, dir='~/glove', logdir=''):
-    assert dim in (50, 100, 200, 300), 'invalid dim: choose from (50, 100, 200, 300).'
-    # Load the glove file.
-    try:
-        from gensim.models import KeyedVectors
-        path = os.path.join(dir, 'glove.6B.{}d.gensim.txt'.format(dim))
-        glove = KeyedVectors.load_word2vec_format(path, binary=False)
-    except ImportError:
-        path = os.path.join(dir, 'glove.6B.{}d.txt'.format(dim))
-        glove = dict()
-        with open(path) as f:
-            for line in f:
-                line = line.strip().split()
-                word, vec = line[0], line[1:]
-                vec = np.array([float(val) for val in vec])
-                glove[word] = vec
-    vectors = []
-    logfile = open(os.path.join(logdir, 'glove.error.txt'), 'w')
-    for word in dictionary.i2w:
-        try:
-            vec = glove[word]
-        except KeyError:
-            print(word, file=logfile) # print word to logfile
-            vec = np.zeros(dim) # NOTE: Find better fix
-        vectors.append(vec)
-    logfile.close()
-    vectors = np.vstack(vectors)
-    vectors = torch.FloatTensor(vectors)
-    return vectors
+class Item:
+    """A simple wrapper for a data item."""
+    def __init__(self, symbol, index):
+        self.symbol = symbol
+        self.index = index
+
 
 class Dictionary:
     """A dictionary for stack, buffer, and action symbols."""
@@ -89,7 +66,7 @@ class Dictionary:
         self.i2w.append(REDUCED_TOKEN)
 
     def read(self, path):
-        with open(path + '.vocab', 'r') as f:
+        with open(os.path.join(path, 'ptb.vocab'), 'r') as f:
             start = len(self.w2i)
             if self.char:
                 chars = set(f.read())
@@ -103,16 +80,33 @@ class Dictionary:
                     w = line.rstrip()
                     self.w2i[w] = i
                     self.i2w.append(w)
-        with open(path + '.nonterminals', 'r') as f:
+        with open(os.path.join(path, 'ptb.nonterminals'), 'r') as f:
             for i, line in enumerate(f):
                 s = line.rstrip()
                 self.n2i[s] = i
                 self.i2n.append(s)
-        with open(path + '.actions', 'r') as f:
+        with open(os.path.join(path, 'ptb.actions'), 'r') as f:
             for i, line in enumerate(f):
                 a = line.rstrip()
                 self.a2i[a] = i
                 self.i2a.append(a)
+
+    @property
+    def unks(self):
+        return [w for w in self.w2i if w.startswith('UNK')]
+
+    @property
+    def num_words(self):
+        return len(self.w2i)
+
+    @property
+    def num_actions(self):
+        return len(self.a2i)
+
+    @property
+    def num_nonterminals(self):
+        return len(self.n2i)
+
 
 class Data:
     """A dataset with parse configurations."""
@@ -127,7 +121,7 @@ class Data:
         self.read(path, dictionary, textline)
 
     def __str__(self):
-        return '{} sentences'.format(len(self.sentences))
+        return f'{len(self.sentences)} sentences'
 
     def _order(self, new_order):
         self.sentences = [self.sentences[i] for i in new_order]
@@ -178,10 +172,14 @@ class Data:
             batches.append((sentence, ids, actions))
         return batches
 
+    @property
+    def textline(self):
+        return self.textline
+
 class Corpus:
     """A corpus of three datasets (train, development, and test) and a dictionary."""
-    def __init__(self, data_path="../tmp", textline='unked', char=False):
-        self.dictionary = Dictionary(os.path.join(data_path,  'ptb'), char=char)
+    def __init__(self, data_path='../tmp', textline='unked', char=False):
+        self.dictionary = Dictionary(os.path.join(data_path, 'vocab', textline), char=char)
         self.train = Data(os.path.join(data_path, 'train', 'ptb.train.oracle'),
                         self.dictionary, textline, char=char)
         self.dev = Data(os.path.join(data_path, 'dev', 'ptb.dev.oracle'),
@@ -191,15 +189,18 @@ class Corpus:
 
     def __str__(self):
         items = ['CORPUS',
-                 'vocab size: {}'.format(len(self.dictionary.w2i)),
-                 'train', str(self.train),
-                 'dev', str(self.dev),
-                 'test', str(self.test)]
+                 f'vocab size: {self.dictionary.num_words}',
+                 'train',
+                 str(self.train),
+                 'dev',
+                 str(self.dev),
+                 'test',
+                 str(self.test)]
         return '\n'.join(items)
 
 if __name__ == "__main__":
     # Example usage:
-    corpus = Corpus(data_path="../tmp", textline='unked', char=True)
+    corpus = Corpus(data_path='../tmp', textline='unked', char=True)
     batches = corpus.train.batches(1, length_ordered=False)
     print(corpus.dictionary.w2i)
     print(corpus)

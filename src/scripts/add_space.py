@@ -9,11 +9,12 @@ def add_space(s):
     return re.sub(pattern, sub, s)
 
 def main(path):
+    # Add space between brackets.
     with open(path) as f:
         text = f.read()
     text = add_space(text)
     with open(path, 'w') as f:
-        print(text, file=f)
+        print(text, file=f, end='')
 
 if __name__ == '__main__':
     # s = '(S(NP(NP(NNP Pierre)(NNP Vinken))(, ,)(ADJP(NP(CD 61)(NNS years))(JJ old))(, ,))(VP(MD will)(VP(VB join)(NP(DT the)(NN board))(PP(IN as)(NP(DT a)(JJ nonexecutive)(NN director)))(NP(NNP Nov.)(CD 29))))(. .))'

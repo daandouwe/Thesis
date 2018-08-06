@@ -1,55 +1,74 @@
 #!/usr/bin/env python
-
 import os
 import glob
 import argparse
+import re
 
 from PYEVALB.scorer import Scorer
 
-from get_vocab import get_sentences
+from scripts.get_vocab import get_sentences
 
-def oracle2tree(sent):
-    """Returns a linearize tree from a list of actions in an oracle file.
-
-    Arguments:
-        sent (dictionary): format returned by get_sent_dict from get_vocab.py
-    """
-    actions   = sent['actions']
-    words     = sent['upper'].split()
-    tags      = sent['tags'].split()
-    gold_tree = sent['tree'][2:] # remove the hash at the beginning
-    pred_tree = ''
+def actions2tree(words, actions, tags=None):
+    """Returns a linearizen tree from a list of words and actions."""
     # reverse words:
     words = words[::-1]
-    tags = tags[::-1]
+    if tags:
+        tags = tags[::-1]
+    tree = ''
     for i, a in enumerate(actions):
         if a == 'SHIFT':
-            w = words.pop()
-            t = tags.pop()
-            pred_tree += '({} {}) '.format(t, w)
+            word = words.pop()
+            if tags:
+                tag = tags.pop()
+                tree += '({} {}) '.format(tag, word)
+            else:
+                tree += '{} '.format(word)
         elif a == 'REDUCE':
-            pred_tree += ') '
+            tree = tree[:-1] # Remove whitespace
+            tree += ') '
         else:
             nt = a[3:-1] # a is NT(X), and we select only X
-            pred_tree += '({} '.format(nt)
-    return pred_tree, gold_tree
+            tree += '({} '.format(nt)
+    return tree
+
+def eval(outdir, verbose=False):
+    oracle_path = os.path.join(outdir, 'test.pred.oracle')
+    pred_path   = os.path.join(outdir, 'test.pred.trees')
+    gold_path   = os.path.join(outdir, 'test.gold.trees')
+    result_path = os.path.join(outdir, 'test.result')
+    predicted_sents = get_sentences(oracle_path)
+    with open(pred_path, 'w') as f:
+        with open(gold_path, 'w') as g:
+            for sent in predicted_sents:
+                pred_tree = actions2tree(sent['upper'].split(),
+                                         sent['actions'],
+                                         sent['tags'].split())
+                gold_tree = sent['tree'][2:] # remove the hash at the beginning
+                print(pred_tree, file=f)
+                print(gold_tree, file=g)
+    scorer = Scorer()
+    scorer.evalb(gold_path, pred_path, result_path)
+    if verbose:
+        with open(result_path) as f:
+            print(f.read())
 
 def main(args):
     oracle_path = os.path.join(args.preddir, args.name + '.pred.oracle')
     pred_path   = os.path.join(args.preddir, args.name + '.pred.trees')
     gold_path   = os.path.join(args.preddir, args.name + '.gold.trees')
     result_path = os.path.join(args.preddir, args.name + '.result')
-
     predicted_sents = get_sentences(oracle_path)
     with open(pred_path, 'w') as f:
         with open(gold_path, 'w') as g:
             for sent in predicted_sents:
-                pred_tree, gold_tree = oracle2tree(sent)
+                pred_tree = actions2tree(sent['upper'].split(),
+                                         sent['actions'],
+                                         sent['tags'].split())
+                gold_tree = sent['tree'][2:] # remove the hash at the beginning
                 print(pred_tree, file=f)
                 print(gold_tree, file=g)
     scorer = Scorer()
     scorer.evalb(gold_path, pred_path, result_path)
-
     if args.verbose:
         with open(result_path) as f:
             print(f.read())
@@ -64,8 +83,8 @@ if __name__ == '__main__':
                         help='directory where predictions are written to')
     parser.add_argument('--folder', type=str, default='',
                         help='the folder in outdir to look for')
-    parser.add_argument('--name', type=str, choices=['train', 'dev', 'test'], default='test',
-                        help='name of the data set used')
+    parser.add_argument('--name', type=str, choices=['train', 'dev', 'test'],
+                        default='test', help='name of the data set used')
     args = parser.parse_args()
 
     if args.use_latest:

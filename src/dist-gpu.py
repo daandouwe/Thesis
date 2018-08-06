@@ -1,3 +1,10 @@
+"""Making this work.
+https://github.com/pytorch/pytorch/issues/241
+https://discuss.pytorch.org/t/how-to-properly-use-distributed-pytorch-with-infiniband-support/10161
+https://userinfo.surfsara.nl/systems/lisa/usage/batch-usage
+"""
+
+
 #!/usr/bin/env python
 import os
 import sys
@@ -36,12 +43,9 @@ def average_gradients(model):
             dist.all_reduce(param.grad.data, op=dist.reduce_op.SUM)
             param.grad.data /= size
 
-def init_processes(fn, *args, backend='tcp'):
+def init_processes(fn, *args, backend='nccl'):
     """Initialize the distributed environment."""
-    os.environ['MASTER_ADDR'] = '127.0.0.1'
-    os.environ['MASTER_PORT'] = '29500'
-    print(size)
-    dist.init_process_group(backend, rank=rank, world_size=size)
+    dist.init_process_group(backend, init_method="file:///distributed_test", rank=rank, world_size=size)
     fn(*args)
 
 if __name__ == "__main__":

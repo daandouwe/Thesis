@@ -64,9 +64,9 @@ def get_actions(sentences):
 
 def main(args):
     # Partition the oracle files into sentences
-    train = get_sentences(os.path.join(args.oracle_path, 'train', 'ptb.train.oracle'))
-    dev = get_sentences(os.path.join(args.oracle_path, 'dev', 'ptb.dev.oracle'))
-    test = get_sentences(os.path.join(args.oracle_path, 'test', 'ptb.test.oracle'))
+    train = get_sentences(os.path.join(args.oracle_dir, 'train', 'ptb.train.oracle'))
+    dev = get_sentences(os.path.join(args.oracle_dir, 'dev', 'ptb.dev.oracle'))
+    test = get_sentences(os.path.join(args.oracle_dir, 'test', 'ptb.test.oracle'))
     sentences = train + dev + test
 
     # Collect desired symbols for our dictionaries
@@ -75,7 +75,7 @@ def main(args):
     nonterminals = get_nonterminals(sentences)
 
     # Write out vocabularies
-    path = os.path.join(args.oracle_path, 'ptb')
+    path = os.path.join(args.out_dir, 'ptb')
     print('\n'.join(nonterminals),
             file=open(path + '.nonterminals', 'w'))
     print('\n'.join(actions),
@@ -85,8 +85,10 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='data for RNNG parser.')
-    parser.add_argument('--oracle_path', type=str, default='../tmp',
-                        help='location of the oracle path')
+    parser.add_argument('--oracle_dir', type=str, default='../tmp',
+                        help='oracle path')
+    parser.add_argument('--out_dir', type=str, default='../tmp',
+                        help='path to output vocabulary')
     parser.add_argument('--textline', type=str, choices=['unked', 'lower', 'upper'], default='unked',
                         help='textline to use from the oracle file')
     args = parser.parse_args()
