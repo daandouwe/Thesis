@@ -10,13 +10,13 @@ def simplify(s):
     """
     # Starts with `(` and then any sequence of capital letters: ([A-Z]+
     # we call this chuck nt: (?P<nt>...)
-    # then followed by exactly one of `-` or `=`: [-=]{1}
+    # then followed by exactly one of `-` or `=` or `|`: [-=]{1}
     # and then any number of characters that is not a space: \S
     # and then exactly one space: \s{1}
     # and then keep only nt: \g<nt>
     # Note: this is safe, because in the trees no word ever
     # starts with `(` followed by capitals.
-    pattern = r'(?P<nt>\([A-Z]+)[-=]{1}\S+\s{1}'
+    pattern = r'(?P<nt>\([A-Z]+)[-=|]{1}\S+\s{1}'
     sub = r'\g<nt> '
     return re.sub(pattern, sub, s)
 

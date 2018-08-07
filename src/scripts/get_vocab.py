@@ -2,6 +2,8 @@
 import argparse
 import os
 
+ACTIONS = ('SHIFT', 'REDUCE', 'OPEN')
+
 def get_sent_dict(sent):
     """Organize a sentence from the oracle file  as a dictionary."""
     d = {
@@ -47,19 +49,14 @@ def get_nonterminals(sentences):
     """Returns the set of actions used in the oracle file."""
     nonterminals = set()
     for sent_dict in sentences:
-        nts = [a for a in sent_dict['actions'] if a.startswith('NT')]
+        nts = [a[3:-1] for a in sent_dict['actions'] if a.startswith('NT')]
         nonterminals.update(nts)
     nonterminals = sorted(list(nonterminals))
     return nonterminals
 
 def get_actions(sentences):
     """Returns the set of actions used in the oracle file."""
-    actions = set()
-    for sent_dict in sentences:
-        actions.update(sent_dict['actions'])
-    actions = sorted(list(actions))
-    return actions
-
+    return ACTIONS
 
 def main(args):
     # Partition the oracle files into sentences

@@ -29,8 +29,8 @@ def pad(batch):
 
 def wrap(batch, device):
     """Packages the batch as a Variable containing a LongTensor."""
-    x = torch.LongTensor(batch, device=device)
-    return x
+    x = torch.LongTensor(batch)
+    return x.to(device)
 
 class Item:
     def __init__(self, token, index, embedding=None, encoding=None):
@@ -47,6 +47,13 @@ class Item:
         self.index = index
         self.embedding = embedding
         self.encoding = encoding
+
+class Action(Item):
+    def __init__(self, token, index, embedding=None, encoding=None, symbol=None):
+        super(Action, self).__init__(token, index, embedding, encoding)
+        if symbol is not None:
+            assert isinstance(symbol, Item)
+        self.symbol = symbol
 
 class Dictionary:
     """A dictionary for stack, buffer, and action symbols."""
@@ -150,9 +157,16 @@ class Data:
                                 for token, index in zip(sentence, indices)]
             # Get action items
             actions = sent_dict['actions']
-            indices = [dictionary.a2i[action] for action in actions]
-            action_items = [Item(token, index)
-                                for token, index in zip(actions, indices)]
+            # indices = [dictionary.a2i[action] for action in actions]
+            # action_items = [Item(token, index, symbol)
+                                # for token, index in zip(actions, indices)]
+            action_items = []
+            for token in actions:
+                if not token == 'SHIFT' and not token == 'REDUCE':
+                    nonterminal = token[3:-1]
+                    symbol = Item(nonterminal, self.dictionary.n2i[nonterminal])
+                    token, index = 'OPEN', dictionary.a2i['OPEN']
+                    action_items.append(Action(token, index, symbol=symbol))
             # Store internally
             self.sentences.append(sentence_items)
             self.actions.append(action_items)

@@ -1,7 +1,7 @@
 import torch
 
 from data import (EMPTY_INDEX, REDUCED_INDEX, EMPTY_TOKEN, REDUCED_TOKEN, PAD_TOKEN,
-                    Item, wrap, pad)
+                    Item, Action, wrap, pad)
 
 class TransitionBase:
     """A base class for the Stack, Buffer and History."""
@@ -185,7 +185,7 @@ class History(TransitionBase):
     def initialize(self):
         """Initialize the history by push the `empty` item."""
         self._reset()
-        self.push(Item(EMPTY_TOKEN, EMPTY_INDEX))
+        self.push(Action(EMPTY_TOKEN, EMPTY_INDEX))
 
     def push(self, item):
         """Push action index and vector embedding onto history."""
@@ -196,7 +196,7 @@ class History(TransitionBase):
 class Parser:
     """The parse configuration."""
     def __init__(self, word_embedding, nonterminal_embedding, action_embedding,
-                 buffer_encoder, device):
+                 buffer_encoder, SHIFT, REDUCE, OPEN, device):
         """Initialize the parser.
 
         Arguments:
@@ -204,11 +204,13 @@ class Parser:
             nonterminal_embedding: embedding function for nonterminals.
             actions_embedding: embedding function for actions.
             buffer_encoder: encoder function to encode buffer contents.
+            SHIFT, REDUCE, OPEN (int): indices of these actions.
             device: device on which computation is done (gpu or cpu).
         """
         self.stack = Stack(word_embedding, nonterminal_embedding, device)
         self.buffer = Buffer(word_embedding, buffer_encoder, device)
         self.history = History(action_embedding, device)
+        self.SHIFT, self.REDUCE, self.OPEN = SHIFT, REDUCE, OPEN
 
     def __str__(self):
         return '\n'.join(('Parser', str(self.stack), str(self.buffer), str(self.history)))
@@ -234,16 +236,16 @@ class Parser:
 
     def is_valid_action(self, action):
         """Check whether the action is valid under the parser's configuration."""
-        if action.token == 'SHIFT':
+        if action.token == self.SHIFT:
             cond1 = not self.buffer.empty
             cond2 = self.stack.num_open_nonterminals > 0
             return cond1 and cond2
-        elif action.token =='REDUCE':
-            cond1 = not self.last_action.startswith('NT')
+        elif action.token == self.REDUCE:
+            cond1 = not self.last_action == self.OPEN
             cond2 = self.stack.num_open_nonterminals > 1
             cond3 = self.buffer.empty
             return cond1 and (cond2 or cond3)
-        elif action.token.startswith('NT'):
+        elif action.token == self.OPEN:
             cond1 = not self.buffer.empty
             cond2 = self.stack.num_open_nonterminals < 100
             return cond1 and cond2

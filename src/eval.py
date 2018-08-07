@@ -27,7 +27,7 @@ def actions2tree(words, actions, tags=None):
             tree = tree[:-1] # Remove whitespace
             tree += ') '
         else:
-            nt = a[3:-1] # a is NT(X), and we select only X
+            nt = a
             tree += '({} '.format(nt)
     return tree
 

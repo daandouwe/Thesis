@@ -21,7 +21,8 @@ class RNNG(nn.Module):
         buffer_encoder,
         stack_encoder,
         history_encoder,
-        mlp,
+        action_mlp,
+        nonterminal_mlp,
         loss_compute,
         dropout,
         device
@@ -35,15 +36,17 @@ class RNNG(nn.Module):
         self.action_embedding = action_embedding
 
         # Actions
-        # d = dictionary.n2i
-        # self.SHIFT, self.REDUCE, self.OPEN = d['SHIFT'], d['REDUCE'], d['OPEN']
+        d = dictionary.a2i
+        self.SHIFT, self.REDUCE, self.OPEN = d['SHIFT'], d['REDUCE'], d['OPEN']
         # Parser encoders
         self.buffer_encoder = buffer_encoder
         self.stack_encoder = stack_encoder
         self.history_encoder = history_encoder
 
         # MLP for action classifiction
-        self.mlp = mlp
+        self.action_mlp = action_mlp
+        # MLP for nonterminal classifiction
+        self.nonterminal_mlp = nonterminal_mlp
 
         self.dropout = nn.Dropout(p=dropout)
 
@@ -53,6 +56,9 @@ class RNNG(nn.Module):
             self.nonterminal_embedding,
             self.action_embedding,
             self.buffer_encoder,
+            self.SHIFT,
+            self.REDUCE,
+            self.OPEN,
             device=device
         )
 
@@ -70,19 +76,16 @@ class RNNG(nn.Module):
         s = self.stack_encoder(stack) # returns top hidden state
         # Concatenate and apply mlp to obtain logits.
         x = torch.cat((b, h, s), dim=-1)
-        logits = self.mlp(x)
-        return logits
+        return x
 
     def parse_step(self, action, logfile=False):
         """Updates parser one step give the action."""
         self.parser.history.push(action)
 
-        # if action.token == self.SHIFT:
-        if action.token == 'SHIFT':
+        if action.index == self.SHIFT:
             self.parser.shift()
 
-        # elif action.token == self.REDUCE:
-        elif action.token == 'REDUCE':
+        elif action.index == self.REDUCE:
             # Pop all items from the open nonterminal.
             items, embeddings = self.parser.stack.pop()
             # Reduce these items using the composition function.
@@ -94,14 +97,12 @@ class RNNG(nn.Module):
                 reduced=True
             )
 
-        # elif action.token == self.OPEN:
-        elif action.token.startswith('NT'):
-             # break relation with the original action Item
-            item = Item(action.token, action.index)
+        elif action.index == self.OPEN:
+            item = Item(action.symbol.token, action.symbol.index) # Now action has these attributes
             self.parser.stack.open_nonterminal(item)
 
         else:
-            raise ValueError('got illegal action: {}'.format(a))
+            raise ValueError('got illegal action: {}'.format(action.token))
 
         # if logfile is not None:
         #     print(t, file=logfile)
@@ -129,9 +130,12 @@ class RNNG(nn.Module):
         for t, action in enumerate(actions):
             # Compute parse representation and prediction.
             stack, buffer, history = self.parser.get_embedded_input()
-            logits = self.encode(stack, buffer, history) # encode the parse configuration
-            step_loss = self.loss_compute(logits, action.index)
-            loss += step_loss
+            x = self.encode(stack, buffer, history) # encode the parse configuration
+            action_logits = self.action_mlp(x)
+            loss += self.loss_compute(action_logits, action.index)
+            if action.index == self.OPEN:
+                nonterminal_logits = self.nonterminal_mlp(x)
+                loss += self.loss_compute(nonterminal_logits, action.symbol.index)
             # Take the appropriate parse step.
             self.parse_step(action)
         return loss
@@ -216,10 +220,16 @@ def make_model(args, dictionary):
     )
 
     mlp_input = 2 * args.word_lstm_hidden + args.action_lstm_hidden
-    mlp = MLP(
+    action_mlp = MLP(
         mlp_input,
         args.mlp_dim,
         num_actions,
+        args.dropout
+    )
+    nonterminal_mlp = MLP(
+        mlp_input,
+        args.mlp_dim,
+        num_nonterminals,
         args.dropout
     )
 
@@ -233,7 +243,8 @@ def make_model(args, dictionary):
         buffer_encoder=buffer_encoder,
         stack_encoder=stack_encoder,
         history_encoder=history_encoder,
-        mlp=mlp,
+        action_mlp=action_mlp,
+        nonterminal_mlp=nonterminal_mlp,
         loss_compute=loss_compute,
         dropout=args.dropout,
         device=args.device
