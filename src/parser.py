@@ -100,7 +100,7 @@ class Stack(TransitionBase):
             item = self._items.pop()
             poppep_items.append(item)
             # Break from while if we found a nonterminal
-            if item.token.startswith('NT'):
+            if item.is_nonterminal:
                 found_nonterminal = True
         # reverse the lists (we appended)
         poppep_items = poppep_items[::-1]
@@ -236,21 +236,21 @@ class Parser:
 
     def is_valid_action(self, action):
         """Check whether the action is valid under the parser's configuration."""
-        if action.token == self.SHIFT:
+        if action.index == self.SHIFT:
             cond1 = not self.buffer.empty
             cond2 = self.stack.num_open_nonterminals > 0
             return cond1 and cond2
-        elif action.token == self.REDUCE:
+        elif action.index == self.REDUCE:
             cond1 = not self.last_action == self.OPEN
             cond2 = self.stack.num_open_nonterminals > 1
             cond3 = self.buffer.empty
             return cond1 and (cond2 or cond3)
-        elif action.token == self.OPEN:
+        elif action.index == self.OPEN:
             cond1 = not self.buffer.empty
             cond2 = self.stack.num_open_nonterminals < 100
             return cond1 and cond2
         else:
-            raise ValueError(f'got illegal action: {action}')
+            raise ValueError(f'got illegal action: {action.token}')
 
     @property
     def actions(self):

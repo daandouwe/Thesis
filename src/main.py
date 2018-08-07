@@ -22,41 +22,53 @@ def main():
                         help='to be constructed by util.make_folders')
     parser.add_argument('--logfile', default=None,
                         help='to be constructed by util.make_folders')
-    parser.add_argument('--disable_folders', action='store_true',
+    parser.add_argument('--disable-folders', action='store_true',
                         help='do not make output folders (debug)')
     # Model arguments
-    parser.add_argument('--use_char', action='store_true',
+    parser.add_argument('--use-char', action='store_true',
                         help='use character-level word embeddings')
-    parser.add_argument('--word_emb_dim', type=int, default=100,
+    parser.add_argument('--word-emb-dim', type=int, default=100,
                         help='dim of embeddings for word')
-    parser.add_argument('--action_emb_dim', type=int, default=20,
+    parser.add_argument('--action-emb-dim', type=int, default=20,
                         help='dim of embeddings for actions')
-    parser.add_argument('--word_lstm_hidden', type=int, default=128,
+    parser.add_argument('--word-lstm-hidden', type=int, default=128,
                         help='size of lstm hidden states for StackLSTM and BufferLSTM')
-    parser.add_argument('--action_lstm_hidden', type=int, default=128,
+    parser.add_argument('--action-lstm-hidden', type=int, default=128,
                         help='size of lstm hidden states for history encoder')
-    parser.add_argument('--lstm_num_layers', type=int, default=2,
+    parser.add_argument('--lstm-num-layers', type=int, default=2,
                         help='number of layers in lstm')
-    parser.add_argument('--mlp_dim', type=int, default=128,
+    parser.add_argument('--mlp-dim', type=int, default=128,
                         help='size of mlp hidden state')
     parser.add_argument('--dropout', type=float, default=0.2,
                         help='dropout rate for embeddings, lstm, and mlp')
-    parser.add_argument('--use_glove', action='store_true',
+    parser.add_argument('--use-glove', action='store_true',
                         help='using pretrained glove embeddings')
-    parser.add_argument('--glovedir', type=str, default='~/glove',
+    parser.add_argument('--use-fasttext', action='store_true',
+                        help='using pretrained fasttext embeddings')
+    parser.add_argument('--glove-dir', type=str, default='~/glove',
                         help='to be constructed by util.make_folders')
+    parser.add_argument('--glove-torchtext', action='store_true',
+                        help='loading glove with torchtext')
     parser.add_argument('--seed', type=int, default=42,
                         help='random seed to use')
     # Training arguments
-    parser.add_argument('--lr', type=float, default=1e-3,
+    parser.add_argument('--batch-size', type=int, default=16,
+                        help='size of mini batch')
+    parser.add_argument('--lr', type=float, default=0.0008,
                         help='initial learning rate')
+    parser.add_argument('--learning-rate-warmup_steps', type=int,
+                        default=160)
+    parser.add_argument('--step-decay-patience', type=int,
+                        default=1)
+    parser.add_argument('--step-decay-factor', type=float,
+                        default=0.5)
     parser.add_argument('--epochs', type=int, default=10,
                         help='number of epochs')
     parser.add_argument('--clip', type=float, default=5.,
                         help='clipping gradient norm at this value')
-    parser.add_argument('--print_every', type=int, default=10,
+    parser.add_argument('--print-every', type=int, default=10,
                         help='when to print training progress')
-    parser.add_argument('--disable_cuda', action='store_true',
+    parser.add_argument('--disable-cuda', action='store_true',
                         help='disable CUDA')
     args = parser.parse_args()
 

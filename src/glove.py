@@ -45,40 +45,44 @@ def load_glove(words, dim, dir, logdir):
                 vec = np.array([float(val) for val in vec])
                 glove[word] = vec
     # Get the glove vector for each word in the dictionary and log words not found.
-    logfile = open(os.path.join(logdir, 'glove.error.txt'), 'w')
+    with open(os.path.join(logdir, 'glove.error.txt'), 'w'):
+        vectors = get_vectors(words, glove, dim, logfile)
+    return vectors
+
+def get_vectors(words, vectordict, dim, logfile):
+    """Get the vectors for the words in vectordict and return as tensor."""
     vectors = []
     for word in words:
-        vec = get_vector(word, glove, dim, logfile)
+        vec = get_vector(word, vectordict, dim, logfile)
         vectors.append(vec)
-    logfile.close()
     vectors = np.vstack(vectors)
     vectors = torch.FloatTensor(vectors)
     return vectors
 
-def get_vector(word, glove, dim, logfile):
-    """Get the word from the glove dictionary.
+def get_vector(word, vectordict, dim, logfile):
+    """Get the word from the vectordict dictionary.
 
-    Tries alternatives if the word is not in the glove dictionary,
+    Tries alternatives if the word is not in the vectordict dictionary,
     and finally initializes random if even this cannot be done. These words
     are printed to logfile. Default initialization is Normal(0,1).
     """
     try:
-        vec = glove[word]
+        vec = vectordict[word]
     # Word not found.
     except KeyError:
         # If the word is uppercase we try lowercase.
-        if word.lower() in glove:
-            vec = glove[word.lower()]
+        if word.lower() in vectordict:
+            vec = vectordict[word.lower()]
         # If word is can be split using characters like `-` and `&` then
         # we take the average embedding of those splits.
         elif splits(word) is not None: # word can be split into parts
             vec = np.zeros(dim) # accumulator
             parts = splits(word)
             for part in parts:
-                if part in glove:
-                    vec += glove[part]
-                elif part.lower() in glove:
-                    vec += glove[part.lower()]
+                if part in vectordict:
+                    vec += vectordict[part]
+                elif part.lower() in vectordict:
+                    vec += vectordict[part.lower()]
                 else:
                     pass # implicit zero vector for this part
             vec /= len(parts) # Average of the embeddings

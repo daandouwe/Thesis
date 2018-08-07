@@ -10,14 +10,14 @@ from scripts.get_vocab import get_sentences
 
 def predict(args, model, batches, name='test'):
     model.eval()
-    sentences = get_sentences(os.path.join(args.data, 'test', 'ptb.{}.oracle'.format(name)))
+    sentences = get_sentences(os.path.join(args.data, 'test', f'ptb.{name}.oracle'))
     nsents = len(batches)
     for i, batch in enumerate(batches):
         sentence, actions = batch
-        parser = model.parse(sent, indices)
+        parser = model.parse(sentence)
         sentences[i]['actions'] = parser.actions
         if i % 10 == 0:
-            print('Predicting: sentence {}/{}.'.format(i, nsents), end='\r')
+            print(f'Predicting: sentence {i}/{nsents}.', end='\r')
     print()
     write_prediction(sentences, args.outdir, name=name)
 
@@ -31,7 +31,7 @@ def print_sent_dict_as_config(sent_dict, file):
     print(file=file)
 
 def write_prediction(sentences, outdir, name, verbose=False):
-    path = os.path.join(outdir, '{}.pred.oracle'.format(name))
+    path = os.path.join(outdir, '{name}.pred.oracle')
     with open(path, 'w') as f:
         for i, sent_dict in enumerate(sentences):
             if verbose: print(i, end='\r')

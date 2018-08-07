@@ -2,6 +2,7 @@ import sys
 import os
 import string
 from collections import defaultdict
+from tqdm import tqdm
 
 import torch
 from torch.autograd import Variable
@@ -29,11 +30,14 @@ def pad(batch):
 
 def wrap(batch, device):
     """Packages the batch as a Variable containing a LongTensor."""
+    assert isinstance(batch, list)
+    if isinstance(batch[0], list) and len(batch) > 1:
+        batch = pad(batch)
     x = torch.LongTensor(batch)
     return x.to(device)
 
 class Item:
-    def __init__(self, token, index, embedding=None, encoding=None):
+    def __init__(self, token, index, embedding=None, encoding=None, nonterminal=False):
         """Make a data item.
 
         Args:
@@ -47,6 +51,14 @@ class Item:
         self.index = index
         self.embedding = embedding
         self.encoding = encoding
+        self._nonterminal = nonterminal
+
+    def __str__(self):
+        return self.token
+
+    @property
+    def is_nonterminal(self):
+        return self._nonterminal
 
 class Action(Item):
     def __init__(self, token, index, embedding=None, encoding=None, symbol=None):
@@ -54,6 +66,7 @@ class Action(Item):
         if symbol is not None:
             assert isinstance(symbol, Item)
         self.symbol = symbol
+
 
 class Dictionary:
     """A dictionary for stack, buffer, and action symbols."""
@@ -135,7 +148,7 @@ class Data:
         self.read(path, dictionary, textline)
 
     def __str__(self):
-        return f'{len(self.sentences)} sentences'
+        return f'{len(self.sentences):,} sentences'
 
     def _order(self, new_order):
         self.sentences = [self.sentences[i] for i in new_order]
@@ -144,22 +157,18 @@ class Data:
     def read(self, path, dictionary, textline):
         sents = get_sentences(path) # a list of `sent_dict` objects
         nlines = len(sents)
-        for i, sent_dict in enumerate(sents):
+        for i, sent_dict in enumerate(tqdm(sents)):
             # Get sentence items.
             sentence = sent_dict[textline].split()
-            if self.char:
-                indices = [[dictionary.w2i[char] for char in word]
-                                for word in sentence]
-                indices = pad(indices)
-            else:
-                indices = [dictionary.w2i[word] for word in sentence]
-            sentence_items = [Item(token, index)
-                                for token, index in zip(sentence, indices)]
+            sentence_items = []
+            for token in sentence:
+                if self.char:
+                    index = [dictionary.w2i[char] for char in token]
+                else:
+                    index = dictionary.w2i[token]
+                sentence_items.append(Item(token, index))
             # Get action items
             actions = sent_dict['actions']
-            # indices = [dictionary.a2i[action] for action in actions]
-            # action_items = [Item(token, index, symbol)
-                                # for token, index in zip(actions, indices)]
             action_items = []
             for token in actions:
                 if not token == 'SHIFT' and not token == 'REDUCE':
@@ -214,14 +223,13 @@ class Corpus:
                         self.dictionary, textline, char=char)
 
     def __str__(self):
-        items = ['CORPUS',
-                 f'vocab size: {self.dictionary.num_words}',
-                 'train',
-                 str(self.train),
-                 'dev',
-                 str(self.dev),
-                 'test',
-                 str(self.test)]
+        items = (
+            'Corpus',
+             f'vocab size: {self.dictionary.num_words:,}',
+             f'train: {str(self.train)}',
+             f'dev: {str(self.dev)}',
+             f'test: {str(self.test)}',
+        )
         return '\n'.join(items)
 
 if __name__ == "__main__":
