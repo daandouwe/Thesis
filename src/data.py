@@ -29,16 +29,24 @@ def pad(batch):
 
 def wrap(batch, device):
     """Packages the batch as a Variable containing a LongTensor."""
-    # x = torch.LongTensor(batch, device=device) # somehow not working?!
-    x = torch.LongTensor(batch)
-    return x.to(device)
+    x = torch.LongTensor(batch, device=device)
+    return x
 
 class Item:
-    """A simple wrapper for a data item."""
-    def __init__(self, symbol, index):
-        self.symbol = symbol
-        self.index = index
+    def __init__(self, token, index, embedding=None, encoding=None):
+        """Make a data item.
 
+        Args:
+            token (str): a word, action, or nonterminal.
+            index (int or [int]): an integer index for word embedding,
+                or a list of integers if character embeddings are used.
+            embedding (torch tensor): an embedding of the token.
+            encoding (torch tensor): an encoding of the token.
+        """
+        self.token = token
+        self.index = index
+        self.embedding = embedding # tensor
+        self.encoding = encoding # tensor
 
 class Dictionary:
     """A dictionary for stack, buffer, and action symbols."""
@@ -92,8 +100,8 @@ class Dictionary:
                 self.i2a.append(a)
 
     @property
-    def unks(self):
-        return [w for w in self.w2i if w.startswith('UNK')]
+    def unks(self, unk_start='UNK'):
+        return [w for w in self.w2i if w.startswith(unk_start)]
 
     @property
     def num_words(self):
@@ -114,7 +122,7 @@ class Data:
         self.dictionary = dictionary
 
         self.sentences = [] # each sentence as list of words
-        self.indices = [] # each sentence as list of indices
+        # self.indices = [] # each sentence as list of indices
         self.actions = [] # each sequence of actions as list of indices
 
         self.char = char
@@ -125,23 +133,32 @@ class Data:
 
     def _order(self, new_order):
         self.sentences = [self.sentences[i] for i in new_order]
-        self.indices = [self.indices[i] for i in new_order]
+        # self.indices = [self.indices[i] for i in new_order]
         self.actions = [self.actions[i] for i in new_order]
 
     def read(self, path, dictionary, textline):
         sents = get_sentences(path) # a list of `sent_dict` objects
         nlines = len(sents)
         for i, sent_dict in enumerate(sents):
-            sent = sent_dict[textline].split()
-            actions = sent_dict['actions']
+            # Get sentence items.
+            sentence = sent_dict[textline].split()
             if self.char:
-                ids = [[dictionary.w2i[char] for char in w] for w in sent]
+                indices = [[dictionary.w2i[char] for char in word]
+                                for word in sentence]
+                indices = pad(indices)
             else:
-                ids = [dictionary.w2i[w] for w in sent]
-            actions = [dictionary.a2i[w] for w in actions]
-            self.sentences.append(sent)
-            self.indices.append(ids)
-            self.actions.append(actions)
+                indices = [dictionary.w2i[word] for word in sentence]
+                # indices = wrap(indices) # TODO see if needed.
+            sentence_items = [Item(token, index)
+                                for token, index in zip(sentence, indices)]
+            # Get action items
+            actions = sent_dict['actions']
+            indices = [dictionary.a2i[action] for action in actions]
+            action_items = [Item(token, index)
+                                for token, index in zip(actions, indices)]
+            # Store internally
+            self.sentences.append(sentence_items)
+            self.actions.append(action_items)
         self.lengths = [len(sent) for sent in self.sentences]
 
     def order(self):
@@ -166,10 +183,10 @@ class Data:
         batches = []
         for i in range(n):
             sentence = self.sentences[i]
-            ids = self.indices[i]
-            ids = pad(ids) if self.char else ids
+            # ids = self.indices[i]
+            # ids = pad(ids) if self.char else ids
             actions = self.actions[i]
-            batches.append((sentence, ids, actions))
+            batches.append((sentence, actions))
         return batches
 
     @property

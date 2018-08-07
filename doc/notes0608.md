@@ -13,7 +13,7 @@
 * use `&` to run multiple commands on the same node/processor.
 
 # Objectives
-- [ ] Still parallel
+- [ ] Still work on parallel.
 - [ ] Beter use of Lisa: more GPUs per node, `&` for more computation per processor
 - [ ] Some more embeddings.
 - [ ] Move to generative

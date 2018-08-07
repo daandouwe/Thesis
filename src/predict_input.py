@@ -54,3 +54,6 @@ def main(args):
         print(unked)
         print(tree)
         print()
+
+if __name__ == '__main__':
+    main(args)

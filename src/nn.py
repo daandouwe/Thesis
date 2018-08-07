@@ -26,14 +26,14 @@ class MLP(nn.Module):
 
 
 class BiRecurrentEncoder(nn.Module):
-    """A bidirectional RNN encoder."""
+    """A bidirectional RNN encoder for unpadded batches."""
     def __init__(self,input_size, hidden_size, num_layers, dropout, batch_first=True, device=None):
         super(BiRecurrentEncoder, self).__init__()
-        self.forward_rnn = nn.LSTM(input_size, hidden_size, num_layers,
+        self.fwd_rnn = nn.LSTM(input_size, hidden_size, num_layers,
                                 batch_first=batch_first, dropout=dropout)
-        self.backward_rnn = nn.LSTM(input_size, hidden_size, num_layers,
+        self.bwd_rnn = nn.LSTM(input_size, hidden_size, num_layers,
                                 batch_first=batch_first, dropout=dropout)
-        self.device = device # GPU or CPU
+        self.device = device
         self.to(device)
 
     def _reverse(self, tensor):
@@ -42,8 +42,9 @@ class BiRecurrentEncoder(nn.Module):
         return tensor.index_select(1, idx)
 
     def forward(self, x):
-        hf, _ = self.forward_rnn(x)                 # [batch, seq, hidden_size]
-        hb, _ = self.backward_rnn(self._reverse(x)) # [batch, seq, hidden_size]
+        """Forward pass works for unpadded, i.e. equal length, batches."""
+        hf, _ = self.fwd_rnn(x)                 # [batch, seq, hidden_size]
+        hb, _ = self.bwd_rnn(self._reverse(x))  # [batch, seq, hidden_size]
 
         # select final representation
         hf = hf[:, -1, :] # [batch, hidden_size]
@@ -70,9 +71,9 @@ class BaseLSTM(nn.Module):
         self._hidden_states_2 = [] # layer 2
 
         # Used for custom dropout.
-        keep_prob = 1. - dropout
+        self.keep_prob = 1. - dropout
         self.bernoulli = dist.Bernoulli(
-                            probs=torch.tensor([keep_prob], device=device)
+                            probs=torch.tensor([self.keep_prob], device=device)
                         )
 
         self.initialize_hidden()
@@ -86,7 +87,8 @@ class BaseLSTM(nn.Module):
 
     def dropout(self, x):
         """Custom recurrent dropout: same mask for the whole sequence."""
-        return x * self._dropout_mask
+        scale = 1 / self.keep_prob # Scale the weights up to compensate for dropping out.
+        return x * self._dropout_mask * scale
 
     def initialize_hidden(self, batch_size=1):
         """Set initial hidden state to zeros."""
@@ -116,9 +118,6 @@ class BaseLSTM(nn.Module):
         # Add cell states to memory.
         self._hidden_states_1.append((self.hx1, self.cx1))
         self._hidden_states_2.append((self.hx2, self.cx2))
-        # NOTE SCALE ACTIVATIONS!
-        # NOTE Use L2 regularization yarin gal's paper page 9 for formula.
-
         # Return hidden state of second layer
         return self.hx2
 
@@ -135,8 +134,6 @@ class StackLSTM(BaseLSTM):
         """Reset the hidden state to before opening the sequence."""
         self._hidden_states_1 = self._hidden_states_1[:-sequence_len]
         self._hidden_states_2 = self._hidden_states_2[:-sequence_len]
-        # del(self._hidden_states_1[-sequence_len:]) ??
-        # del(self._hidden_states_2[-sequence_len:]) ??
         self.hx1, self.cx1 = self._hidden_states_1[-1]
         self.hx2, self.cx2 = self._hidden_states_2[-1]
 
@@ -161,11 +158,13 @@ class HistoryLSTM(BaseLSTM):
 
 
 class BufferLSTM(nn.Module):
+    """A straightforward lstm but wrapped to hide internals such as selection of output."""
     def __init__(self, input_size, hidden_size, num_layers, dropout, device):
         super(BufferLSTM, self).__init__()
         self.rnn = nn.LSTM(input_size, hidden_size, dropout=dropout, num_layers=num_layers,
                            batch_first=True, bidirectional=False)
 
     def forward(self, x):
+        """Encode and return the output hidden states."""
         h, _ = self.rnn(x)
         return h

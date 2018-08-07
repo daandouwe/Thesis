@@ -6,27 +6,27 @@ from data import EMPTY_INDEX, REDUCED_INDEX
 
 class ConvolutionalCharEmbedding(nn.Module):
     """Convolutional character embedding following https://arxiv.org/pdf/1508.06615.pdf."""
-    def __init__(self, nchars, output_size, padding_idx,
-                 max_kernel_width=4, emb_dim=15, filter_factor=25, activation='Tanh',
+    def __init__(self, nchars, emb_dim, padding_idx,
+                 max_kernel_width=6, char_emb_dim=15, filter_factor=25, activation='Tanh',
                  dropout=0, device=None):
         super(ConvolutionalCharEmbedding, self).__init__()
         self.padding_idx = padding_idx
         self.device = device
         self.max_kernel_width = max_kernel_width
         # Embedding for characters.
-        self.embedding = nn.Embedding(nchars, emb_dim, padding_idx=padding_idx)
-        # For EMPTY_TOKEN and REDUCED_TOKEN we learn embeddings directly.
-        self.er_embedding = nn.Embedding(max(EMPTY_INDEX, REDUCED_INDEX),
-                                                    output_size)
+        self.embedding = nn.Embedding(nchars, char_emb_dim, padding_idx=padding_idx)
+        # For special tokens we learn embeddings directly.
+        special = (EMPTY_INDEX, REDUCED_INDEX)
+        self.er_embedding = nn.Embedding(max(special), emb_dim)
 
         filter_size = lambda kernel_size: filter_factor * kernel_size
         kernel_sizes = range(1, max_kernel_width+1)
         self.conv_size = sum(map(filter_size, kernel_sizes))
         self.convs = nn.ModuleList(
-            [nn.Conv1d(emb_dim, filter_size(i), kernel_size=i)
+            [nn.Conv1d(char_emb_dim, filter_size(i), kernel_size=i)
                 for i in kernel_sizes]
         )
-        self.linear = nn.Linear(self.conv_size, output_size)
+        self.linear = nn.Linear(self.conv_size, emb_dim)
 
         self.act_fn = getattr(nn, activation)()
         self.pool = nn.AdaptiveMaxPool1d(1) # Max pooling over time.
@@ -60,6 +60,6 @@ class ConvolutionalCharEmbedding(nn.Module):
 
         f = torch.cat(f, dim=-1) # (sent, conv_size)
         f = self.dropout(f)
-        f = self.act_fn(self.linear(f)) # (sent, output_size)
+        f = self.act_fn(self.linear(f)) # (sent, emb_dim)
 
-        return f.contiguous().view(sent_len, f.size(-1)) # (sent, output_size)
+        return f.contiguous().view(sent_len, f.size(-1)) # (sent, emb_dim)

@@ -4,8 +4,8 @@
   * Use a tokenizer to process input from terminal?
 
 # Embeddings
-* Ask Wilker if he knows a nice default character embedding method (e.g. convolutions)
-* Elmo embeddings: figure out what the fuss is about, and incorporate them (only discriminative).
+* Ask Wilker if he knows a nice default character embedding method (e.g. convolutions).
+* Elmo embeddings: figure out what the fuss is about, and incorporate them (only discriminative!).
   * Compute embeddings once: save to file, then load like it were glove. But then sentence_id -> token_id -> vector.
 * Glove embeddings are done.
 * FastText: drop-in.

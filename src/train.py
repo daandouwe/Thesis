@@ -20,11 +20,13 @@ def train(args, model, batches, optimizer):
     timer = Timer()
     num_batches = len(batches)
     for step, batch in enumerate(batches, 1):
-        sent, indices, actions = batch
-        # Idea: make sent and actions a list of Vocab items:
+        # sent, indices, actions = batch
+        sentence, actions = batch
+        # Idea: make sentence and actions a list of Vocab items:
         # word = vocab.word, index = vocab.index
         # action = vocab.word, action_index = vocab.index https://github.com/nikitakit/self-attentive-parser/blob/master/src/vocabulary.py
-        loss = model(sent, indices, actions)
+        # loss = model(sentence, indices, actions)
+        loss = model(sentence, actions)
 
         optimizer.zero_grad()
         loss.backward()
@@ -42,11 +44,14 @@ def train(args, model, batches, optimizer):
 
 def evaluate(model, batches):
     model.eval()
-    total_loss = 0.
-    for step, batch in enumerate(batches, 1):
-        sent, indices, actions = batch
-        loss = model(sent, indices, actions)
-        total_loss += loss.item()
+    with torch.no_grad(): # operations inside don't track history
+        total_loss = 0.
+        for step, batch in enumerate(batches, 1):
+            # sent, indices, actions = batch
+            sentence, actions = batch
+            # loss = model(sent, indices, actions)
+            loss = model(sentence, actions)
+            total_loss += loss.item()
     return total_loss / step
 
 def main(args):
@@ -66,22 +71,25 @@ def main(args):
     test_batches  = corpus.test.batches(length_ordered=False, shuffle=False)
     print(corpus)
 
-    model = RNNG(dictionary=corpus.dictionary,
-                 word_emb_dim=args.word_emb_dim,
-                 action_emb_dim=args.action_emb_dim,
-                 word_lstm_hidden=args.word_lstm_hidden,
-                 action_lstm_hidden=args.action_lstm_hidden,
-                 lstm_num_layers=args.lstm_num_layers,
-                 mlp_hidden=args.mlp_dim,
-                 dropout=args.dropout,
-                 device=args.device,
-                 use_glove=args.use_glove,
-                 glove_dir=args.glovedir,
-                 glove_error_dir=args.logdir,
-                 use_char=args.use_char)
+    model = RNNG(
+        dictionary=corpus.dictionary,
+        word_emb_dim=args.word_emb_dim,
+        action_emb_dim=args.action_emb_dim,
+        word_lstm_hidden=args.word_lstm_hidden,
+        action_lstm_hidden=args.action_lstm_hidden,
+        lstm_num_layers=args.lstm_num_layers,
+        mlp_hidden=args.mlp_dim,
+        dropout=args.dropout,
+        device=args.device,
+        use_glove=args.use_glove,
+        glove_dir=args.glovedir,
+        glove_error_dir=args.logdir,
+        use_char=args.use_char
+    )
     model.to(args.device)
 
     parameters = filter(lambda p: p.requires_grad, model.parameters())
+    # NOTE Use L2 regularization yarin gal's paper page 9 for formula.
     optimizer = torch.optim.Adam(parameters, lr=args.lr)
 
     lr = args.lr

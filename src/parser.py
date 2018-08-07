@@ -1,301 +1,249 @@
 import torch
 
 from data import (EMPTY_INDEX, REDUCED_INDEX, EMPTY_TOKEN, REDUCED_TOKEN, PAD_TOKEN,
-                    wrap, pad)
+                    Item, wrap, pad)
 
-class Stack:
-    """The stack."""
-    def __init__(self, dictionary, word_embedding, nonterminal_embedding, device):
+class TransitionBase:
+    """A base class for the Stack, Buffer and History."""
+    def __init__(self):
+        self._items = [] # Will hold a list of Items.
+        self._reset()
+
+    def __str__(self):
+        return f'{type(self).__name__}: {self.tokens}'
+
+    def _reset(self):
+        self._items = []
+
+    @property
+    def tokens(self):
+        return [item.token for item in self._items]
+
+    @property
+    def indices(self):
+        return [item.index for item in self._items]
+
+    @property
+    def embeddings(self):
+        return [item.embedding for item in self._items]
+
+    @property
+    def encodings(self):
+        return [item.encoding for item in self._items]
+
+    @property
+    def top_item(self):
+        return self._items[-1]
+
+    @property
+    def top_token(self):
+        return self.top_item.token
+
+    @property
+    def top_index(self):
+        return self.top_item.index
+
+    @property
+    def top_embedded(self):
+        return self.top_item.embedding
+
+    @property
+    def top_encoded(self):
+        return self.top_item.encoding
+
+    @property
+    def empty(self):
+        pass
+
+
+class Stack(TransitionBase):
+    def __init__(self, word_embedding, nonterminal_embedding, device):
         """Initialize the Stack.
 
         Arguments:
-            dictionary (data.Dictionary): wraps dictionaries.
             word_embedding (nn.Embedding): embedding function for words.
             nonterminal_embedding (nn.Embedding): embedding function for nonterminals.
             device: device on which computation is done (gpu or cpu).
         """
-        self._tokens = [] # list of str
-        self._indices = [] # list of int
-        self._embeddings = [] # list of embeddings (pytorch Variables)
+        super(Stack, self).__init__()
         self._num_open_nonterminals = 0 # Keep track of the nonterminals opened.
         self.word_embedding = word_embedding
         self.nonterminal_embedding = nonterminal_embedding
         self.device = device
 
     def __str__(self):
-        return f'Stack ({self.num_open_nonterminals} open NTs): {self._tokens}'
-
-    def _reset(self):
-        """Resets the buffer to empty state."""
-        self._tokens = []
-        self._indices = []
-        self._embeddings = []
+        return f'{type(self).__name__} ({self.num_open_nonterminals} open NTs): {self.tokens}'
 
     def initialize(self):
         """Initialize by pushing the `empty` item onto the stack."""
         self._reset()
-        empty_embedding = self.word_embedding(wrap([EMPTY_INDEX], self.device))
-        self.push(EMPTY_TOKEN, EMPTY_INDEX, empty_embedding)
+        self.push(Item(EMPTY_TOKEN, EMPTY_INDEX))
 
-    def push(self, token, index, emb):
-        """Push a new item on the stack."""
-        self._tokens.append(token)
-        self._indices.append(index)
-        self._embeddings.append(emb)
-
-    def open_nonterminal(self, token, index):
+    def open_nonterminal(self, item):
         """Open a new nonterminal in the tree."""
         self._num_open_nonterminals += 1
-        emb = self.nonterminal_embedding(wrap([index], self.device))
-        self.push(token, index, emb)
+        self.push(item, nonterminal=True)
+
+    def push(self, item, nonterminal=False, reduced=False):
+        """Push a new item on the stack."""
+        if not reduced:
+            embedding_fn = self.nonterminal_embedding if nonterminal else self.word_embedding
+            item.embedding = embedding_fn(wrap([item.index], self.device))
+        self._items.append(item)
 
     def pop(self):
         """Pop tokens and vectors from the stack until first open nonterminal."""
         found_nonterminal = False
-        tokens, indices, embeddings = [], [], []
+        poppep_items = []
         # We pop items from self._tokens till we find a nonterminal.
         while not found_nonterminal:
-            token = self._tokens.pop()
-            index = self._indices.pop()
-            emb = self._embeddings.pop()
-            tokens.append(token)
-            indices.append(index)
-            embeddings.append(emb)
+            item = self._items.pop()
+            poppep_items.append(item)
             # Break from while if we found a nonterminal
-            if token.startswith('NT'):
+            if item.token.startswith('NT'):
                 found_nonterminal = True
         # reverse the lists (we appended)
-        tokens = tokens[::-1]
-        indices = indices[::-1]
-        embeddings = embeddings[::-1]
+        poppep_items = poppep_items[::-1]
         # add nonterminal also to the end of both lists
-        tokens.append(tokens[0])
-        indices.append(indices[0])
-        embeddings.append(embeddings[0])
+        poppep_items.append(poppep_items[0])
         # Package embeddings as pytorch tensor
-        embs = [emb.unsqueeze(0) for emb in embeddings]
-        embeddings = torch.cat(embs, 1) # [batch, seq_len, emb_dim]
+        embeddings = [item.embedding.unsqueeze(0) for item in poppep_items]
+        x = torch.cat(embeddings, 1) # tensor (batch, seq_len, emb_dim)
         # Update the number of open nonterminals
         self._num_open_nonterminals -= 1
-        return tokens, indices, embeddings
-
-    @property
-    def top_embedded(self):
-        """Returns the embedding of the symbol on the top of the stack."""
-        return self._embeddings[-1]
+        return poppep_items, x
 
     @property
     def empty(self):
-        """Returns True if the stack is empty"""
-        return self._tokens == [EMPTY_TOKEN, REDUCED_TOKEN]
+        """Returns True if the stack is empty."""
+        return self.indices == [EMPTY_INDEX, REDUCED_INDEX]
 
     @property
     def num_open_nonterminals(self):
         """Return the number of nonterminal nodes in the tree that are not yet closed."""
         return self._num_open_nonterminals
 
-class Buffer:
-    """The buffer."""
-    def __init__(self, dictionary, embedding, encoder, device):
+
+class Buffer(TransitionBase):
+    def __init__(self, embedding, encoder, device):
         """Initialize the Buffer.
 
         Arguments:
-            dictionary (data.Dictionary): wraps dictionaries.
             embedding (nn.Embedding): embedding function for words on the buffer.
             encoder (nn.Module): encoder function to encode buffer contents.
             device: device on which computation is done (gpu or cpu).
         """
-        self._tokens = [] # list of str
-        self._indices = [] # list of int
-        self._embeddings = [] # list of embeddings (pytorch Variables)
-        self._hiddens = [] # list of embeddings (pytorch Variables)
-        self.dict = dictionary
+        super(Buffer, self).__init__()
         self.embedding = embedding
         self.encoder = encoder
         self.device = device
 
-    def __str__(self):
-        return f'Buffer : {self._tokens}'
-
-    def _reset(self):
-        """Resets the buffer to empty state."""
-        self._tokens = []
-        self._indices = []
-        self._embeddings = []
-        self._hiddens = []
-
-    def initialize(self, sentence, indices):
-        """Initialize buffer with te sentence."""
+    def initialize(self, sentence):
+        """Embed and encode the sentence."""
         self._reset()
-        self._tokens = sentence[::-1]
-        self._indices = indices[::-1]
-        embeddings = self.embedding(wrap(self._indices, self.device))
-        self._encoder_input = embeddings.unsqueeze(0)
-        self._embeddings = [embeddings[i, :].unsqueeze(0)
-                                for i in range(embeddings.size(0))]
+        self._items = sentence[::-1] # On the buffer the sentence is reversed.
+        embeddings = self.embedding(wrap(self.indices, self.device))
+        encodings = self.encoder(embeddings.unsqueeze(0)) # (batch, seq, hidden_size)
+        for i, item in enumerate(self._items):
+            item.embedding = embeddings[i, :].unsqueeze(0)
+            item.encoding = encodings[:, i ,:]
 
-    def push(self, token, index):
-        """Push action index and vector embedding onto buffer."""
-        self._tokens.append(token)
-        self._indices.append(index)
-        emb = self.embedding(wrap([index], self.device))
-        self._embeddings.append(emb)
-        # NOTE: this is a bit hacky! LSTM encoding of empty state...
-        emb = self.embedding(wrap([[index]], self.device))
-        self._hiddens.append(self.encoder(emb).squeeze(0))
+    def push(self, item):
+        """Push item onto buffer."""
+        item.embedding = self.embedding(wrap([item.index], self.device))
+        item.encoding = self.encoder(item.embedding.unsqueeze(0)).squeeze(0)
+        self._items.append(item)
 
     def pop(self):
         if self.empty:
             raise ValueError('trying to pop from an empty buffer')
         else:
-            token = self._tokens.pop()
-            index = self._indices.pop()
-            emb = self._embeddings.pop()
-            _ = self._hiddens.pop() # We do not need this one
-            # If pop makes the buffer empty, push
-            # the empty token to signal that it is empty.
-            if not self._tokens:
-                self.push(EMPTY_TOKEN, EMPTY_INDEX)
-            return token, index, emb
-
-    def encode(self):
-        """Encode the buffer with the provided encoder and store these internally."""
-        x = self._encoder_input # [batch, seq, hidden_size]
-        h = self.encoder(x) # [batch, seq, hidden_size]
-        self._hiddens = [h[:, i ,:] for i in range(h.size(1))]
-        del self._encoder_input
-
-    @property
-    def embedded(self):
-        """Concatenate all the embeddings and return as pytorch tensor."""
-        embs = [emb.unsqueeze(0) for emb in self._embeddings]
-        return torch.cat(embs, 1) # [batch, seq_len, emb_dim]
-
-    @property
-    def top_embedded(self):
-        """Returns the embedding of the symbol on the top of the buffer."""
-        return self._embeddings[-1]
-
-    @property
-    def top_encoded(self):
-        """Returns the hidden state on the top of the buffer."""
-        return self._hiddens[-1]
+            item = self._items.pop()
+            if not self._items: # empty list
+                # Push empty token.
+                self.push(Item(EMPTY_TOKEN, EMPTY_INDEX))
+            return item
 
     @property
     def empty(self):
         """Returns True if the buffer is empty."""
-        return self._tokens == [EMPTY_TOKEN]
+        return self.indices == [EMPTY_INDEX]
 
-class History:
-    """The history."""
-    def __init__(self, dictionary, embedding, device):
-        """Initialize the Buffer.
+
+class History(TransitionBase):
+    def __init__(self, embedding, device):
+        """Initialize the History.
 
         Arguments:
-            dictionary (data.Dictionary): wraps dictionaries.
             embedding (nn.Embedding): embedding function for actions.
             device: device on which computation is done (gpu or cpu).
         """
-        self._actions = [] # list of int
-        self._embeddings = []# list of embeddings (pytorch Variables)
-        self.dict = dictionary
+        super(History, self).__init__()
         self.embedding = embedding
         self.device = device
-
-    def __str__(self):
-        return f'History : {self.actions}'
-
-    def _reset(self):
-        """Resets the buffer to empty state."""
-        self._actions = []
-        self._embeddings = []
 
     def initialize(self):
         """Initialize the history by push the `empty` item."""
         self._reset()
-        self.push(EMPTY_INDEX)
+        self.push(Item(EMPTY_TOKEN, EMPTY_INDEX))
 
-    def push(self, action):
+    def push(self, item):
         """Push action index and vector embedding onto history."""
-        self._actions.append(action)
-        self._embeddings.append(self.embedding(wrap([action], self.device)))
+        item.embedding = self.embedding(wrap([item.index], self.device))
+        self._items.append(item)
 
-    @property
-    def embedded(self):
-        """Concatenate all the embeddings and return as pytorch tensor"""
-        embs = [emb.unsqueeze(0) for emb in self._embeddings]
-        return torch.cat(embs, 1) # [batch, seq_len, emb_dim]
-
-    @property
-    def top_embedded(self):
-        """Returns the embedding of the symbol on the top of the stack."""
-        return self._embeddings[-1]
-
-    @property
-    def last_action(self):
-        """Return the last action taken."""
-        i = self._actions[-1]
-        return self.dict.i2a[i]
-
-    @property
-    def actions(self):
-        """Return the current history of actions."""
-        return [self.dict.i2a[i] for i in self._actions]
 
 class Parser:
     """The parse configuration."""
-    def __init__(self, dictionary, word_embedding, nonterminal_embedding, action_embedding,
+    def __init__(self, word_embedding, nonterminal_embedding, action_embedding,
                  buffer_encoder, device):
         """Initialize the parser.
 
         Arguments:
-            dictionary (data.Dictionary): wraps dictionaries.
-            word_embedding (nn.Embedding): embedding function for words.
-            nonterminal_embedding (nn.Embedding): embedding function for nonterminals.
-            actions_embedding (nn.Embedding): embedding function for actions.
-            buffer_encoder (nn.Module): encoder function to encode buffer contents.
+            word_embedding: embedding function for words.
+            nonterminal_embedding: embedding function for nonterminals.
+            actions_embedding: embedding function for actions.
+            buffer_encoder: encoder function to encode buffer contents.
             device: device on which computation is done (gpu or cpu).
         """
-        self.stack = Stack(dictionary, word_embedding, nonterminal_embedding, device)
-        self.buffer = Buffer(dictionary, word_embedding, buffer_encoder, device)
-        self.history = History(dictionary, action_embedding, device)
-        self.dict = dictionary
+        self.stack = Stack(word_embedding, nonterminal_embedding, device)
+        self.buffer = Buffer(word_embedding, buffer_encoder, device)
+        self.history = History(action_embedding, device)
 
     def __str__(self):
-        return '\n'.join(('PARSER STATE', str(self.stack), str(self.buffer), str(self.history)))
+        return '\n'.join(('Parser', str(self.stack), str(self.buffer), str(self.history)))
 
-    def initialize(self, sentence, indices):
+    def initialize(self, items):
         """Initialize all the components of the parser."""
-        self.buffer.initialize(sentence, indices)
+        self.buffer.initialize(items)
         self.stack.initialize()
         self.history.initialize()
 
     def shift(self):
         """Shift an item from the buffer to the stack."""
-        token, index, emb = self.buffer.pop()
-        self.stack.push(token, index, emb)
+        self.stack.push(self.buffer.pop())
 
     def get_embedded_input(self):
         """Return the representations of the stack buffer and history.
 
-        Note: `buffer` is already the lstm encoding of the buffer."""
-        stack = self.stack.top_embedded     # [batch, emb_size]
+        Note: `buffer` is already the encoding of the buffer."""
+        stack = self.stack.top_embedded     # [batch, word_emb_size]
         buffer = self.buffer.top_encoded    # [batch, word_lstm_hidden]
-        history = self.history.top_embedded # [batch, emb_size]
+        history = self.history.top_embedded # [batch, action_emb_size]
         return stack, buffer, history
 
     def is_valid_action(self, action):
         """Check whether the action is valid under the parser's configuration."""
-        if action == 'SHIFT':
+        if action.token == 'SHIFT':
             cond1 = not self.buffer.empty
             cond2 = self.stack.num_open_nonterminals > 0
             return cond1 and cond2
-        elif action =='REDUCE':
-            cond1 = not self.history.last_action.startswith('NT')
+        elif action.token =='REDUCE':
+            cond1 = not self.last_action.startswith('NT')
             cond2 = self.stack.num_open_nonterminals > 1
             cond3 = self.buffer.empty
             return cond1 and (cond2 or cond3)
-        elif action.startswith('NT'):
+        elif action.token.startswith('NT'):
             cond1 = not self.buffer.empty
             cond2 = self.stack.num_open_nonterminals < 100
             return cond1 and cond2
@@ -305,8 +253,12 @@ class Parser:
     @property
     def actions(self):
         """Return the current history of actions."""
-        return self.history.actions
+        return self.history.tokens
 
+    @property
+    def last_action(self):
+        """Return the last action taken."""
+        return self.history.top_token
 
 if __name__ == '__main__':
     stack = Stack(None, None, None, device=None)
