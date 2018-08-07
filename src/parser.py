@@ -77,6 +77,7 @@ class Stack(TransitionBase):
     def initialize(self):
         """Initialize by pushing the `empty` item onto the stack."""
         self._reset()
+        self._num_open_nonterminals = 0
         self.push(Item(EMPTY_TOKEN, EMPTY_INDEX))
 
     def open_nonterminal(self, item):
@@ -94,29 +95,33 @@ class Stack(TransitionBase):
     def pop(self):
         """Pop tokens and vectors from the stack until first open nonterminal."""
         found_nonterminal = False
-        poppep_items = []
+        pop_items = []
         # We pop items from self._tokens till we find a nonterminal.
         while not found_nonterminal:
             item = self._items.pop()
-            poppep_items.append(item)
+            pop_items.append(item)
             # Break from while if we found a nonterminal
             if item.is_nonterminal:
                 found_nonterminal = True
         # reverse the lists (we appended)
-        poppep_items = poppep_items[::-1]
+        pop_items = pop_items[::-1]
         # add nonterminal also to the end of both lists
-        poppep_items.append(poppep_items[0])
+        pop_items.append(pop_items[0])
         # Package embeddings as pytorch tensor
-        embeddings = [item.embedding.unsqueeze(0) for item in poppep_items]
+        embeddings = [item.embedding.unsqueeze(0) for item in pop_items]
         x = torch.cat(embeddings, 1) # tensor (batch, seq_len, emb_dim)
         # Update the number of open nonterminals
         self._num_open_nonterminals -= 1
-        return poppep_items, x
+        return pop_items, x
 
     @property
     def empty(self):
         """Returns True if the stack is empty."""
         return self.indices == [EMPTY_INDEX, REDUCED_INDEX]
+
+    @property
+    def start(self):
+        return self.indices == [EMPTY_INDEX]
 
     @property
     def num_open_nonterminals(self):
@@ -242,9 +247,10 @@ class Parser:
             return cond1 and cond2
         elif action.index == self.REDUCE:
             cond1 = not self.last_action == self.OPEN
-            cond2 = self.stack.num_open_nonterminals > 1
-            cond3 = self.buffer.empty
-            return cond1 and (cond2 or cond3)
+            cond2 = not self.stack.start
+            cond3 = self.stack.num_open_nonterminals > 1
+            cond4 = self.buffer.empty
+            return (cond1 and cond2 and cond3) or cond4
         elif action.index == self.OPEN:
             cond1 = not self.buffer.empty
             cond2 = self.stack.num_open_nonterminals < 100

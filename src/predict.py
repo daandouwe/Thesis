@@ -31,7 +31,7 @@ def print_sent_dict_as_config(sent_dict, file):
     print(file=file)
 
 def write_prediction(sentences, outdir, name, verbose=False):
-    path = os.path.join(outdir, '{name}.pred.oracle')
+    path = os.path.join(outdir, f'{name}.pred.oracle')
     with open(path, 'w') as f:
         for i, sent_dict in enumerate(sentences):
             if verbose: print(i, end='\r')

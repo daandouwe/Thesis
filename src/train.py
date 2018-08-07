@@ -64,9 +64,7 @@ def evaluate(model, batches):
     with torch.no_grad(): # operations inside don't track history
         total_loss = 0.
         for step, batch in enumerate(batches, 1):
-            # sent, indices, actions = batch
             sentence, actions = batch
-            # loss = model(sent, indices, actions)
             loss = model(sentence, actions)
             total_loss += loss.item()
     return total_loss / step
@@ -85,8 +83,8 @@ def main(args):
     print(f'Loading data from {args.data}...')
     corpus = Corpus(data_path=args.data, textline=args.textline, char=args.use_char)
     train_batches = corpus.train.batches(length_ordered=False, shuffle=False)
-    dev_batches   = corpus.dev.batches(length_ordered=False, shuffle=False)
-    test_batches  = corpus.test.batches(length_ordered=False, shuffle=False)
+    dev_batches = corpus.dev.batches(length_ordered=False, shuffle=False)
+    test_batches = corpus.test.batches(length_ordered=False, shuffle=False)
     print(corpus)
 
     model = make_model(args, corpus.dictionary)
@@ -127,28 +125,32 @@ def main(args):
     except KeyboardInterrupt:
         print('-'*89)
         print('Exiting from training early.')
-        # Save the losses for plotting and diagnostics.
-        write_losses(args, LOSSES)
-        print('Evaluating on development set...')
-        dev_loss = evaluate(model, dev_batches)
-        # Save the model if the validation loss is the best we've seen so far.
-        if not best_dev_loss or dev_loss < best_dev_loss:
-            with open(args.checkfile, 'wb') as f:
-                torch.save(model, f)
-            best_dev_epoch = epoch
-            best_dev_loss = dev_loss
-
-    # Load best saved model.
-    with open(args.checkfile, 'rb') as f:
-        model = torch.load(f)
-
-    # Evaluate on test set.
-    print('Evaluating on test set...')
-    test_loss = evaluate(model, test_batches)
-    print('-'*89)
-    print('| End of training | test loss {:2.4f} | best dev epoch {:2d} | best dev loss {:2.4f}'.format(
-            test_loss, best_dev_epoch, best_dev_loss))
-    print('-'*89)
+    #     # Save the losses for plotting and diagnostics.
+    #     write_losses(args, LOSSES)
+    #     print('Evaluating on development set...')
+    #     dev_loss = evaluate(model, dev_batches)
+    #     # Save the model if the validation loss is the best we've seen so far.
+    #     if not best_dev_loss or dev_loss < best_dev_loss:
+    #         with open(args.checkfile, 'wb') as f:
+    #             torch.save(model, f)
+    #         best_dev_epoch = epoch
+    #         best_dev_loss = dev_loss
+    #
+    # # Load best saved model.
+    # with open(args.checkfile, 'rb') as f:
+    #     model = torch.load(f)
+    #
+    # # Evaluate on test set.
+    # print('Evaluating on test set...')
+    # test_loss = evaluate(model, test_batches)
+    # print('-'*89)
+    # print(
+    #      '| End of training '
+    #     f'| test loss {test_loss:2.4f} '
+    #     f'| best dev epoch {best_dev_epoch:2d} '
+    #     f'| best dev loss {best_dev_loss:2.4f} |'
+    # )
+    # print('-'*89)
 
     # Predict with best model on test set.
     print('Predicting on test set...')

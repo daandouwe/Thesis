@@ -179,12 +179,16 @@ class RNNG(nn.Module):
                 vals, ids = nonterminal_logits.sort(descending=True)
                 vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
                 action.symbol = Item(self.dictionary.i2n[ids[0]], ids[0])
-                print(action.symbol)
             # Take the appropriate parse step.
             self.parse_step(action)
 
         return self.parser
 
+
+def set_embedding(embedding, tensor):
+    assert tensor.shape == embedding.weight.shape
+    embedding.weight = nn.Parameter(tensor)
+    embedding.weight.requires_grad = False
 
 def make_model(args, dictionary):
     # Embeddings
@@ -202,31 +206,30 @@ def make_model(args, dictionary):
         word_embedding = nn.Embedding(
                 num_words, args.word_emb_dim, padding_idx=PAD_INDEX
             )
+        # Get words in order.
+        words = [dictionary.i2w[i] for i in range(len(dictionary.w2i))]
         if args.use_glove:
             assert args.word_emb_dim in (50, 100, 200, 300), f'invalid dim: {dim}, choose from (50, 100, 200, 300).'
-            # Get words in order.
-            words = [dictionary.i2w[i] for i in range(len(dictionary.w2i))]
+            logfile = open(os.path.join(args.logdir, 'glove.error.txt'), 'w')
             if args.glove_torchtext:
                 from torchtext.vocab import GloVe
-                print(f'Loading GloVe vectors glove.840B.{args.word_emb_dim}d (torchtext)...')
-                raise NotImplementedError('no torchtext glove yet')
+                print(f'Loading GloVe vectors glove.42B.{args.word_emb_dim}d (torchtext)...')
+                glove = GloVe(name='42B', dim=args.word_emb_dim)
+                embeddings = get_vectors(words, glove, args.word_emb_dim, logfile)
             else:
                 print(f'Loading GloVe vectors glove.6B.{args.word_emb_dim}d (custom)...')
-                embeddings = load_glove(words, args.word_emb_dim, args.glove_dir, args.outdir)
-                word_embedding.weight = nn.Parameter(embeddings)
-                word_embedding.weight.requires_grad = False
+                embeddings = load_glove(words, args.word_emb_dim, args.glove_dir, logfile)
+            set_embedding(word_embedding, embeddings)
+            logfile.close()
         if args.use_fasttext:
             from torchtext.vocab import FastText
             assert args.word_emb_dim == 300, 'FastText only availlable in dimension 300.'
             print(f'Loading FastText vectors fasttext.en.300d (torchtext)...')
-            words = [dictionary.i2w[i] for i in range(len(dictionary.w2i))]
             fasttext = FastText()
-            print('Loaded Fasttext.')
             logfile = open(os.path.join(args.logdir, 'fasttext.error.txt'), 'w')
             embeddings = get_vectors(words, fasttext, args.word_emb_dim, logfile)
+            set_embedding(word_embedding, embeddings)
             logfile.close()
-            word_embedding.weight = nn.Parameter(embeddings)
-            word_embedding.weight.requires_grad = False
 
     nonterminal_embedding = nn.Embedding(num_nonterminals, args.word_emb_dim, padding_idx=PAD_INDEX)
     action_embedding = nn.Embedding(num_actions, args.action_emb_dim, padding_idx=PAD_INDEX)

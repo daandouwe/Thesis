@@ -3,3 +3,4 @@ data/*
 tmp/*
 src/.*
 src/*.ipynb
+*.ipynb_checkpoints

@@ -17,7 +17,7 @@ def make_gensim_compatible(dim):
             print(length, dim, file=g)
             print(f.read(), file=g, end='')
 
-def load_glove(words, dim, dir, logdir):
+def load_glove(words, dim, dir, logfile):
     """Loads all the words from the glove vectors of dimension dim in saved in dir."""
     if dir.startswith('~'):
         dir = os.path.expanduser(dir)
@@ -45,8 +45,7 @@ def load_glove(words, dim, dir, logdir):
                 vec = np.array([float(val) for val in vec])
                 glove[word] = vec
     # Get the glove vector for each word in the dictionary and log words not found.
-    with open(os.path.join(logdir, 'glove.error.txt'), 'w'):
-        vectors = get_vectors(words, glove, dim, logfile)
+    vectors = get_vectors(words, glove, dim, logfile)
     return vectors
 
 def get_vectors(words, vectordict, dim, logfile):
