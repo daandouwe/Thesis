@@ -13,7 +13,7 @@ def predict(args, model, batches, name='test'):
     sentences = get_sentences(os.path.join(args.data, 'test', 'ptb.{}.oracle'.format(name)))
     nsents = len(batches)
     for i, batch in enumerate(batches):
-        sent, indices, actions = batch
+        sentence, actions = batch
         parser = model.parse(sent, indices)
         sentences[i]['actions'] = parser.actions
         if i % 10 == 0:

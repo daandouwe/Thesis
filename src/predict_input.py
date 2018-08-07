@@ -4,7 +4,7 @@ import os
 
 import torch
 
-from data import Corpus
+from data import Item, Corpus
 from model import RNNG
 from eval import actions2tree
 from scripts.get_oracle import unkify
@@ -22,7 +22,7 @@ def process_unks(sent, dictionary):
 
 def predict(model, sent, dictionary):
     model.eval()
-    indices = [dictionary[w] for w in sent]
+    indices = [Item(word, dictionary[word]) for word in sent]
     parser = model.parse(sent, indices)
     return parser.actions
 
@@ -34,7 +34,6 @@ def main(args):
 
     print('Loading corpus with textline {}.'.format(args.textline))
     corpus = Corpus(data_path=args.data, textline=args.textline, char=args.use_char)
-    dictionary = corpus.dictionary.w2i
 
     latest_dir = max(glob.glob(os.path.join('checkpoints', '*/')))
     checkfile = os.path.join(latest_dir, 'model.pt')
@@ -47,8 +46,8 @@ def main(args):
     while True:
         sent = input('Input a sentence: ')
         words = sent.split()
-        unked = process_unks(words, dictionary)
-        actions = predict(model, unked, dictionary)
+        unked = process_unks(words, corpus.dictionary.w2i)
+        actions = predict(model, unked, corpus.dictionary.w2i)
         tree = actions2tree(words, actions[1:]) # Hack...
         print(words)
         print(unked)

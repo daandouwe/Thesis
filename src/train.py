@@ -7,7 +7,7 @@ import torch.nn as nn
 from torch.autograd import Variable
 
 from data import Corpus
-from model import RNNG
+from model import make_model
 from predict import predict, write_prediction
 from eval import eval
 from util import Timer, clock_time, get_subdir_string, write_losses, make_folders
@@ -71,21 +71,7 @@ def main(args):
     test_batches  = corpus.test.batches(length_ordered=False, shuffle=False)
     print(corpus)
 
-    model = RNNG(
-        dictionary=corpus.dictionary,
-        word_emb_dim=args.word_emb_dim,
-        action_emb_dim=args.action_emb_dim,
-        word_lstm_hidden=args.word_lstm_hidden,
-        action_lstm_hidden=args.action_lstm_hidden,
-        lstm_num_layers=args.lstm_num_layers,
-        mlp_hidden=args.mlp_dim,
-        dropout=args.dropout,
-        device=args.device,
-        use_glove=args.use_glove,
-        glove_dir=args.glovedir,
-        glove_error_dir=args.logdir,
-        use_char=args.use_char
-    )
+    model = make_model(args, corpus.dictionary)
     model.to(args.device)
 
     parameters = filter(lambda p: p.requires_grad, model.parameters())

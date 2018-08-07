@@ -4,7 +4,6 @@
 * Two approximations: bernoulli and importance:
   * use importance sampling
   * approx. sampling without replacement: with replacement, then discard reps.
-  *
 
 ## Training
 * keep trying parallel: batches 16, 32, 48 (CPU), 4, 8, 12 (GPU).
@@ -14,6 +13,7 @@
 
 # Objectives
 - [ ] Still work on parallel.
+- [x] Refactor data and parser.
 - [ ] Beter use of Lisa: more GPUs per node, `&` for more computation per processor
 - [ ] Some more embeddings.
 - [ ] Move to generative

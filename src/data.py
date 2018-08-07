@@ -45,8 +45,8 @@ class Item:
         """
         self.token = token
         self.index = index
-        self.embedding = embedding # tensor
-        self.encoding = encoding # tensor
+        self.embedding = embedding
+        self.encoding = encoding
 
 class Dictionary:
     """A dictionary for stack, buffer, and action symbols."""
@@ -122,7 +122,6 @@ class Data:
         self.dictionary = dictionary
 
         self.sentences = [] # each sentence as list of words
-        # self.indices = [] # each sentence as list of indices
         self.actions = [] # each sequence of actions as list of indices
 
         self.char = char
@@ -133,7 +132,6 @@ class Data:
 
     def _order(self, new_order):
         self.sentences = [self.sentences[i] for i in new_order]
-        # self.indices = [self.indices[i] for i in new_order]
         self.actions = [self.actions[i] for i in new_order]
 
     def read(self, path, dictionary, textline):
@@ -148,7 +146,6 @@ class Data:
                 indices = pad(indices)
             else:
                 indices = [dictionary.w2i[word] for word in sentence]
-                # indices = wrap(indices) # TODO see if needed.
             sentence_items = [Item(token, index)
                                 for token, index in zip(sentence, indices)]
             # Get action items
@@ -183,8 +180,6 @@ class Data:
         batches = []
         for i in range(n):
             sentence = self.sentences[i]
-            # ids = self.indices[i]
-            # ids = pad(ids) if self.char else ids
             actions = self.actions[i]
             batches.append((sentence, actions))
         return batches
