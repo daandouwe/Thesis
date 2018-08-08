@@ -56,6 +56,13 @@ class Item:
     def __str__(self):
         return self.token
 
+    def __repr__(self):
+        return "Item('{}', {}, {}, {})".format(
+            self.token, self.index,
+            type(self.embedding).__name__,
+            type(self.encoding).__name__,
+        )
+
     @property
     def is_nonterminal(self):
         return self._nonterminal
@@ -66,6 +73,9 @@ class Action(Item):
         if symbol is not None:
             assert isinstance(symbol, Item)
         self.symbol = symbol
+
+    def __repr__(self):
+        return 'Action({!r}, {!r})'.format(self.token, self.symbol)
 
     @property
     def is_nonterminal(self):

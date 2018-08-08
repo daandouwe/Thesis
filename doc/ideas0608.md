@@ -1,5 +1,9 @@
 # Todo list
 
+## Datasets
+- [ ] There are alternatives to the PTB: see [this stackoverflow](https://stackoverflow.com/questions/8949517/is-there-any-treebank-for-free).
+- [ ] The [TED treebank](https://ahcweb01.naist.jp/resource/tedtreebank/) is by Graham Neubig!
+
 ## Data
 - [x] Use an Item class two wrap indices and tokens together:
     * `Item(word, index)`, then `word = item.word` and `index = item.index`.

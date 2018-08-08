@@ -3,6 +3,7 @@ import torch.nn as nn
 
 from data import (EMPTY_INDEX, REDUCED_INDEX, EMPTY_TOKEN, REDUCED_TOKEN, PAD_TOKEN,
                     Item, Action, wrap, pad)
+from tree import Tree
 
 class TransitionBase:
     """A base class for the Stack, Buffer and History."""
@@ -72,63 +73,72 @@ class Stack(TransitionBase):
         self.nonterminal_embedding = nonterminal_embedding
         # TODO: self.encoder = encoder
         self.device = device
+        self.initialize()
 
     def __str__(self):
         return f'{type(self).__name__} ({self.num_open_nonterminals} open NTs): {self.tokens}'
 
     def initialize(self):
         """Initialize by pushing the `empty` item onto the stack."""
-        self._reset()
         self._num_open_nonterminals = 0
-        self.push(Item(EMPTY_TOKEN, EMPTY_INDEX))
+        self.tree = Tree()
+        # self.push(Item(EMPTY_TOKEN, EMPTY_INDEX), 'root')
+        self.push('EMPTY', 'root')
 
     def open_nonterminal(self, item):
         """Open a new nonterminal in the tree."""
-        self._num_open_nonterminals += 1
-        self.push(item, nonterminal=True)
+        self.push(item, 'nonterminal')
 
-    def push(self, item, nonterminal=False, reduced=False):
-        """Push a new item on the stack."""
-        if not reduced:
-            embedding_fn = self.nonterminal_embedding if nonterminal else self.word_embedding
-            item.embedding = embedding_fn(wrap([item.index], self.device))
-        self._items.append(item)
+    def push(self, item, option, reduced=False):
+        assert option in ('root', 'nonterminal', 'leaf')
+        # if not reduced: # Then we need to compute embedding
+            # embedding_fn = self.nonterminal_embedding if nonterminal else self.word_embedding
+            # item.embedding = embedding_fn(wrap([item.index], self.device))
+        # item.encoding = self.encoder(item.embedding)
+        if option == 'root':
+            self.tree.make_root(item)
+        elif option == 'nonterminal':
+            self.tree.open_nonterminal(item)
+        else:
+            self.tree.make_leaf(item)
 
     def pop(self):
-        """Pop tokens and vectors from the stack until first open nonterminal."""
-        found_head = False
-        children = []
-        # We pop items from self._tokens till we find a nonterminal head.
-        while not found_head:
-            item = self._items.pop()
-            children.append(item)
-            # Break from while if we found a nonterminal
-            if item.is_nonterminal:
-                found_head = True
-        # reverse the lists (we appended)
-        children = children[::-1]
-        # add nonterminal also to the end of both lists
-        children.append(children[0])
+        """Pop items from the stack until first open nonterminal."""
+        head, children = self.tree.close_nonterminal()
+        # Add nonterminal label to the beginning and end of children
+        children = [head.label] + [child.item for child in children] + [head.label]
         # Package embeddings as pytorch tensor
-        embeddings = [item.embedding.unsqueeze(0) for item in children]
-        x = torch.cat(embeddings, 1) # tensor (batch, seq_len, emb_dim)
+        # embeddings = [item.embedding.unsqueeze(0) for item in children]
+        # x = torch.cat(embeddings, 1) # tensor (batch, seq_len, emb_dim)
         # Update the number of open nonterminals
-        self._num_open_nonterminals -= 1
-        return children, x
+        # return children, x
+        return children
+
+    @property
+    def top_embedded(self):
+        return self.tree.current_node.embedding
+
+    @property
+    def top_encoded(self):
+        return self.tree.current_node.encoded
 
     @property
     def empty(self):
         """Returns True if the stack is empty."""
-        return self.indices == [EMPTY_INDEX, REDUCED_INDEX]
+        if self.start:
+            return True
+        else:
+            # return self.root.children[0].item.index == REDUCED_INDEX
+            return self.treeroot.children[0].item.index == REDUCED_INDEX
 
     @property
     def start(self):
-        return self.indices == [EMPTY_INDEX]
+        return not self.tree.root.children # True if no children
 
     @property
     def num_open_nonterminals(self):
         """Return the number of nonterminal nodes in the tree that are not yet closed."""
-        return self._num_open_nonterminals
+        return self.tree.num_open_nonterminals
 
 
 class Buffer(TransitionBase):
@@ -175,7 +185,6 @@ class Buffer(TransitionBase):
     def empty(self):
         """Returns True if the buffer is empty."""
         return self.indices == [EMPTY_INDEX]
-
 
 class History(TransitionBase):
     def __init__(self, embedding, device):
@@ -276,7 +285,49 @@ class Parser(nn.Module):
         return self.history.top_item
 
 if __name__ == '__main__':
-    stack = Stack(None, None, None, device=None)
-    parser = Parser(None, None, None, None, None, device=None)
-    print(stack)
-    print(parser)
+    tree = "(S (INTJ (* No)) (* ,) (NP (* it)) (VP (* was) (* n't) (NP (* Black) (* Monday))) (* .))"
+    sentence = "No , it was n't Black Monday .".split()
+    sentence = sentence[::-1]
+    actions = [
+        'NT(S)',
+        'NT(INTJ)',
+        'SHIFT',
+        'REDUCE',
+        'SHIFT',
+        'NT(NP)',
+        'SHIFT',
+        'REDUCE',
+        'NT(VP)',
+        'SHIFT',
+        'SHIFT',
+        'NT(NP)',
+        'SHIFT',
+        'SHIFT',
+        'REDUCE',
+        'REDUCE',
+        'SHIFT',
+        'REDUCE',
+    ]
+    stack = Stack(None, None, None)
+
+    for action in actions:
+        print(stack.num_open_nonterminals)
+        print('head:', stack.tree.get_current_head())
+        print('current:', stack.tree.current_node)
+
+        if action == 'SHIFT':
+            stack.push(sentence.pop(), 'leaf')
+        elif action == 'REDUCE':
+            children = stack.pop()
+            print(f'children {children}')
+        elif action.startswith('NT'):
+            label = action[3:-1]
+            stack.open_nonterminal(label)
+        print()
+
+    print(stack.num_open_nonterminals)
+    print('head:', stack.tree.get_current_head())
+    print('current:', stack.tree.current_node)
+    print()
+    print('pred :', stack.tree.linearize())
+    print('gold :',tree)
