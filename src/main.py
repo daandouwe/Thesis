@@ -11,6 +11,8 @@ def main():
                                      fromfile_prefix_chars='@') # Enable loading args from textfile
     # Choose mode
     parser.add_argument('mode', type=str, choices=['train', 'predict'])
+    # Debugging
+    parser.add_argument('-d', '--debug', action='store_true')
     # Data arguments
     parser.add_argument('--data', type=str, default='../tmp',
                         help='location of the data corpus')
@@ -58,12 +60,14 @@ def main():
                         help='initial learning rate')
     parser.add_argument('--learning-rate-warmup_steps', type=int,
                         default=160)
-    parser.add_argument('--step-decay-patience', type=int,
-                        default=1)
-    parser.add_argument('--step-decay-factor', type=float,
-                        default=0.5)
-    parser.add_argument('--epochs', type=int, default=10,
-                        help='number of epochs')
+    parser.add_argument('--step-decay', type=bool, default=True)
+
+    parser.add_argument('--step-decay-patience', type=int,default=1)
+
+    parser.add_argument('--step-decay-factor', type=float,default=0.5)
+
+    parser.add_argument('--epochs', default=None,
+                        help='max number of epochs')
     parser.add_argument('--clip', type=float, default=5.,
                         help='clipping gradient norm at this value')
     parser.add_argument('--print-every', type=int, default=10,

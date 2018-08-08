@@ -20,15 +20,14 @@ def actions2tree(words, actions, tags=None):
             word = words.pop()
             if tags:
                 tag = tags.pop()
-                tree += '({} {}) '.format(tag, word)
+                tree += f'({tag} {word}) '
             else:
-                tree += '{} '.format(word)
+                tree += f'{word} '
         elif a == 'REDUCE':
             tree = tree[:-1] # Remove whitespace
             tree += ') '
         else:
-            nt = a
-            tree += '({} '.format(nt)
+            tree += f'({a} '
     return tree
 
 def eval(outdir, verbose=False):

@@ -158,7 +158,7 @@ class RNNG(Parser):
                 nonterminal_logits = self.nonterminal_mlp(x)
                 vals, ids = nonterminal_logits.sort(descending=True)
                 vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
-                action.symbol = Item(self.dictionary.i2n[ids[0]], ids[0])
+                action.symbol = Item(self.dictionary.i2n[ids[0]], ids[0], nonterminal=True)
             # Take the appropriate parse step.
             self.parse_step(action)
         return self.actions

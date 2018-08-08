@@ -1,10 +1,11 @@
-# TODO
-# refactor training by writing a trainer class with inspiration taken from
-# https://github.com/allenai/allennlp/blob/master/allennlp/training/trainer.py
+import logging
+import itertools
+
 import numpy as np
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
+from tensorboardX import SummaryWriter
 
 from data import Corpus
 from model import make_model
@@ -13,6 +14,7 @@ from eval import eval
 from util import Timer, clock_time, get_subdir_string, write_losses, make_folders
 
 LOSSES = list()
+num_updates = 0
 
 def schedule_lr(args, optimizer, update):
     update = update + 1
@@ -30,27 +32,35 @@ def batchify(batches, batch_size):
     return [batches[i*batch_size:(i+1)*batch_size]
                 for i in range(div(len(batches), batch_size))]
 
-def train(args, model, batches, optimizer, epoch):
+def train(args, model, batches, optimizer):
     """One epoch of training."""
     model.train()
     timer = Timer()
     num_batches = len(batches) // args.batch_size
     for step, minibatch in enumerate(batchify(batches, args.batch_size), 1):
+        # Get new learning rate.
+        global num_updates
+        num_updates += 1
+        schedule_lr(args, optimizer, num_updates)
+
+        # Compute loss over minibatch.
         loss = torch.zeros(1, device=args.device)
         for batch in minibatch:
             sentence, actions = batch
             loss += model(sentence, actions)
         loss /= args.batch_size
 
-        schedule_lr(args, optimizer, step)
         optimizer.zero_grad()
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
         optimizer.step()
-        # TODO(use tensorboard)
+
+        # Log to tensorboard.
         loss = loss.item()
         LOSSES.append(loss)
         if step % args.print_every == 0:
+            writer.add_scalar('Train/Loss', loss, num_updates)
+            writer.add_scalar('Train/Learning-rate', get_lr(optimizer), num_updates)
             sents_per_sec = args.batch_size * args.print_every / timer.elapsed()
             avg_loss = np.mean(LOSSES[-args.print_every:])
             eta = clock_time((num_batches - step) / sents_per_sec)
@@ -73,8 +83,9 @@ def evaluate(model, batches):
     return total_loss / step
 
 def main(args):
-    # Set random seed.
+    # Set random seeds.
     torch.manual_seed(args.seed)
+    np.random.seed(args.seed)
     # Set cuda.
     use_cuda = not args.disable_cuda and torch.cuda.is_available()
     args.device = torch.device("cuda" if use_cuda else "cpu")
@@ -83,12 +94,22 @@ def main(args):
     if not args.disable_folders:
         make_folders(args)
 
+    print(f'Created tensorboard summary writer at {args.logdir}.')
+    global writer
+    writer = SummaryWriter(args.logdir)
+
     print(f'Loading data from {args.data}...')
     corpus = Corpus(data_path=args.data, textline=args.textline, char=args.use_char)
-    train_batches = corpus.train.batches(length_ordered=False, shuffle=False)
+    train_batches = corpus.train.batches(length_ordered=False, shuffle=True)
     dev_batches = corpus.dev.batches(length_ordered=False, shuffle=False)
     test_batches = corpus.test.batches(length_ordered=False, shuffle=False)
     print(corpus)
+
+    if args.debug:
+        print('Debug mode.')
+        train_batches = train_batches[:10]
+        dev_batches = dev_batches[:10]
+        test_batches = test_batches[:10]
 
     model = make_model(args, corpus.dictionary)
     model.to(args.device)
@@ -106,24 +127,39 @@ def main(args):
     best_dev_epoch = None
     best_dev_loss = None
 
+    # TODO: See if this can be made to work somehow...
+    # sentence, actions = train_batches[0]
+    # writer.add_graph(model, (sentence, actions))
+
     print('Start training.')
     # At any point you can hit Ctrl + C to break out of training early.
     try:
-        for epoch in range(1, args.epochs+1):
-            # TODO(shuffle batches each epoch)
-            train(args, model, train_batches, optimizer, epoch)
-            dev_loss = evaluate(model, dev_batches)
+        # No upper limit of epochs
+        for epoch in itertools.count(start=1):
+            if args.epochs is not None and epoch > args.epochs:
+                break
+
+            # Shuffle batches each epoch.
+            np.random.shuffle(train_batches)
+            train(args, model, train_batches, optimizer)
+
             # TODO(instead of loss, compute dev f1 using predict and eval)
             # Save the model if the validation loss is the best we've seen so far.
+            dev_loss = evaluate(model, dev_batches)
+            writer.add_scalar('Dev/Loss', dev_loss, num_updates)
             if not best_dev_loss or dev_loss < best_dev_loss:
                 with open(args.checkfile, 'wb') as f:
                     torch.save(model, f)
                 best_dev_epoch = epoch
                 best_dev_loss = dev_loss
-            # TODO(scheduler for learning rate!)
+            # Scheduler for learning rate.
+            if args.step_decay:
+                if (num_updates // args.batch_size + 1) > args.learning_rate_warmup_steps:
+                    scheduler.step(best_dev_loss)
+
             print('-'*89)
             print(
-                f'| End of epoch {epoch:3d}/{args.epochs:3d} '
+                f'| End of epoch {epoch:3d}/{args.epochs} '
                 f'| dev loss {dev_loss:2.4f} '
                 f'| best dev epoch {best_dev_epoch:2d} '
                 f'| best dev loss {best_dev_loss:2.4f} '
@@ -148,12 +184,9 @@ def main(args):
     with open(args.checkfile, 'rb') as f:
         model = torch.load(f)
 
-    print('Evaluating on test set...')
-    test_loss = evaluate(model, test_batches)
     print('-'*89)
     print(
          '| End of training '
-        f'| test loss {test_loss:2.4f} '
         f'| best dev epoch {best_dev_epoch:2d} '
         f'| best dev loss {best_dev_loss:2.4f} '
     )

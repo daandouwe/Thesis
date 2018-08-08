@@ -71,6 +71,9 @@ class Action(Item):
     def is_nonterminal(self):
         return self.symbol is not None
 
+class Word(Item):
+    pass
+
 class Dictionary:
     """A dictionary for stack, buffer, and action symbols."""
     def __init__(self, path, char=False):
@@ -175,7 +178,7 @@ class Data:
             action_items = []
             for token in actions:
                 if not token == 'SHIFT' and not token == 'REDUCE':
-                    nonterminal = token[3:-1]
+                    nonterminal = token[3:-1] # NT(X) -> X
                     symbol = Item(nonterminal, self.dictionary.n2i[nonterminal])
                     token, index = 'OPEN', dictionary.a2i['OPEN']
                 else:
