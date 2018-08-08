@@ -85,7 +85,7 @@ class Tree:
         self.num_open_nonterminals -= 1
         head = self.get_current_head()
         children = head.children
-        self.current_node = self.get_current_head().head # Move two nodes up!
+        self.current_node = head.head # Move two nodes up from current leaf!
         return head, children
 
     def linearize(self):
