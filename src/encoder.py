@@ -7,6 +7,10 @@ import torch.distributions as dist
 
 from data import wrap
 
+# NOTE(Elmo paper):
+# forget gate bias is initialized to 1 for all LSTMs, with all other gates
+# initialized to 0, as per (Jozefowicz et al., 2015).
+
 class BiRecurrentEncoder(nn.Module):
     """A bidirectional RNN encoder for unpadded batches."""
     def __init__(self,input_size, hidden_size, num_layers, dropout, batch_first=True, device=None):
@@ -53,7 +57,7 @@ class BaseLSTM(nn.Module):
         self._hidden_states_2 = [] # layer 2
 
         # Used for custom dropout.
-        self.keep_prob = 1. - dropout
+        self.keep_prob = 1.0 - dropout
         self.bernoulli = dist.Bernoulli(
                             probs=torch.tensor([self.keep_prob], device=device)
                         )

@@ -11,7 +11,7 @@ import numpy as np
 from scripts.get_vocab import get_sentences
 
 PAD_TOKEN = '_PAD_'
-EMPTY_TOKEN = '_EMPTY_'
+EMPTY_TOKEN = '_EMPTY_' # used as dummy to encode an empty stack or history
 REDUCED_TOKEN = '_REDUCED_' # used as dummy for reduced sequences
 
 PAD_INDEX = 0
@@ -67,6 +67,9 @@ class Action(Item):
             assert isinstance(symbol, Item)
         self.symbol = symbol
 
+    @property
+    def is_nonterminal(self):
+        return self.symbol is not None
 
 class Dictionary:
     """A dictionary for stack, buffer, and action symbols."""
@@ -175,7 +178,10 @@ class Data:
                     nonterminal = token[3:-1]
                     symbol = Item(nonterminal, self.dictionary.n2i[nonterminal])
                     token, index = 'OPEN', dictionary.a2i['OPEN']
-                    action_items.append(Action(token, index, symbol=symbol))
+                else:
+                    index = dictionary.a2i[token]
+                    symbol = None
+                action_items.append(Action(token, index, symbol=symbol))
             # Store internally
             self.sentences.append(sentence_items)
             self.actions.append(action_items)
@@ -234,8 +240,9 @@ class Corpus:
 
 if __name__ == "__main__":
     # Example usage:
-    corpus = Corpus(data_path='../tmp', textline='unked', char=True)
-    batches = corpus.train.batches(1, length_ordered=False)
-    print(corpus.dictionary.w2i)
-    print(corpus)
-    print(batches[0])
+    corpus = Corpus(data_path='../tmp', textline='unked', char=False)
+    batches = corpus.test.batches(1, length_ordered=False)
+    sentence, actions = batches[0]
+    print([item.token for item in sentence])
+    print([item.token for item in actions])
+    print([item.symbol.token if item.is_nonterminal else item.token for item in actions])

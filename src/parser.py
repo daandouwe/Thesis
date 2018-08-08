@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 
 from data import (EMPTY_INDEX, REDUCED_INDEX, EMPTY_TOKEN, REDUCED_TOKEN, PAD_TOKEN,
                     Item, Action, wrap, pad)
@@ -197,11 +198,15 @@ class History(TransitionBase):
         item.embedding = self.embedding(wrap([item.index], self.device))
         self._items.append(item)
 
+    @property
+    def actions(self):
+        return [item.symbol.token if item.is_nonterminal else item.token
+                    for item in self._items[1:]] # First item in self._items is the empty item
 
-class Parser:
+class Parser(nn.Module):
     """The parse configuration."""
     def __init__(self, word_embedding, nonterminal_embedding, action_embedding,
-                 buffer_encoder, SHIFT, REDUCE, OPEN, device):
+                 buffer_encoder, actions, device):
         """Initialize the parser.
 
         Arguments:
@@ -209,13 +214,14 @@ class Parser:
             nonterminal_embedding: embedding function for nonterminals.
             actions_embedding: embedding function for actions.
             buffer_encoder: encoder function to encode buffer contents.
-            SHIFT, REDUCE, OPEN (int): indices of these actions.
+            actions (tuple): tuple with indices of actions.
             device: device on which computation is done (gpu or cpu).
         """
+        super(Parser, self).__init__()
+        self.SHIFT, self.REDUCE, self.OPEN = actions
         self.stack = Stack(word_embedding, nonterminal_embedding, device)
         self.buffer = Buffer(word_embedding, buffer_encoder, device)
         self.history = History(action_embedding, device)
-        self.SHIFT, self.REDUCE, self.OPEN = SHIFT, REDUCE, OPEN
 
     def __str__(self):
         return '\n'.join(('Parser', str(self.stack), str(self.buffer), str(self.history)))
@@ -246,7 +252,7 @@ class Parser:
             cond2 = self.stack.num_open_nonterminals > 0
             return cond1 and cond2
         elif action.index == self.REDUCE:
-            cond1 = not self.last_action == self.OPEN
+            cond1 = not self.last_action.index == self.OPEN
             cond2 = not self.stack.start
             cond3 = self.stack.num_open_nonterminals > 1
             cond4 = self.buffer.empty
@@ -256,17 +262,17 @@ class Parser:
             cond2 = self.stack.num_open_nonterminals < 100
             return cond1 and cond2
         else:
-            raise ValueError(f'got illegal action: {action.token}')
+            raise ValueError(f'got illegal action: {action.token}.')
 
     @property
     def actions(self):
         """Return the current history of actions."""
-        return self.history.tokens
+        return self.history.actions
 
     @property
     def last_action(self):
         """Return the last action taken."""
-        return self.history.top_token
+        return self.history.top_item
 
 if __name__ == '__main__':
     stack = Stack(None, None, None, device=None)

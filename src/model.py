@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-from data import PAD_INDEX, EMPTY_INDEX, REDUCED_INDEX, REDUCED_TOKEN, Item, wrap
+from data import PAD_INDEX, EMPTY_INDEX, REDUCED_INDEX, REDUCED_TOKEN, Item, Action, wrap
 from glove import load_glove, get_vectors
 from embedding import ConvolutionalCharEmbedding
 from nn import MLP
@@ -12,7 +12,7 @@ from encoder import StackLSTM, HistoryLSTM, BufferLSTM
 from parser import Parser
 from loss import LossCompute
 
-class RNNG(nn.Module):
+class RNNG(Parser):
     """Recurrent Neural Network Grammar model."""
     def __init__(
         self,
@@ -30,7 +30,14 @@ class RNNG(nn.Module):
         dropout,
         device
     ):
-        super(RNNG, self).__init__()
+        super(RNNG, self).__init__(
+            word_embedding,
+            nonterminal_embedding,
+            action_embedding,
+            buffer_encoder,
+            actions,
+            device=device
+        )
         self.dictionary = dictionary
         self.device = device
 
@@ -38,8 +45,6 @@ class RNNG(nn.Module):
         self.nonterminal_embedding = nonterminal_embedding
         self.action_embedding = action_embedding
 
-        # Actions
-        self.SHIFT, self.REDUCE, self.OPEN = actions
         # Parser encoders
         self.buffer_encoder = buffer_encoder
         self.stack_encoder = stack_encoder
@@ -51,18 +56,6 @@ class RNNG(nn.Module):
         self.nonterminal_mlp = nonterminal_mlp
 
         self.dropout = nn.Dropout(p=dropout)
-
-        # Create an internal parser.
-        self.parser = Parser(
-            self.word_embedding,
-            self.nonterminal_embedding,
-            self.action_embedding,
-            self.buffer_encoder,
-            self.SHIFT,
-            self.REDUCE,
-            self.OPEN,
-            device=device
-        )
 
         # Loss computation
         self.loss_compute = loss_compute
@@ -82,38 +75,25 @@ class RNNG(nn.Module):
 
     def parse_step(self, action, logfile=False):
         """Updates parser one step give the action."""
-        self.parser.history.push(action)
-
+        self.history.push(action)
         if action.index == self.SHIFT:
-            self.parser.shift()
-
+            self.shift()
         elif action.index == self.REDUCE:
             # Pop all items from the open nonterminal.
-            items, embeddings = self.parser.stack.pop()
+            items, embeddings = self.stack.pop()
             # Reduce these items using the composition function.
             x = self.stack_encoder.reduce(embeddings)
             # Push the new representation onto stack: the computed vector x
             # and a dummy index.
-            self.parser.stack.push(
+            self.stack.push(
                 Item(REDUCED_TOKEN, REDUCED_INDEX, embedding=x),
                 reduced=True
             )
-
         elif action.index == self.OPEN:
             item = Item(action.symbol.token, action.symbol.index, nonterminal=True)
-            self.parser.stack.open_nonterminal(item)
-
+            self.stack.open_nonterminal(item)
         else:
             raise ValueError(f'got illegal action: {action.token}')
-
-        # if logfile is not None:
-        #     print(t, file=logfile)
-        #     print(str(self.parser), file=logfile)
-        #     print('Values : ', vals.numpy()[:10], file=logfile)
-        #     print('Ids : ', ids.numpy()[:10], file=logfile)
-        #     print('Action : ', action_id, action, file=logfile)
-        #     print('Recalls : ', i, file=logfile)
-        #     print(file=logfile)
 
     def forward(self, sentence, actions, logfile=None):
         """Forward training pass for RNNG.
@@ -123,7 +103,7 @@ class RNNG(nn.Module):
             actions (list): parse action sequence as list of Item objects.
         """
         # Initialize the parser with the sentence.
-        self.parser.initialize(sentence)
+        self.initialize(sentence)
         # Reset the hidden states of the StackLSTM and the HistoryLSTM.
         self.stack_encoder.initialize_hidden()
         self.history_encoder.initialize_hidden()
@@ -131,7 +111,7 @@ class RNNG(nn.Module):
         loss = torch.zeros(1, device=self.device)
         for t, action in enumerate(actions):
             # Get the parser representation.
-            stack, buffer, history = self.parser.get_embedded_input()
+            stack, buffer, history = self.get_embedded_input()
             # Encode it.
             x = self.encode(stack, buffer, history)
             # Compute the logits for the action.
@@ -153,15 +133,15 @@ class RNNG(nn.Module):
             sentence (list): input sentence as list of Item objects.
         """
         # Initialize the parser with the sentence.
-        self.parser.initialize(sentence)
+        self.initialize(sentence)
         # Reset the hidden states of the StackLSTM and the HistoryLSTM.
         self.stack_encoder.initialize_hidden()
         self.history_encoder.initialize_hidden()
         t = 0
-        while not self.parser.stack.empty:
+        while not self.stack.empty:
             t += 1
             # Get the parser representation.
-            stack, buffer, history = self.parser.get_embedded_input()
+            stack, buffer, history = self.get_embedded_input()
             # Encode it.
             x = self.encode(stack, buffer, history)
             # Compute the logits for the action.
@@ -170,10 +150,10 @@ class RNNG(nn.Module):
             vals, ids = action_logits.sort(descending=True)
             vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
             i = 0
-            action = Item(self.dictionary.i2a[ids[i]], ids[i])
-            while not self.parser.is_valid_action(action):
+            action = Action(self.dictionary.i2a[ids[i]], ids[i])
+            while not self.is_valid_action(action):
                 i += 1
-                action = Item(self.dictionary.i2a[ids[i]], ids[i])
+                action = Action(self.dictionary.i2a[ids[i]], ids[i])
             if action.index == self.OPEN:
                 nonterminal_logits = self.nonterminal_mlp(x)
                 vals, ids = nonterminal_logits.sort(descending=True)
@@ -181,8 +161,7 @@ class RNNG(nn.Module):
                 action.symbol = Item(self.dictionary.i2n[ids[0]], ids[0])
             # Take the appropriate parse step.
             self.parse_step(action)
-
-        return self.parser
+        return self.actions
 
 
 def set_embedding(embedding, tensor):
@@ -288,8 +267,8 @@ def make_model(args, dictionary):
     )
 
     # Initialize parameters with Glorot.
-    for p in model.parameters():
-        if p.dim() > 1 and p.requires_grad:
-            nn.init.xavier_uniform_(p)
+    for param in model.parameters():
+        if param.dim() > 1 and param.requires_grad:
+            nn.init.xavier_uniform_(param)
 
     return model

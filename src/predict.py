@@ -12,13 +12,15 @@ def predict(args, model, batches, name='test'):
     model.eval()
     sentences = get_sentences(os.path.join(args.data, 'test', f'ptb.{name}.oracle'))
     nsents = len(batches)
-    for i, batch in enumerate(batches):
-        sentence, actions = batch
-        parser = model.parse(sentence)
-        sentences[i]['actions'] = parser.actions
-        if i % 10 == 0:
-            print(f'Predicting: sentence {i}/{nsents}.', end='\r')
-    print()
+    with torch.no_grad(): # operations inside don't track history
+        for i, batch in enumerate(batches):
+            sentence, actions = batch
+            actions = model.parse(sentence)
+            # Modify the gold data with the list of actions
+            sentences[i]['actions'] = actions
+            if i % 10 == 0:
+                print(f'Predicting sentence {i}/{nsents}...', end='\r')
+        print()
     write_prediction(sentences, args.outdir, name=name)
 
 def print_sent_dict_as_config(sent_dict, file):
@@ -39,7 +41,9 @@ def write_prediction(sentences, outdir, name, verbose=False):
 
 def main(args):
     checkpath = os.path.join(args.checkdir, 'model.pt')
+    print(f'Loading model from {checkpath}...')
     model = torch.load(checkpath)
+    print(f'Loading data from {args.data}...')
     corpus = Corpus(data_path=args.data, textline=args.textline)
     test_batches  = corpus.test.batches(length_ordered=False, shuffle=False)
     predict(args, model, test_batches, name='test')
