@@ -28,9 +28,9 @@ def get_lr(optimizer):
         return param_group['lr']
 
 def batchify(batches, batch_size):
-    div = lambda a, b : ((a-1) // b) + 1
+    ceil_div = lambda a, b : ((a-1) // b) + 1
     return [batches[i*batch_size:(i+1)*batch_size]
-                for i in range(div(len(batches), batch_size))]
+                for i in range(ceil_div(len(batches), batch_size))]
 
 def train(args, model, batches, optimizer):
     """One epoch of training."""

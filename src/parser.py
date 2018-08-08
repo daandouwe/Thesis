@@ -95,25 +95,25 @@ class Stack(TransitionBase):
 
     def pop(self):
         """Pop tokens and vectors from the stack until first open nonterminal."""
-        found_nonterminal = False
-        pop_items = []
-        # We pop items from self._tokens till we find a nonterminal.
-        while not found_nonterminal:
+        found_head = False
+        children = []
+        # We pop items from self._tokens till we find a nonterminal head.
+        while not found_head:
             item = self._items.pop()
-            pop_items.append(item)
+            children.append(item)
             # Break from while if we found a nonterminal
             if item.is_nonterminal:
-                found_nonterminal = True
+                found_head = True
         # reverse the lists (we appended)
-        pop_items = pop_items[::-1]
+        children = children[::-1]
         # add nonterminal also to the end of both lists
-        pop_items.append(pop_items[0])
+        children.append(children[0])
         # Package embeddings as pytorch tensor
-        embeddings = [item.embedding.unsqueeze(0) for item in pop_items]
+        embeddings = [item.embedding.unsqueeze(0) for item in children]
         x = torch.cat(embeddings, 1) # tensor (batch, seq_len, emb_dim)
         # Update the number of open nonterminals
         self._num_open_nonterminals -= 1
-        return pop_items, x
+        return children, x
 
     @property
     def empty(self):

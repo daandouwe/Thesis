@@ -34,3 +34,9 @@
 - [x] Use TensorboadX to keep track of training.
 - [x] Training from: https://github.com/nikitakit/self-attentive-parser/blob/master/src/main.py.
 - [ ] Look into trainer class from https://github.com/allenai/allennlp/blob/master/allennlp/training/trainer.py.
+
+
+## Visualization
+- [ ] A live broswer demo to inspect the trees loaded from textfile.
+- [ ] A live demo that predicts tree for input and visualizes it in browser.
+- [ ] A demo that shows how the stack embedding changes per update step.

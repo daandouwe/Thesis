@@ -182,6 +182,9 @@ def make_model(args, dictionary):
                 dropout=args.dropout, device=args.device
             )
     else:
+        if args.use_fasttext:
+            print('FasText only availlable in 300 dimensions: changed word-emb-dim accordingly.')
+            args.word_emb_dim = 300
         word_embedding = nn.Embedding(
                 num_words, args.word_emb_dim, padding_idx=PAD_INDEX
             )
@@ -202,7 +205,6 @@ def make_model(args, dictionary):
             logfile.close()
         if args.use_fasttext:
             from torchtext.vocab import FastText
-            assert args.word_emb_dim == 300, 'FastText only availlable in dimension 300.'
             print(f'Loading FastText vectors fasttext.en.300d (torchtext)...')
             fasttext = FastText()
             logfile = open(os.path.join(args.logdir, 'fasttext.error.txt'), 'w')
