@@ -11,12 +11,14 @@ import numpy as np
 from scripts.get_vocab import get_sentences
 
 PAD_TOKEN = '_PAD_'
-EMPTY_TOKEN = '_EMPTY_' # used as dummy to encode an empty stack or history
+EMPTY_TOKEN = '_EMPTY_' # used as dummy to encode an empty buffer or history
 REDUCED_TOKEN = '_REDUCED_' # used as dummy for reduced sequences
+ROOT_TOKEN = '_ROOT_' # used as dummy for reduced sequences
 
 PAD_INDEX = 0
 EMPTY_INDEX = 1
 REDUCED_INDEX = 2
+ROOT_INDEX = 3
 
 def pad(batch):
     """Pad a batch of irregular length indices."""
@@ -101,9 +103,9 @@ class Dictionary:
         self.read(path)
 
     def initialize(self):
-        self.w2i[PAD_TOKEN] = 0
-        self.w2i[EMPTY_TOKEN] = 1
-        self.w2i[REDUCED_TOKEN] = 2
+        self.w2i[PAD_TOKEN] = PAD_INDEX
+        self.w2i[EMPTY_TOKEN] = EMPTY_INDEX
+        self.w2i[REDUCED_TOKEN] = REDUCED_INDEX
 
         self.i2w.append(PAD_TOKEN)
         self.i2w.append(EMPTY_TOKEN)

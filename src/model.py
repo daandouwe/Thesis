@@ -117,7 +117,7 @@ class RNNG(Parser):
             # Compute the logits for the action.
             action_logits = self.action_mlp(x)
             loss += self.loss_compute(action_logits, action.index)
-            # If we open a nonterminal, predict which nonterminal.
+            # If we open a nonterminal, predict which.
             if action.index == self.OPEN:
                 nonterminal_logits = self.nonterminal_mlp(x)
                 loss += self.loss_compute(nonterminal_logits, action.symbol.index)

@@ -9,7 +9,8 @@ class Node:
 
 class InternalNode(Node):
     def __init__(self, item, head):
-        # assert isinstance(item, Action)
+        assert isinstance(item, Item)
+        assert isinstance(head, Node) or isinstance(head, type(None))
         self.item = item
         self.head = head
         self.children = tuple()
@@ -20,26 +21,21 @@ class InternalNode(Node):
         self.children = (*self.children, child) # new extended tuple
 
     def __str__(self):
-        children = [child.item for child in self.children]
+        children = [child.item.token for child in self.children]
         return 'InternalNode({}, ({}))'.format(self.item, ', '.join(children))
 
     def linearize(self):
         return "({} {})".format(
             self.item, " ".join(child.linearize() for child in self.children))
-            # self.item.symbol, " ".join(child.linearize() for child in self.children))
 
     def leaves(self):
         for child in self.children:
             yield from child.leaves()
 
-    @property
-    def label(self):
-        # return self.item.symbol
-        return self.item
-
 class LeafNode(Node):
     def __init__(self, item, head, tag='*'):
-        # assert isinstance(item, Item)
+        assert isinstance(item, Item)
+        assert isinstance(head, Node)
         self.item = item
         self.head = head
         self.tag = tag
@@ -48,24 +44,37 @@ class LeafNode(Node):
         return 'LeafNode({!r}, {:})'.format(self.item, self.tag)
 
     def linearize(self):
-        return "({} {})".format(self.tag, self.item)
+        if self.tag == '*':
+            return "{}".format(self.item)
+        else:
+            return "({} {})".format(self.tag, self.item)
 
     def leaves(self):
         yield self
 
 class Tree:
     """A tree that is constructed top-down."""
-    def __init__(self):
+    def __init__(self, verbose=False):
         self.root = None # The root node
         self.current_node = None # Keep track of the current node
         self.num_open_nonterminals = 0
+        self.verbose = verbose
 
     def make_root(self, item):
-        print(f'making root `{item}`')
-        self.root = self.current_node = InternalNode(item, None)
+        if self.verbose: print(f'making root `{item}`')
+        node = InternalNode(item, None)
+        self.root = node
+        self.current_node = node
+
+    def make_leaf(self, item):
+        if self.verbose: print(f'making leaf `{item}`')
+        head = self.get_current_head()
+        node = LeafNode(item, head)
+        head.add_child(node)
+        self.current_node = node
 
     def open_nonterminal(self, item):
-        print(f'opening nonterminal `{item}`')
+        if self.verbose: print(f'opening nonterminal `{item}`')
         self.num_open_nonterminals += 1
         # If current node is a nonterminal.
         head = self.get_current_head()
@@ -73,30 +82,36 @@ class Tree:
         head.add_child(node)
         self.current_node = node
 
-    def make_leaf(self, item):
-        print(f'making leaf `{item}`')
-        head = self.get_current_head()
-        node = LeafNode(item, head)
-        head.add_child(node)
-        self.current_node = node
-
     def close_nonterminal(self):
-        print(f'reducing under {self.get_current_head()}')
+        if self.verbose: print(f'reducing under {self.get_current_head()}')
         self.num_open_nonterminals -= 1
         head = self.get_current_head()
         children = head.children
-        self.current_node = head.head # Move two nodes up from current leaf!
+        # Move two nodes up from current leaf since we closed the head
+        self.current_node = head.head
         return head, children
-
-    def linearize(self):
-        return self.root.children[0].linearize()
 
     def get_current_head(self):
         if isinstance(self.current_node, InternalNode):
             return self.current_node
-        else:
+        else: # current node is a LeafNode
             return self.current_node.head
 
+    def linearize(self):
+        return self.root.children[0].linearize()
+
+    @property
+    def last_closed_nonterminal(self):
+        assert self.current_node.children, 'no nonterminals opened yet'
+        return self.current_node.children[0]
+
+    @property
+    def start(self):
+        return not self.root.children
+
+    @property
+    def finished(self):
+        return self.current_node == self.root
 
 if __name__ == '__main__':
     pass

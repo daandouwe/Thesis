@@ -10,10 +10,19 @@ from data import wrap
 # NOTE(Elmo paper):
 # forget gate bias is initialized to 1 for all LSTMs, with all other gates
 # initialized to 0, as per (Jozefowicz et al., 2015).
+# From Joost:
+# def init_lstm(cell, gain=1, forget_bias=1.):
+#   init_gru(cell, gain)
+#
+#   # positive forget gate bias (Jozefowicz et al., 2015)
+#   for _, _, ih_b, hh_b in cell.all_weights:
+#     l = len(ih_b)
+#     ih_b[l // 4:l // 2].data.fill_(forget_bias)
+#     hh_b[l // 4:l // 2].data.fill_(forget_bias)
 
 class BiRecurrentEncoder(nn.Module):
     """A bidirectional RNN encoder for unpadded batches."""
-    def __init__(self,input_size, hidden_size, num_layers, dropout, batch_first=True, device=None):
+    def __init__(self, input_size, hidden_size, num_layers, dropout, batch_first=True, device=None):
         super(BiRecurrentEncoder, self).__init__()
         self.fwd_rnn = nn.LSTM(input_size, hidden_size, num_layers,
                                 batch_first=batch_first, dropout=dropout)
@@ -32,7 +41,7 @@ class BiRecurrentEncoder(nn.Module):
         hf, _ = self.fwd_rnn(x)                 # [batch, seq, hidden_size]
         hb, _ = self.bwd_rnn(self._reverse(x))  # [batch, seq, hidden_size]
 
-        # select final representation
+        # Select final representation.
         hf = hf[:, -1, :] # [batch, hidden_size]
         hb = hb[:, -1, :] # [batch, hidden_size]
 
@@ -65,7 +74,7 @@ class BaseLSTM(nn.Module):
         self.initialize_hidden()
         self.to(device)
 
-    def set_new_dropout_mask(self, batch_size):
+    def sample_recurrent_dropout_mask(self, batch_size):
         """Fix a new dropout mask used for recurrent dropout."""
         self._dropout_mask = self.bernoulli.sample(
                             (batch_size, self.hidden_size)
@@ -85,7 +94,7 @@ class BaseLSTM(nn.Module):
         cx = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
         self.hx1, self.cx1 = hx, cx
         self.hx2, self.cx2 = c(hx), c(cx)
-        self.set_new_dropout_mask(batch_size)
+        self.sample_recurrent_dropout_mask(batch_size)
 
     def forward(self, x):
         """Compute the next hidden state with input x and the previous hidden state.
@@ -145,7 +154,7 @@ class HistoryLSTM(BaseLSTM):
 
 class BufferLSTM(nn.Module):
     """A straightforward lstm but wrapped to hide internals such as selection of output."""
-    def __init__(self, input_size, hidden_size, num_layers, dropout, device):
+    def __init__(self, input_size, hidden_size, num_layers, dropout, device=None):
         super(BufferLSTM, self).__init__()
         self.rnn = nn.LSTM(input_size, hidden_size, dropout=dropout, num_layers=num_layers,
                            batch_first=True, bidirectional=False)
