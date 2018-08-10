@@ -5,17 +5,32 @@ class Timer:
     """A simple timer to use during training."""
     def __init__(self):
         self.time0 = time.time()
+        self.previous = time.time()
 
     def elapsed(self):
-        time1 = time.time()
-        elapsed = time1 - self.time0
-        self.time0 = time1
+        return time.time() - self.time0
+
+    def elapsed_since_previous(self):
+        new = time.time()
+        elapsed = new - self.previous
+        self.previous = new
         return elapsed
 
-def clock_time(s):
-    h, s = divmod(s, 3600)
-    m, s = divmod(s, 60)
-    return int(h), int(m), int(s)
+    def clock_time(self, seconds):
+        minutes, seconds = divmod(seconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        days, hours = divmod(hours, 24)
+        return int(days), int(hours), int(minutes), int(seconds)
+
+    def format(self, seconds):
+        days, hours, minutes, seconds = self.clock_time(seconds)
+        elapsed_string = "{}h{:02}m{:02}s".format(hours, minutes, seconds)
+        if days > 0:
+            elapsed_string = "{}d{}".format(days, elapsed_string)
+        return elapsed_string
+
+    def format_elapsed(self):
+        return self.format(self.elapsed())
 
 def get_parameter_string(args):
     """Returns an identification string based on arguments in args.

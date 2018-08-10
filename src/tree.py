@@ -45,7 +45,8 @@ class LeafNode(Node):
 
     def linearize(self):
         if self.tag == '*':
-            return "{}".format(self.item)
+            return "({} {})".format(self.tag, self.item)
+            # return "{}".format(self.item)
         else:
             return "({} {})".format(self.tag, self.item)
 
@@ -54,27 +55,26 @@ class LeafNode(Node):
 
 class Tree:
     """A tree that is constructed top-down."""
-    def __init__(self, verbose=False):
+    def __init__(self):
         self.root = None # The root node
         self.current_node = None # Keep track of the current node
         self.num_open_nonterminals = 0
-        self.verbose = verbose
+
+    def __str__(self):
+        return self.linearize()
 
     def make_root(self, item):
-        if self.verbose: print(f'making root `{item}`')
         node = InternalNode(item, None)
         self.root = node
         self.current_node = node
 
     def make_leaf(self, item):
-        if self.verbose: print(f'making leaf `{item}`')
         head = self.get_current_head()
         node = LeafNode(item, head)
         head.add_child(node)
         self.current_node = node
 
     def open_nonterminal(self, item):
-        if self.verbose: print(f'opening nonterminal `{item}`')
         self.num_open_nonterminals += 1
         # If current node is a nonterminal.
         head = self.get_current_head()
@@ -83,7 +83,6 @@ class Tree:
         self.current_node = node
 
     def close_nonterminal(self):
-        if self.verbose: print(f'reducing under {self.get_current_head()}')
         self.num_open_nonterminals -= 1
         head = self.get_current_head()
         children = head.children
@@ -98,6 +97,7 @@ class Tree:
             return self.current_node.head
 
     def linearize(self):
+        assert self.current_node.children, 'no nonterminals opened yet'
         return self.root.children[0].linearize()
 
     @property
@@ -111,7 +111,7 @@ class Tree:
 
     @property
     def finished(self):
-        return self.current_node == self.root
+        return self.current_node is self.root and not self.start
 
 if __name__ == '__main__':
     pass

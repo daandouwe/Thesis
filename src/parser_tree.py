@@ -58,14 +58,14 @@ class TransitionBase(nn.Module):
     def empty(self):
         pass
 
-
 class Stack(TransitionBase):
-    def __init__(self, word_embedding, nonterminal_embedding, encoder, device, verbose=False):
+    def __init__(self, word_embedding, nonterminal_embedding, encoder, device):
         """Initialize the Stack.
 
         Arguments:
             word_embedding (nn.Embedding): embedding function for words.
             nonterminal_embedding (nn.Embedding): embedding function for nonterminals.
+            encoder (nn.Module): recurrent encoder.
             device: device on which computation is done (gpu or cpu).
         """
         super(Stack, self).__init__()
@@ -73,14 +73,13 @@ class Stack(TransitionBase):
         self.nonterminal_embedding = nonterminal_embedding
         self.encoder = encoder
         self.device = device
-        self.verbose = verbose
         self.initialize()
 
     def __str__(self):
         return f'{type(self).__name__} ({self.num_open_nonterminals} open NTs): {self.tokens}'
 
     def initialize(self):
-        self.tree = Tree(verbose=self.verbose)
+        self.tree = Tree()
         self.encoder.initialize_hidden()
         self.push(Item(ROOT_TOKEN, ROOT_INDEX), 'root')
 
@@ -128,7 +127,7 @@ class Stack(TransitionBase):
         # TODO change _reset_hidden is encoder so we can remove +1
         self.encoder._reset_hidden(sequence_len + 1)
 
-    def compute_reduced_node_encoding(self):
+    def encode_reduced_node(self):
         """Compute the new hidden state of the node that was just reduced."""
         # Get the last reduced Node from the tree.
         reduced_node = self.tree.last_closed_nonterminal
@@ -138,7 +137,15 @@ class Stack(TransitionBase):
     @property
     def empty(self):
         """Returns True if the stack is empty."""
-        return self.tree.start or self.tree.finished
+        return self.tree.finished
+
+    @property
+    def start(self):
+        return self.tree.start
+
+    # @property
+    # def finished(self):
+    #     return self.tree.finished
 
     @property
     def num_open_nonterminals(self):
@@ -149,7 +156,6 @@ class Stack(TransitionBase):
     def top_item(self):
         """Overide property from baseclass."""
         return self.tree.current_node.item
-
 
 class Buffer(TransitionBase):
     def __init__(self, embedding, encoder, device):
@@ -263,20 +269,35 @@ class Parser(nn.Module):
         self.stack.push(self.buffer.pop(), 'leaf')
 
     def get_embedded_input(self):
-        """Return the representations of the stack buffer and history.
-
-        Note: `buffer` is already the encoding of the buffer."""
+        """Return the representations of the stack buffer and history."""
         stack = self.stack.top_embedded     # [batch, word_emb_size]
-        buffer = self.buffer.top_encoded    # [batch, word_lstm_hidden]
+        buffer = self.buffer.top_embedded   # [batch, word_emb_size]
         history = self.history.top_embedded # [batch, action_emb_size]
         return stack, buffer, history
 
     def get_encoded_input(self):
-        """Return the representations of the stack buffer and history."""
+        """Return the representations of the stack, buffer and history."""
         stack = self.stack.top_encoded      # [batch, word_lstm_hidden]
         buffer = self.buffer.top_encoded    # [batch, word_lstm_hidden]
         history = self.history.top_encoded  # [batch, action_lstm_hidden]
         return stack, buffer, history
+
+    def parse_step(self, action):
+        """Updates parser one step give the action."""
+        # Take step prescribed by action.
+        self.history.push(action)
+        if action.index == self.SHIFT:
+            self.shift()
+        elif action.index == self.OPEN:
+            self.stack.open_nonterminal(action.symbol)
+        elif action.index == self.REDUCE:
+            children, embeddings, sequence_len = self.stack.pop()
+            reduced = self.stack.encoder.composition(embeddings)
+            self.stack.set_reduced_node_embedding(reduced)
+            self.stack.reset_hidden(sequence_len)
+            self.stack.encode_reduced_node()
+        else:
+            raise ValueError(f'got illegal action: {action.token}')
 
     def is_valid_action(self, action):
         """Check whether the action is valid under the parser's configuration."""
@@ -311,6 +332,7 @@ if __name__ == '__main__':
     from encoder import BiRecurrentEncoder, StackLSTM, BufferLSTM, HistoryLSTM
     from nn import MLP
     from loss import LossCompute
+
     # A test sentence.
     tagged_tree = "(S (NP (NN Champagne) (CC and) (NN dessert)) (VP (VBD followed)) (. .))"
     tree = "(S (NP Champagne and dessert) (VP followed) .)"
@@ -328,6 +350,7 @@ if __name__ == '__main__':
         'SHIFT',
         'REDUCE'
     ]
+
     def prepare_data(actions, sentence):
         i2a = ['SHIFT', 'REDUCE', 'OPEN']
         i2n = [a[3:-1] for a in actions if a.startswith('NT')] + [ROOT_TOKEN]
@@ -351,7 +374,7 @@ if __name__ == '__main__':
         moves = range(3)
         return action_items, sentence_items, moves, len(i2w), len(i2n), len(i2a)
 
-    def test_parser(actions, sentence, dim=4, verbose=True):
+    def test_parser(actions, sentence, dim=4):
         assert dim % 2 == 0
         actions, sentence, moves, num_words, num_nonterm, num_actions = prepare_data(actions, sentence)
         SHIFT, REDUCE, OPEN = moves
@@ -400,10 +423,7 @@ if __name__ == '__main__':
                 parser.stack.set_reduced_node_embedding(reduced)
                 parser.stack.reset_hidden(sequence_len)
                 print('{:<17}'.format('hidden reset:'), parser.stack.encoder.hx1.data)
-                parser.stack.compute_reduced_node_encoding()
-                reduced_item = parser.stack.tree.last_closed_nonterminal.item
-                reduced_item.embedding = reduced
-                reduced_item.encoding = parser.stack.encoder(reduced)
+                parser.stack.encode_reduced_node()
                 print('{:<17}'.format('embedding after:'), parser.stack.tree.last_closed_nonterminal.item.embedding.data)
                 print('{:<17}'.format('encoding after:'), parser.stack.tree.last_closed_nonterminal.item.encoding.data)
                 print('{:<17}'.format('hidden after:'), parser.stack.encoder.hx1.data)
@@ -419,7 +439,8 @@ if __name__ == '__main__':
         print('pred :', parser.stack.tree.linearize())
         print('gold :',tree)
 
-    def test_forward(parser, reducer, action_mlp, nonterminal_mlp, actions, sentence):
+    def forward(model, actions, sentence):
+        parser, reducer, action_mlp, nonterminal_mlp = model
         parser.initialize(sentence)
         loss_compute = LossCompute(nn.CrossEntropyLoss, device=None)
         loss = torch.zeros(1)
@@ -430,7 +451,7 @@ if __name__ == '__main__':
             action_logits = action_mlp(x)
             loss += loss_compute(action_logits, action.index)
             # If we open a nonterminal, predict which.
-            if action.index == parser.OPEN:
+            if action.index is parser.OPEN:
                 nonterminal_logits = nonterminal_mlp(x)
                 loss += loss_compute(nonterminal_logits, action.symbol.index)
 
@@ -445,10 +466,7 @@ if __name__ == '__main__':
                 reduced = reducer(embeddings)
                 parser.stack.set_reduced_node_embedding(reduced)
                 parser.stack.reset_hidden(sequence_len)
-                parser.stack.compute_reduced_node_encoding()
-                reduced_item = parser.stack.tree.last_closed_nonterminal.item
-                reduced_item.embedding = reduced
-                reduced_item.encoding = parser.stack.encoder(reduced)
+                parser.stack.encode_reduced_node()
         return loss
 
     def test_train(actions, sentence, steps, dim=4):
@@ -481,23 +499,16 @@ if __name__ == '__main__':
                         list(reducer.parameters()) + \
                         list(action_mlp.parameters()) + \
                         list(nonterminal_mlp.parameters())
-        optimizer = torch.optim.Adam(parameters, lr=0.01)
-
+        optimizer = torch.optim.Adam(parameters, lr=0.001)
+        model = (parser, reducer, action_mlp, nonterminal_mlp)
         for i in range(steps):
-            loss = test_forward(
-                parser,
-                reducer,
-                action_mlp,
-                nonterminal_mlp,
-                actions,
-                sentence
-            )
+            loss = forward(model, actions, sentence)
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            print(loss.item(), end='\r')
+            print('loss', loss.item(), end='\r')
 
-    # test_parser(actions, sentence, verbose=True)
+    # test_parser(actions, sentence)
 
-    test_train(actions, sentence, dim=50, steps=100)
+    # test_train(actions, sentence, dim=50, steps=1000)

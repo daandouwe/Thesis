@@ -8,8 +8,26 @@ import torch
 from data import Corpus
 from scripts.get_vocab import get_sentences
 
-def predict(args, model, batches, name='test'):
+def predict(model, batches, outdir, name='test'):
     model.eval()
+    assert name in ('train', 'dev', 'test')
+    pred_path = os.path.join(outdir, f'{name}.pred.trees')
+    nsents = len(batches)
+    trees = []
+    with torch.no_grad(): # operations inside don't track history
+        for i, batch in enumerate(batches):
+            sentence, actions = batch
+            tree = model.parse(sentence)
+            # Modify the gold data with the list of actions
+            trees.append(tree)
+            if i % 10 == 0:
+                print(f'Predicting sentence {i}/{nsents}...', end='\r')
+    with open(pred_path, 'w') as f:
+        print('\n'.join(trees), file=f)
+
+def predict_oracle(args, model, batches, name='test'):
+    model.eval()
+    assert name in ('train', 'dev', 'test')
     sentences = get_sentences(os.path.join(args.data, 'test', f'ptb.{name}.oracle'))
     nsents = len(batches)
     with torch.no_grad(): # operations inside don't track history

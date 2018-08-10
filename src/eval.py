@@ -8,6 +8,21 @@ from PYEVALB.scorer import Scorer
 
 from scripts.get_vocab import get_sentences
 
+def evalb(outdir, datadir, name='test'):
+    assert name in ('train', 'dev', 'test')
+    pred_path = os.path.join(outdir, f'{name}.pred.trees')
+    gold_path = os.path.join(datadir, name, f'ptb.{name}.trees')
+    result_path = os.path.join(outdir, f'{name}.result')
+    scorer = Scorer()
+    scorer.evalb(gold_path, pred_path, result_path)
+    with open(result_path) as infile:
+        for line in infile:
+            match = re.match(r"Bracketing FMeasure:\s+(\d+\.\d+)", line)
+            if match:
+                fscore = float(match.group(1))
+                return fscore
+    return 0.0
+
 def actions2tree(words, actions, tags=None):
     """Returns a linearizen tree from a list of words and actions."""
     # reverse words:
@@ -30,7 +45,7 @@ def actions2tree(words, actions, tags=None):
             tree += f'({a} '
     return tree
 
-def eval(outdir, verbose=False):
+def eval_oracle(outdir, verbose=False):
     oracle_path = os.path.join(outdir, 'test.pred.oracle')
     pred_path   = os.path.join(outdir, 'test.pred.trees')
     gold_path   = os.path.join(outdir, 'test.gold.trees')

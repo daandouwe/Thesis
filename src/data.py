@@ -111,6 +111,9 @@ class Dictionary:
         self.i2w.append(EMPTY_TOKEN)
         self.i2w.append(REDUCED_TOKEN)
 
+        self.n2i[ROOT_TOKEN] = ROOT_INDEX
+        self.i2n.append(ROOT_TOKEN)
+
     def read(self, path):
         with open(os.path.join(path, 'ptb.vocab'), 'r') as f:
             start = len(self.w2i)
@@ -127,12 +130,14 @@ class Dictionary:
                     self.w2i[w] = i
                     self.i2w.append(w)
         with open(os.path.join(path, 'ptb.nonterminals'), 'r') as f:
-            for i, line in enumerate(f):
+            start = len(self.n2i)
+            for i, line in enumerate(f, start):
                 s = line.rstrip()
                 self.n2i[s] = i
                 self.i2n.append(s)
         with open(os.path.join(path, 'ptb.actions'), 'r') as f:
-            for i, line in enumerate(f):
+            start = len(self.a2i)
+            for i, line in enumerate(f, start):
                 a = line.rstrip()
                 self.a2i[a] = i
                 self.i2a.append(a)
