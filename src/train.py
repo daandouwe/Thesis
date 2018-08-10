@@ -13,7 +13,6 @@ from predict import predict
 from eval import evalb
 from util import Timer, write_losses, make_folders
 
-
 def schedule_lr(args, optimizer, update):
     update = update + 1
     warmup_coeff = args.lr / args.learning_rate_warmup_steps
@@ -45,7 +44,6 @@ def main(args):
         print('Did not make output folders!')
 
     print(f'Created tensorboard summary writer at {args.logdir}.')
-    global writer
     writer = SummaryWriter(args.logdir)
 
     print(f'Loading data from {args.data}...')
@@ -141,9 +139,6 @@ def main(args):
                     f'| eta {train_timer.format(eta)}'
                 )
 
-    # TODO: See if this can be made to work somehow...
-    # sentence, actions = train_batches[0]
-    # writer.add_graph(model, (sentence, actions))
     epoch_timer = Timer()
     # At any point you can hit Ctrl + C to break out of training early.
     try:

@@ -4,21 +4,51 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 import torch.distributions as dist
-
+from torch.nn.modules.rnn import RNNBase, RNNCellBase
 from data import wrap
+from torch.nn.init import orthogonal_ as orthogonal
 
-# NOTE(Elmo paper):
-# forget gate bias is initialized to 1 for all LSTMs, with all other gates
-# initialized to 0, as per (Jozefowicz et al., 2015).
-# From Joost:
-# def init_lstm(cell, gain=1, forget_bias=1.):
-#   init_gru(cell, gain)
-#
-#   # positive forget gate bias (Jozefowicz et al., 2015)
-#   for _, _, ih_b, hh_b in cell.all_weights:
-#     l = len(ih_b)
-#     ih_b[l // 4:l // 2].data.fill_(forget_bias)
-#     hh_b[l // 4:l // 2].data.fill_(forget_bias)
+def orthogonal_init(lstm, gain=1):
+    """Orthogonal initialization of recurrent weights."""
+    # Rewrote from Joost:
+    # https://github.com/bastings/parser/blob/extended_parser/parser/utils.py
+    lstm.reset_parameters()
+    if isinstance(lstm, RNNBase):
+        for _, weight_hh, _, _ in lstm.all_weights:
+            for i in range(0, weight_hh.size(0), lstm.hidden_size):
+                orthogonal(weight_hh[i:i + lstm.hidden_size], gain=gain)
+    elif isinstance(lstm, RNNCellBase):
+        for i in range(0, lstm.weight_hh.size(0), lstm.hidden_size):
+            orthogonal(lstm.weight_hh[i:i + lstm.hidden_size], gain=gain)
+    else:
+        raise ValueError('what are you passing? A {}!?'.format(type(lstm)))
+
+
+def bias_init(lstm, gain=1, forget_bias=1., rest_bias=0.):
+    """Positive forget gate bias (Jozefowicz et al., 2015)."""
+    # Rewrote from Joost:
+    # https://github.com/bastings/parser/blob/extended_parser/parser/utils.py
+    if isinstance(lstm, RNNBase):
+        for _, _, bias_ih, bias_hh in lstm.all_weights:
+            l = len(bias_ih)
+            bias_ih.data.fill_(rest_bias)
+            bias_hh.data.fill_(rest_bias)
+            bias_ih[l // 4:l // 2].data.fill_(forget_bias)
+            bias_hh[l // 4:l // 2].data.fill_(forget_bias)
+    elif isinstance(lstm, RNNCellBase):
+        l = len(lstm.bias_ih)
+        lstm.bias_ih.data.fill_(rest_bias)
+        lstm.bias_hh.data.fill_(rest_bias)
+        lstm.bias_ih[l // 4:l // 2].data.fill_(forget_bias)
+        lstm.bias_hh[l // 4:l // 2].data.fill_(forget_bias)
+    else:
+        raise ValueError('what are you passing? A {}!?'.format(type(lstm)))
+
+def init_lstm(lstm, ortho=True, gain=1):
+    """Initialize the forget bias and weights of LSTM."""
+    if ortho:
+        orthogonal_init(lstm, gain)
+    bias_init(lstm)
 
 class BiRecurrentEncoder(nn.Module):
     """A bidirectional RNN encoder for unpadded batches."""
@@ -29,6 +59,8 @@ class BiRecurrentEncoder(nn.Module):
         self.bwd_rnn = nn.LSTM(input_size, hidden_size, num_layers,
                                 batch_first=batch_first, dropout=dropout)
         self.device = device
+        init_lstm(self.fwd_rnn)
+        init_lstm(self.bwd_rnn)
         self.to(device)
 
     def _reverse(self, tensor):
@@ -70,7 +102,8 @@ class BaseLSTM(nn.Module):
         self.bernoulli = dist.Bernoulli(
                             probs=torch.tensor([self.keep_prob], device=device)
                         )
-
+        init_lstm(self.rnn_1)
+        init_lstm(self.rnn_2)
         self.initialize_hidden()
         self.to(device)
 
@@ -163,3 +196,13 @@ class BufferLSTM(nn.Module):
         """Encode and return the output hidden states."""
         h, _ = self.rnn(x)
         return h
+
+if __name__ == '__main__':
+    history_encoder = HistoryLSTM(2, 3, 0.1)
+    init_lstm(history_encoder.rnn_1)
+
+
+    buffer_encoder = BufferLSTM(2, 3, 2, 0.1)
+    init_lstm(buffer_encoder.rnn)
+
+    orthogonal_init(history_encoder.rnn_1)

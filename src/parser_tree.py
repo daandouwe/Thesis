@@ -509,6 +509,6 @@ if __name__ == '__main__':
             optimizer.step()
             print('loss', loss.item(), end='\r')
 
-    # test_parser(actions, sentence)
+    test_parser(actions, sentence)
 
     # test_train(actions, sentence, dim=50, steps=1000)

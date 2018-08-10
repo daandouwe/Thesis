@@ -101,6 +101,42 @@ class RNNG(Parser):
             self.parse_step(action)
         return self.stack.tree.linearize()
 
+    def parse_and_write_embeddings(self, sentence, writer):
+        """Parse an input sequence.
+
+        Arguments:
+            sentence (list): input sentence as list of Item objects.
+        """
+        self.initialize(sentence)
+        t = 0
+        while not self.stack.empty:
+            top_token = self.stack.top_item.token
+            embedding = self.stack.top_item.embedding
+            encoding = self.stack.top_item.encoding
+            writer.add_embedding(embedding, metadata=[top_token], global_step=t)
+            writer.add_embedding(encoding, metadata=[top_token], global_step=t)
+
+            t += 1
+            # Compute loss
+            stack, buffer, history = self.get_encoded_input()
+            x = torch.cat((buffer, history, stack), dim=-1)
+            action_logits = self.action_mlp(x)
+            # Get highest scoring valid predictions.
+            vals, ids = action_logits.sort(descending=True)
+            vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
+            i = 0
+            action = Action(self.dictionary.i2a[ids[i]], ids[i])
+            while not self.is_valid_action(action):
+                i += 1
+                action = Action(self.dictionary.i2a[ids[i]], ids[i])
+            if action.index == self.OPEN:
+                nonterminal_logits = self.nonterminal_mlp(x)
+                vals, ids = nonterminal_logits.sort(descending=True)
+                vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
+                action.symbol = Item(self.dictionary.i2n[ids[0]], ids[0], nonterminal=True)
+            self.parse_step(action)
+        return self.stack.tree.linearize()
+
 def set_embedding(embedding, tensor):
     """Sets the tensor as fixed weight tensor in embedding."""
     assert tensor.shape == embedding.weight.shape
@@ -179,13 +215,15 @@ def make_model(args, dictionary):
         mlp_input,
         args.mlp_dim,
         num_actions,
-        args.dropout
+        dropout=args.dropout,
+        activation='Tanh'
     )
     nonterminal_mlp = MLP(
         mlp_input,
         args.mlp_dim,
         num_nonterminals,
-        args.dropout
+        dropout=args.dropout,
+        activation='Tanh'
     )
 
     loss_compute = LossCompute(nn.CrossEntropyLoss, args.device)
@@ -206,9 +244,10 @@ def make_model(args, dictionary):
         device=args.device
     )
 
-    # Initialize parameters with Glorot.
-    for param in model.parameters():
-        if param.dim() > 1 and param.requires_grad:
-            nn.init.xavier_uniform_(param)
+    if not args.disable_glorot:
+        # Initialize parameters with Glorot.
+        for param in model.parameters():
+            if param.dim() > 1 and param.requires_grad:
+                nn.init.xavier_uniform_(param)
 
     return model

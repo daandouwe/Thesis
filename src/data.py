@@ -33,10 +33,14 @@ def pad(batch):
 def wrap(batch, device):
     """Packages the batch as a Variable containing a LongTensor."""
     assert isinstance(batch, list)
-    if isinstance(batch[0], list) and len(batch) > 1:
+    if len(batch) > 1 and isinstance(batch[0], list):
         batch = pad(batch)
-    x = torch.LongTensor(batch)
-    return x.to(device)
+    x = torch.LongTensor(batch, device=device)
+    # print(device)
+    # print(x.device)
+    x.to(device)
+    # print(x.device)
+    return x
 
 class Item:
     def __init__(self, token, index, embedding=None, encoding=None, nonterminal=False):

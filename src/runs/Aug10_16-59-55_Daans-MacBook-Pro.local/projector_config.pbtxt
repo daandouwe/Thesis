@@ -1,0 +1,150 @@
+embeddings {
+tensor_name: "Embedding:00000"
+tensor_path: "00000/Embedding/tensors.tsv"
+metadata_path: "00000/Embedding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Encoding:00000"
+tensor_path: "00000/Encoding/tensors.tsv"
+metadata_path: "00000/Encoding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Embedding:00001"
+tensor_path: "00001/Embedding/tensors.tsv"
+metadata_path: "00001/Embedding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Encoding:00001"
+tensor_path: "00001/Encoding/tensors.tsv"
+metadata_path: "00001/Encoding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Embedding:00002"
+tensor_path: "00002/Embedding/tensors.tsv"
+metadata_path: "00002/Embedding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Encoding:00002"
+tensor_path: "00002/Encoding/tensors.tsv"
+metadata_path: "00002/Encoding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Embedding:00003"
+tensor_path: "00003/Embedding/tensors.tsv"
+metadata_path: "00003/Embedding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Encoding:00003"
+tensor_path: "00003/Encoding/tensors.tsv"
+metadata_path: "00003/Encoding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Embedding:00004"
+tensor_path: "00004/Embedding/tensors.tsv"
+metadata_path: "00004/Embedding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Encoding:00004"
+tensor_path: "00004/Encoding/tensors.tsv"
+metadata_path: "00004/Encoding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Embedding:00005"
+tensor_path: "00005/Embedding/tensors.tsv"
+metadata_path: "00005/Embedding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Encoding:00005"
+tensor_path: "00005/Encoding/tensors.tsv"
+metadata_path: "00005/Encoding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Embedding:00006"
+tensor_path: "00006/Embedding/tensors.tsv"
+metadata_path: "00006/Embedding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Encoding:00006"
+tensor_path: "00006/Encoding/tensors.tsv"
+metadata_path: "00006/Encoding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Embedding:00007"
+tensor_path: "00007/Embedding/tensors.tsv"
+metadata_path: "00007/Embedding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Encoding:00007"
+tensor_path: "00007/Encoding/tensors.tsv"
+metadata_path: "00007/Encoding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Embedding:00008"
+tensor_path: "00008/Embedding/tensors.tsv"
+metadata_path: "00008/Embedding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Encoding:00008"
+tensor_path: "00008/Encoding/tensors.tsv"
+metadata_path: "00008/Encoding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Embedding:00009"
+tensor_path: "00009/Embedding/tensors.tsv"
+metadata_path: "00009/Embedding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Encoding:00009"
+tensor_path: "00009/Encoding/tensors.tsv"
+metadata_path: "00009/Encoding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Embedding:00010"
+tensor_path: "00010/Embedding/tensors.tsv"
+metadata_path: "00010/Embedding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Encoding:00010"
+tensor_path: "00010/Encoding/tensors.tsv"
+metadata_path: "00010/Encoding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Embedding:00011"
+tensor_path: "00011/Embedding/tensors.tsv"
+metadata_path: "00011/Embedding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Encoding:00011"
+tensor_path: "00011/Encoding/tensors.tsv"
+metadata_path: "00011/Encoding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Embedding:00012"
+tensor_path: "00012/Embedding/tensors.tsv"
+metadata_path: "00012/Embedding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Encoding:00012"
+tensor_path: "00012/Encoding/tensors.tsv"
+metadata_path: "00012/Encoding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Embedding:00013"
+tensor_path: "00013/Embedding/tensors.tsv"
+metadata_path: "00013/Embedding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Encoding:00013"
+tensor_path: "00013/Encoding/tensors.tsv"
+metadata_path: "00013/Encoding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Embedding:00014"
+tensor_path: "00014/Embedding/tensors.tsv"
+metadata_path: "00014/Embedding/metadata.tsv"
+}
+embeddings {
+tensor_name: "Encoding:00014"
+tensor_path: "00014/Encoding/tensors.tsv"
+metadata_path: "00014/Encoding/metadata.tsv"
+}

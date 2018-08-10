@@ -1,5 +1,3 @@
-from collections.abc import Sequence
-
 import torch
 
 from data import Item, Action
@@ -10,7 +8,7 @@ class Node:
 class InternalNode(Node):
     def __init__(self, item, head):
         assert isinstance(item, Item)
-        assert isinstance(head, Node) or isinstance(head, type(None))
+        assert isinstance(head, Node) or isinstance(head, type(None)) # Root node has head None
         self.item = item
         self.head = head
         self.children = tuple()
@@ -103,7 +101,7 @@ class Tree:
     @property
     def last_closed_nonterminal(self):
         assert self.current_node.children, 'no nonterminals opened yet'
-        return self.current_node.children[0]
+        return self.current_node.children[-1]
 
     @property
     def start(self):

@@ -54,20 +54,22 @@ def main():
     parser.add_argument('--seed', type=int, default=42,
                         help='random seed to use')
     # Training arguments
+    parser.add_argument('--epochs', default=None,
+                        help='max number of epochs')
     parser.add_argument('--batch-size', type=int, default=16,
                         help='size of mini batch')
     parser.add_argument('--lr', type=float, default=0.0008,
                         help='initial learning rate')
     parser.add_argument('--learning-rate-warmup_steps', type=int,
                         default=160)
-    parser.add_argument('--step-decay', type=bool, default=True)
-
-    parser.add_argument('--step-decay-patience', type=int,default=1)
-
-    parser.add_argument('--step-decay-factor', type=float,default=0.5)
-
-    parser.add_argument('--epochs', default=None,
-                        help='max number of epochs')
+    parser.add_argument('--step-decay', type=bool, default=True,
+                        help='scheduler parameter')
+    parser.add_argument('--step-decay-patience', type=int,default=1,
+                        help='scheduler parameter')
+    parser.add_argument('--step-decay-factor', type=float,default=0.5,
+                        help='scheduler parameter')
+    parser.add_argument('--disable-glorot', action='store_true',
+                        help='override custom lstm initialization with glorot')
     parser.add_argument('--clip', type=float, default=5.,
                         help='clipping gradient norm at this value')
     parser.add_argument('--print-every', type=int, default=10,
