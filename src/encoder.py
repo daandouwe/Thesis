@@ -201,7 +201,6 @@ if __name__ == '__main__':
     history_encoder = HistoryLSTM(2, 3, 0.1)
     init_lstm(history_encoder.rnn_1)
 
-
     buffer_encoder = BufferLSTM(2, 3, 2, 0.1)
     init_lstm(buffer_encoder.rnn)
 
