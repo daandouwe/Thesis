@@ -31,9 +31,11 @@ def parse_and_write_embeddings(model, sentence, writer):
     model.initialize(sentence)
     t = 0
     while not model.stack.empty:
+        tree = model.stack.tree.linearize() # partial tree
         top_token = model.stack.top_item.token
         embedding = model.stack.top_item.embedding
         encoding = model.stack.top_item.encoding
+        writer.add_text('Tree', metadata=[top_token], global_step=t, tag='Encoding')
         writer.add_embedding(embedding, metadata=[top_token], global_step=t, tag='Embedding')
         writer.add_embedding(encoding, metadata=[top_token], global_step=t, tag='Encoding')
 

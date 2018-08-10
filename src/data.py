@@ -243,13 +243,14 @@ class Data:
 
 class Corpus:
     """A corpus of three datasets (train, development, and test) and a dictionary."""
-    def __init__(self, data_path='../tmp', textline='unked', char=False):
+    def __init__(self, data_path='../tmp', textline='unked', name_template='ptb.{}', char=False):
+        name_template += '.oracle'
         self.dictionary = Dictionary(os.path.join(data_path, 'vocab', textline), char=char)
-        self.train = Data(os.path.join(data_path, 'train', 'ptb.train.oracle'),
+        self.train = Data(os.path.join(data_path, 'train', name_template.format('train')),
                         self.dictionary, textline, char=char)
-        self.dev = Data(os.path.join(data_path, 'dev', 'ptb.dev.oracle'),
+        self.dev = Data(os.path.join(data_path, 'dev', name_template.format('dev')),
                         self.dictionary, textline, char=char)
-        self.test = Data(os.path.join(data_path, 'test', 'ptb.test.oracle'),
+        self.test = Data(os.path.join(data_path, 'test', name_template.format('test')),
                         self.dictionary, textline, char=char)
 
     def __str__(self):

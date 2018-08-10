@@ -47,7 +47,7 @@ def main(args):
     writer = SummaryWriter(args.logdir)
 
     print(f'Loading data from {args.data}...')
-    corpus = Corpus(data_path=args.data, textline=args.textline, char=args.use_char)
+    corpus = Corpus(data_path=args.data, textline=args.textline, name_template=args.name_template, char=args.use_char)
     train_batches = corpus.train.batches(length_ordered=False, shuffle=True)
     dev_batches = corpus.dev.batches(length_ordered=False, shuffle=False)
     test_batches = corpus.test.batches(length_ordered=False, shuffle=False)
@@ -83,7 +83,7 @@ def main(args):
         nonlocal best_dev_epoch
 
         predict(model, dev_batches, args.outdir, name='dev')
-        dev_fscore = evalb(args.outdir, args.data, name='dev')
+        dev_fscore = evalb(args.outdir, args.data, args.name_template, name='dev')
         writer.add_scalar('Dev/Fscore', dev_fscore, num_updates)
         if dev_fscore > best_dev_fscore:
             print(f'Saving new best model to {args.checkfile}...')
@@ -175,6 +175,7 @@ def main(args):
         print('Exiting from training early.')
         # Save the losses for plotting and diagnostics.
         write_losses(args, losses)
+        #TODO(not sure) writer.export_scalars_to_json('scalars.json')
         print('Evaluating fscore on development set...')
         check_dev()
     # Load best saved model.
@@ -184,7 +185,7 @@ def main(args):
 
     print('Evaluating loaded model on test set...')
     predict(model, test_batches, args.outdir, name='test')
-    fscore = evalb(args.outdir, args.data, name='test')
+    fscore = evalb(args.outdir, args.data, args.name_template, name='test')
 
     print('-'*89)
     print(

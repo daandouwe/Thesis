@@ -18,6 +18,8 @@ def main():
                         help='location of the data corpus')
     parser.add_argument('--textline', type=str, choices=['unked', 'lower', 'upper'], default='unked',
                         help='textline to use from the oracle file')
+    parser.add_argument('--name-template', type=str, default='ptb.{}',
+                        help='will be used with format to construct ptb.train.oracle, ptb.test.trees, etc.')
     parser.add_argument('--root', type=str, default='.',
                         help='root dir to make output log and checkpoint folders')
     parser.add_argument('--logdir', default=None,

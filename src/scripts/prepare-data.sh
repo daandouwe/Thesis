@@ -45,18 +45,24 @@ python simplify_nonterminals.py $TMP/train/ptb.train.trees.notrace
 python simplify_nonterminals.py $TMP/dev/ptb.dev.trees.notrace
 python simplify_nonterminals.py $TMP/test/ptb.test.trees.notrace
 
+# overwrite the old trees with the new notrace trees
+mv \
+  $TMP/train/ptb.train.trees.notrace $TMP/train/ptb.train.trees\
+  $TMP/dev/ptb.dev.trees.notrace $TMP/dev/ptb.dev.trees \
+  $TMP/test/ptb.test.trees.notrace $TMP/test/ptb.test.trees
+
 # get oracles
 python get_oracle.py \
-    $TMP/train/ptb.train.trees.notrace \
-    $TMP/train/ptb.train.trees.notrace \
+    $TMP/train/ptb.train.trees \
+    $TMP/train/ptb.train.trees \
     > $TMP/train/ptb.train.oracle
 python get_oracle.py \
-    $TMP/train/ptb.train.trees.notrace \
-    $TMP/dev/ptb.dev.trees.notrace \
+    $TMP/train/ptb.train.trees \
+    $TMP/dev/ptb.dev.trees \
     > $TMP/dev/ptb.dev.oracle
 python get_oracle.py \
-    $TMP/train/ptb.train.trees.notrace \
-    $TMP/test/ptb.test.trees.notrace \
+    $TMP/train/ptb.train.trees \
+    $TMP/test/ptb.test.trees \
     > $TMP/test/ptb.test.oracle
 
 # make vocabularies for lower, upper and unked

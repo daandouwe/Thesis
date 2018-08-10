@@ -1,5 +1,6 @@
 # Source: https://github.com/clab/rnng/blob/master/get_dictionary.py
 # Changed print ..  to print(..) for python3 compatibility.
+import sys
 
 def is_next_open_bracket(line, start_idx):
     for char in line[(start_idx + 1):]:

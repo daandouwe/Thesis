@@ -8,10 +8,10 @@ from PYEVALB.scorer import Scorer
 
 from scripts.get_vocab import get_sentences
 
-def evalb(outdir, datadir, name='test'):
+def evalb(outdir, datadir, name_template, name='test'):
     assert name in ('train', 'dev', 'test')
     pred_path = os.path.join(outdir, f'{name}.pred.trees')
-    gold_path = os.path.join(datadir, name, f'ptb.{name}.trees')
+    gold_path = os.path.join(datadir, name, name_template.format(name) + '.trees')
     result_path = os.path.join(outdir, f'{name}.result')
     scorer = Scorer()
     scorer.evalb(gold_path, pred_path, result_path)

@@ -60,9 +60,9 @@ def get_actions(sentences):
 
 def main(args):
     # Partition the oracle files into sentences
-    train = get_sentences(os.path.join(args.oracle_dir, 'train', 'ptb.train.oracle'))
-    dev = get_sentences(os.path.join(args.oracle_dir, 'dev', 'ptb.dev.oracle'))
-    test = get_sentences(os.path.join(args.oracle_dir, 'test', 'ptb.test.oracle'))
+    train = get_sentences(os.path.join(args.oracle_dir, 'train', args.name_template.format('train')))
+    dev = get_sentences(os.path.join(args.oracle_dir, 'dev', args.name_template.format('dev')))
+    test = get_sentences(os.path.join(args.oracle_dir, 'test', args.name_template.format('test')))
     sentences = train + dev + test
 
     # Collect desired symbols for our dictionaries
@@ -87,6 +87,7 @@ if __name__ == '__main__':
                         help='path to output vocabulary')
     parser.add_argument('--textline', type=str, choices=['unked', 'lower', 'upper'], default='unked',
                         help='textline to use from the oracle file')
+    parser.add_argument('--name_template', type=str, default='ptb.{}.oracle')
     args = parser.parse_args()
 
     main(args)
