@@ -2,15 +2,15 @@ import os
 
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
 
-from data import PAD_INDEX, EMPTY_INDEX, REDUCED_INDEX, REDUCED_TOKEN, Item, Action, wrap
+from data import PAD_INDEX, REDUCED_INDEX, REDUCED_TOKEN, Item, Action
 from glove import load_glove, get_vectors
 from embedding import ConvolutionalCharEmbedding
 from nn import MLP
 from encoder import StackLSTM, HistoryLSTM, BufferLSTM
 from parser import Parser
 from loss import LossCompute
+
 
 class RNNG(Parser):
     """Recurrent Neural Network Grammar model."""
@@ -62,13 +62,13 @@ class RNNG(Parser):
 
     def encode(self, stack, buffer, history):
         # Apply dropout.
-        stack = self.dropout(stack)     # (batch, input_size)
-        buffer = self.dropout(buffer)   # (batch, input_size)
-        history = self.dropout(history) # (batch, input_size)
+        stack = self.dropout(stack)      # (batch, input_size)
+        buffer = self.dropout(buffer)    # (batch, input_size)
+        history = self.dropout(history)  # (batch, input_size)
         # Encode
-        b = buffer # buffer is already the top hidden state
-        h = self.history_encoder(history) # returns top hidden state
-        s = self.stack_encoder(stack) # returns top hidden state
+        b = buffer  # buffer is already the top hidden state
+        h = self.history_encoder(history)  # returns top hidden state
+        s = self.stack_encoder(stack)  # returns top hidden state
         # Concatenate and apply mlp to obtain logits.
         x = torch.cat((b, h, s), dim=-1)
         return x
@@ -90,7 +90,9 @@ class RNNG(Parser):
                 reduced=True
             )
         elif action.index == self.OPEN:
-            item = Item(action.symbol.token, action.symbol.index, nonterminal=True)
+            item = Item(
+                action.symbol.token, action.symbol.index, nonterminal=True
+            )
             self.stack.open_nonterminal(item)
         else:
             raise ValueError(f'got illegal action: {action.token}')
@@ -124,7 +126,6 @@ class RNNG(Parser):
             # Take the appropriate parse step.
             self.parse_step(action)
         return loss
-
 
     def parse(self, sentence, logfile=None):
         """Parse an input sequence.
@@ -169,6 +170,7 @@ def set_embedding(embedding, tensor):
     embedding.weight = nn.Parameter(tensor)
     embedding.weight.requires_grad = False
 
+
 def make_model(args, dictionary):
     # Embeddings
     num_words = dictionary.num_words
@@ -191,7 +193,8 @@ def make_model(args, dictionary):
         # Get words in order.
         words = [dictionary.i2w[i] for i in range(len(dictionary.w2i))]
         if args.use_glove:
-            assert args.word_emb_dim in (50, 100, 200, 300), f'invalid dim: {dim}, choose from (50, 100, 200, 300).'
+            dim = args.word_emb_dim
+            assert dim in (50, 100, 200, 300), f'invalid dim: {dim}, choose from (50, 100, 200, 300).'
             logfile = open(os.path.join(args.logdir, 'glove.error.txt'), 'w')
             if args.glove_torchtext:
                 from torchtext.vocab import GloVe

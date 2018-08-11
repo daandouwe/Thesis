@@ -1,15 +1,16 @@
 import torch
 import torch.nn as nn
 
-from data import (EMPTY_INDEX, REDUCED_INDEX, EMPTY_TOKEN, REDUCED_TOKEN, PAD_TOKEN,
-                    ROOT_INDEX, ROOT_TOKEN, Item, Action, wrap, pad)
+from data import (EMPTY_INDEX, EMPTY_TOKEN, ROOT_INDEX, ROOT_TOKEN,
+                  Item, Action, wrap)
 from tree import Tree
+
 
 class TransitionBase(nn.Module):
     """A base class for the Stack, Buffer and History."""
     def __init__(self):
         super(TransitionBase, self).__init__()
-        self._items = [] # Will hold a list of Items.
+        self._items = []  # Will hold a list of Items.
         self._reset()
 
     def __str__(self):
@@ -58,6 +59,7 @@ class TransitionBase(nn.Module):
     def empty(self):
         pass
 
+
 class Stack(TransitionBase):
     def __init__(self, word_embedding, nonterminal_embedding, encoder, device):
         """Initialize the Stack.
@@ -73,13 +75,14 @@ class Stack(TransitionBase):
         self.nonterminal_embedding = nonterminal_embedding
         self.encoder = encoder
         self.device = device
+        self.tree = Tree()
         self.initialize()
 
     def __str__(self):
         return f'{type(self).__name__} ({self.num_open_nonterminals} open NTs): {self.tokens}'
 
     def initialize(self):
-        self.tree = Tree()
+        self.tree.reset()
         self.encoder.initialize_hidden()
         self.push(Item(ROOT_TOKEN, ROOT_INDEX), 'root')
 
@@ -113,7 +116,7 @@ class Stack(TransitionBase):
         children = [head.item] + children + [head.item]
         # Package embeddings as pytorch tensor
         embeddings = [item.embedding.unsqueeze(0) for item in children]
-        embeddings = torch.cat(embeddings, 1) # tensor (batch, seq_len, emb_dim)
+        embeddings = torch.cat(embeddings, 1)  # tensor (batch, seq_len, emb_dim)
         return children, embeddings, sequence_len
 
     def set_reduced_node_embedding(self, embedding):
@@ -157,6 +160,7 @@ class Stack(TransitionBase):
         """Overide property from baseclass."""
         return self.tree.current_node.item
 
+
 class Buffer(TransitionBase):
     def __init__(self, embedding, encoder, device):
         """Initialize the Buffer.
@@ -174,12 +178,12 @@ class Buffer(TransitionBase):
     def initialize(self, sentence):
         """Embed and encode the sentence."""
         self._reset()
-        self._items = sentence[::-1] # On the buffer the sentence is reversed.
+        self._items = sentence[::-1]  # On the buffer the sentence is reversed.
         embeddings = self.embedding(wrap(self.indices, self.device))
-        encodings = self.encoder(embeddings.unsqueeze(0)) # (batch, seq, hidden_size)
+        encodings = self.encoder(embeddings.unsqueeze(0))  # (batch, seq, hidden_size)
         for i, item in enumerate(self._items):
             item.embedding = embeddings[i, :].unsqueeze(0)
-            item.encoding = encodings[:, i ,:]
+            item.encoding = encodings[:, i, :]
 
     def push(self, item):
         """Push item onto buffer."""
@@ -194,7 +198,7 @@ class Buffer(TransitionBase):
             raise ValueError('trying to pop from an empty buffer')
         else:
             item = self._items.pop()
-            if not self._items: # empty list
+            if not self._items:  # empty list
                 # Push empty token.
                 self.push(Item(EMPTY_TOKEN, EMPTY_INDEX))
             return item
@@ -203,6 +207,7 @@ class Buffer(TransitionBase):
     def empty(self):
         """Returns True if the buffer is empty."""
         return self.indices == [EMPTY_INDEX]
+
 
 class History(TransitionBase):
     def __init__(self, embedding, encoder, device):
@@ -232,7 +237,8 @@ class History(TransitionBase):
     @property
     def actions(self):
         return [item.symbol.token if item.is_nonterminal else item.token
-                    for item in self._items[1:]] # First item in self._items is the empty item
+                for item in self._items[1:]]  # First item in self._items is the empty item
+
 
 class Parser(nn.Module):
     """The parse configuration."""
@@ -270,9 +276,9 @@ class Parser(nn.Module):
 
     def get_embedded_input(self):
         """Return the representations of the stack buffer and history."""
-        stack = self.stack.top_embedded     # [batch, word_emb_size]
-        buffer = self.buffer.top_embedded   # [batch, word_emb_size]
-        history = self.history.top_embedded # [batch, action_emb_size]
+        stack = self.stack.top_embedded      # [batch, word_emb_size]
+        buffer = self.buffer.top_embedded    # [batch, word_emb_size]
+        history = self.history.top_embedded  # [batch, action_emb_size]
         return stack, buffer, history
 
     def get_encoded_input(self):
@@ -328,28 +334,65 @@ class Parser(nn.Module):
         """Return the last action taken."""
         return self.history.top_item
 
+
 if __name__ == '__main__':
     from encoder import BiRecurrentEncoder, StackLSTM, BufferLSTM, HistoryLSTM
     from nn import MLP
     from loss import LossCompute
 
-    # A test sentence.
-    tagged_tree = "(S (NP (NN Champagne) (CC and) (NN dessert)) (VP (VBD followed)) (. .))"
-    tree = "(S (NP Champagne and dessert) (VP followed) .)"
-    sentence = "Champagne and dessert followed .".split()
+    tree = '(S (NP (NNP Avco) (NNP Corp.)) (VP (VBD received) (NP (NP (DT an) (ADJP (QP ($ $) (CD 11.8) (CD million))) (NNP Army) (NN contract)) (PP (IN for) (NP (NN helicopter) (NNS engines))))) (. .))'
+    sentence = 'Avco Corp. received an $ 11.8 million Army contract for helicopter engines .'.split()
     actions = [
         'NT(S)',
         'NT(NP)',
         'SHIFT',
         'SHIFT',
-        'SHIFT',
         'REDUCE',
         'NT(VP)',
         'SHIFT',
+        'NT(NP)',
+        'NT(NP)',
+        'SHIFT',
+        'NT(ADJP)',
+        'NT(QP)',
+        'SHIFT',
+        'SHIFT',
+        'SHIFT',
+        'REDUCE',
+        'REDUCE',
+        'SHIFT',
+        'SHIFT',
+        'REDUCE',
+        'NT(PP)',
+        'SHIFT',
+        'NT(NP)',
+        'SHIFT',
+        'SHIFT',
+        'REDUCE',
+        'REDUCE',
+        'REDUCE',
         'REDUCE',
         'SHIFT',
         'REDUCE'
     ]
+
+    # # A test sentence.
+    # tagged_tree = "(S (NP (NN Champagne) (CC and) (NN dessert)) (VP (VBD followed)) (. .))"
+    # tree = "(S (NP Champagne and dessert) (VP followed) .)"
+    # sentence = "Champagne and dessert followed .".split()
+    # actions = [
+    #     'NT(S)',
+    #     'NT(NP)',
+    #     'SHIFT',
+    #     'SHIFT',
+    #     'SHIFT',
+    #     'REDUCE',
+    #     'NT(VP)',
+    #     'SHIFT',
+    #     'REDUCE',
+    #     'SHIFT',
+    #     'REDUCE'
+    # ]
 
     def prepare_data(actions, sentence):
         i2a = ['SHIFT', 'REDUCE', 'OPEN']
@@ -437,7 +480,7 @@ if __name__ == '__main__':
         print('current:', parser.stack.tree.current_node)
         print()
         print('pred :', parser.stack.tree.linearize())
-        print('gold :',tree)
+        print('gold :', tree)
 
     def forward(model, actions, sentence):
         parser, reducer, action_mlp, nonterminal_mlp = model
@@ -495,10 +538,12 @@ if __name__ == '__main__':
         action_mlp = MLP(3*dim, dim, num_actions)
         nonterminal_mlp = MLP(3*dim, dim, num_nonterm)
 
-        parameters = list(parser.parameters()) + \
-                        list(reducer.parameters()) + \
-                        list(action_mlp.parameters()) + \
-                        list(nonterminal_mlp.parameters())
+        parameters = (
+            list(parser.parameters()) +
+            list(reducer.parameters()) +
+            list(action_mlp.parameters()) +
+            list(nonterminal_mlp.parameters())
+        )
         optimizer = torch.optim.Adam(parameters, lr=0.001)
         model = (parser, reducer, action_mlp, nonterminal_mlp)
         for i in range(steps):

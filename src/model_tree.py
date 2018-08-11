@@ -2,15 +2,15 @@ import os
 
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
 
-from data import PAD_INDEX, EMPTY_INDEX, REDUCED_INDEX, REDUCED_TOKEN, Item, Action, wrap
+from data import PAD_INDEX, Item, Action
 from glove import load_glove, get_vectors
 from embedding import ConvolutionalCharEmbedding
 from nn import MLP
 from encoder import StackLSTM, HistoryLSTM, BufferLSTM
 from parser_tree import Parser
 from loss import LossCompute
+
 
 class RNNG(Parser):
     """Recurrent Neural Network Grammar model."""
@@ -56,7 +56,6 @@ class RNNG(Parser):
     def forward(self, sentence, actions):
         """Forward pass."""
         self.initialize(sentence)
-        loss_compute = LossCompute(nn.CrossEntropyLoss, device=None)
         loss = torch.zeros(1, device=self.device)
         for i, action in enumerate(actions):
             # Compute loss
@@ -101,47 +100,13 @@ class RNNG(Parser):
             self.parse_step(action)
         return self.stack.tree.linearize()
 
-    def parse_and_write_embeddings(self, sentence, writer):
-        """Parse an input sequence.
-
-        Arguments:
-            sentence (list): input sentence as list of Item objects.
-        """
-        self.initialize(sentence)
-        t = 0
-        while not self.stack.empty:
-            top_token = self.stack.top_item.token
-            embedding = self.stack.top_item.embedding
-            encoding = self.stack.top_item.encoding
-            writer.add_embedding(embedding, metadata=[top_token], global_step=t)
-            writer.add_embedding(encoding, metadata=[top_token], global_step=t)
-
-            t += 1
-            # Compute loss
-            stack, buffer, history = self.get_encoded_input()
-            x = torch.cat((buffer, history, stack), dim=-1)
-            action_logits = self.action_mlp(x)
-            # Get highest scoring valid predictions.
-            vals, ids = action_logits.sort(descending=True)
-            vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
-            i = 0
-            action = Action(self.dictionary.i2a[ids[i]], ids[i])
-            while not self.is_valid_action(action):
-                i += 1
-                action = Action(self.dictionary.i2a[ids[i]], ids[i])
-            if action.index == self.OPEN:
-                nonterminal_logits = self.nonterminal_mlp(x)
-                vals, ids = nonterminal_logits.sort(descending=True)
-                vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
-                action.symbol = Item(self.dictionary.i2n[ids[0]], ids[0], nonterminal=True)
-            self.parse_step(action)
-        return self.stack.tree.linearize()
 
 def set_embedding(embedding, tensor):
     """Sets the tensor as fixed weight tensor in embedding."""
     assert tensor.shape == embedding.weight.shape
     embedding.weight = nn.Parameter(tensor)
     embedding.weight.requires_grad = False
+
 
 def make_model(args, dictionary):
     # Embeddings
@@ -165,7 +130,8 @@ def make_model(args, dictionary):
         # Get words in order.
         words = [dictionary.i2w[i] for i in range(len(dictionary.w2i))]
         if args.use_glove:
-            assert args.word_emb_dim in (50, 100, 200, 300), f'invalid dim: {dim}, choose from (50, 100, 200, 300).'
+            dim = args.word_emb_dim
+            assert dim in (50, 100, 200, 300), f'invalid dim: {dim}, choose from (50, 100, 200, 300).'
             logfile = open(os.path.join(args.logdir, 'glove.error.txt'), 'w')
             if args.glove_torchtext:
                 from torchtext.vocab import GloVe

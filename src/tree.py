@@ -1,14 +1,14 @@
-import torch
+from data import Item
 
-from data import Item, Action
 
 class Node:
     pass
 
+
 class InternalNode(Node):
     def __init__(self, item, head):
         assert isinstance(item, Item)
-        assert isinstance(head, Node) or isinstance(head, type(None)) # Root node has head None
+        assert isinstance(head, Node) or isinstance(head, type(None))  # Root node has head None
         self.item = item
         self.head = head
         self.children = tuple()
@@ -16,7 +16,7 @@ class InternalNode(Node):
     def add_child(self, child):
         assert isinstance(child, Node)
         assert child
-        self.children = (*self.children, child) # new extended tuple
+        self.children = (*self.children, child)  # new extended tuple
 
     def __str__(self):
         children = [child.item.token for child in self.children]
@@ -29,6 +29,7 @@ class InternalNode(Node):
     def leaves(self):
         for child in self.children:
             yield from child.leaves()
+
 
 class LeafNode(Node):
     def __init__(self, item, head, tag='*'):
@@ -51,26 +52,40 @@ class LeafNode(Node):
     def leaves(self):
         yield self
 
+
 class Tree:
     """A tree that is constructed top-down."""
     def __init__(self):
-        self.root = None # The root node
-        self.current_node = None # Keep track of the current node
+        self.nodes = []
+        self.root = None  # The root node
+        self.current_node = None  # Keep track of the current node
         self.num_open_nonterminals = 0
 
     def __str__(self):
         return self.linearize()
 
+    def reset(self):
+        del self.root
+        del self.current_node
+        for node in self.nodes:
+            del node
+        self.nodes = []
+        self.root = None  # The root node
+        self.current_node = None  # Keep track of the current node
+        self.num_open_nonterminals = 0
+
     def make_root(self, item):
         node = InternalNode(item, None)
         self.root = node
         self.current_node = node
+        self.nodes.append(node)
 
     def make_leaf(self, item):
         head = self.get_current_head()
         node = LeafNode(item, head)
         head.add_child(node)
         self.current_node = node
+        self.nodes.append(node)
 
     def open_nonterminal(self, item):
         self.num_open_nonterminals += 1
@@ -79,6 +94,7 @@ class Tree:
         node = InternalNode(item, head)
         head.add_child(node)
         self.current_node = node
+        self.nodes.append(node)
 
     def close_nonterminal(self):
         self.num_open_nonterminals -= 1
@@ -91,11 +107,11 @@ class Tree:
     def get_current_head(self):
         if isinstance(self.current_node, InternalNode):
             return self.current_node
-        else: # current node is a LeafNode
+        else:  # current node is a LeafNode
             return self.current_node.head
 
     def linearize(self):
-        assert self.current_node.children, 'no nonterminals opened yet'
+        assert self.root.children, 'no nonterminals opened yet'
         return self.root.children[0].linearize()
 
     @property
@@ -110,6 +126,7 @@ class Tree:
     @property
     def finished(self):
         return self.current_node is self.root and not self.start
+
 
 if __name__ == '__main__':
     pass

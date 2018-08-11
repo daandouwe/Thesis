@@ -4,61 +4,41 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 import torch.distributions as dist
-from torch.nn.modules.rnn import RNNBase, RNNCellBase
 from data import wrap
-from torch.nn.init import orthogonal_ as orthogonal
-
-def orthogonal_init(lstm, gain=1):
-    """Orthogonal initialization of recurrent weights."""
-    # Rewrote from Joost:
-    # https://github.com/bastings/parser/blob/extended_parser/parser/utils.py
-    lstm.reset_parameters()
-    if isinstance(lstm, RNNBase):
-        for _, weight_hh, _, _ in lstm.all_weights:
-            for i in range(0, weight_hh.size(0), lstm.hidden_size):
-                orthogonal(weight_hh[i:i + lstm.hidden_size], gain=gain)
-    elif isinstance(lstm, RNNCellBase):
-        for i in range(0, lstm.weight_hh.size(0), lstm.hidden_size):
-            orthogonal(lstm.weight_hh[i:i + lstm.hidden_size], gain=gain)
-    else:
-        raise ValueError('what are you passing? A {}!?'.format(type(lstm)))
+import torch.nn.init as init
 
 
-def bias_init(lstm, gain=1, forget_bias=1., rest_bias=0.):
+def orthogonal_init(lstm):
+    for name, param in lstm.named_parameters():
+        if name.startswith('weight'):
+            init.orthogonal_(param)
+
+
+def bias_init(lstm):
     """Positive forget gate bias (Jozefowicz et al., 2015)."""
-    # Rewrote from Joost:
-    # https://github.com/bastings/parser/blob/extended_parser/parser/utils.py
-    if isinstance(lstm, RNNBase):
-        for _, _, bias_ih, bias_hh in lstm.all_weights:
-            l = len(bias_ih)
-            bias_ih.data.fill_(rest_bias)
-            bias_hh.data.fill_(rest_bias)
-            bias_ih[l // 4:l // 2].data.fill_(forget_bias)
-            bias_hh[l // 4:l // 2].data.fill_(forget_bias)
-    elif isinstance(lstm, RNNCellBase):
-        l = len(lstm.bias_ih)
-        lstm.bias_ih.data.fill_(rest_bias)
-        lstm.bias_hh.data.fill_(rest_bias)
-        lstm.bias_ih[l // 4:l // 2].data.fill_(forget_bias)
-        lstm.bias_hh[l // 4:l // 2].data.fill_(forget_bias)
-    else:
-        raise ValueError('what are you passing? A {}!?'.format(type(lstm)))
+    for name, param in lstm.named_parameters():
+        if name.startswith('bias'):
+            init.constant_(param, 0.)
+            dim = param.size(0)
+            param[dim // 4:dim // 2].data.fill_(1.)
 
-def init_lstm(lstm, ortho=True, gain=1):
+
+def init_lstm(lstm, ortho=True):
     """Initialize the forget bias and weights of LSTM."""
-    if ortho:
-        orthogonal_init(lstm, gain)
     bias_init(lstm)
+    if ortho:
+        orthogonal_init(lstm)
+
 
 class BiRecurrentEncoder(nn.Module):
     """A bidirectional RNN encoder for unpadded batches."""
     def __init__(self, input_size, hidden_size, num_layers, dropout, batch_first=True, device=None):
         super(BiRecurrentEncoder, self).__init__()
-        self.fwd_rnn = nn.LSTM(input_size, hidden_size, num_layers,
-                                batch_first=batch_first, dropout=dropout)
-        self.bwd_rnn = nn.LSTM(input_size, hidden_size, num_layers,
-                                batch_first=batch_first, dropout=dropout)
         self.device = device
+        self.fwd_rnn = nn.LSTM(input_size, hidden_size, num_layers,
+                               batch_first=batch_first, dropout=dropout)
+        self.bwd_rnn = nn.LSTM(input_size, hidden_size, num_layers,
+                               batch_first=batch_first, dropout=dropout)
         init_lstm(self.fwd_rnn)
         init_lstm(self.bwd_rnn)
         self.to(device)
@@ -74,10 +54,10 @@ class BiRecurrentEncoder(nn.Module):
         hb, _ = self.bwd_rnn(self._reverse(x))  # [batch, seq, hidden_size]
 
         # Select final representation.
-        hf = hf[:, -1, :] # [batch, hidden_size]
-        hb = hb[:, -1, :] # [batch, hidden_size]
+        hf = hf[:, -1, :]  # [batch, hidden_size]
+        hb = hb[:, -1, :]  # [batch, hidden_size]
 
-        h = torch.cat((hf, hb), dim=-1) # [batch, 2*hidden_size]
+        h = torch.cat((hf, hb), dim=-1)  # [batch, 2*hidden_size]
         return h
 
 
@@ -86,16 +66,16 @@ class BaseLSTM(nn.Module):
     def __init__(self, input_size, hidden_size, dropout, device=None):
         super(BaseLSTM, self).__init__()
         self.input_size = input_size
-        self.hidden_size = hidden_size # Must be even number, see composition function.
-        self.device = device # GPU or CPU
+        self.hidden_size = hidden_size  # Must be even number, see composition function.
+        self.device = device  # GPU or CPU
 
         self.rnn_1 = nn.LSTMCell(input_size, hidden_size)
         self.rnn_2 = nn.LSTMCell(hidden_size, hidden_size)
 
         # Were we store all intermediate computed hidden states.
         # Last item in _hidden_states_2 is used as the representation.
-        self._hidden_states_1 = [] # layer 1
-        self._hidden_states_2 = [] # layer 2
+        self._hidden_states_1 = []  # layer 1
+        self._hidden_states_2 = []  # layer 2
 
         # Used for custom dropout.
         self.keep_prob = 1.0 - dropout
@@ -115,7 +95,7 @@ class BaseLSTM(nn.Module):
 
     def dropout(self, x):
         """Custom recurrent dropout: same mask for the whole sequence."""
-        scale = 1 / self.keep_prob # Scale the weights up to compensate for dropping out.
+        scale = 1 / self.keep_prob  # Scale the weights up to compensate for dropping out.
         return x * self._dropout_mask * scale
 
     def initialize_hidden(self, batch_size=1):
@@ -123,10 +103,12 @@ class BaseLSTM(nn.Module):
         c = copy.deepcopy
         self._hidden_states_1 = []
         self._hidden_states_2 = []
-        hx = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
-        cx = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
-        self.hx1, self.cx1 = hx, cx
-        self.hx2, self.cx2 = c(hx), c(cx)
+        h0 = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
+        c0 = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
+        self.hx1, self.cx1 = h0, c0
+        self.hx2, self.cx2 = c(h0), c(c0)
+        self._hidden_states_1.append((self.hx1, self.cx1))
+        self._hidden_states_2.append((self.hx2, self.cx2))
         self.sample_recurrent_dropout_mask(batch_size)
 
     def forward(self, x):
@@ -197,11 +179,17 @@ class BufferLSTM(nn.Module):
         h, _ = self.rnn(x)
         return h
 
+
 if __name__ == '__main__':
     history_encoder = HistoryLSTM(2, 3, 0.1)
-    init_lstm(history_encoder.rnn_1)
+    # init_lstm(history_encoder.rnn_1)
+
+    for name, param in history_encoder.rnn_1.named_parameters():
+        print(name)
 
     buffer_encoder = BufferLSTM(2, 3, 2, 0.1)
     init_lstm(buffer_encoder.rnn)
+    for name, param in buffer_encoder.rnn.named_parameters():
+        print(name)
 
     orthogonal_init(history_encoder.rnn_1)

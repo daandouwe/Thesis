@@ -1,10 +1,8 @@
-import logging
+import gc
 import itertools
 
 import numpy as np
 import torch
-import torch.nn as nn
-from torch.autograd import Variable
 from tensorboardX import SummaryWriter
 
 from data import Corpus
@@ -13,6 +11,9 @@ from predict import predict
 from eval import evalb
 from util import Timer, write_losses, make_folders
 
+gc.set_debug(gc.DEBUG_LEAK)
+
+
 def schedule_lr(args, optimizer, update):
     update = update + 1
     warmup_coeff = args.lr / args.learning_rate_warmup_steps
@@ -20,14 +21,18 @@ def schedule_lr(args, optimizer, update):
         for param_group in optimizer.param_groups:
             param_group['lr'] = update * warmup_coeff
 
+
 def get_lr(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
 
+
 def batchify(batches, batch_size):
-    ceil_div = lambda a, b : ((a-1) // b) + 1
+    def ceil_div(a, b):
+        return ((a-1) // b) + 1
     return [batches[i*batch_size:(i+1)*batch_size]
-                for i in range(ceil_div(len(batches), batch_size))]
+            for i in range(ceil_div(len(batches), batch_size))]
+
 
 def main(args):
     # Set random seeds.
@@ -121,6 +126,8 @@ def main(args):
             torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
             optimizer.step()
 
+            gc.collect()
+
             loss = loss.item()
             losses.append(loss)
             if step % args.print_every == 0:
@@ -175,7 +182,7 @@ def main(args):
         print('Exiting from training early.')
         # Save the losses for plotting and diagnostics.
         write_losses(args, losses)
-        #TODO(not sure) writer.export_scalars_to_json('scalars.json')
+        # TODO(not sure) writer.export_scalars_to_json('scalars.json')
         print('Evaluating fscore on development set...')
         check_dev()
     # Load best saved model.
@@ -189,9 +196,9 @@ def main(args):
 
     print('-'*89)
     print(
-         '| End of training '
-        f'| best dev-epoch {best_dev_epoch:2d} '
-        f'| best dev-fscore {best_dev_fscore:4.2f} '
-        f'| test-fscore {fscore}'
+         f'| End of training '
+         f'| best dev-epoch {best_dev_epoch:2d} '
+         f'| best dev-fscore {best_dev_fscore:4.2f} '
+         f'| test-fscore {fscore}'
     )
     print('-'*89)
