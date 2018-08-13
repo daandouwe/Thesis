@@ -5,13 +5,11 @@ import numpy as np
 import torch
 from tensorboardX import SummaryWriter
 
-from data import Corpus
-from model_tree import make_model
+from data_test import Corpus
+from model_test import make_model
 from predict import predict
 from eval import evalb
 from util import Timer, write_losses, make_folders
-
-gc.set_debug(gc.DEBUG_LEAK)
 
 
 def schedule_lr(args, optimizer, update):
@@ -125,8 +123,6 @@ def main(args):
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
             optimizer.step()
-
-            gc.collect()
 
             loss = loss.item()
             losses.append(loss)

@@ -23,10 +23,10 @@ def bias_init(lstm):
             param[dim // 4:dim // 2].data.fill_(1.)
 
 
-def init_lstm(lstm, ortho=True):
+def init_lstm(lstm, orthogonal=True):
     """Initialize the forget bias and weights of LSTM."""
     bias_init(lstm)
-    if ortho:
+    if orthogonal:
         orthogonal_init(lstm)
 
 

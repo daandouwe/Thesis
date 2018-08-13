@@ -109,6 +109,7 @@ class Stack(TransitionBase):
 
     def pop(self):
         """Pop items from the stack until first open nonterminal."""
+        assert not self.empty
         head, children = self.tree.close_nonterminal()
         sequence_len = len(children)
         # Add nonterminal label to the beginning and end of children
@@ -178,7 +179,8 @@ class Buffer(TransitionBase):
     def initialize(self, sentence):
         """Embed and encode the sentence."""
         self._reset()
-        self._items = sentence[::-1]  # On the buffer the sentence is reversed.
+        empty_item = Item(EMPTY_TOKEN, EMPTY_INDEX)
+        self._items = [empty_item] + sentence[::-1]  # On the buffer the sentence is reversed.
         embeddings = self.embedding(wrap(self.indices, self.device))
         encodings = self.encoder(embeddings.unsqueeze(0))  # (batch, seq, hidden_size)
         for i, item in enumerate(self._items):
@@ -192,16 +194,8 @@ class Buffer(TransitionBase):
         self._items.append(item)
 
     def pop(self):
-        # return self._items.pop()
-        # TODO figure out this mess.
-        if self.empty:
-            raise ValueError('trying to pop from an empty buffer')
-        else:
-            item = self._items.pop()
-            if not self._items:  # empty list
-                # Push empty token.
-                self.push(Item(EMPTY_TOKEN, EMPTY_INDEX))
-            return item
+        assert not self.empty
+        return self._items.pop()
 
     @property
     def empty(self):
@@ -336,9 +330,11 @@ class Parser(nn.Module):
 
 
 if __name__ == '__main__':
+    from data import SPECIAL_TOKENS
     from encoder import BiRecurrentEncoder, StackLSTM, BufferLSTM, HistoryLSTM
     from nn import MLP
     from loss import LossCompute
+
 
     tree = '(S (NP (NNP Avco) (NNP Corp.)) (VP (VBD received) (NP (NP (DT an) (ADJP (QP ($ $) (CD 11.8) (CD million))) (NNP Army) (NN contract)) (PP (IN for) (NP (NN helicopter) (NNS engines))))) (. .))'
     sentence = 'Avco Corp. received an $ 11.8 million Army contract for helicopter engines .'.split()
@@ -395,9 +391,9 @@ if __name__ == '__main__':
     # ]
 
     def prepare_data(actions, sentence):
-        i2a = ['SHIFT', 'REDUCE', 'OPEN']
-        i2n = [a[3:-1] for a in actions if a.startswith('NT')] + [ROOT_TOKEN]
-        i2w = [w for w in list(set(sentence))]
+        i2a = list(SPECIAL_TOKENS) + ['SHIFT', 'REDUCE', 'OPEN']
+        i2n = list(SPECIAL_TOKENS) + [a[3:-1] for a in actions if a.startswith('NT')]
+        i2w = list(SPECIAL_TOKENS) + [w for w in list(set(sentence))]
         a2i = dict((a, i) for i, a in enumerate(i2a))
         n2i = dict((n, i) for i, n in enumerate(i2n))
         w2i = dict((w, i) for i, w in enumerate(i2w))
@@ -414,7 +410,7 @@ if __name__ == '__main__':
         for w in sentence:
             item = Item(w, w2i[w])
             sentence_items.append(item)
-        moves = range(3)
+        moves = a2i['SHIFT'], a2i['REDUCE'], a2i['OPEN']
         return action_items, sentence_items, moves, len(i2w), len(i2n), len(i2a)
 
     def test_parser(actions, sentence, dim=4):
@@ -448,6 +444,7 @@ if __name__ == '__main__':
             print('head:', parser.stack.tree.get_current_head())
             print('current:', parser.stack.tree.current_node)
             print('hidden:', parser.stack.encoder.hx1.data)
+            print('action:', action.token)
             # Take step prescribed by action.
             if action.index is SHIFT:
                 parser.shift()
@@ -471,8 +468,9 @@ if __name__ == '__main__':
                 print('{:<17}'.format('encoding after:'), parser.stack.tree.last_closed_nonterminal.item.encoding.data)
                 print('{:<17}'.format('hidden after:'), parser.stack.encoder.hx1.data)
             # Show partial prediction.
-            print('partial tree:', parser.stack.tree.linearize())
-            print()
+            if i > 10:
+                print('partial tree:', parser.stack.tree.linearize())
+                print()
         print('--------')
         print('Finished')
         print(f'open nonterminals: {parser.stack.num_open_nonterminals}')

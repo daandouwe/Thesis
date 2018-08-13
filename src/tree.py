@@ -65,10 +65,10 @@ class Tree:
         return self.linearize()
 
     def reset(self):
-        del self.root
-        del self.current_node
-        for node in self.nodes:
-            del node
+        # del self.root
+        # del self.current_node
+        # for node in self.nodes:
+            # del node
         self.nodes = []
         self.root = None  # The root node
         self.current_node = None  # Keep track of the current node
@@ -127,6 +127,10 @@ class Tree:
     def finished(self):
         return self.current_node is self.root and not self.start
 
-
 if __name__ == '__main__':
-    pass
+    tree = Tree()
+    print(tree)
+    tree.append('a')
+    print(tree)
+    tree.reset()
+    print(tree)
