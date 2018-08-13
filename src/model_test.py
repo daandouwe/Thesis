@@ -58,7 +58,6 @@ class RNNG(Parser):
         return torch.cat((buffer, history, stack), dim=-1)
 
     def forward(self, sentence, actions):
-        """Forward pass."""
         # TODO wtf
         self.initialize(sentence)
         self.initialize(sentence)
@@ -77,11 +76,6 @@ class RNNG(Parser):
         return loss
 
     def parse(self, sentence):
-        """Parse an input sequence.
-
-        Arguments:
-            sentence (list): input sentence as list of Item objects.
-        """
         self.initialize(sentence)
         t = 0
         while not self.stack.is_empty():
