@@ -232,8 +232,7 @@ class BeamSearchDecoder(Decoder):
             parser.buffer.empty_emb = self.model.buffer.empty_emb
             parser.history.empty_emb = self.model.history.empty_emb
 
-            # self.beams = [(deepcopy(parser), 0.0) for _ in range(k)]  # (beam_state, score)
-            self.beams = [(parser, 0.0)]  # (beam_state, score)
+            self.beams = [(parser, 0.0)]
             self.finished = []
             for parser, _ in self.beams:
                 parser.initialize(sentence)
@@ -242,8 +241,6 @@ class BeamSearchDecoder(Decoder):
                 self.beam_step()
                 print('finished beams:', len(self.finished))
                 print('num beams:', len(self.beams))
-                for parser, prob in self.beams:
-                    print(parser.stack, prob.item())
 
             finished = [(parser.stack._items[1], logprob) for parser, logprob in self.finished]
             return sorted(finished, key=lambda x: x[1], reverse=True)
@@ -288,12 +285,10 @@ class BeamSearchDecoder(Decoder):
                         action = NT(X)
                         new_parser.parse_step(action)
                         new_beams.append((new_parser, new_log_prob + nt_logprob[i]))  # nt_logprobs has the same order as ids!
-                    print()
                 else:
                     new_parser.parse_step(action)
                     new_beams.append((new_parser, new_log_prob))
             del parser
-        # new_beams = sorted(new_beams, key=lambda x: x[1])
         new_beams = sorted(new_beams, key=lambda x: x[1])[-self.k:]
         self.finished += [(beam, logprob) for beam, logprob in new_beams if beam.stack.is_empty()]
         self.beams = [(beam, logprob) for beam, logprob in new_beams if not beam.stack.is_empty()]
@@ -313,7 +308,7 @@ if __name__ == '__main__':
     sampler.load_model(path='checkpoints/20180815_170655/model.pt')
 
     print('Beam-search decoder:')
-    results = beam(sentence, k=5)
+    results = beam(sentence, k=2)
     for tree, logprob in results:
         print('{} {:.2f}'.format(tree.linearize(with_tag=False), logprob))
     print()
