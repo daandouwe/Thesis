@@ -1,5 +1,5 @@
-from copy import deepcopy
 import json
+from copy import deepcopy
 
 import numpy as np
 import torch
@@ -22,7 +22,7 @@ class Decoder:
         self.model = model
         self.dictionary = dictionary
 
-        self.use_char = use_char  # character based input embedding
+        self.use_char = use_char  #  using character based input embedding
         self.use_tokenizer = use_tokenizer
         self.verbose = verbose
 
@@ -79,8 +79,9 @@ class Decoder:
         assert sentence, f'decoder received empty sentence'
         if isinstance(sentence, str):
             return self._from_string(sentence)
-        elif isinstance(sentence, list) and isinstance(sentence[0], Word):
-            return sentence
+        elif isinstance(sentence, list):
+            assert isinstance(sentence[0], str)
+            return self._from_string(' '.join(sentence))
         else:
             raise ValueError(f'sentence format not recognized: {sentence}')
 
@@ -118,24 +119,15 @@ class Decoder:
         )
         return mask
 
-    def _best_valid_action(self, logits, k=1):
+    def _best_valid_action(self, logits):
         mask = self._valid_actions_mask()
         masked_logits = torch.Tensor(
             [logit if allowed else -np.inf for logit, allowed in zip(logits, mask)]
         )
         masked_logits, ids = masked_logits.sort(descending=True)
-        if k == 1:
-            index = ids[0]
-            action = self._make_action(index)
-            print(action)
-            return index, action
-        else:
-            assert not k > logits.size(0), f'logits size {logits.shape} but k is {k}'
-            print(ids)
-            print(mask)
-            indices = [i.item() for i in ids[:k] if mask[i]]
-            print(indices)
-            return indices, [self._make_action(i) for i in indices]
+        index = ids[0]
+        action = self._make_action(index)
+        return index, action
 
     def load_model(self, path):
         with open(path, 'rb') as f:
@@ -181,40 +173,38 @@ class GreedyDecoder(Decoder):
 class SamplingDecoder(Decoder):
     """Ancestral sampling decoder for RNNG."""
     def __call__(self, sentence, alpha=1.0):
-        self.model.eval()
-        sentence = self._process_sentence(sentence)
-        self.model.initialize(sentence)
-        while not self.model.stack.is_empty():
-            # Compute action logits.
-            x = self.model.get_input()
-            action_logits = self.model.action_mlp(x).squeeze(0)  # tensor (num_actions)
-            mask = self._valid_actions_mask()
-            action_probs = self._compute_probs(action_logits, mask=mask, alpha=alpha)
-            # Sample action.
-            index = np.random.choice(
-                range(action_probs.size(0)), p=action_probs.data.numpy()
-            )
-            action = self._make_action(index)
-            self._store_logprob(action_logits, index)
-            if action.is_nt:
-                nt_logits = self.model.nonterminal_mlp(x).squeeze(0)  # tensor (num_nonterminals)
-                nt_probs = self._compute_probs(nt_logits, alpha)
-                # Sample nonterminal.
+        with torch.no_grad():
+            self.model.eval()
+            sentence = self._process_sentence(sentence)
+            self.model.initialize(sentence)
+            while not self.model.stack.is_empty():
+                x = self.model.get_input()
+                action_logits = self.model.action_mlp(x).squeeze(0)  # tensor (num_actions)
+                mask = self._valid_actions_mask()
+                action_probs = self._compute_probs(action_logits, mask=mask, alpha=alpha)
                 index = np.random.choice(
-                    range(nt_probs.size(0)), p=nt_probs.data.numpy()
+                    range(action_probs.size(0)), p=action_probs.data.numpy()
                 )
-                X = Nonterminal(self.dictionary.i2n[index], index)
-                action = NT(X)
-                self._store_logprob(nt_logits, index)
-            self.model.parse_step(action)
-        return self.get_tree(), self._compute_logprob()
+                action = self._make_action(index)
+                self._store_logprob(action_logits, index)
+                if action.is_nt:
+                    nt_logits = self.model.nonterminal_mlp(x).squeeze(0)  # tensor (num_nonterminals)
+                    nt_probs = self._compute_probs(nt_logits, alpha)
+                    index = np.random.choice(
+                        range(nt_probs.size(0)), p=nt_probs.data.numpy()
+                    )
+                    X = Nonterminal(self.dictionary.i2n[index], index)
+                    action = NT(X)
+                    self._store_logprob(nt_logits, index)
+                self.model.parse_step(action)
+            return self.get_tree(), self._compute_logprob()
 
 
 class BeamSearchDecoder(Decoder):
     """Beam search decoder for RNNG."""
+
     def __call__(self, sentence, k=10):
         with torch.no_grad():
-            self.k = k
             sentence = self._process_sentence(sentence)
             parser = Parser(
                 word_embedding=self.model.history.word_embedding,
@@ -225,23 +215,21 @@ class BeamSearchDecoder(Decoder):
                 history_encoder=self.model.history.encoder,
                 device=self.model.device
             )
-            parser.eval()
-
             # TODO: this could be done inside parser.
             parser.stack.empty_emb = self.model.stack.empty_emb
             parser.buffer.empty_emb = self.model.buffer.empty_emb
             parser.history.empty_emb = self.model.history.empty_emb
+            parser.eval()
+            parser.initialize(sentence)
 
-            self.beams = [(parser, 0.0)]
+            self.k = k
+            self.open_beams = [(parser, 0.0)]
             self.finished = []
-            for parser, _ in self.beams:
-                parser.initialize(sentence)
 
-            while self.beams:
-                self.beam_step()
+            while self.open_beams:
+                self.advance_beam()
                 print('finished beams:', len(self.finished))
-                print('num beams:', len(self.beams))
-
+                print('open beams:', len(self.open_beams))
             finished = [(parser.stack._items[1], logprob) for parser, logprob in self.finished]
             return sorted(finished, key=lambda x: x[1], reverse=True)
 
@@ -261,42 +249,41 @@ class BeamSearchDecoder(Decoder):
         stack, buffer, history = parser.get_encoded_input()
         return torch.cat((buffer, history, stack), dim=-1)
 
-    def beam_step(self):
-        """Advance each beam one step."""
+    def advance_beam(self):
+        """Advance each beam one step a keep best k."""
         new_beams = []
-        for parser, log_prob in self.beams:
-            # Compute action logits.
+        for parser, log_prob in self.open_beams:
             x = self.get_input(parser)
             action_logits = self.model.action_mlp(x).squeeze(0)
             action_logprobs = self.logsoftmax(action_logits)
-            indices, actions = self._best_k_valid_actions(parser, action_logits)
-            for i, action in enumerate(actions):
+            indices, best_actions = self._best_k_valid_actions(parser, action_logits)
+            for i, action in enumerate(best_actions):
                 new_parser = deepcopy(parser)
                 new_log_prob = log_prob + action_logprobs[i]
                 if action.is_nt:
                     nt_logits = self.model.nonterminal_mlp(x).squeeze(0)
                     nt_logits, ids = nt_logits.sort(descending=True)
-                    nt_logprob = self.logsoftmax(nt_logits)
-                    k = self.k - len(indices) + 1  # can open this many Nonterminals.
+                    nt_logprobs = self.logsoftmax(nt_logits)
+                    k = self.k - len(best_actions) + 1  # can open this many Nonterminals.
+                    k = max(k, nt_logits.size(0))
                     for i, index in enumerate(ids[:k]):
                         new_parser = deepcopy(parser)
                         nt = self.dictionary.i2n[index]
                         X = Nonterminal(nt, index)
                         action = NT(X)
                         new_parser.parse_step(action)
-                        new_beams.append((new_parser, new_log_prob + nt_logprob[i]))  # nt_logprobs has the same order as ids!
+                        new_beams.append((new_parser, new_log_prob + nt_logprobs[i]))  # nt_logprobs has the same order as ids!
                 else:
                     new_parser.parse_step(action)
                     new_beams.append((new_parser, new_log_prob))
             del parser
         new_beams = sorted(new_beams, key=lambda x: x[1])[-self.k:]
         self.finished += [(beam, logprob) for beam, logprob in new_beams if beam.stack.is_empty()]
-        self.beams = [(beam, logprob) for beam, logprob in new_beams if not beam.stack.is_empty()]
-
+        self.open_beams = [(beam, logprob) for beam, logprob in new_beams if not beam.stack.is_empty()]
 
 
 if __name__ == '__main__':
-    sentence = u'The hungry banker eats .'
+    sentence = u'The hungry banker eats a piece of bread .'
 
     greedy = GreedyDecoder()
     greedy.load_model(path='checkpoints/20180815_170655/model.pt')
@@ -307,20 +294,16 @@ if __name__ == '__main__':
     sampler = SamplingDecoder()
     sampler.load_model(path='checkpoints/20180815_170655/model.pt')
 
-    print('Beam-search decoder:')
-    results = beam(sentence, k=2)
-    for tree, logprob in results:
-        print('{} {:.2f}'.format(tree.linearize(with_tag=False), logprob))
-    print()
-
-    quit()
-
     print('Greedy decoder:')
     tree, logprob = greedy(sentence)
     print('{} {:.2f}'.format(tree.linearize(with_tag=False), logprob))
     print()
 
-
+    print('Beam-search decoder:')
+    results = beam(sentence, k=3)
+    for tree, logprob in results:
+        print('{} {:.2f}'.format(tree.linearize(with_tag=False), logprob))
+    print()
 
     print('Sampling decoder:')
     for _ in range(5):
