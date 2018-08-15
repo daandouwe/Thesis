@@ -1,6 +1,7 @@
 import os
 import time
 
+
 class Timer:
     """A simple timer to use during training."""
     def __init__(self):
@@ -32,6 +33,7 @@ class Timer:
     def format_elapsed(self):
         return self.format(self.elapsed())
 
+
 def get_parameter_string(args):
     """Returns an identification string based on arguments in args.
 
@@ -55,6 +57,7 @@ def get_parameter_string(args):
     params = [f'{key}_{args[key]}' for key in sorted(keys)]
     return '_'.join(params)
 
+
 def get_subdir_string(args, with_params=False):
     """Returns a concatenation of a date and timestamp and parameters.
 
@@ -70,6 +73,7 @@ def get_subdir_string(args, with_params=False):
         return f'{date}_{timestamp}_{params}'
     else:
         return f'{date}_{timestamp}'
+
 
 def write_args(args, positional=('mode',)):
     """Writes args to a file to be later used as input in the command line.
@@ -87,12 +91,14 @@ def write_args(args, positional=('mode',)):
             if k not in positional: # skip positional arguments
                 print(f'--{k}={v}', file=f)
 
+
 def write_losses(args, losses):
     path = os.path.join(args.logdir, 'loss.csv')
     with open(path, 'w') as f:
         print('loss', file=f)
         for loss in losses:
             print(loss, file=f)
+
 
 def make_folders(args):
     # Create folders for logging and checkpoints

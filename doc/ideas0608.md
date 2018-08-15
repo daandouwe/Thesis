@@ -34,7 +34,7 @@
 
 ## Decoding
 - [ ] Add beam-search to prediction: see if this improves f1.
-- [ ] Ancestral sampler decoder.
+- [x] Ancestral sampler decoder.
 
 ## Training
 - [x] Use TensorboadX to keep track of training.

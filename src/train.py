@@ -12,6 +12,9 @@ from eval import evalb
 from util import Timer, write_losses, make_folders
 
 
+# gc.set_debug(gc.DEBUG_LEAK)
+
+
 def schedule_lr(args, optimizer, update):
     update = update + 1
     warmup_coeff = args.lr / args.learning_rate_warmup_steps
@@ -80,18 +83,42 @@ def main(args):
     num_updates = 0
     best_dev_fscore = -np.inf
     best_dev_epoch = None
+    test_fscore = None
+
+    def save_checkpoint():
+        with open(args.checkfile, 'wb') as f:
+            # Could move to using 'model': model.state_dict()
+            # Then:
+            # model_state_dict = state['model']
+            # args = state['args']
+            # dictionary = state['dictionary']
+            # model = load_model(args, dictionary)
+            # model.load_state_dict(model_state_dict)
+            state = {
+                'args': args,
+                'model': model,
+                'dictionary': corpus.dictionary,
+                'optimizer': optimizer,
+                'scheduler': scheduler,
+                'epoch': epoch,
+                'num-updates': num_updates,
+                'best-dev-fscore': best_dev_fscore,
+                'best-dev-epoch': best_dev_epoch,
+                'test-fscore': test_fscore
+            }
+            torch.save(state, f)
 
     def check_dev():
         nonlocal best_dev_fscore
         nonlocal best_dev_epoch
 
+        model.eval()
         predict(model, dev_batches, args.outdir, name='dev')
         dev_fscore = evalb(args.outdir, args.data, args.name_template, name='dev')
         writer.add_scalar('Dev/Fscore', dev_fscore, num_updates)
         if dev_fscore > best_dev_fscore:
             print(f'Saving new best model to {args.checkfile}...')
-            with open(args.checkfile, 'wb') as f:
-                torch.save(model, f)
+            save_checkpoint()
             best_dev_epoch = epoch
             best_dev_fscore = dev_fscore
         return dev_fscore
@@ -119,9 +146,11 @@ def main(args):
                 loss += model(sentence, actions)
             loss /= args.batch_size
 
+            # TODO: Look into Adam optimizer if memory use is growing.
+
             optimizer.zero_grad()
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
+            torch.nn.utils.clip_grad_norm_(trainable_parameters, args.clip)
             optimizer.step()
 
             loss = loss.item()
@@ -141,6 +170,8 @@ def main(args):
                     f'| {sents_per_sec:4.1f} sents/sec '
                     f'| eta {train_timer.format(eta)}'
                 )
+
+
 
     epoch_timer = Timer()
     # At any point you can hit Ctrl + C to break out of training early.
@@ -184,17 +215,19 @@ def main(args):
     # Load best saved model.
     print(f'Loading best saved model (epoch {best_dev_epoch}) from {args.checkfile}...')
     with open(args.checkfile, 'rb') as f:
-        model = torch.load(f)
+        state = torch.load(f)
+        model = state['model']
 
     print('Evaluating loaded model on test set...')
     predict(model, test_batches, args.outdir, name='test')
-    fscore = evalb(args.outdir, args.data, args.name_template, name='test')
+    test_fscore = evalb(args.outdir, args.data, args.name_template, name='test')
+    save_checkpoint()
 
     print('-'*89)
     print(
          f'| End of training '
          f'| best dev-epoch {best_dev_epoch:2d} '
          f'| best dev-fscore {best_dev_fscore:4.2f} '
-         f'| test-fscore {fscore}'
+         f'| test-fscore {test_fscore}'
     )
     print('-'*89)

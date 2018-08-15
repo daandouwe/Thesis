@@ -16,21 +16,19 @@ from loss import LossCompute
 
 class RNNG(Parser):
     """Recurrent Neural Network Grammar model."""
-    def __init__(
-        self,
-        dictionary,
-        word_embedding,
-        nonterminal_embedding,
-        action_embedding,
-        buffer_encoder,
-        stack_encoder,
-        history_encoder,
-        action_mlp,
-        nonterminal_mlp,
-        loss_compute,
-        dropout,
-        device
-    ):
+    def __init__(self,
+                 dictionary,
+                 word_embedding,
+                 nonterminal_embedding,
+                 action_embedding,
+                 buffer_encoder,
+                 stack_encoder,
+                 history_encoder,
+                 action_mlp,
+                 nonterminal_mlp,
+                 loss_compute,
+                 dropout,
+                 device):
         super(RNNG, self).__init__(
             word_embedding,
             nonterminal_embedding,
@@ -58,8 +56,6 @@ class RNNG(Parser):
         return torch.cat((buffer, history, stack), dim=-1)
 
     def forward(self, sentence, actions):
-        # TODO wtf
-        self.initialize(sentence)
         self.initialize(sentence)
         loss = torch.zeros(1, device=self.device)
         for i, action in enumerate(actions):
@@ -76,6 +72,7 @@ class RNNG(Parser):
         return loss
 
     def parse(self, sentence):
+        assert not self.training, f'set model.eval() to enable parsing'
         self.initialize(sentence)
         t = 0
         while not self.stack.is_empty():
@@ -83,14 +80,19 @@ class RNNG(Parser):
             # Compute loss
             x = self.get_input()
             action_logits = self.action_mlp(x)
+
+            # TODO something like mask = (1, -inf, 1) = self.get_illegal_actions()
+            # (1.3, 0.2, -inf) = (action_logits * mask).sort(descending=True)
+            # action_index = ids[0]
+
             # Get highest scoring valid predictions.
             vals, ids = action_logits.sort(descending=True)
             vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
             i = 0
-            action = self.make_action(i)
+            action = self.make_action(ids[i])
             while not self.is_valid_action(action):
                 i += 1
-                action = self.make_action(i)
+                action = self.make_action(ids[i])
             if action.is_nt:
                 nonterminal_logits = self.nonterminal_mlp(x)
                 vals, ids = nonterminal_logits.sort(descending=True)
@@ -108,9 +110,10 @@ class RNNG(Parser):
         elif index == REDUCE.index:
             return REDUCE
         elif index == Action.NT_INDEX:
-            return NT(Action('_', -1))
+            return NT(Nonterminal('_', -1))
         # elif index == Action.GEN_INDEX:
             # return GEN(Word('_', -1))
+
 
 def set_embedding(embedding, tensor):
     """Sets the tensor as fixed weight tensor in embedding."""
@@ -123,6 +126,7 @@ def make_model(args, dictionary):
     # Embeddings
     num_words = dictionary.num_words
     num_nonterminals = dictionary.num_nonterminals
+    num_actions = 3
     if args.use_char:
         word_embedding = ConvolutionalCharEmbedding(
                 num_words, args.word_emb_dim, padding_idx=PAD_INDEX,
@@ -161,7 +165,7 @@ def make_model(args, dictionary):
             logfile.close()
 
     nonterminal_embedding = nn.Embedding(num_nonterminals, args.word_emb_dim, padding_idx=PAD_INDEX)
-    action_embedding = nn.Embedding(3, args.word_emb_dim, padding_idx=PAD_INDEX)
+    action_embedding = nn.Embedding(num_actions, args.word_emb_dim, padding_idx=PAD_INDEX)
 
     # Encoders
     buffer_encoder = BufferLSTM(
@@ -184,11 +188,12 @@ def make_model(args, dictionary):
         args.device
     )
 
+    # Score MLPs
     mlp_input = 2 * args.word_lstm_hidden + args.action_lstm_hidden
     action_mlp = MLP(
         mlp_input,
         args.mlp_dim,
-        3,
+        num_actions,
         dropout=args.dropout,
         activation='Tanh'
     )
@@ -218,7 +223,7 @@ def make_model(args, dictionary):
     )
 
     if not args.disable_glorot:
-        # Initialize parameters with Glorot.
+        # Initialize *all* parameters with Glorot. (Overrides custom LSTM init.)
         for param in model.parameters():
             if param.dim() > 1 and param.requires_grad:
                 nn.init.xavier_uniform_(param)

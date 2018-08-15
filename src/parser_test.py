@@ -11,7 +11,7 @@ from tree_test import InternalNode, LeafNode
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename='parser.log', level=logging.INFO)
+logging.basicConfig(filename='parser.log', level=logging.DEBUG)
 
 
 class TransitionBase(nn.Module):
@@ -86,27 +86,29 @@ class Stack(TransitionBase):
             device: device on which computation is done (gpu or cpu).
         """
         super(Stack, self).__init__()
+        assert word_embedding.embedding_dim == nt_embedding.embedding_dim
+        self.embedding_dim = word_embedding.embedding_dim
         self.word_embedding = word_embedding
         self.nt_embedding = nt_embedding
         self.encoder = encoder
         self.device = device
         self.num_open_nonterminals = 0
-        self.empty_emb = nn.Parameter(torch.zeros(1, word_embedding.embedding_dim))
+        self.empty_emb = nn.Parameter(torch.zeros(1, self.embedding_dim, device=self.device))
 
     def __str__(self):
-        return f'{type(self).__name__} ({self.num_open_nonterminals} open NTs): {self.tokens}'
+        return f'Stack ({self.num_open_nonterminals} open NTs): {self.tokens}'
 
     def _reset(self):
-        empty = Item(self.EMPTY_TOKEN, self.EMPTY_INDEX)
-        empty.embedding = self.empty_emb
-        empty.encoding = self.encoder(self.empty_emb)
+        del self._items
+        self.encoder.initialize_hidden()
+        embedding = self.empty_emb
+        encoding = self.encoder(embedding)
+        empty = Item(self.EMPTY_TOKEN, self.EMPTY_INDEX, embedding, encoding)
         self._items = [InternalNode(empty)]
-        self._start = True
 
     def initialize(self):
         self._reset()
         self.num_open_nonterminals = 0
-        self.encoder.initialize_hidden()
 
     def open(self, nonterminal):
         assert isinstance(nonterminal, Nonterminal)
@@ -122,26 +124,27 @@ class Stack(TransitionBase):
         elif isinstance(item, Nonterminal):
             node = InternalNode(item)
         else:
-            raise ValueError(f'ivalid {item} pushed onto stack')
+            raise ValueError(f'invalid {item:!r} pushed onto stack')
         # Add child node to open nonterminal
-        for head in self._items[::-1]:
-            if head.is_open_nt:
-                head.add_child(node)
-                break
+        if not self.training:
+            for head in self._items[::-1]:
+                if head.is_open_nt:
+                    head.add_child(node)
+                    break
         self._items.append(node)
 
     def reduce(self):
         children = []
         while not self.top.is_open_nt:
             children.append(self.pop())
-        children.reverse()
+        children.reverse()  # List[Node]
         sequence_len = len(children)
         head = self.top
         # Add nonterminal label to the beginning and end of children
-        # TODO not completely correct...
         children = [child.item for child in children]  # List[Item]
         logger.debug('{:<23} {}'.format('head:', head))
         logger.debug('{:<23} {}'.format('reducing', [item.token for item in children]))
+        # TODO not completely correct...
         children = [head.item] + children + [head.item]  # List[Item]
         # Package embeddings as pytorch tensor
         embeddings = [item.embedding.unsqueeze(0) for item in children]  # List[Variable]
@@ -167,18 +170,20 @@ class Stack(TransitionBase):
         self.encoder._reset_hidden(sequence_len + 1)
 
     def get_tree(self):
+        assert not self.training, f'forgot to set model.eval() to build tree'
         return self._items[1].linearize()
 
     def is_empty(self):
         if len(self._items) == 2:
-            return not self.top.is_open_nt
+            # e.g. [-EMPTY-, S]
+            return not self.top.is_open_nt  # S needs to be closed
         else:
+            # e.g. [-EMPTY-] (start) or [-EMPTY-, S, NP, ...] (not finished)
             return False
 
     @property
     def empty(self):
-        start = len(self._items) == 1
-        return not start and not self.top_item.is_open_nt
+        return self.is_empty()  # TODO wtf
 
     @property
     def items(self):
@@ -207,14 +212,15 @@ class Buffer(TransitionBase):
             device: device on which computation is done (gpu or cpu).
         """
         super(Buffer, self).__init__()
+        self.embedding_dim = embedding.embedding_dim
         self.embedding = embedding
         self.encoder = encoder
         self.device = device
-        self.empty_emb = nn.Parameter(torch.zeros(1, embedding.embedding_dim))
+        self.empty_emb = nn.Parameter(torch.zeros(1, self.embedding_dim, device=self.device))
 
     def _reset(self):
-        empty = Action(self.EMPTY_TOKEN, self.EMPTY_INDEX)
-        empty.embedding = self.empty_emb
+        del self._items
+        empty = Action(self.EMPTY_TOKEN, self.EMPTY_INDEX, embedding=self.empty_emb)
         self._items = [empty]
 
     def initialize(self, sentence):
@@ -223,12 +229,12 @@ class Buffer(TransitionBase):
         self._items += sentence[::-1]
         # Embed items without the first element, which is EMPTY and already embedded.
         embeddings = self.embedding(wrap(self.indices[1:], self.device))  # (seq_len, emb_dim)
-        empty_embedding = self.items[0].embedding
-        embeddings = torch.cat((empty_embedding, embeddings), dim=0)
+        empty_embedding = self.items[0].embedding  # (1, emb_dim)
+        embeddings = torch.cat((empty_embedding, embeddings), dim=0).unsqueeze(0)  # (1, seq_len+1, emb_dim)
         # Encode everything together
-        encodings = self.encoder(embeddings.unsqueeze(0))  # (1, seq_len, hidden_size)
+        encodings = self.encoder(embeddings)  # (1, seq_len, hidden_size)
         for i, item in enumerate(self._items):
-            item.embedding = embeddings[i, :].unsqueeze(0)  # (1, emb_dim)
+            item.embedding = embeddings[:, i, :]  # (1, emb_dim)
             item.encoding = encodings[:, i, :]  # (1, hidden_size)
 
     @property
@@ -249,27 +255,28 @@ class History(TransitionBase):
             device: device on which computation is done (gpu or cpu).
         """
         super(History, self).__init__()
-        assert word_embedding.embedding_dim == action_embedding.embedding_dim
+        assert word_embedding.embedding_dim == action_embedding.embedding_dim == nt_embedding.embedding_dim
+        self.embedding_dim = word_embedding.embedding_dim
         self.word_embedding = word_embedding
         self.nt_embedding = nt_embedding
         self.action_embedding = action_embedding
         self.encoder = encoder
         self.device = device
-        self.empty_emb = nn.Parameter(torch.zeros(1, word_embedding.embedding_dim))
+        self.empty_emb = nn.Parameter(torch.zeros(1, self.embedding_dim, device=self.device))
 
     def _reset(self):
-        empty = Action(self.EMPTY_TOKEN, self.EMPTY_INDEX)
-        empty.embedding = self.empty_emb
-        empty.encoding = self.encoder(self.empty_emb)
+        del self._items
+        self.encoder.initialize_hidden()
+        embedding = self.empty_emb
+        encoding = self.encoder(embedding)
+        empty = Action(self.EMPTY_TOKEN, self.EMPTY_INDEX, embedding, encoding)
         self._items = [empty]
 
     def initialize(self):
-        """Initialize the history by pushing the `empty` item."""
         self._reset()
-        self.encoder.initialize_hidden()
 
     def push(self, action):
-        assert isinstance(action, Action)
+        assert isinstance(action, Action), f'invalid action {action:!r}'
         # Embed the action.
         if action.is_nt:
             nt = action.get_nt()
@@ -310,14 +317,13 @@ class Parser(nn.Module):
         self.stack = Stack(word_embedding, nt_embedding, stack_encoder, device)
         self.buffer = Buffer(word_embedding, buffer_encoder, device)
         self.history = History(word_embedding, nt_embedding, action_embedding, history_encoder, device)
-        # TODO: self.terminals = Terminals(...)
 
     def __str__(self):
         return '\n'.join(('Parser', str(self.stack), str(self.buffer), str(self.history)))
 
-    def initialize(self, sentence: List[Word]):
+    def initialize(self, sentence):
         """Initialize all the components of the parser."""
-        self.buffer.initialize(sentence)  # items: List[Word]
+        self.buffer.initialize(sentence)  # sentence: List[Word]
         self.stack.initialize()
         self.history.initialize()
 
@@ -342,21 +348,21 @@ class Parser(nn.Module):
         return (cond1 and cond3) or cond4
 
     def _shift(self):
-        assert self._can_shift()
+        assert self._can_shift(), f'cannot shift: {self}'
         self.stack.push(self.buffer.pop())
 
     def _gen(self, word):
         assert isinstance(word, Word)
-        assert self._can_gen()
+        assert self._can_gen(), f'cannot gen: {self}'
         self.terminals.push(word)
 
     def _open(self, nonterminal):
         assert isinstance(nonterminal, Nonterminal)
-        assert self._can_open()
+        assert self._can_open(), f'cannot open: {self}'
         self.stack.open(nonterminal)
 
     def _reduce(self):
-        assert self._can_reduce()
+        assert self._can_reduce(), f'cannot reduce: {self}'
         self.stack.reduce()
 
     def get_encoded_input(self):
@@ -379,10 +385,13 @@ class Parser(nn.Module):
             self._gen(action.get_gen())
         elif action.is_nt:
             self._open(action.get_nt())
+        else:
+            raise ValueError(f'got illegal action: {action:!r}')
         self.history.push(action)
 
     def is_valid_action(self, action):
         """Check whether the action is valid under the parser's configuration."""
+        assert isinstance(action, Action)
         if action == SHIFT:
             return self._can_shift()
         elif action == REDUCE:
@@ -392,7 +401,7 @@ class Parser(nn.Module):
         elif action.is_nt:
             return self._can_open()
         else:
-            raise ValueError(f'got illegal action: {action.token}.')
+            raise ValueError(f'got illegal action: {action:!r}')
 
     @property
     def actions(self):
@@ -406,7 +415,7 @@ class Parser(nn.Module):
 
 
 if __name__ == '__main__':
-    from data import SPECIAL_TOKENS
+    from data_test import PAD_TOKEN, PAD_INDEX
     from encoder import BiRecurrentEncoder, StackLSTM, BufferLSTM, HistoryLSTM
     from nn import MLP
     from loss import LossCompute
@@ -469,8 +478,8 @@ if __name__ == '__main__':
 
 
     def prepare_data(actions, sentence):
-        i2n = list(SPECIAL_TOKENS) + [a[3:-1] for a in actions if a.startswith('NT')]
-        i2w = list(SPECIAL_TOKENS) + [w for w in list(set(sentence))]
+        i2n = [PAD_TOKEN] + [a[3:-1] for a in actions if a.startswith('NT')]
+        i2w = [w for w in list(set(sentence))]
         n2i = dict((n, i) for i, n in enumerate(i2n))
         w2i = dict((w, i) for i, w in enumerate(i2w))
         action_items = []
@@ -483,14 +492,16 @@ if __name__ == '__main__':
                 action = SHIFT
             elif token == REDUCE.token:
                 action = REDUCE
-            elif token.startswith('NT'):
+            elif token.startswith('NT(') and token.endswith(')'):
                 nt = token[3:-1]
                 nt = Nonterminal(nt, n2i[nt])
                 action = NT(nt)
-            elif token.startswith('GEN'):
+            elif token.startswith('GEN(') and token.endswith(')'):
                 word = token[4:-1]
                 word = Word(word, w2i[word])
                 action = GEN(word)
+            else:
+                raise ValueError(f'found strange token: {token}')
             action_items.append(action)
         return action_items, sentence_items, len(i2w), len(i2n)
 
@@ -515,6 +526,7 @@ if __name__ == '__main__':
             history_encoder,
         )
         parser.initialize(sentence)
+        parser.eval()
         for i, action in enumerate(actions):
             logger.debug('--------')
             logger.debug(f'Step {i:>3}')
@@ -591,7 +603,6 @@ if __name__ == '__main__':
         optimizer = torch.optim.Adam(parameters, lr=0.001)
         model = (parser, reducer, action_mlp, nonterminal_mlp)
         for i in range(steps):
-            parser.initialize(sentence)
             loss = forward(model, actions, sentence)
 
             optimizer.zero_grad()
@@ -600,5 +611,5 @@ if __name__ == '__main__':
             print('loss', loss.item(), end='\r')
 
 
-    # test_parser(actions, sentence)
-    test_train(actions, sentence, dim=50, steps=10000)
+    test_parser(actions, sentence)
+    # test_train(actions, sentence, dim=50, steps=10000)

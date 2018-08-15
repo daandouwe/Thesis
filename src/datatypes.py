@@ -1,3 +1,8 @@
+# With inspiration from kmkurn/pytorch-rnng:
+# https://github.com/kmkurn/pytorch-rnng/blob/master/src/rnng/actions.py
+
+import torch.nn as nn
+
 
 class Item:
     def __init__(self, token, index, embedding=None, encoding=None):
@@ -10,7 +15,7 @@ class Item:
         return self.token
 
     def __repr__(self):
-        return '{}({}, {})'.format(type(self).__name__, self.token, self.index)
+        return f'{type(self).__name__}(token={self.token}, index={self.index})'
 
     def __eq__(self, other):
         if not type(self) == type(other):
@@ -29,17 +34,17 @@ class Word(Item):
 
 class Action(Item):
     SHIFT_INDEX = 0
-    GEN_INDEX = 0  # Shift and Gen are mutually exclusive
+    GEN_INDEX = 0  # SHIFT and GEN are mutually exclusive
     NT_INDEX = 1
     REDUCE_INDEX = 2
 
     def get_word(self):
-        assert self.is_gen
+        assert self.is_gen, f'cannot get word from {self:!r}'
         word = self.token[4:-1]
         return Word(word, self.index, self.embedding, self.encoding)
 
     def get_nt(self):
-        assert self.is_nt
+        assert self.is_nt, f'cannot get nt from {self:!r}'
         nt = self.token[3:-1]
         return Nonterminal(nt, self.index, self.embedding, self.encoding)
 

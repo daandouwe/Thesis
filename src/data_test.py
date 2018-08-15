@@ -1,11 +1,9 @@
 import sys
 import os
 import string
-from collections import defaultdict
 from tqdm import tqdm
 
 import torch
-from torch.autograd import Variable
 import numpy as np
 
 from datatypes import Word, Nonterminal
@@ -104,9 +102,9 @@ class Data:
         self.actions = [self.actions[i] for i in new_order]
 
     def read(self, path, dictionary, textline):
-        sents = get_sentences(path) # a list of `sent_dict` objects
+        sents = get_sentences(path)  # a list of dict
         nlines = len(sents)
-        for i, sent_dict in enumerate(tqdm(sents)):
+        for i, sent_dict in enumerate(tqdm(sents)):  # tqdm: a progressbar
             # Get sentence items.
             sentence = sent_dict[textline].split()
             sentence_items = []
@@ -116,7 +114,7 @@ class Data:
                 else:
                     index = dictionary.w2i[token]
                 sentence_items.append(Word(token, index))
-            # Get action items
+            # Get action items.
             actions = sent_dict['actions']
             action_items = []
             for token in actions:
@@ -133,7 +131,6 @@ class Data:
                     word = Word(word, dictionary.w2i[word])
                     action = GEN(word)
                 action_items.append(action)
-            # Store internally
             self.sentences.append(sentence_items)
             self.actions.append(action_items)
         self.lengths = [len(sent) for sent in self.sentences]
@@ -151,7 +148,6 @@ class Data:
 
     def batches(self, shuffle=True,
                 length_ordered=False, cuda=False):
-        """An iterator over batches."""
         n = len(self.sentences)
         if shuffle:
             self.shuffle()
@@ -167,6 +163,7 @@ class Data:
     @property
     def textline(self):
         return self.textline
+
 
 class Corpus:
     """A corpus of three datasets (train, development, and test) and a dictionary."""
@@ -190,10 +187,18 @@ class Corpus:
         )
         return '\n'.join(items)
 
+
 if __name__ == "__main__":
+    import json
+
     # Example usage:
     corpus = Corpus(data_path='../tmp', textline='unked', char=False)
     batches = corpus.test.batches(1, length_ordered=False)
     sentence, actions = batches[0]
     print([word.token for word in sentence])
     print([action.token for action in actions])
+
+    with open('w2i.json', 'w') as f:
+        json.dump(corpus.dictionary.w2i, f, sort_keys=True, indent=4)
+    with open('n2i.json', 'w') as f:
+        json.dump(corpus.dictionary.n2i, f, sort_keys=True, indent=4)

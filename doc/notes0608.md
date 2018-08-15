@@ -15,10 +15,10 @@
 - [ ] Still work on parallel.
 - [x] Refactor data and parser.
 - [ ] Beter use of Lisa: more GPUs per node, `&` for more computation per processor
-- [ ] Some more embeddings.
+- [x] Some more embeddings.
 - [ ] Move to generative
 - [ ] Normal softmax: see if terrible
 - [ ] Implement barber approx.
 - [ ] Beam search
-- [ ] Ancestral sampling inference.
+- [x] Ancestral sampling inference.
 - [ ] Investigate: how easy is shift to dependency.

@@ -50,14 +50,14 @@ class BiRecurrentEncoder(nn.Module):
 
     def forward(self, x):
         """Forward pass works for unpadded, i.e. equal length, batches."""
-        hf, _ = self.fwd_rnn(x)                 # [batch, seq, hidden_size]
-        hb, _ = self.bwd_rnn(self._reverse(x))  # [batch, seq, hidden_size]
+        hf, _ = self.fwd_rnn(x)                 # (batch, seq, hidden_size)
+        hb, _ = self.bwd_rnn(self._reverse(x))  # (batch, seq, hidden_size)
 
         # Select final representation.
-        hf = hf[:, -1, :]  # [batch, hidden_size]
-        hb = hb[:, -1, :]  # [batch, hidden_size]
+        hf = hf[:, -1, :]  # (batch, hidden_size)
+        hb = hb[:, -1, :]  # (batch, hidden_size)
 
-        h = torch.cat((hf, hb), dim=-1)  # [batch, 2*hidden_size]
+        h = torch.cat((hf, hb), dim=-1)  # (batch, 2*hidden_size)
         return h
 
 
