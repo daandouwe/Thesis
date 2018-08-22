@@ -2,9 +2,9 @@ import copy
 
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
 
 from data import wrap
+
 
 class MLP(nn.Module):
     """A simple multilayer perceptron with one hidden layer and dropout."""

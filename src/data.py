@@ -24,6 +24,7 @@ SPECIAL_TOKENS = (PAD_TOKEN, EMPTY_TOKEN, REDUCED_TOKEN, ROOT_TOKEN)
 
 SHIFT, OPEN, REDUCE = 'SHIFT', 'OPEN', 'REDUCE'
 
+
 def pad(batch):
     """Pad a batch of irregular length indices."""
     lens = list(map(len, batch))
@@ -34,17 +35,14 @@ def pad(batch):
         padded_batch.append(padded)
     return padded_batch
 
+
 def wrap(batch, device):
     """Packages the batch as a Variable containing a LongTensor."""
     assert isinstance(batch, list)
     if len(batch) > 1 and isinstance(batch[0], list):
         batch = pad(batch)
-    x = torch.LongTensor(batch, device=device)
-    # print(device)
-    # print(x.device)
-    x.to(device)
-    # print(x.device)
-    return x
+    return torch.tensor(batch, device=device, dtype=torch.long)
+
 
 class Item:
     def __init__(self, token, index, embedding=None, encoding=None, nonterminal=False):

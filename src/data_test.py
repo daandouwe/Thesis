@@ -31,15 +31,14 @@ def wrap(batch, device):
     assert isinstance(batch, list)
     if len(batch) > 1 and isinstance(batch[0], list):
         batch = pad(batch)
-    x = torch.LongTensor(batch, device=device)
-    return x.to(device)
+    return torch.tensor(batch, device=device, dtype=torch.long)
 
 
 class Dictionary:
     """A dictionary for stack, buffer, and action symbols."""
     def __init__(self, path, char=False):
-        self.n2i = dict() # nonterminals
-        self.w2i = dict() # words
+        self.n2i = dict()  # nonterminals
+        self.w2i = dict()  # words
         self.i2n = []
         self.i2w = []
         self.char = char

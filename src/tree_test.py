@@ -61,7 +61,3 @@ class LeafNode(Node):
 
     def leaves(self):
         yield self
-
-
-if __name__ == '__main__':
-    pass

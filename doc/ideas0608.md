@@ -9,7 +9,7 @@
 - [x] Use an Item class two wrap indices and tokens together:
     * `Item(word, index)`, then `word = item.word` and `index = item.index`.
     * Use a tokenizer to process input from terminal?
-- [ ] `Item` object is nice! `Action` object is pretty ugly though... Fix this!
+- [x] `Item` object is nice! `Action` object is pretty ugly though... Fix this!
 - [x] Implement a `Tree` class to store the created trees during parsing.
     * This way we can store the represenations of the StackLSTM, which is useful for inspection.
     * Then we can pass a `Tree` object from `model.parse` directly.
@@ -33,14 +33,13 @@
     * Use the original evalb?
 
 ## Decoding
-- [ ] Add beam-search to prediction: see if this improves f1.
+- [x] Add beam-search to prediction: see if this improves f1.
 - [x] Ancestral sampler decoder.
 
 ## Training
 - [x] Use TensorboadX to keep track of training.
 - [x] Training from: https://github.com/nikitakit/self-attentive-parser/blob/master/src/main.py.
 - [ ] Look into trainer class from https://github.com/allenai/allennlp/blob/master/allennlp/training/trainer.py.
-
 
 ## Visualization
 - [ ] A live broswer demo to inspect the trees loaded from textfile.

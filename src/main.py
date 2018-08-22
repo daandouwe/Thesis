@@ -5,6 +5,7 @@ import argparse
 import train
 import predict_input
 
+
 def main():
 
     parser = argparse.ArgumentParser(description='Discriminative RNNG parser',
@@ -31,16 +32,16 @@ def main():
     # Model arguments
     parser.add_argument('--use-char', action='store_true',
                         help='use character-level word embeddings')
-    parser.add_argument('--word-emb-dim', type=int, default=100,
-                        help='dim of embeddings for word')
-    parser.add_argument('--action-emb-dim', type=int, default=20,
-                        help='dim of embeddings for actions')
+    parser.add_argument('--emb-dim', type=int, default=100,
+                        help='dim of all embeddings (words, actions, nonterminals)')
     parser.add_argument('--word-lstm-hidden', type=int, default=128,
                         help='size of lstm hidden states for StackLSTM and BufferLSTM')
     parser.add_argument('--action-lstm-hidden', type=int, default=128,
                         help='size of lstm hidden states for history encoder')
     parser.add_argument('--lstm-num-layers', type=int, default=2,
                         help='number of layers in lstm')
+    parser.add_argument('--use-attn', action='store_true',
+                        help='use attention in StackLSTM composition function')
     parser.add_argument('--mlp-dim', type=int, default=128,
                         help='size of mlp hidden state')
     parser.add_argument('--dropout', type=float, default=0.2,
@@ -49,7 +50,7 @@ def main():
                         help='using pretrained glove embeddings')
     parser.add_argument('--use-fasttext', action='store_true',
                         help='using pretrained fasttext embeddings')
-    parser.add_argument('--glove-dir', type=str, default='~/glove',
+    parser.add_argument('--glove-dir', type=str, default='~/embeddings/glove',
                         help='to be constructed by util.make_folders')
     parser.add_argument('--glove-torchtext', action='store_true',
                         help='loading glove with torchtext')
@@ -71,7 +72,7 @@ def main():
     parser.add_argument('--step-decay-factor', type=float,default=0.5,
                         help='scheduler parameter')
     parser.add_argument('--disable-glorot', action='store_true',
-                        help='override custom lstm initialization with glorot')
+                        help='do not override custom lstm initialization with glorot')
     parser.add_argument('--clip', type=float, default=5.,
                         help='clipping gradient norm at this value')
     parser.add_argument('--print-every', type=int, default=10,
@@ -84,6 +85,7 @@ def main():
         train.main(args)
     elif args.mode == 'predict':
         predict_input.main(args)
+
 
 if __name__ == '__main__':
     main()

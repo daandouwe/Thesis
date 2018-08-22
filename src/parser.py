@@ -107,14 +107,14 @@ class Stack(TransitionBase):
                 found_head = True
         # reverse the lists (we appended)
         children = children[::-1]
-        # add nonterminal also to the end of both lists
-        children.append(children[0])
+        head, children = children[0], children[1:]
         # Package embeddings as pytorch tensor
-        embeddings = [item.embedding.unsqueeze(0) for item in children]
-        x = torch.cat(embeddings, 1) # tensor (batch, seq_len, emb_dim)
+        children = [item.embedding.unsqueeze(0) for item in children]
+        children = torch.cat(children, 1)  # tensor (batch, seq_len, emb_dim)
+        head = head.embedding  # tensor (batch, emb_dim)
         # Update the number of open nonterminals
         self._num_open_nonterminals -= 1
-        return children, x
+        return children, head
 
     @property
     def empty(self):

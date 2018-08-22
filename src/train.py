@@ -11,9 +11,9 @@ from predict import predict
 from eval import evalb
 from util import Timer, write_losses, make_folders
 
-
-# gc.set_debug(gc.DEBUG_LEAK)
-
+##
+from memory import print_memory
+##
 
 def schedule_lr(args, optimizer, update):
     update = update + 1
@@ -30,7 +30,7 @@ def get_lr(optimizer):
 
 def batchify(batches, batch_size):
     def ceil_div(a, b):
-        return ((a-1) // b) + 1
+        return ((a - 1) // b) + 1
     return [batches[i*batch_size:(i+1)*batch_size]
             for i in range(ceil_div(len(batches), batch_size))]
 
@@ -134,10 +134,20 @@ def main(args):
         num_batches = num_sentences // args.batch_size
         processed = 0
         for step, minibatch in enumerate(batchify(train_batches, args.batch_size), 1):
+        # for step, batch in enumerate(train_batches, 1):
             # Set learning rate.
             num_updates += 1
             processed += args.batch_size
             schedule_lr(args, optimizer, num_updates)
+
+            ##
+            # print(79*'-')
+            # print_memory('Before minibatch:')
+            # print(tr.print_diff())
+            ##
+
+            # sentence, actions = batch
+            # loss = model(sentence, actions)
 
             # Compute loss over minibatch.
             loss = torch.zeros(1, device=args.device)
@@ -146,12 +156,20 @@ def main(args):
                 loss += model(sentence, actions)
             loss /= args.batch_size
 
-            # TODO: Look into Adam optimizer if memory use is growing.
+            ##
+            # print_memory('After minibatch:')
+            # print(tr.print_diff())
+            ##
 
             optimizer.zero_grad()
             loss.backward()
             torch.nn.utils.clip_grad_norm_(trainable_parameters, args.clip)
             optimizer.step()
+
+            ##
+            # print_memory('After update:')
+            # print(tr.print_diff())
+            ##
 
             loss = loss.item()
             losses.append(loss)
@@ -172,7 +190,6 @@ def main(args):
                 )
 
 
-
     epoch_timer = Timer()
     # At any point you can hit Ctrl + C to break out of training early.
     try:
@@ -183,6 +200,11 @@ def main(args):
 
             # Shuffle batches each epoch.
             np.random.shuffle(train_batches)
+
+            ##
+            # print_memory('Before training:')
+            # print(tr.print_diff())
+            ##
 
             # Train one epoch.
             train_epoch()
@@ -208,6 +230,9 @@ def main(args):
         print('-'*89)
         print('Exiting from training early.')
         # Save the losses for plotting and diagnostics.
+        ##
+        # save_checkpoint()
+        ##
         write_losses(args, losses)
         # TODO(not sure) writer.export_scalars_to_json('scalars.json')
         print('Evaluating fscore on development set...')

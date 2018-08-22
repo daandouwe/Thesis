@@ -13,6 +13,9 @@ from encoder import StackLSTM, HistoryLSTM, BufferLSTM
 from parser_test import Parser
 from loss import LossCompute
 
+##
+from memory import print_memory
+##
 
 class RNNG(Parser):
     """Recurrent Neural Network Grammar model."""
@@ -56,9 +59,21 @@ class RNNG(Parser):
         return torch.cat((buffer, history, stack), dim=-1)
 
     def forward(self, sentence, actions):
+        ##
+        # print()
+        # print(79*'=')
+        # print_memory('Before initialize parser:')
+        ##
         self.initialize(sentence)
+        ##
+        # print_memory('After initialize parser:')
+        ##
         loss = torch.zeros(1, device=self.device)
         for i, action in enumerate(actions):
+            ##
+            # print(79*'-')
+            # print(f'Step {i}/{len(actions)}')
+            ##
             # Compute loss
             x = self.get_input()
             action_logits = self.action_mlp(x)
@@ -68,7 +83,13 @@ class RNNG(Parser):
                 nonterminal_logits = self.nonterminal_mlp(x)
                 nt = action.get_nt()
                 loss += self.loss_compute(nonterminal_logits, nt.index)
+            ##
+            # print_memory('a) Before parse step:')
+            ##
             self.parse_step(action)
+            ##
+            # print_memory('b) After parse step:')
+            ##
         return loss
 
     def parse(self, sentence):
@@ -129,30 +150,30 @@ def make_model(args, dictionary):
     num_actions = 3
     if args.use_char:
         word_embedding = ConvolutionalCharEmbedding(
-                num_words, args.word_emb_dim, padding_idx=PAD_INDEX,
+                num_words, args.emb_dim, padding_idx=PAD_INDEX,
                 dropout=args.dropout, device=args.device
             )
     else:
         if args.use_fasttext:
             print('FasText only availlable in 300 dimensions: changed word-emb-dim accordingly.')
-            args.word_emb_dim = 300
+            args.emb_dim = 300
         word_embedding = nn.Embedding(
-                num_words, args.word_emb_dim, padding_idx=PAD_INDEX
+                num_words, args.emb_dim, padding_idx=PAD_INDEX
             )
         # Get words in order.
-        words = [dictionary.i2w[i] for i in range(len(dictionary.w2i))]
+        words = [dictionary.i2w[i] for i in range(num_words)]
         if args.use_glove:
-            dim = args.word_emb_dim
+            dim = args.emb_dim
             assert dim in (50, 100, 200, 300), f'invalid dim: {dim}, choose from (50, 100, 200, 300).'
             logfile = open(os.path.join(args.logdir, 'glove.error.txt'), 'w')
             if args.glove_torchtext:
                 from torchtext.vocab import GloVe
-                print(f'Loading GloVe vectors glove.42B.{args.word_emb_dim}d (torchtext)...')
-                glove = GloVe(name='42B', dim=args.word_emb_dim)
-                embeddings = get_vectors(words, glove, args.word_emb_dim, logfile)
+                print(f'Loading GloVe vectors glove.42B.{args.emb_dim}d (torchtext)...')
+                glove = GloVe(name='42B', dim=args.emb_dim)
+                embeddings = get_vectors(words, glove, args.emb_dim, logfile)
             else:
-                print(f'Loading GloVe vectors glove.6B.{args.word_emb_dim}d (custom)...')
-                embeddings = load_glove(words, args.word_emb_dim, args.glove_dir, logfile)
+                print(f'Loading GloVe vectors glove.6B.{args.emb_dim}d (custom)...')
+                embeddings = load_glove(words, args.emb_dim, args.glove_dir, logfile)
             set_embedding(word_embedding, embeddings)
             logfile.close()
         if args.use_fasttext:
@@ -160,29 +181,30 @@ def make_model(args, dictionary):
             print(f'Loading FastText vectors fasttext.en.300d (torchtext)...')
             fasttext = FastText()
             logfile = open(os.path.join(args.logdir, 'fasttext.error.txt'), 'w')
-            embeddings = get_vectors(words, fasttext, args.word_emb_dim, logfile)
+            embeddings = get_vectors(words, fasttext, args.emb_dim, logfile)
             set_embedding(word_embedding, embeddings)
             logfile.close()
 
-    nonterminal_embedding = nn.Embedding(num_nonterminals, args.word_emb_dim, padding_idx=PAD_INDEX)
-    action_embedding = nn.Embedding(num_actions, args.word_emb_dim, padding_idx=PAD_INDEX)
+    nonterminal_embedding = nn.Embedding(num_nonterminals, args.emb_dim, padding_idx=PAD_INDEX)
+    action_embedding = nn.Embedding(num_actions, args.emb_dim, padding_idx=PAD_INDEX)
 
     # Encoders
     buffer_encoder = BufferLSTM(
-        args.word_emb_dim,
+        args.emb_dim,
         args.word_lstm_hidden,
         args.lstm_num_layers,
         args.dropout,
         args.device
     )
     stack_encoder = StackLSTM(
-        args.word_emb_dim,
+        args.emb_dim,
         args.word_lstm_hidden,
         args.dropout,
-        args.device
+        args.device,
+        attn_comp=args.use_attn
     )
     history_encoder = HistoryLSTM(
-        args.word_emb_dim,
+        args.emb_dim,
         args.action_lstm_hidden,
         args.dropout,
         args.device

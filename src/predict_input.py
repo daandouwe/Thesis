@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-import glob
 import os
+import glob
 
 from decode import GreedyDecoder, BeamSearchDecoder, SamplingDecoder
+
 
 def main(args):
     latest_dir = max(glob.glob(os.path.join('checkpoints', '*/')))
@@ -17,21 +18,22 @@ def main(args):
     while True:
         sentence = input('Input a sentence: ')
         print('Greedy decoder:')
-        tree, logprob = greedy(sentence)
+        tree, logprob, *rest = greedy(sentence)
         print('{} {:.2f}'.format(tree.linearize(with_tag=False), logprob))
         print()
 
         print('Sampling decoder:')
         for _ in range(3):
-            tree, logprob = sampler(sentence)
+            tree, logprob, *rest = sampler(sentence)
             print('{} {:.2f}'.format(tree.linearize(with_tag=False), logprob))
         print('-'*79)
         print()
 
+
 if __name__ == '__main__':
     main(args)
 
-    # TODO: For embeddings:
+    # TODO: To log embeddings while predicting:
     # if writer:
     #     print(f'Created tensorboard summary writer at {args.logdir}.')
     #     writer = SummaryWriter(latest_dir)

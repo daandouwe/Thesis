@@ -80,9 +80,9 @@ class RNNG(Parser):
             self.shift()
         elif action.index == self.REDUCE:
             # Pop all items from the open nonterminal.
-            items, embeddings = self.stack.pop()
+            children, head = self.stack.pop()
             # Reduce these items using the composition function.
-            x = self.stack_encoder.reduce(embeddings)
+            x = self.stack_encoder.reduce(children, head)
             # Push the new representation onto stack: the computed vector x
             # and a dummy index.
             self.stack.push(
@@ -111,7 +111,7 @@ class RNNG(Parser):
         self.history_encoder.initialize_hidden()
         # Cummulator variable for loss
         loss = torch.zeros(1, device=self.device)
-        for t, action in enumerate(actions):
+        for i, action in enumerate(actions):
             # Get the parser representation.
             stack, buffer, history = self.get_embedded_input()
             # Encode it.
@@ -180,30 +180,30 @@ def make_model(args, dictionary):
     actions = (a2i['SHIFT'], a2i['REDUCE'], a2i['OPEN'])
     if args.use_char:
         word_embedding = ConvolutionalCharEmbedding(
-                num_words, args.word_emb_dim, padding_idx=PAD_INDEX,
+                num_words, args.emb_dim, padding_idx=PAD_INDEX,
                 dropout=args.dropout, device=args.device
             )
     else:
         if args.use_fasttext:
             print('FasText only availlable in 300 dimensions: changed word-emb-dim accordingly.')
-            args.word_emb_dim = 300
+            args.emb_dim = 300
         word_embedding = nn.Embedding(
-                num_words, args.word_emb_dim, padding_idx=PAD_INDEX
+                num_words, args.emb_dim, padding_idx=PAD_INDEX
             )
         # Get words in order.
         words = [dictionary.i2w[i] for i in range(len(dictionary.w2i))]
         if args.use_glove:
-            dim = args.word_emb_dim
+            dim = args.emb_dim
             assert dim in (50, 100, 200, 300), f'invalid dim: {dim}, choose from (50, 100, 200, 300).'
             logfile = open(os.path.join(args.logdir, 'glove.error.txt'), 'w')
             if args.glove_torchtext:
                 from torchtext.vocab import GloVe
-                print(f'Loading GloVe vectors glove.42B.{args.word_emb_dim}d (torchtext)...')
-                glove = GloVe(name='42B', dim=args.word_emb_dim)
-                embeddings = get_vectors(words, glove, args.word_emb_dim, logfile)
+                print(f'Loading GloVe vectors glove.42B.{args.emb_dim}d (torchtext)...')
+                glove = GloVe(name='42B', dim=args.emb_dim)
+                embeddings = get_vectors(words, glove, args.emb_dim, logfile)
             else:
-                print(f'Loading GloVe vectors glove.6B.{args.word_emb_dim}d (custom)...')
-                embeddings = load_glove(words, args.word_emb_dim, args.glove_dir, logfile)
+                print(f'Loading GloVe vectors glove.6B.{args.emb_dim}d (custom)...')
+                embeddings = load_glove(words, args.emb_dim, args.glove_dir, logfile)
             set_embedding(word_embedding, embeddings)
             logfile.close()
         if args.use_fasttext:
@@ -211,29 +211,29 @@ def make_model(args, dictionary):
             print(f'Loading FastText vectors fasttext.en.300d (torchtext)...')
             fasttext = FastText()
             logfile = open(os.path.join(args.logdir, 'fasttext.error.txt'), 'w')
-            embeddings = get_vectors(words, fasttext, args.word_emb_dim, logfile)
+            embeddings = get_vectors(words, fasttext, args.emb_dim, logfile)
             set_embedding(word_embedding, embeddings)
             logfile.close()
 
-    nonterminal_embedding = nn.Embedding(num_nonterminals, args.word_emb_dim, padding_idx=PAD_INDEX)
-    action_embedding = nn.Embedding(num_actions, args.action_emb_dim, padding_idx=PAD_INDEX)
+    nonterminal_embedding = nn.Embedding(num_nonterminals, args.emb_dim, padding_idx=PAD_INDEX)
+    action_embedding = nn.Embedding(num_actions, args.emb_dim, padding_idx=PAD_INDEX)
 
     # Encoders
     buffer_encoder = BufferLSTM(
-        args.word_emb_dim,
+        args.emb_dim,
         args.word_lstm_hidden,
         args.lstm_num_layers,
         args.dropout,
         args.device
     )
     stack_encoder = StackLSTM(
-        args.word_emb_dim,
+        args.emb_dim,
         args.word_lstm_hidden,
         args.dropout,
         args.device
     )
     history_encoder = HistoryLSTM(
-        args.action_emb_dim,
+        args.emb_dim,
         args.action_lstm_hidden,
         args.dropout,
         args.device

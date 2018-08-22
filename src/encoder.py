@@ -2,7 +2,6 @@ import copy
 
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
 import torch.distributions as dist
 from data import wrap
 import torch.nn.init as init
@@ -20,7 +19,7 @@ def bias_init(lstm):
         if name.startswith('bias'):
             init.constant_(param, 0.)
             dim = param.size(0)
-            param[dim // 4:dim // 2].data.fill_(1.)
+            param[dim//4:dim//2].data.fill_(1.)
 
 
 def init_lstm(lstm, orthogonal=True):
@@ -34,10 +33,11 @@ class BiRecurrentEncoder(nn.Module):
     """A bidirectional RNN encoder for unpadded batches."""
     def __init__(self, input_size, hidden_size, num_layers, dropout, batch_first=True, device=None):
         super(BiRecurrentEncoder, self).__init__()
+        assert hidden_size % 2 == 0, 'hidden size must be even'
         self.device = device
-        self.fwd_rnn = nn.LSTM(input_size, hidden_size, num_layers,
+        self.fwd_rnn = nn.LSTM(input_size, hidden_size//2, num_layers,
                                batch_first=batch_first, dropout=dropout)
-        self.bwd_rnn = nn.LSTM(input_size, hidden_size, num_layers,
+        self.bwd_rnn = nn.LSTM(input_size, hidden_size//2, num_layers,
                                batch_first=batch_first, dropout=dropout)
         init_lstm(self.fwd_rnn)
         init_lstm(self.bwd_rnn)
@@ -48,17 +48,72 @@ class BiRecurrentEncoder(nn.Module):
         idx = wrap(idx, device=self.device)
         return tensor.index_select(1, idx)
 
-    def forward(self, x):
-        """Forward pass works for unpadded, i.e. equal length, batches."""
-        hf, _ = self.fwd_rnn(x)                 # (batch, seq, hidden_size)
-        hb, _ = self.bwd_rnn(self._reverse(x))  # (batch, seq, hidden_size)
+    def forward(self, head, children):
+        """Forward pass that works for unpadded, i.e. equal length, batches."""
+        # children shape (batch, seq, dim)
+        # head shape (batch, dim)
+        xf = torch.cat((head.unsqueeze(1), children), dim=1)  # [NP, the, black, cat]
+        xb = torch.cat((head.unsqueeze(1), self._reverse(children)), dim=1)  # [NP, black, cat, the]
+
+        hf, _ = self.fwd_rnn(xf)  # (batch, seq, hidden_size//2)
+        hb, _ = self.bwd_rnn(xb)  # (batch, seq, hidden_size//2)
 
         # Select final representation.
         hf = hf[:, -1, :]  # (batch, hidden_size)
         hb = hb[:, -1, :]  # (batch, hidden_size)
 
-        h = torch.cat((hf, hb), dim=-1)  # (batch, 2*hidden_size)
+        h = torch.cat((hf, hb), dim=-1)  # (batch, hidden_size)
         return h
+
+
+class AttentionEncoder(nn.Module):
+    """A bidirectional RNN encoder for unpadded batches."""
+    def __init__(self, input_size, hidden_size, num_layers, dropout, batch_first=True, device=None):
+        super(AttentionEncoder, self).__init__()
+        assert hidden_size % 2 == 0, 'hidden size must be even'
+        self.device = device
+        self.fwd_rnn = nn.LSTM(input_size, hidden_size//2, num_layers,
+                               batch_first=batch_first, dropout=dropout)
+        self.bwd_rnn = nn.LSTM(input_size, hidden_size//2, num_layers,
+                               batch_first=batch_first, dropout=dropout)
+        self.V = nn.Parameter(torch.ones((hidden_size, hidden_size), device=device, dtype=torch.float))
+        self.linear = nn.Linear(2*hidden_size, hidden_size)
+
+        self.softmax = nn.Softmax(dim=1)
+        self.sigmoid = nn.Sigmoid()
+
+        init_lstm(self.fwd_rnn)
+        init_lstm(self.bwd_rnn)
+        nn.init.xavier_uniform_(self.V)
+        self.to(device)
+
+    def _reverse(self, tensor):
+        idx = [i for i in range(tensor.size(1) - 1, -1, -1)]
+        idx = wrap(idx, device=self.device)
+        return tensor.index_select(1, idx)
+
+    def forward(self, head, children):
+        """Forward pass that works for unpadded, i.e. equal length, batches."""
+        # children shape (batch, seq, dim)
+        # head shape (batch, dim)
+        xf = torch.cat((head.unsqueeze(1), children), dim=1)  # [NP, the, black, cat]
+        xb = torch.cat((head.unsqueeze(1), self._reverse(children)), dim=1)  # [NP, black, cat, the]
+
+        hf, _ = self.fwd_rnn(xf)  # (batch, seq, hidden_size//2)
+        hb, _ = self.bwd_rnn(xb)  # (batch, seq, hidden_size//2)
+
+        c = torch.cat((hf, hb), dim=-1)  # (batch, seq, hidden_size)
+        a = c @ self.V @ head.transpose(0, 1)  # (batch, seq, 1)
+        a = a.squeeze(-1)  # (batch, seq)
+        a = self.softmax(a)  # (batch, seq)
+        # self.attn = a  # optional: store computed attention internally for retreival.
+        m = a @ c  # (batch, seq) @ (batch, seq, hidden_size) = (batch, 1, hidden_size)
+        m = m.squeeze(1)  # (batch, hidden_size)
+
+        x = torch.cat((head, m), dim=-1)  # (batch, 2*hidden_size)
+        g = self.sigmoid(self.linear(x))  # (batch, hidden_size)
+        c = g * head + (1 - g) * m  # (batch, hidden_size)
+        return c
 
 
 class BaseLSTM(nn.Module):
@@ -80,8 +135,8 @@ class BaseLSTM(nn.Module):
         # Used for custom dropout.
         self.keep_prob = 1.0 - dropout
         self.bernoulli = dist.Bernoulli(
-                            probs=torch.tensor([self.keep_prob], device=device)
-                        )
+            probs=torch.tensor([self.keep_prob], device=device)
+        )
         init_lstm(self.rnn_1)
         init_lstm(self.rnn_2)
         self.initialize_hidden()
@@ -90,8 +145,8 @@ class BaseLSTM(nn.Module):
     def sample_recurrent_dropout_mask(self, batch_size):
         """Fix a new dropout mask used for recurrent dropout."""
         self._dropout_mask = self.bernoulli.sample(
-                            (batch_size, self.hidden_size)
-                        ).squeeze(-1)
+            (batch_size, self.hidden_size)
+        ).squeeze(-1)
 
     def dropout(self, x):
         """Custom recurrent dropout: same mask for the whole sequence."""
@@ -103,8 +158,8 @@ class BaseLSTM(nn.Module):
         c = copy.deepcopy
         self._hidden_states_1 = []
         self._hidden_states_2 = []
-        h0 = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
-        c0 = Variable(torch.zeros(batch_size, self.hidden_size, device=self.device))
+        h0 = torch.zeros(batch_size, self.hidden_size, device=self.device)
+        c0 = torch.zeros(batch_size, self.hidden_size, device=self.device)
         self.hx1, self.cx1 = h0, c0
         self.hx2, self.cx2 = c(h0), c(c0)
         self._hidden_states_1.append((self.hx1, self.cx1))
@@ -134,31 +189,34 @@ class BaseLSTM(nn.Module):
 
 class StackLSTM(BaseLSTM):
     """A Stack-LSTM used to encode the stack of a transition based parser."""
-    def __init__(self, input_size, hidden_size, dropout, device=None):
+    def __init__(self, input_size, hidden_size, dropout, device=None, attn_comp=False):
         super(StackLSTM, self).__init__(input_size, hidden_size, dropout, device)
-        # BiRNN ecoder used as composition function.
-        assert input_size % 2 == 0, 'input size must be even'
-        self.composition = BiRecurrentEncoder(input_size, input_size//2, 2, dropout, device=device)
+        # Composition function.
+        if attn_comp:
+            self.composition = AttentionEncoder(input_size, input_size, 2, dropout, device=device)
+        else:
+            self.composition = BiRecurrentEncoder(input_size, input_size, 2, dropout, device=device)
 
     def _reset_hidden(self, sequence_len):
         """Reset the hidden state to before opening the sequence."""
-        self._hidden_states_1 = self._hidden_states_1[:-sequence_len]
-        self._hidden_states_2 = self._hidden_states_2[:-sequence_len]
+        del self._hidden_states_1[-sequence_len:], self._hidden_states_2[-sequence_len:]
+        # self._hidden_states_1 = self._hidden_states_1[:-sequence_len]
+        # self._hidden_states_2 = self._hidden_states_2[:-sequence_len]
         self.hx1, self.cx1 = self._hidden_states_1[-1]
         self.hx2, self.cx2 = self._hidden_states_2[-1]
 
-    def reduce(self, sequence):
+    def reduce(self, children, head):
         """Reduce a nonterminal sequence.
 
         Computes a BiRNN represesentation for the sequence, then replaces
         the reduced sequence of hidden states with this one representation.
         """
-        # Length of sequence (minus extra nonterminal at end).
-        length = sequence.size(1) - 1
+        # Length of sequence (length of children plus one head node).
+        length = children.size(1) + 1
         # Move hidden state back to before we opened the nonterminal.
         self._reset_hidden(length)
         # Return computed composition.
-        return self.composition(sequence)
+        return self.composition(head, children)
 
 
 class HistoryLSTM(BaseLSTM):

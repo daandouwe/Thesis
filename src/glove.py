@@ -3,19 +3,6 @@ import os
 import torch
 import numpy as np
 
-def make_gensim_compatible(dim):
-    """Make a glove vector path gensim compatible.
-
-    Prints the number of words and dimension at the top of a copy of the glove
-    file with dimension dim.
-    """
-    in_path  = f'glove.6B.{dim}d.txt'
-    out_path = f'glove.6B.{dim}d.gensim.txt'
-    length = sum(1 for _ in open(in_path))
-    with open(in_path) as f:
-        with open(out_path, 'w') as g:
-            print(length, dim, file=g)
-            print(f.read(), file=g, end='')
 
 def load_glove(words, dim, dir, logfile):
     """Loads all the words from the glove vectors of dimension dim in saved in dir."""
@@ -48,6 +35,7 @@ def load_glove(words, dim, dir, logfile):
     vectors = get_vectors(words, glove, dim, logfile)
     return vectors
 
+
 def get_vectors(words, vectordict, dim, logfile):
     """Get the vectors for the words in vectordict and return as tensor."""
     vectors = []
@@ -57,6 +45,7 @@ def get_vectors(words, vectordict, dim, logfile):
     vectors = np.vstack(vectors)
     vectors = torch.FloatTensor(vectors)
     return vectors
+
 
 def get_vector(word, vectordict, dim, logfile):
     """Get the word from the vectordict dictionary.
@@ -91,6 +80,7 @@ def get_vector(word, vectordict, dim, logfile):
             print(word, file=logfile) # print word to logfile
     return vec
 
+
 def splits(word, chars=('-', '\/', ',', '.', '&', "'")):
     """Tries to split the word with one of the given characters.
 
@@ -108,3 +98,18 @@ def splits(word, chars=('-', '\/', ',', '.', '&', "'")):
             words = chunks
             longest = len(chunks)
     return words
+
+
+def make_gensim_compatible(dim):
+    """Make a glove vector path gensim compatible.
+
+    Prints the number of words and dimension at the top of a copy of the glove
+    file with dimension dim.
+    """
+    in_path  = f'glove.6B.{dim}d.txt'
+    out_path = f'glove.6B.{dim}d.gensim.txt'
+    length = sum(1 for _ in open(in_path))
+    with open(in_path) as f:
+        with open(out_path, 'w') as g:
+            print(length, dim, file=g)
+            print(f.read(), file=g, end='')

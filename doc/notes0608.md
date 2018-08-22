@@ -19,6 +19,6 @@
 - [ ] Move to generative
 - [ ] Normal softmax: see if terrible
 - [ ] Implement barber approx.
-- [ ] Beam search
+- [x] Beam search
 - [x] Ancestral sampling inference.
 - [ ] Investigate: how easy is shift to dependency.

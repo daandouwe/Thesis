@@ -33,6 +33,7 @@ class Word(Item):
 
 
 class Action(Item):
+    """Action can be used by both discriminative and generative parser."""
     SHIFT_INDEX = 0
     GEN_INDEX = 0  # SHIFT and GEN are mutually exclusive
     NT_INDEX = 1
