@@ -9,10 +9,10 @@ from data import Corpus
 from scripts.get_vocab import get_sentences
 
 
-def predict(model, batches, outdir, name='test'):
+def predict(model, batches, outdir, name, set='test'):
     model.eval()
-    assert name in ('train', 'dev', 'test')
-    pred_path = os.path.join(outdir, f'{name}.pred.trees')
+    assert set in ('train', 'dev', 'test')
+    pred_path = os.path.join(outdir, f'{name}.{set}.pred.trees')
     nsents = len(batches)
     trees = []
     with torch.no_grad():  # operations inside don't track history.

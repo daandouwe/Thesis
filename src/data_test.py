@@ -36,21 +36,21 @@ def wrap(batch, device):
 
 class Dictionary:
     """A dictionary for stack, buffer, and action symbols."""
-    def __init__(self, path, char=False):
+    def __init__(self, path, name, char=False):
         self.n2i = dict()  # nonterminals
         self.w2i = dict()  # words
         self.i2n = []
         self.i2w = []
         self.char = char
         self.initialize()
-        self.read(path)
+        self.read(path, name)
 
     def initialize(self):
         self.w2i[PAD_TOKEN] = PAD_INDEX
         self.i2w.append(PAD_TOKEN)
 
-    def read(self, path):
-        with open(os.path.join(path, 'ptb.vocab'), 'r') as f:
+    def read(self, path, name):
+        with open(os.path.join(path, name + '.vocab'), 'r') as f:
             start = len(self.w2i)
             if self.char:
                 chars = set(f.read())
@@ -64,7 +64,7 @@ class Dictionary:
                     w = line.rstrip()
                     self.w2i[w] = i
                     self.i2w.append(w)
-        with open(os.path.join(path, 'ptb.nonterminals'), 'r') as f:
+        with open(os.path.join(path, name + '.nonterminals'), 'r') as f:
             start = len(self.n2i)
             for i, line in enumerate(f, start):
                 s = line.rstrip()
@@ -166,15 +166,14 @@ class Data:
 
 class Corpus:
     """A corpus of three datasets (train, development, and test) and a dictionary."""
-    def __init__(self, data_path='../tmp', textline='unked', name_template='ptb.{}', char=False):
-        name_template += '.oracle'
-        self.dictionary = Dictionary(os.path.join(data_path, 'vocab', textline), char=char)
-        self.train = Data(os.path.join(data_path, 'train', name_template.format('train')),
-                        self.dictionary, textline, char=char)
-        self.dev = Data(os.path.join(data_path, 'dev', name_template.format('dev')),
-                        self.dictionary, textline, char=char)
-        self.test = Data(os.path.join(data_path, 'test', name_template.format('test')),
-                        self.dictionary, textline, char=char)
+    def __init__(self, data_path='../tmp', textline='unked', name='ptb', char=False):
+        self.dictionary = Dictionary(path=os.path.join(data_path, 'vocab', textline), name=name, char=char)
+        self.train = Data(path=os.path.join(data_path, 'train', name + '.train.oracle'),
+                        dictionary=self.dictionary, textline=textline, char=char)
+        self.dev = Data(path=os.path.join(data_path, 'dev', name + '.dev.oracle'),
+                        dictionary=self.dictionary, textline=textline, char=char)
+        self.test = Data(path=os.path.join(data_path, 'test', name + '.test.oracle'),
+                        dictionary=self.dictionary, textline=textline, char=char)
 
     def __str__(self):
         items = (

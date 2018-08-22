@@ -53,7 +53,7 @@ def main(args):
     writer = SummaryWriter(args.logdir)
 
     print(f'Loading data from {args.data}...')
-    corpus = Corpus(data_path=args.data, textline=args.textline, name_template=args.name_template, char=args.use_char)
+    corpus = Corpus(data_path=args.data, textline=args.textline, name=args.name, char=args.use_char)
     train_batches = corpus.train.batches(length_ordered=False, shuffle=True)
     dev_batches = corpus.dev.batches(length_ordered=False, shuffle=False)
     test_batches = corpus.test.batches(length_ordered=False, shuffle=False)
@@ -113,8 +113,8 @@ def main(args):
         nonlocal best_dev_epoch
 
         model.eval()
-        predict(model, dev_batches, args.outdir, name='dev')
-        dev_fscore = evalb(args.outdir, args.data, args.name_template, name='dev')
+        predict(model, dev_batches, args.outdir, name=args.name, set='dev')
+        dev_fscore = evalb(args.outdir, args.data, name=args.name, set='dev')
         writer.add_scalar('Dev/Fscore', dev_fscore, num_updates)
         if dev_fscore > best_dev_fscore:
             print(f'Saving new best model to {args.checkfile}...')
@@ -244,8 +244,8 @@ def main(args):
         model = state['model']
 
     print('Evaluating loaded model on test set...')
-    predict(model, test_batches, args.outdir, name='test')
-    test_fscore = evalb(args.outdir, args.data, args.name_template, name='test')
+    predict(model, test_batches, args.outdir, name=args.name, set='test')
+    test_fscore = evalb(args.outdir, args.data, name=args.name, set='test')
     save_checkpoint()
 
     print('-'*89)

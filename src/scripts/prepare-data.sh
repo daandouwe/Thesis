@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 THESIS_DIR=$HOME/Documents/Logic/Thesis
-PTB=$HOME/data/ptb/con/treebank3/parsed/mrg/wsj
+DATA_DIR=$HOME/data/ptb/con/treebank3/parsed/mrg/wsj
 TMP=$THESIS_DIR/tmp
 MAX_LINES=-1 # no upper limit
+NAME=ptb
 
 set -x # echo on
 
@@ -17,64 +18,73 @@ mkdir -p \
 
 # from mrg files to linearized one-tree-per-line and train/dev/test splits.
 python transform_ptb.py \
-    --in_path $PTB \
-    --out_path $TMP
+    --in_path $DATA_DIR \
+    --out_path $TMP \
+    --name $NAME \
     --nlines $MAX_LINES \
 
 # remove traces from trees
 treetools/treetools transform \
-    $TMP/train/ptb.train.trees \
-    $TMP/train/ptb.train.trees.notrace \
+    $TMP/train/$NAME.train.trees \
+    $TMP/train/$NAME.train.trees.notrace \
     --trans ptb_delete_traces --src-format brackets --dest-format brackets
 treetools/treetools transform \
-    $TMP/dev/ptb.dev.trees \
-    $TMP/dev/ptb.dev.trees.notrace \
+    $TMP/dev/$NAME.dev.trees \
+    $TMP/dev/$NAME.dev.trees.notrace \
     --trans ptb_delete_traces --src-format brackets --dest-format brackets
 treetools/treetools transform \
-    $TMP/test/ptb.test.trees \
-    $TMP/test/ptb.test.trees.notrace \
+    $TMP/test/$NAME.test.trees \
+    $TMP/test/$NAME.test.trees.notrace \
     --trans ptb_delete_traces --src-format brackets --dest-format brackets
 
 # add back the damm space between brackets that treetools removed...
-python add_space.py $TMP/train/ptb.train.trees.notrace
-python add_space.py $TMP/dev/ptb.dev.trees.notrace
-python add_space.py $TMP/test/ptb.test.trees.notrace
+python add_space.py $TMP/train/$NAME.train.trees.notrace
+python add_space.py $TMP/dev/$NAME.dev.trees.notrace
+python add_space.py $TMP/test/$NAME.test.trees.notrace
 
 # simplify the nonterminals
-python simplify_nonterminals.py $TMP/train/ptb.train.trees.notrace
-python simplify_nonterminals.py $TMP/dev/ptb.dev.trees.notrace
-python simplify_nonterminals.py $TMP/test/ptb.test.trees.notrace
+python simplify_nonterminals.py $TMP/train/$NAME.train.trees.notrace
+python simplify_nonterminals.py $TMP/dev/$NAME.dev.trees.notrace
+python simplify_nonterminals.py $TMP/test/$NAME.test.trees.notrace
 
 # overwrite the old trees with the new notrace trees
-mv \
-  $TMP/train/ptb.train.trees.notrace $TMP/train/ptb.train.trees\
-  $TMP/dev/ptb.dev.trees.notrace $TMP/dev/ptb.dev.trees \
-  $TMP/test/ptb.test.trees.notrace $TMP/test/ptb.test.trees
+mv $TMP/train/$NAME.train.trees.notrace $TMP/train/$NAME.train.trees
+mv $TMP/dev/$NAME.dev.trees.notrace $TMP/dev/$NAME.dev.trees
+mv $TMP/test/$NAME.test.trees.notrace $TMP/test/$NAME.test.trees
 
 # get oracles
 python get_oracle.py \
-    $TMP/train/ptb.train.trees \
-    $TMP/train/ptb.train.trees \
-    > $TMP/train/ptb.train.oracle
+    $TMP/train/$NAME.train.trees \
+    $TMP/train/$NAME.train.trees \
+    > $TMP/train/$NAME.train.oracle
 python get_oracle.py \
-    $TMP/train/ptb.train.trees \
-    $TMP/dev/ptb.dev.trees \
-    > $TMP/dev/ptb.dev.oracle
+    $TMP/train/$NAME.train.trees \
+    $TMP/dev/$NAME.dev.trees \
+    > $TMP/dev/$NAME.dev.oracle
 python get_oracle.py \
-    $TMP/train/ptb.train.trees \
-    $TMP/test/ptb.test.trees \
-    > $TMP/test/ptb.test.oracle
+    $TMP/train/$NAME.train.trees \
+    $TMP/test/$NAME.test.trees \
+    > $TMP/test/$NAME.test.oracle
 
 # make vocabularies for lower, upper and unked
 python get_vocab.py \
-    --oracle_dir $TMP \
-    --out_dir $TMP/vocab/lower \
-    --textline lower
+    $TMP/train/$NAME.train.oracle \
+    $TMP/dev/$NAME.dev.oracle \
+    $TMP/test/$NAME.test.oracle \
+    --name $NAME \
+    --textline lower \
+    --outdir $TMP/vocab/lower
 python get_vocab.py \
-    --oracle_dir $TMP \
-    --out_dir $TMP/vocab/unked \
-    --textline unked
+    $TMP/train/$NAME.train.oracle \
+    $TMP/dev/$NAME.dev.oracle \
+    $TMP/test/$NAME.test.oracle \
+    --name $NAME \
+    --textline unked \
+    --outdir $TMP/vocab/unked
 python get_vocab.py \
-    --oracle_dir $TMP \
-    --out_dir $TMP/vocab/upper \
-    --textline upper
+    $TMP/train/$NAME.train.oracle \
+    $TMP/dev/$NAME.dev.oracle \
+    $TMP/test/$NAME.test.oracle \
+    --name $NAME \
+    --textline upper \
+    --outdir $TMP/vocab/upper

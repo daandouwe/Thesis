@@ -106,16 +106,15 @@ def make_folders(args):
     logdir   = os.path.join(args.root, 'log', subdir)
     checkdir = os.path.join(args.root, 'checkpoints', subdir)
     outdir   = os.path.join(args.root, 'out', subdir)
-
+    # Make directories.
     os.mkdir(logdir)
     os.mkdir(checkdir)
     os.mkdir(outdir)
-
+    # Make filenames
     logfile   = os.path.join(logdir, 'train.log')
     checkfile = os.path.join(checkdir, 'model.pt')
     outfile   = os.path.join(outdir, 'train.predict.txt')
-
-    # Add folders and dirs to args
+    # Add folders and dirs to args namespace.
     args.outdir     = outdir
     args.outfile    = outfile
     args.logdir     = logdir
