@@ -1,6 +1,7 @@
-# Source: https://github.com/clab/rnng/blob/master/get_oracle.py
-# Changed print ..  to print(..) for python3 compatibility.
-
+"""Source: https://github.com/clab/rnng/blob/master/get_oracle.py
+Changed print ..  to print(..) for python3 compatibility.
+- Daan van Stigt
+"""
 import sys
 try:
     import get_dictionary

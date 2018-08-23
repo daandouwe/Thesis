@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import sys
 import re
 
@@ -8,13 +7,13 @@ def simplify(s):
 
     Example: ADJP-PRD=1 --> ADJ
     """
-    # Starts with `(` and then any sequence of capital letters: ([A-Z]+
-    # we call this chuck nt: (?P<nt>...)
-    # then followed by exactly one of `-` or `=` or `|`: [-=]{1}
-    # and then any number of characters that is not a space: \S
+    # Nonterminal starts with `(` and then any sequence of capital letters: ([A-Z]+
+    # and escape bracket: \(. We call this chunk nt: (?P<nt>...)
+    # then followed by exactly one of `-` or `=` or `|`: [-=|]{1}
+    # then any number of characters that is not a whitespace: \S
     # and then exactly one space: \s{1}
-    # and then keep only nt: \g<nt>
-    # Note: this is safe, because in the trees no word ever
+    # We then keep only nt: \g<nt>
+    # Note: this is safe, because in the sentences no word ever
     # starts with `(` followed by capitals.
     pattern = r'(?P<nt>\([A-Z]+)[-=|]{1}\S+\s{1}'
     sub = r'\g<nt> '
