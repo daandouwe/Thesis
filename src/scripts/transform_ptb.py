@@ -14,10 +14,11 @@ def partition(sent, indices):
     return parts
 
 def transform_mrg(path):
-    """Clean the mrg file.
+    """Clean an mrg file.
 
-    Prints a one-line string to stdout in the format given
-    by sample_input_english.txt
+    Turns each of the fancy formatted trees in the mrg
+    file into one-line strings, in the format given
+    (S (NP (DT The) (NN cat)) (VP (VBZ eats))))
     """
     with open(path) as s:
         s = s.read()
@@ -32,8 +33,8 @@ def transform_mrg(path):
 
 def ptb_folders_iter(corpus_root):
     """Iterator over all mrg filepaths in the wsj part of the ptb."""
-    train_folders = ['00', '01', '02', '03', '04', '05', '06', '07', \
-                     '08', '09', '10', '11', '12', '13', '14', '15', \
+    train_folders = ['00', '01', '02', '03', '04', '05', '06', '07',
+                     '08', '09', '10', '11', '12', '13', '14', '15',
                      '16', '17', '18', '19', '20', '21', '22']
     dev_folder = '23'
     test_folder = '24'
@@ -56,23 +57,24 @@ def ptb_folders_iter(corpus_root):
     return train(), dev(), test()
 
 def main(args):
-    train, dev, test = ptb_folders_iter(args.in_path)
+    indir = os.path.expanduser(args.indir)  # replace `~` with $HOME
+    train, dev, test = ptb_folders_iter(indir)
 
-    train_path = os.path.join(args.out_path, 'train', args.name + '.train.trees')
+    train_path = os.path.join(args.outdir, 'train', args.name + '.train.trees')
     with open(train_path, 'w') as f:
         for path in train:
             lines = transform_mrg(path)
             for line in lines:
                 print(line, file=f)
 
-    dev_path = os.path.join(args.out_path, 'dev', args.name + '.dev.trees')
+    dev_path = os.path.join(args.outdir, 'dev', args.name + '.dev.trees')
     with open(dev_path, 'w') as f:
         for path in dev:
             lines = transform_mrg(path)
             for line in lines:
                 print(line, file=f)
 
-    test_path = os.path.join(args.out_path, 'test', args.name + '.test.trees')
+    test_path = os.path.join(args.outdir, 'test', args.name + '.test.trees')
     with open(test_path, 'w') as f:
         for path in test:
             lines = transform_mrg(path)
@@ -81,14 +83,12 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--in_path', type=str, default='~/data/ptb/con/treebank3/parsed/mrg/wsj',
+    parser.add_argument('--indir', type=str, default='~/data/ptb/con/treebank3/parsed/mrg/wsj',
                         help='the directory to the PTB')
-    parser.add_argument('--out_path', type=str, default='../tmp',
+    parser.add_argument('--outdir', type=str, default='../tmp',
                         help='path to write the transformed mrg files')
     parser.add_argument('--name', type=str, default='ptb',
                         help='name the file')
-    parser.add_argument('--nlines', type=int, default=-1,
-                        help='maximum number of lines to process')
     args = parser.parse_args()
 
     main(args)

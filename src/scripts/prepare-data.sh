@@ -2,7 +2,6 @@
 THESIS_DIR=$HOME/Documents/Logic/Thesis
 DATA_DIR=$HOME/data/ptb/con/treebank3/parsed/mrg/wsj
 TMP=$THESIS_DIR/tmp
-MAX_LINES=-1 # no upper limit
 NAME=ptb
 
 set -x # echo on
@@ -14,14 +13,13 @@ mkdir -p \
     $TMP/test \
     $TMP/vocab/lower \
     $TMP/vocab/unked \
-    $TMP/vocab/upper \
+    $TMP/vocab/upper
 
 # from mrg files to linearized one-tree-per-line and train/dev/test splits.
 python transform_ptb.py \
-    --in_path $DATA_DIR \
-    --out_path $TMP \
-    --name $NAME \
-    --nlines $MAX_LINES \
+    --indir $DATA_DIR \
+    --outdir $TMP \
+    --name $NAME
 
 # remove traces from trees
 treetools/treetools transform \
