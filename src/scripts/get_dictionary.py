@@ -32,9 +32,10 @@ def get_dict(lines):
                 output.append(get_between_brackets(line_strip, i))
         #print 'output:',output
     words_dict = {}
+
     for terminal in output:
         terminal_split = terminal.split()
-        assert len(terminal_split) == 2 # each terminal contains a POS tag and word
+        assert len(terminal_split) == 2  # each terminal contains a POS tag and word
         if not(terminal_split[1] in words_dict):
             words_dict[terminal_split[1]] = 1
         else:

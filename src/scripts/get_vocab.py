@@ -2,7 +2,9 @@
 import argparse
 import os
 
+
 ACTIONS = ('SHIFT', 'REDUCE', 'OPEN')
+
 
 def get_sent_dict(sent):
     """Organize a sentence from the oracle file  as a dictionary."""
@@ -15,6 +17,7 @@ def get_sent_dict(sent):
             'actions' : sent[5:]
         }
     return d
+
 
 def get_sentences(path):
     """Chunks the oracle file into sentences.
@@ -35,6 +38,7 @@ def get_sentences(path):
         # sentences is of type [[str]]
         return [get_sent_dict(sent) for sent in sentences if sent]
 
+
 def get_vocab(sentences, textline='unked'):
     """Returns the vocabulary used in the oracle file."""
     textline_options = sentences[0].keys()
@@ -45,6 +49,7 @@ def get_vocab(sentences, textline='unked'):
     vocab = sorted(list(vocab))
     return vocab
 
+
 def get_nonterminals(sentences):
     """Returns the set of actions used in the oracle file."""
     nonterminals = set()
@@ -54,24 +59,26 @@ def get_nonterminals(sentences):
     nonterminals = sorted(list(nonterminals))
     return nonterminals
 
+
 def get_actions(sentences):
     """Returns the set of actions used in the oracle file."""
     return ACTIONS
 
+
 def main(args):
     # Partition the oracle files into sentences
-    train = get_sentences(os.path.join(args.oracle_dir, 'train', args.name_template.format('train')))
-    dev = get_sentences(os.path.join(args.oracle_dir, 'dev', args.name_template.format('dev')))
-    test = get_sentences(os.path.join(args.oracle_dir, 'test', args.name_template.format('test')))
+    train = get_sentences(args.train)
+    dev = get_sentences(args.dev)
+    test = get_sentences(args.test)
     sentences = train + dev + test
 
     # Collect desired symbols for our dictionaries
     actions = get_actions(sentences)
-    vocab = get_vocab(sentences, textline=args.textline)
+    vocab = get_vocab(sentences, textline=args.textline)  # TODO: oov?
     nonterminals = get_nonterminals(sentences)
 
     # Write out vocabularies
-    path = os.path.join(args.out_dir, 'ptb')
+    path = os.path.join(args.outdir, args.name)
     print('\n'.join(nonterminals),
             file=open(path + '.nonterminals', 'w'))
     print('\n'.join(actions),
@@ -79,15 +86,21 @@ def main(args):
     print('\n'.join(vocab),
             file=open(path + '.vocab', 'w'))
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='data for RNNG parser.')
-    parser.add_argument('--oracle_dir', type=str, default='../tmp',
-                        help='oracle path')
-    parser.add_argument('--out_dir', type=str, default='../tmp',
+    parser.add_argument('train', type=str,
+                        help='path to train oracle.')
+    parser.add_argument('dev', type=str,
+                        help='path to dev oracle.')
+    parser.add_argument('test', type=str,
+                        help='path to test oracle.')
+    parser.add_argument('--name', type=str, default='ptb',
+                        help='name of dataset')
+    parser.add_argument('--outdir', type=str, default='../tmp',
                         help='path to output vocabulary')
     parser.add_argument('--textline', type=str, choices=['unked', 'lower', 'upper'], default='unked',
                         help='textline to use from the oracle file')
-    parser.add_argument('--name_template', type=str, default='ptb.{}.oracle')
     args = parser.parse_args()
 
     main(args)
