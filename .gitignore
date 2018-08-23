@@ -1,6 +1,7 @@
 .remote-sync.json
-data/*
-tmp/*
+data
+tmp
 src/.*
 src/*.ipynb
+src/notebooks
 *.ipynb_checkpoints
