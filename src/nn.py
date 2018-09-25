@@ -23,10 +23,10 @@ class MLP(nn.Module):
                 nn.init.xavier_uniform_(param)
 
     def forward(self, x):
-        out = self.fc1(x)
-        out = self.act_fn(out)
-        out = self.dropout(out)
-        out = self.fc2(out)
+        h = self.fc1(x)
+        h = self.act_fn(h)
+        h = self.dropout(h)
+        out = self.fc2(h)
         return out
 
 
