@@ -11,7 +11,7 @@ from actions import SHIFT, REDUCE, NT, GEN
 from scripts.get_vocab import get_sentences
 
 
-PAD_TOKEN = '_PAD_'
+PAD_CHAR = '_'
 PAD_INDEX = 0
 
 
@@ -37,23 +37,23 @@ def wrap(batch, device):
 
 class Dictionary:
     """A dictionary for stack, buffer, and action symbols."""
-    def __init__(self, path, name, char=False):
+    def __init__(self, path, name, use_chars=False):
         self.n2i = dict()  # nonterminals
         self.w2i = dict()  # words
         self.i2n = []
         self.i2w = []
-        self.char = char
+        self.use_chars = use_chars
         self.initialize()
         self.read(path, name)
 
     def initialize(self):
-        self.w2i[PAD_TOKEN] = PAD_INDEX
-        self.i2w.append(PAD_TOKEN)
+        self.w2i[PAD_CHAR] = PAD_INDEX
+        self.i2w.append(PAD_CHAR)
 
     def read(self, path, name):
         with open(os.path.join(path, name + '.vocab'), 'r') as f:
             start = len(self.w2i)
-            if self.char:
+            if self.use_chars:
                 chars = set(f.read())
                 printable = set(string.printable)
                 chars = list(chars | printable)
@@ -87,11 +87,11 @@ class Dictionary:
 
 class Data:
     """A dataset with parse configurations."""
-    def __init__(self, path, dictionary, model, textline, char=False, max_lines=-1):
+    def __init__(self, path, dictionary, model, textline, use_chars=False, max_lines=-1):
         self.dictionary = dictionary
         self.sentences = []
         self.actions = []
-        self.char = char
+        self.use_chars = use_chars
         self.model = model
         self.read(path, dictionary, textline, max_lines)
 
@@ -112,7 +112,7 @@ class Data:
             sentence = sent_dict[textline].split()
             sentence_items = []
             for token in sentence:
-                if self.char:
+                if self.use_chars:
                     index = [dictionary.w2i[char] for char in token]
                 else:
                     index = dictionary.w2i[token]
@@ -127,15 +127,13 @@ class Data:
                         action = Action('SHIFT', Action.SHIFT_INDEX)
                     if self.model == 'gen':
                         word = sentence[word_idx]
-                        word = Word(word, dictionary.w2i[word])
-                        action = GEN(word)
+                        action = GEN(Word(word, dictionary.w2i[word]))
                         word_idx += 1
                 elif token == 'REDUCE':
                     action = Action('REDUCE', Action.REDUCE_INDEX)
                 elif token.startswith('NT'):
                     nt = token[3:-1]
-                    nt = Nonterminal(nt, dictionary.n2i[nt])
-                    action = NT(nt)
+                    action = NT(Nonterminal(nt, dictionary.n2i[nt]))
                 action_items.append(action)
             self.sentences.append(sentence_items)
             self.actions.append(action_items)
@@ -173,14 +171,14 @@ class Data:
 
 class Corpus:
     """A corpus of three datasets (train, development, and test) and a dictionary."""
-    def __init__(self, data_path='../tmp', model='disc', textline='unked', name='ptb', char=False, max_lines=-1):
-        self.dictionary = Dictionary(path=os.path.join(data_path, 'vocab', textline), name=name, char=char)
+    def __init__(self, data_path='../tmp', model='disc', textline='unked', name='ptb', use_chars=False, max_lines=-1):
+        self.dictionary = Dictionary(path=os.path.join(data_path, 'vocab', textline), name=name, use_chars=use_chars)
         self.train = Data(path=os.path.join(data_path, 'train', name + '.train.oracle'),
-                        dictionary=self.dictionary, model=model, textline=textline, char=char, max_lines=max_lines)
+                        dictionary=self.dictionary, model=model, textline=textline, use_chars=use_chars, max_lines=max_lines)
         self.dev = Data(path=os.path.join(data_path, 'dev', name + '.dev.oracle'),
-                        dictionary=self.dictionary, model=model, textline=textline, char=char)
+                        dictionary=self.dictionary, model=model, textline=textline, use_chars=use_chars)
         self.test = Data(path=os.path.join(data_path, 'test', name + '.test.oracle'),
-                        dictionary=self.dictionary, model=model, textline=textline, char=char)
+                        dictionary=self.dictionary, model=model, textline=textline, use_chars=use_chars)
 
     def __str__(self):
         items = (
@@ -197,7 +195,7 @@ if __name__ == "__main__":
     import json
 
     # Example usage:
-    corpus = Corpus(data_path='../tmp', textline='unked', char=False)
+    corpus = Corpus(data_path='../tmp', textline='unked', use_chars=False)
     batches = corpus.test.batches(1, length_ordered=False)
     sentence, actions = batches[0]
     print([word.token for word in sentence])

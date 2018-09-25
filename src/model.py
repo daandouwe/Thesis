@@ -57,6 +57,7 @@ class DiscRNNG(DiscParser):
         return torch.cat((buffer, history, stack), dim=-1)
 
     def forward(self, sentence, actions):
+        """Forward pass only used for training."""
         # We change the items in sentence and actions in-place,
         # so we make a copy so that the tensors do not hang around.
         sentence, actions = deepcopy(sentence), deepcopy(actions)  # Do not remove!
@@ -74,6 +75,34 @@ class DiscRNNG(DiscParser):
                 loss += self.loss_compute(nonterminal_logits, nt.index)
             self.parse_step(action)
         return loss
+
+    def parse(self, sentence):
+        """Parsing with greedy decoding."""
+        assert not self.training, f'set model.eval() to enable parsing'
+        self.initialize(sentence)
+        t = 0
+        while not self.stack.is_empty():
+            t += 1
+            # Compute loss
+            x = self.get_input()
+            action_logits = self.action_mlp(x)
+
+            # Get highest scoring valid predictions.
+            vals, ids = action_logits.sort(descending=True)
+            vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
+            i = 0
+            action = self.make_action(ids[i])
+            while not self.is_valid_action(action):
+                i += 1
+                action = self.make_action(ids[i])
+            if action.is_nt:
+                nonterminal_logits = self.nonterminal_mlp(x)
+                vals, ids = nonterminal_logits.sort(descending=True)
+                vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
+                X = Nonterminal(self.dictionary.i2n[ids[0]], ids[0])
+                action = NT(X)
+            self.parse_step(action)
+        return self.stack.get_tree()
 
     def make_action(self, index):
         """Maps index to action."""
@@ -131,6 +160,7 @@ class GenRNNG(GenParser):
         return torch.cat((terminals, history, stack), dim=-1)
 
     def forward(self, sentence, actions):
+        """Forward pass only used for training."""
         # We change the items in sentence and actions in-place,
         # so we make a copy so that the tensors do not hang around.
         sentence, actions = deepcopy(sentence), deepcopy(actions)  # Do not remove!
@@ -154,6 +184,40 @@ class GenRNNG(GenParser):
             self.parse_step(action)
         return loss
 
+    def parse(self, sentence, predict_words=False):
+        """Parsing with greedy decoding."""
+        assert not self.training, f'set `model.eval()` to enable parsing'
+        self.initialize(sentence)
+        t = 0
+        while not self.stack.is_empty():
+            t += 1
+            # Compute loss
+            x = self.get_input()
+            action_logits = self.action_mlp(x)
+
+            # Get highest scoring valid predictions.
+            vals, ids = action_logits.sort(descending=True)
+            vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
+            i = 0
+            action = self.make_action(ids[i])
+            while not self.is_valid_action(action):
+                i += 1
+                action = self.make_action(ids[i])
+            if action.is_nt:
+                nonterminal_logits = self.nonterminal_mlp(x)
+                vals, ids = nonterminal_logits.sort(descending=True)
+                vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
+                X = Nonterminal(self.dictionary.i2n[ids[0]], ids[0])
+                action = NT(X)
+            if action.is_gen and predict_words:
+                    terminal_logits = self.terminal_mlp(x)
+                    vals, ids = terminal_logits.sort(descending=True)
+                    vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
+                    word = Word(self.dictionary.i2w[ids[0]], ids[0])
+                    action = GEN(word)
+            self.parse_step(action)
+        return self.stack.get_tree()
+
     def make_action(self, index):
         """Maps index to action."""
         assert index in range(3), index
@@ -163,7 +227,6 @@ class GenRNNG(GenParser):
             return NT(Nonterminal('_', -1))
         elif index == Action.GEN_INDEX:
             return GEN(Word('_', -1))
-
 
 def set_embedding(embedding, tensor):
     """Sets the tensor as fixed weight tensor in embedding."""
@@ -177,18 +240,20 @@ def make_model(args, dictionary):
     num_words = dictionary.num_words
     num_nonterminals = dictionary.num_nonterminals
     num_actions = 3
-    if args.use_char:
+    if args.use_chars:
         word_embedding = ConvolutionalCharEmbedding(
-                num_words, args.emb_dim, padding_idx=PAD_INDEX,
-                dropout=args.dropout, device=args.device
+                num_words,
+                args.emb_dim,
+                padding_idx=PAD_INDEX,
+                dropout=args.dropout,
+                device=args.device
             )
     else:
         if args.use_fasttext:
             print('FasText only availlable in 300 dimensions: changed word-emb-dim accordingly.')
             args.emb_dim = 300
         word_embedding = nn.Embedding(
-                num_words, args.emb_dim, padding_idx=PAD_INDEX
-            )
+                num_words, args.emb_dim, padding_idx=PAD_INDEX)
         # Get words in order.
         words = [dictionary.i2w[i] for i in range(num_words)]
         if args.use_glove:
@@ -252,25 +317,24 @@ def make_model(args, dictionary):
         args.mlp_dim,
         num_actions,
         dropout=args.dropout,
-        activation='Tanh'
+        activation=args.mlp_nonlinearity
     )
     nonterminal_mlp = MLP(
         mlp_input,
         args.mlp_dim,
         num_nonterminals,
         dropout=args.dropout,
-        activation='Tanh'
+        activation=args.mlp_nonlinearity
     )
     terminal_mlp = MLP(
         mlp_input,
         args.mlp_dim,
         num_words,
         dropout=args.dropout,
-        activation='Tanh'
+        activation=args.mlp_nonlinearity
     )
 
     loss_compute = LossCompute(nn.CrossEntropyLoss, args.device)
-
     if args.model == 'disc':
         model = DiscRNNG(
             dictionary=dictionary,

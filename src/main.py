@@ -4,7 +4,7 @@ import argparse
 
 import train
 import predict_input
-import dist
+import distributed
 
 
 def main():
@@ -12,8 +12,8 @@ def main():
     parser = argparse.ArgumentParser(description='Discriminative RNNG parser',
                                      fromfile_prefix_chars='@') # Enable loading args from textfile
     # Choose mode
-    parser.add_argument('mode', choices=['train', 'predict', 'dist'], help='what to to do')
-    parser.add_argument('model', choices=['disc', 'gen'], help='discriminative or generative model')
+    parser.add_argument('mode', choices=['train', 'predict', 'dist'], help='what to do')
+    parser.add_argument('model', choices=['disc', 'gen'], help='use discriminative or generative model')
 
     # Debugging
     parser.add_argument('-d', '--debug', action='store_true')
@@ -38,7 +38,7 @@ def main():
                         help='max number of training lines')
 
 
-    parser.add_argument('--use-char', action='store_true',
+    parser.add_argument('--use-chars', action='store_true',
                         help='use character-level word embeddings')
     parser.add_argument('--emb-dim', type=int, default=100,
                         help='dim of all embeddings (words, actions, nonterminals)')
@@ -52,6 +52,8 @@ def main():
                         help='use attention in StackLSTM composition function')
     parser.add_argument('--mlp-dim', type=int, default=128,
                         help='size of mlp hidden state')
+    parser.add_argument('--mlp_nonlinearity', type=str, default='Tanh',
+                        help='nonlinear function inside mlp')
     parser.add_argument('--use-glove', action='store_true',
                         help='using pretrained glove embeddings')
     parser.add_argument('--use-fasttext', action='store_true',
@@ -105,7 +107,7 @@ def main():
     elif args.mode == 'predict':
         predict_input.main(args)
     elif args.mode == 'dist':
-        dist.main(args)
+        distributed.main(args)
 
 
 if __name__ == '__main__':

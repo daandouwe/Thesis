@@ -11,7 +11,7 @@ class TransitionBase(nn.Module):
     EMPTY_TOKEN = '-EMPTY-'  # used as dummy to encode an empty buffer or history
     EMPTY_INDEX = -1
 
-    """A base class for the Stack, Buffer and History."""
+    """A base class for the Stack, Buffer, Terminals, and History."""
     def __init__(self):
         super(TransitionBase, self).__init__()
         self._items = []

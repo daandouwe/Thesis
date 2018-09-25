@@ -88,7 +88,14 @@ def main(args):
     make_folders(args)
 
     # Initialize model and data.
-    corpus = Corpus(data_path='../tmp', textline='unked', max_lines=args.max_lines)
+    corpus = Corpus(
+        data_path=args.data,
+        model=args.model,
+        textline=args.textline,
+        name=args.name,
+        use_chars=args.use_chars,
+        max_lines=args.max_lines
+    )
     train_batches = corpus.train.batches(length_ordered=False, shuffle=False)
     dev_batches = corpus.dev.batches(length_ordered=False, shuffle=False)[:100]
     model = make_model(args, corpus.dictionary)

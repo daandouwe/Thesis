@@ -58,7 +58,14 @@ def main(args):
     writer = SummaryWriter(args.logdir)
 
     print(f'Loading data from `{args.data}`...')
-    corpus = Corpus(data_path=args.data, model=args.model, textline=args.textline, name=args.name, char=args.use_char, max_lines=args.max_lines)
+    corpus = Corpus(
+        data_path=args.data,
+        model=args.model,
+        textline=args.textline,
+        name=args.name,
+        use_chars=args.use_chars,
+        max_lines=args.max_lines
+    )
     train_batches = corpus.train.batches(length_ordered=False, shuffle=True)
     dev_batches = corpus.dev.batches(length_ordered=False, shuffle=False)
     test_batches = corpus.test.batches(length_ordered=False, shuffle=False)
@@ -69,6 +76,9 @@ def main(args):
         train_batches = train_batches[:30]
         dev_batches = dev_batches
         test_batches = test_batches
+    if args.max_lines != -1:
+        dev_batches = dev_batches[:100]
+        test_batches = test_batches[:100]
 
     model = make_model(args, corpus.dictionary)
     model.to(args.device)
