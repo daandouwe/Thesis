@@ -1,4 +1,3 @@
-#Set job requirements
 #PBS -S /bin/bash
 #PBS -lnodes=1
 #PBS -qgpu

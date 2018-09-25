@@ -1,54 +1,46 @@
 import os
+from copy import deepcopy
 
 import torch
 import torch.nn as nn
 
-from data import PAD_INDEX, REDUCED_INDEX, REDUCED_TOKEN, Item, Action
+from datatypes import Item, Word, Nonterminal, Action
+from actions import SHIFT, REDUCE, NT, GEN
+from data import PAD_INDEX
 from glove import load_glove, get_vectors
 from embedding import ConvolutionalCharEmbedding
 from nn import MLP
-from encoder import StackLSTM, HistoryLSTM, BufferLSTM
-from parser import Parser
+from encoder import StackLSTM, HistoryLSTM, BufferLSTM, TerminalLSTM
+from parser import DiscParser, GenParser
 from loss import LossCompute
 
 
-class RNNG(Parser):
-    """Recurrent Neural Network Grammar model."""
-    def __init__(
-        self,
-        dictionary,
-        actions,
-        word_embedding,
-        nonterminal_embedding,
-        action_embedding,
-        buffer_encoder,
-        stack_encoder,
-        history_encoder,
-        action_mlp,
-        nonterminal_mlp,
-        loss_compute,
-        dropout,
-        device
-    ):
-        super(RNNG, self).__init__(
+class DiscRNNG(DiscParser):
+    """Discriminative Recurrent Neural Network Grammar."""
+    def __init__(self,
+                 dictionary,
+                 word_embedding,
+                 nonterminal_embedding,
+                 action_embedding,
+                 buffer_encoder,
+                 stack_encoder,
+                 history_encoder,
+                 action_mlp,
+                 nonterminal_mlp,
+                 loss_compute,
+                 dropout,
+                 device):
+        super(DiscRNNG, self).__init__(
             word_embedding,
             nonterminal_embedding,
             action_embedding,
+            stack_encoder,
             buffer_encoder,
-            actions,
+            history_encoder,
             device=device
         )
         self.dictionary = dictionary
         self.device = device
-
-        self.word_embedding = word_embedding
-        self.nonterminal_embedding = nonterminal_embedding
-        self.action_embedding = action_embedding
-
-        # Parser encoders
-        self.buffer_encoder = buffer_encoder
-        self.stack_encoder = stack_encoder
-        self.history_encoder = history_encoder
 
         # MLP for action classifiction
         self.action_mlp = action_mlp
@@ -60,112 +52,121 @@ class RNNG(Parser):
         # Loss computation
         self.loss_compute = loss_compute
 
-    def encode(self, stack, buffer, history):
-        # Apply dropout.
-        stack = self.dropout(stack)      # (batch, input_size)
-        buffer = self.dropout(buffer)    # (batch, input_size)
-        history = self.dropout(history)  # (batch, input_size)
-        # Encode
-        b = buffer  # buffer is already the top hidden state
-        h = self.history_encoder(history)  # returns top hidden state
-        s = self.stack_encoder(stack)  # returns top hidden state
-        # Concatenate and apply mlp to obtain logits.
-        x = torch.cat((b, h, s), dim=-1)
-        return x
+    def get_input(self):
+        stack, buffer, history = self.get_encoded_input()
+        return torch.cat((buffer, history, stack), dim=-1)
 
-    def parse_step(self, action, logfile=False):
-        """Updates parser one step give the action."""
-        self.history.push(action)
-        if action.index == self.SHIFT:
-            self.shift()
-        elif action.index == self.REDUCE:
-            # Pop all items from the open nonterminal.
-            children, head = self.stack.pop()
-            # Reduce these items using the composition function.
-            x = self.stack_encoder.reduce(children, head)
-            # Push the new representation onto stack: the computed vector x
-            # and a dummy index.
-            self.stack.push(
-                Item(REDUCED_TOKEN, REDUCED_INDEX, embedding=x),
-                reduced=True
-            )
-        elif action.index == self.OPEN:
-            item = Item(
-                action.symbol.token, action.symbol.index, nonterminal=True
-            )
-            self.stack.open_nonterminal(item)
-        else:
-            raise ValueError(f'got illegal action: {action.token}')
-
-    def forward(self, sentence, actions, logfile=None):
-        """Forward training pass for RNNG.
-
-        Arguments:
-            sentence (list): input sentence as list of Item objects.
-            actions (list): parse action sequence as list of Item objects.
-        """
-        # Initialize the parser with the sentence.
+    def forward(self, sentence, actions):
+        # We change the items in sentence and actions in-place,
+        # so we make a copy so that the tensors do not hang around.
+        sentence, actions = deepcopy(sentence), deepcopy(actions)  # Do not remove!
         self.initialize(sentence)
-        # Reset the hidden states of the StackLSTM and the HistoryLSTM.
-        self.stack_encoder.initialize_hidden()
-        self.history_encoder.initialize_hidden()
-        # Cummulator variable for loss
         loss = torch.zeros(1, device=self.device)
         for i, action in enumerate(actions):
-            # Get the parser representation.
-            stack, buffer, history = self.get_embedded_input()
-            # Encode it.
-            x = self.encode(stack, buffer, history)
-            # Compute the logits for the action.
+            # Compute loss
+            x = self.get_input()
             action_logits = self.action_mlp(x)
-            loss += self.loss_compute(action_logits, action.index)
+            loss += self.loss_compute(action_logits, action.action_index)
             # If we open a nonterminal, predict which.
-            if action.index == self.OPEN:
+            if action.is_nt:
                 nonterminal_logits = self.nonterminal_mlp(x)
-                loss += self.loss_compute(nonterminal_logits, action.symbol.index)
-            # Take the appropriate parse step.
+                nt = action.get_nt()
+                loss += self.loss_compute(nonterminal_logits, nt.index)
             self.parse_step(action)
         return loss
 
-    def parse(self, sentence, logfile=None):
-        """Parse an input sequence.
+    def make_action(self, index):
+        """Maps index to action."""
+        assert index in range(3), index
+        if index == SHIFT.index:
+            return SHIFT
+        elif index == REDUCE.index:
+            return REDUCE
+        elif index == Action.NT_INDEX:
+            return NT(Nonterminal('_', -1))
 
-        Arguments:
-            sentence (list): input sentence as list of Item objects.
-        """
-        # Initialize the parser with the sentence.
+
+class GenRNNG(GenParser):
+    """Generative Recurrent Neural Network Grammar."""
+    def __init__(self,
+                 dictionary,
+                 word_embedding,
+                 nonterminal_embedding,
+                 action_embedding,
+                 terminal_encoder,
+                 stack_encoder,
+                 history_encoder,
+                 action_mlp,
+                 nonterminal_mlp,
+                 terminal_mlp,
+                 loss_compute,
+                 dropout,
+                 device):
+        super(GenRNNG, self).__init__(
+            word_embedding,
+            nonterminal_embedding,
+            action_embedding,
+            stack_encoder,
+            terminal_encoder,
+            history_encoder,
+            device=device
+        )
+        self.dictionary = dictionary
+        self.device = device
+
+        # MLP for actions.
+        self.action_mlp = action_mlp
+        # MLP for nonterminals.
+        self.nonterminal_mlp = nonterminal_mlp
+        # MLP for words.
+        self.terminal_mlp = terminal_mlp
+
+        self.dropout = nn.Dropout(p=dropout)
+
+        # Loss computation
+        self.loss_compute = loss_compute
+
+    def get_input(self):
+        stack, terminals, history = self.get_encoded_input()
+        return torch.cat((terminals, history, stack), dim=-1)
+
+    def forward(self, sentence, actions):
+        # We change the items in sentence and actions in-place,
+        # so we make a copy so that the tensors do not hang around.
+        sentence, actions = deepcopy(sentence), deepcopy(actions)  # Do not remove!
         self.initialize(sentence)
-        # Reset the hidden states of the StackLSTM and the HistoryLSTM.
-        self.stack_encoder.initialize_hidden()
-        self.history_encoder.initialize_hidden()
-        t = 0
-        while not self.stack.empty:
-            t += 1
-            # Get the parser representation.
-            stack, buffer, history = self.get_embedded_input()
-            # Encode it.
-            x = self.encode(stack, buffer, history)
-            # Compute the logits for the action.
+        loss = torch.zeros(1, device=self.device)
+        for i, action in enumerate(actions):
+            # Compute loss
+            x = self.get_input()
             action_logits = self.action_mlp(x)
-            # Get highest scoring valid predictions.
-            vals, ids = action_logits.sort(descending=True)
-            vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
-            i = 0
-            action = Action(self.dictionary.i2a[ids[i]], ids[i])
-            while not self.is_valid_action(action):
-                i += 1
-                action = Action(self.dictionary.i2a[ids[i]], ids[i])
-            if action.index == self.OPEN:
+            loss += self.loss_compute(action_logits, action.action_index)
+            # If we open a nonterminal, predict which.
+            if action.is_nt:
                 nonterminal_logits = self.nonterminal_mlp(x)
-                vals, ids = nonterminal_logits.sort(descending=True)
-                vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
-                action.symbol = Item(self.dictionary.i2n[ids[0]], ids[0], nonterminal=True)
-            # Take the appropriate parse step.
+                nt = action.get_nt()
+                loss += self.loss_compute(nonterminal_logits, nt.index)
+            # If we generate a word, predict which.
+            if action.is_gen:
+                terminal_logits = self.terminal_mlp(x)
+                word = action.get_word()
+                loss += self.loss_compute(terminal_logits, word.index)
             self.parse_step(action)
-        return self.actions
+        return loss
+
+    def make_action(self, index):
+        """Maps index to action."""
+        assert index in range(3), index
+        if index == REDUCE.index:
+            return REDUCE
+        elif index == Action.NT_INDEX:
+            return NT(Nonterminal('_', -1))
+        elif index == Action.GEN_INDEX:
+            return GEN(Word('_', -1))
 
 
 def set_embedding(embedding, tensor):
+    """Sets the tensor as fixed weight tensor in embedding."""
     assert tensor.shape == embedding.weight.shape
     embedding.weight = nn.Parameter(tensor)
     embedding.weight.requires_grad = False
@@ -175,9 +176,7 @@ def make_model(args, dictionary):
     # Embeddings
     num_words = dictionary.num_words
     num_nonterminals = dictionary.num_nonterminals
-    num_actions = dictionary.num_actions
-    a2i = dictionary.a2i
-    actions = (a2i['SHIFT'], a2i['REDUCE'], a2i['OPEN'])
+    num_actions = 3
     if args.use_char:
         word_embedding = ConvolutionalCharEmbedding(
                 num_words, args.emb_dim, padding_idx=PAD_INDEX,
@@ -191,7 +190,7 @@ def make_model(args, dictionary):
                 num_words, args.emb_dim, padding_idx=PAD_INDEX
             )
         # Get words in order.
-        words = [dictionary.i2w[i] for i in range(len(dictionary.w2i))]
+        words = [dictionary.i2w[i] for i in range(num_words)]
         if args.use_glove:
             dim = args.emb_dim
             assert dim in (50, 100, 200, 300), f'invalid dim: {dim}, choose from (50, 100, 200, 300).'
@@ -226,11 +225,18 @@ def make_model(args, dictionary):
         args.dropout,
         args.device
     )
-    stack_encoder = StackLSTM(
+    terminal_encoder = TerminalLSTM(
         args.emb_dim,
         args.word_lstm_hidden,
         args.dropout,
         args.device
+    )
+    stack_encoder = StackLSTM(
+        args.emb_dim,
+        args.word_lstm_hidden,
+        args.dropout,
+        args.device,
+        attn_comp=args.use_attn
     )
     history_encoder = HistoryLSTM(
         args.emb_dim,
@@ -239,41 +245,68 @@ def make_model(args, dictionary):
         args.device
     )
 
+    # Score MLPs
     mlp_input = 2 * args.word_lstm_hidden + args.action_lstm_hidden
     action_mlp = MLP(
         mlp_input,
         args.mlp_dim,
         num_actions,
-        args.dropout
+        dropout=args.dropout,
+        activation='Tanh'
     )
     nonterminal_mlp = MLP(
         mlp_input,
         args.mlp_dim,
         num_nonterminals,
-        args.dropout
+        dropout=args.dropout,
+        activation='Tanh'
+    )
+    terminal_mlp = MLP(
+        mlp_input,
+        args.mlp_dim,
+        num_words,
+        dropout=args.dropout,
+        activation='Tanh'
     )
 
     loss_compute = LossCompute(nn.CrossEntropyLoss, args.device)
 
-    model = RNNG(
-        dictionary=dictionary,
-        actions=actions,
-        word_embedding=word_embedding,
-        nonterminal_embedding=nonterminal_embedding,
-        action_embedding=action_embedding,
-        buffer_encoder=buffer_encoder,
-        stack_encoder=stack_encoder,
-        history_encoder=history_encoder,
-        action_mlp=action_mlp,
-        nonterminal_mlp=nonterminal_mlp,
-        loss_compute=loss_compute,
-        dropout=args.dropout,
-        device=args.device
-    )
+    if args.model == 'disc':
+        model = DiscRNNG(
+            dictionary=dictionary,
+            word_embedding=word_embedding,
+            nonterminal_embedding=nonterminal_embedding,
+            action_embedding=action_embedding,
+            buffer_encoder=buffer_encoder,
+            stack_encoder=stack_encoder,
+            history_encoder=history_encoder,
+            action_mlp=action_mlp,
+            nonterminal_mlp=nonterminal_mlp,
+            loss_compute=loss_compute,
+            dropout=args.dropout,
+            device=args.device
+        )
+    if args.model == 'gen':
+        model = GenRNNG(
+            dictionary=dictionary,
+            word_embedding=word_embedding,
+            nonterminal_embedding=nonterminal_embedding,
+            action_embedding=action_embedding,
+            terminal_encoder=terminal_encoder,
+            stack_encoder=stack_encoder,
+            history_encoder=history_encoder,
+            action_mlp=action_mlp,
+            nonterminal_mlp=nonterminal_mlp,
+            terminal_mlp=terminal_mlp,
+            loss_compute=loss_compute,
+            dropout=args.dropout,
+            device=args.device
+        )
 
-    # Initialize parameters with Glorot.
-    for param in model.parameters():
-        if param.dim() > 1 and param.requires_grad:
-            nn.init.xavier_uniform_(param)
+    if not args.disable_glorot:
+        # Initialize *all* parameters with Glorot. (Overrides custom LSTM init.)
+        for param in model.parameters():
+            if param.dim() > 1 and param.requires_grad:
+                nn.init.xavier_uniform_(param)
 
     return model

@@ -3,10 +3,12 @@ import os
 import glob
 import argparse
 import re
+import subprocess
 
 from PYEVALB.scorer import Scorer
 
 from scripts.get_vocab import get_sentences
+
 
 def evalb(outdir, datadir, name, set='test'):
     assert set in ('train', 'dev', 'test')
@@ -22,6 +24,22 @@ def evalb(outdir, datadir, name, set='test'):
                 fscore = float(match.group(1))
                 return fscore
     return 0.0
+
+
+def true_evalb(evalb_dir, pred_path, gold_path, result_path, ignore_error=10000):
+    """Use original EVALB to score trees."""
+    evalb_dir = os.path.expanduser(evalb_dir)
+    assert os.path.exists(evalb_dir), f'Do you have EVALB installed at {evalb_dir}?'
+    evalb_exec = os.path.join(evalb_dir, "evalb")
+    command = '{} {} {} -e {} > {}'.format(
+        evalb_exec,
+        pred_path,
+        gold_path,
+        ignore_error,
+        result_path
+    )
+    subprocess.run(command, shell=True)
+
 
 def actions2tree(words, actions, tags=None):
     """Returns a linearizen tree from a list of words and actions."""
@@ -86,6 +104,7 @@ def main(args):
     if args.verbose:
         with open(result_path) as f:
             print(f.read())
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

@@ -1,0 +1,65 @@
+Device: cpu.
+Created tensorboard summary writer at `./log/20180919_133355`.
+Loading data from `../tmp`...
+Corpus
+vocab size: 25,640
+train: 101 sentences
+dev: 2,416 sentences
+test: 1,346 sentences
+Training...
+===============================================================================
+Counter({torch.Size([1, 102]): 41,     # Word lstm hidden
+         torch.Size([1, 100]): 35,     # Word embedding
+         torch.Size([32, 1, 102]): 1,
+140
+===============================================================================
+| sent-length 31 | total mem 272.769M | added mem 272.769M | total 502,237 | ints 5,152 | tensors 707 | strings 70,338 | increase 502,237
+===============================================================================
+Counter({torch.Size([1, 100]): 73,      # Word lstm hidden  (41 + 33 = 74)
+         torch.Size([1, 102]): 73,      # Word embedding
+         torch.Size([3, 1, 50]): 26,    # Composition representation!
+         torch.Size([4, 1, 50]): 12,    # Composition representation!
+         torch.Size([2, 1, 50]): 10,    # Composition representation!
+         torch.Size([33, 1, 102]): 1})  # Not increasing!
+360
+===============================================================================
+| sent-length 32 | total mem 283.255M | added mem 10.486M | total 502,744 | ints 5,175 | tensors 177 | strings 32 | increase 507
+===============================================================================
+Counter({torch.Size([1, 100]): 85,      # Word lstm hidden
+         torch.Size([1, 102]): 85,      # Word embedding
+         torch.Size([3, 1, 50]): 54,    # Composition representation!
+         torch.Size([2, 1, 50]): 30,    # Composition representation!
+         torch.Size([4, 1, 50]): 18,    # Composition representation!
+         torch.Size([5, 1, 50]): 2,     # Composition representation!
+         torch.Size([6, 1, 50]): 2,     # Composition representation!
+         torch.Size([13, 1, 102]): 1})
+442
+===============================================================================
+| sent-length 12 | total mem 283.795M | added mem 0.541M | total 502,407 | ints 5,183 | tensors -282 | strings -11 | increase -337
+===============================================================================
+Counter({torch.Size([1, 100]): 101,
+         torch.Size([1, 102]): 101,
+         torch.Size([3, 1, 50]): 62,
+         torch.Size([2, 1, 50]): 32,
+         torch.Size([4, 1, 50]): 20,
+         torch.Size([5, 1, 50]): 4,
+         torch.Size([6, 1, 50]): 2,
+         torch.Size([17, 1, 102]): 1})
+488
+===============================================================================
+| sent-length 16 | total mem 283.546M | added mem -0.250M | total 502,698 | ints 5,192 | tensors 90 | strings 16 | increase 291
+===============================================================================
+Counter({torch.Size([1, 100]): 119,
+         torch.Size([1, 102]): 119,
+         torch.Size([3, 1, 50]): 72,
+         torch.Size([2, 1, 50]): 34,
+         torch.Size([4, 1, 50]): 26,
+         torch.Size([5, 1, 50]): 4,
+         torch.Size([6, 1, 50]): 2,
+         torch.Size([19, 1, 102]): 1})
+542
+===============================================================================
+| sent-length 18 | total mem 284.078M | added mem 0.532M | total 502,947 | ints 5,203 | tensors 64 | strings 14 | increase 249
+===============================================================================
+-----------------------------------------------------------------------------------------
+Exiting from training early.

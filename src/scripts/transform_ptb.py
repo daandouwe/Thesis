@@ -14,22 +14,29 @@ def partition(sent, indices):
     return parts
 
 def transform_mrg(path):
-    """Clean an mrg file.
+    """Clean an mrg file manually.
 
     Turns each of the fancy formatted trees in the mrg
-    file into one-line strings, in the format given
-    (S (NP (DT The) (NN cat)) (VP (VBZ eats))))
+    file into one-line strings, in the format given by:
+    (S (NP (DT The) (NN cat)) (VP (VBZ sleaps))) (. .))
     """
-    with open(path) as s:
-        s = s.read()
-        s = re.sub('\n', '', s)
-        s = re.sub(' +', ' ', s)
-        s = re.sub('\( ', '(', s)
-        s = re.sub(' \)', ')', s)
-        bounds = [m.start() for m in re.finditer('\(\(', s)]
-        parts = partition(s, bounds)
-        for line in parts:
-            yield line[1:-1]
+    with open(path) as fin:
+        s = fin.read()
+        s = re.sub('\n', '', s)    # put string onto one long line
+        s = re.sub(' +', ' ', s)   # remove excess whitespace (indentation)
+        s = re.sub('\( ', '(', s)  # `( (S ... -> ((S`
+        s = re.sub(' \)', ')', s)  # `(NN director) ))` --> `(NN director)))`
+        bounds = [m.start() for m in re.finditer('\(\(', s)]  # each tree starts with double left brackets.
+        trees = partition(s, bounds)
+        for tree in trees:
+            yield tree[1:-1]  # `((S ... (. .)))` --> `(S ... (. .))`
+
+def transform_mrg_nltk(path):
+    """Let NTLK do the dirty work."""
+    from nltk.corpus import ptb  # TODO: move these imports
+    from numpy import inf
+    for tree in ptb.parsed_sents(path):
+        yield tree.pformat(margin=inf)  # format nltk tree on one line (no margin to indent at)
 
 def ptb_folders_iter(corpus_root):
     """Iterator over all mrg filepaths in the wsj part of the ptb."""

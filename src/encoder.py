@@ -3,8 +3,9 @@ import copy
 import torch
 import torch.nn as nn
 import torch.distributions as dist
-from data import wrap
 import torch.nn.init as init
+
+from data import wrap
 
 
 def orthogonal_init(lstm):
@@ -53,14 +54,14 @@ class BiRecurrentEncoder(nn.Module):
         # children shape (batch, seq, dim)
         # head shape (batch, dim)
         xf = torch.cat((head.unsqueeze(1), children), dim=1)  # [NP, the, black, cat]
-        xb = torch.cat((head.unsqueeze(1), self._reverse(children)), dim=1)  # [NP, black, cat, the]
+        xb = torch.cat((head.unsqueeze(1), self._reverse(children)), dim=1)  # [NP, cat, black, the]
 
         hf, _ = self.fwd_rnn(xf)  # (batch, seq, hidden_size//2)
         hb, _ = self.bwd_rnn(xb)  # (batch, seq, hidden_size//2)
 
         # Select final representation.
-        hf = hf[:, -1, :]  # (batch, hidden_size)
-        hb = hb[:, -1, :]  # (batch, hidden_size)
+        hf = hf[:, -1, :]  # (batch, hidden_size//2)
+        hb = hb[:, -1, :]  # (batch, hidden_size//2)
 
         h = torch.cat((hf, hb), dim=-1)  # (batch, hidden_size)
         return h
@@ -106,9 +107,11 @@ class AttentionEncoder(nn.Module):
         a = c @ self.V @ head.transpose(0, 1)  # (batch, seq, 1)
         a = a.squeeze(-1)  # (batch, seq)
         a = self.softmax(a)  # (batch, seq)
-        # self.attn = a  # optional: store computed attention internally for retreival.
         m = a @ c  # (batch, seq) @ (batch, seq, hidden_size) = (batch, 1, hidden_size)
         m = m.squeeze(1)  # (batch, hidden_size)
+
+        # Optional: store computed attention internally for retreival.
+        self.attn = a
 
         x = torch.cat((head, m), dim=-1)  # (batch, 2*hidden_size)
         g = self.sigmoid(self.linear(x))  # (batch, hidden_size)
@@ -222,7 +225,23 @@ class StackLSTM(BaseLSTM):
 class HistoryLSTM(BaseLSTM):
     """An LSTM used to encode the history of actions of a transition based parser."""
     def __init__(self, input_size, hidden_size, dropout, device=None):
-        super(HistoryLSTM, self).__init__(input_size, hidden_size, dropout, device)
+        super(HistoryLSTM, self).__init__(
+            input_size,
+            hidden_size,
+            dropout,
+            device
+        )
+
+
+class TerminalLSTM(BaseLSTM):
+    """An LSTM used to encode the history of actions of a transition based parser."""
+    def __init__(self, input_size, hidden_size, dropout, device=None):
+        super(TerminalLSTM, self).__init__(
+            input_size,
+            hidden_size,
+            dropout,
+            device
+        )
 
 
 class BufferLSTM(nn.Module):

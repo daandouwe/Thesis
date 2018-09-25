@@ -8,7 +8,7 @@ from PYEVALB import parser, scorer
 
 from datatypes import Item, Word, Nonterminal, Action
 from actions import SHIFT, REDUCE, NT, GEN
-from parser_test import Parser
+from parser import DiscParser
 from scripts.get_oracle import unkify
 
 
@@ -215,7 +215,7 @@ class SamplingDecoder(Decoder):
 
 
 class Beam(NamedTuple):
-    parser: Parser
+    parser: DiscParser
     logprob: float
 
 
@@ -224,7 +224,7 @@ class BeamSearchDecoder(Decoder):
     def __call__(self, sentence, k=10):
         with torch.no_grad():
             sentence = self._process_sentence(sentence)
-            parser = Parser(
+            parser = DiscParser(
                 word_embedding=self.model.history.word_embedding,
                 nt_embedding=self.model.history.nt_embedding,
                 action_embedding=self.model.history.action_embedding,

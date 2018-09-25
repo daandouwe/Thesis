@@ -1,6 +1,7 @@
-# With inspiration from kmkurn/pytorch-rnng:
-# https://github.com/kmkurn/pytorch-rnng/blob/master/src/rnng/actions.py
-
+"""
+With inspiration from kmkurn/pytorch-rnng:
+    https://github.com/kmkurn/pytorch-rnng/blob/master/src/rnng/actions.py
+"""
 import torch.nn as nn
 
 

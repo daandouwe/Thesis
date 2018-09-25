@@ -1,19 +1,22 @@
-import gc
 import itertools
 
 import numpy as np
 import torch
 from tensorboardX import SummaryWriter
 
-from data_test import Corpus
-from model_test import make_model
+from data import Corpus
+from model import make_model
 from predict import predict
 from eval import evalb
 from util import Timer, write_losses, make_folders
 
 ##
-from memory import print_memory
+from test_memory import get_added_memory, get_num_objects, get_tensors
+
+from pprint import pprint
+from collections import Counter
 ##
+
 
 def schedule_lr(args, optimizer, update):
     update = update + 1
@@ -36,9 +39,11 @@ def batchify(batches, batch_size):
 
 
 def main(args):
+
     # Set random seeds.
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
+
     # Set cuda.
     use_cuda = not args.disable_cuda and torch.cuda.is_available()
     args.device = torch.device("cuda" if use_cuda else "cpu")
@@ -49,11 +54,11 @@ def main(args):
     else:
         print('Did not make output folders!')
 
-    print(f'Created tensorboard summary writer at {args.logdir}.')
+    print(f'Created tensorboard summary writer at `{args.logdir}`.')
     writer = SummaryWriter(args.logdir)
 
-    print(f'Loading data from {args.data}...')
-    corpus = Corpus(data_path=args.data, textline=args.textline, name=args.name, char=args.use_char)
+    print(f'Loading data from `{args.data}`...')
+    corpus = Corpus(data_path=args.data, model=args.model, textline=args.textline, name=args.name, char=args.use_char, max_lines=args.max_lines)
     train_batches = corpus.train.batches(length_ordered=False, shuffle=True)
     dev_batches = corpus.dev.batches(length_ordered=False, shuffle=False)
     test_batches = corpus.test.batches(length_ordered=False, shuffle=False)
@@ -117,7 +122,7 @@ def main(args):
         dev_fscore = evalb(args.outdir, args.data, name=args.name, set='dev')
         writer.add_scalar('Dev/Fscore', dev_fscore, num_updates)
         if dev_fscore > best_dev_fscore:
-            print(f'Saving new best model to {args.checkfile}...')
+            print(f'Saving new best model to `{args.checkfile}`...')
             save_checkpoint()
             best_dev_epoch = epoch
             best_dev_fscore = dev_fscore
@@ -133,21 +138,18 @@ def main(args):
         num_sentences = len(train_batches)
         num_batches = num_sentences // args.batch_size
         processed = 0
+
+        ##
+        prev_mem = 0
+        prev_num_objects, prev_num_tensors, prev_num_strings = 0, 0, 0
+        old_tensors = []
+        ##
+
         for step, minibatch in enumerate(batchify(train_batches, args.batch_size), 1):
-        # for step, batch in enumerate(train_batches, 1):
             # Set learning rate.
             num_updates += 1
             processed += args.batch_size
             schedule_lr(args, optimizer, num_updates)
-
-            ##
-            # print(79*'-')
-            # print_memory('Before minibatch:')
-            # print(tr.print_diff())
-            ##
-
-            # sentence, actions = batch
-            # loss = model(sentence, actions)
 
             # Compute loss over minibatch.
             loss = torch.zeros(1, device=args.device)
@@ -156,20 +158,10 @@ def main(args):
                 loss += model(sentence, actions)
             loss /= args.batch_size
 
-            ##
-            # print_memory('After minibatch:')
-            # print(tr.print_diff())
-            ##
-
             optimizer.zero_grad()
             loss.backward()
             torch.nn.utils.clip_grad_norm_(trainable_parameters, args.clip)
             optimizer.step()
-
-            ##
-            # print_memory('After update:')
-            # print(tr.print_diff())
-            ##
 
             loss = loss.item()
             losses.append(loss)
@@ -181,14 +173,47 @@ def main(args):
                 lr = get_lr(optimizer)
                 sents_per_sec = processed / train_timer.elapsed()
                 eta = (num_sentences - processed) / sents_per_sec
-                print(
-                    f'| step {step:6d}/{num_batches:5d} '
-                    f'| loss {avg_loss:7.3f} '
-                    f'| lr {lr:.1e} '
-                    f'| {sents_per_sec:4.1f} sents/sec '
-                    f'| eta {train_timer.format(eta)}'
-                )
 
+                ##
+                if args.memory_debug:
+                    cur_mem, add_mem = get_added_memory(prev_mem)
+                    prev_mem = cur_mem
+                    num_objects, num_tensors, num_strings, num_ints = get_num_objects()
+
+                    print(
+                        f'| sent-length {len(sentence)} '
+                        f'| total mem {cur_mem:.3f}M '
+                        f'| added mem {add_mem:.3f}M '
+                        f'| total {num_objects:,} '
+                        f'| tensors {num_tensors:,} '
+                        # f'| ints {num_ints:,} '
+                        # f'| tensors {num_tensors - prev_num_tensors:,} '
+                        # f'| strings {num_strings - prev_num_strings:,} '
+                        # f'| increase {num_objects - prev_num_objects:,} '
+                    )
+                    prev_num_objects = num_objects
+                    prev_num_tensors = num_tensors
+                    prev_num_strings = num_strings
+
+                    # # Which shapes are the tensors that remain?
+                    # print(79*'=')
+                    # print('After initializing parser.')
+                    # shapes = [(1, 100), (1, 102)] + [(i, 1, 50) for i in range(2, 10)]
+                    # tensors = [tensor for tensor in get_tensors() if tensor.shape in shapes]
+                    # counter = Counter(sorted([tensor.shape for tensor in tensors]))
+                    # pprint(counter)
+                    # print('Require grad:')
+                    # pprint(Counter([tensor.shape for tensor in tensors if tensor.requires_grad]))
+                    # print('Total number of tensors:', len(tensors))
+                    # print(79*'=')
+                else:
+                    print(
+                        f'| step {step:6d}/{num_batches:5d} '
+                        f'| loss {avg_loss:7.3f} '
+                        f'| lr {lr:.1e} '
+                        f'| {sents_per_sec:4.1f} sents/sec '
+                        f'| eta {train_timer.format(eta)} '
+                    )
 
     epoch_timer = Timer()
     # At any point you can hit Ctrl + C to break out of training early.
@@ -200,11 +225,6 @@ def main(args):
 
             # Shuffle batches each epoch.
             np.random.shuffle(train_batches)
-
-            ##
-            # print_memory('Before training:')
-            # print(tr.print_diff())
-            ##
 
             # Train one epoch.
             train_epoch()
@@ -229,16 +249,16 @@ def main(args):
     except KeyboardInterrupt:
         print('-'*89)
         print('Exiting from training early.')
-        # Save the losses for plotting and diagnostics.
-        ##
-        # save_checkpoint()
-        ##
+
+        # Save the losses for plotting and diagnostics
+        save_checkpoint()
+
         write_losses(args, losses)
         # TODO(not sure) writer.export_scalars_to_json('scalars.json')
         print('Evaluating fscore on development set...')
         check_dev()
     # Load best saved model.
-    print(f'Loading best saved model (epoch {best_dev_epoch}) from {args.checkfile}...')
+    print(f'Loading best saved model (epoch {best_dev_epoch}) from `{args.checkfile}`...')
     with open(args.checkfile, 'rb') as f:
         state = torch.load(f)
         model = state['model']

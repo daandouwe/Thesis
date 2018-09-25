@@ -7,8 +7,9 @@
 
 ## Training
 * keep trying parallel: batches 16, 32, 48 (CPU), 4, 8, 12 (GPU).
+* pbs_joblogin <jobnr> [nodenr]
 * nvidia-smi
-* ssh daanvans@login-gpu.lisa.surfsara.nl -> ssh <name-node>
+* how to submit to specific node in lisa?
 * use `&` to run multiple commands on the same node/processor.
 
 # Objectives

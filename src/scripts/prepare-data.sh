@@ -50,7 +50,7 @@ mv $TMP/train/$NAME.train.trees.notrace $TMP/train/$NAME.train.trees
 mv $TMP/dev/$NAME.dev.trees.notrace $TMP/dev/$NAME.dev.trees
 mv $TMP/test/$NAME.test.trees.notrace $TMP/test/$NAME.test.trees
 
-# get oracles
+# get discriminative oracles
 python get_oracle.py \
     $TMP/train/$NAME.train.trees \
     $TMP/train/$NAME.train.trees \
@@ -63,6 +63,20 @@ python get_oracle.py \
     $TMP/train/$NAME.train.trees \
     $TMP/test/$NAME.test.trees \
     > $TMP/test/$NAME.test.oracle
+
+# get generative oracles
+# python get_oracle_gen.py \
+#     $TMP/train/$NAME.train.trees \
+#     $TMP/train/$NAME.train.trees \
+#     > $TMP/train/$NAME.train.gen.oracle
+# python get_oracle_gen.py \
+#     $TMP/train/$NAME.train.trees \
+#     $TMP/dev/$NAME.dev.trees \
+#     > $TMP/dev/$NAME.dev.gen.oracle
+# python get_oracle_gen.py \
+#     $TMP/train/$NAME.train.trees \
+#     $TMP/test/$NAME.test.trees \
+#     > $TMP/test/$NAME.test.gen.oracle
 
 # make vocabularies for lower, upper and unked
 python get_vocab.py \
