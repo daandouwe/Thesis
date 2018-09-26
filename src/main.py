@@ -42,9 +42,9 @@ def main():
                         help='use character-level word embeddings')
     parser.add_argument('--emb-dim', type=int, default=100,
                         help='dim of all embeddings (words, actions, nonterminals)')
-    parser.add_argument('--word-lstm-hidden', type=int, default=102,
+    parser.add_argument('--word-lstm-hidden', type=int, default=100,
                         help='size of lstm hidden states for StackLSTM and BufferLSTM')
-    parser.add_argument('--action-lstm-hidden', type=int, default=104,
+    parser.add_argument('--action-lstm-hidden', type=int, default=100,
                         help='size of lstm hidden states for history encoder')
     parser.add_argument('--lstm-num-layers', type=int, default=2,
                         help='number of layers in lstm')
@@ -52,7 +52,7 @@ def main():
                         help='use attention in StackLSTM composition function')
     parser.add_argument('--mlp-dim', type=int, default=128,
                         help='size of mlp hidden state')
-    parser.add_argument('--mlp_nonlinearity', type=str, default='Tanh',
+    parser.add_argument('--mlp_nonlinearity', default='Tanh', choices=['Tanh', 'ReLU'],
                         help='nonlinear function inside mlp')
     parser.add_argument('--use-glove', action='store_true',
                         help='using pretrained glove embeddings')

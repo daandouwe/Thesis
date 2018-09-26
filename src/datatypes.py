@@ -13,10 +13,6 @@ class Token(NamedTuple):
         """Used when print the token in a predicted tree."""
         return self.original
 
-    def __repr__(self):
-        """Used for other purposes."""
-        return repr(self)
-
 
 class Item:
     def __init__(self, token, index, embedding=None, encoding=None):
@@ -29,7 +25,7 @@ class Item:
         return str(self.token)
 
     def __repr__(self):
-        return f'{type(self).__name__}(token={repr(self.token)}, index={self.index})'
+        return f'{type(self).__name__}(token={str(self.token)}, index={self.index})'
 
     def __eq__(self, other):
         if not type(self) == type(other):

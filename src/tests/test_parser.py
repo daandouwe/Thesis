@@ -1,17 +1,17 @@
 import argparse
 
-from parser import Parser
-from data import PAD_TOKEN, PAD_INDEX
+from parser import DiscParser
+from data import PAD_CHAR, PAD_INDEX
 from encoder import BiRecurrentEncoder, StackLSTM, BufferLSTM, HistoryLSTM
 from nn import MLP
 from loss import LossCompute
 
 
-LONG = {
-    tagged_tree : '(S (NP (NNP Avco) (NNP Corp.)) (VP (VBD received) (NP (NP (DT an) (ADJP (QP ($ $) (CD 11.8) (CD million))) (NNP Army) (NN contract)) (PP (IN for) (NP (NN helicopter) (NNS engines))))) (. .))',
-    tree : '(S (NP Avco Corp.) (VP received (NP (NP an (ADJP (QP $ 11.8 million)) Army contract) (PP for (NP helicopter engines)))) .)',
-    sentence : 'Avco Corp. received an $ 11.8 million Army contract for helicopter engines .'.split(),
-    actions : [
+LONG = dict(
+    tagged_tree='(S (NP (NNP Avco) (NNP Corp.)) (VP (VBD received) (NP (NP (DT an) (ADJP (QP ($ $) (CD 11.8) (CD million))) (NNP Army) (NN contract)) (PP (IN for) (NP (NN helicopter) (NNS engines))))) (. .))',
+    tree='(S (NP Avco Corp.) (VP received (NP (NP an (ADJP (QP $ 11.8 million)) Army contract) (PP for (NP helicopter engines)))) .)',
+    sentence='Avco Corp. received an $ 11.8 million Army contract for helicopter engines .'.split(),
+    actions=[
         'NT(S)',
         'NT(NP)',
         'SHIFT',
@@ -44,13 +44,13 @@ LONG = {
         'SHIFT',
         'REDUCE'
     ]
-}
+)
 
-SHORT = {
-    tagged_tree : "(S (NP (NN Champagne) (CC and) (NN dessert)) (VP (VBD followed)) (. .))",
-    tree : "(S (NP Champagne and dessert) (VP followed) .)",
-    sentence : "Champagne and dessert followed .".split(),
-    actions : [
+SHORT = dict(
+    tagged_tree="(S (NP (NN Champagne) (CC and) (NN dessert)) (VP (VBD followed)) (. .))",
+    tree="(S (NP Champagne and dessert) (VP followed) .)",
+    sentence="Champagne and dessert followed .".split(),
+    actions=[
         'NT(S)',
         'NT(NP)',
         'SHIFT',
@@ -63,11 +63,49 @@ SHORT = {
         'SHIFT',
         'REDUCE'
     ]
-}
+)
+
+
+def reduce(self):
+    """A verbose reduce function."""
+    children = []
+    while not self.top.is_open_nt:
+        children.append(self.pop())
+    children.reverse()
+    sequence_len = len(children) + 1
+    head = self.top
+    # Add nonterminal label to the beginning and end of children
+    print('{:<23} {}'.format('head:', head.item))
+    print('{:<23} {}'.format('reducing', [child.item.token for child in children]))
+    # Package embeddings as pytorch tensor
+    children = [child.item.embedding.unsqueeze(0) for child in children]  # List[Variable]
+    children = torch.cat(children, 1)  # tensor (batch, seq_len, emb_dim)
+    head = self.top.item.embedding
+    reduced = self.encoder.composition(head, children)  # TODO: THIS IS THE PROBLEM!
+    # reduced = torch.zeros(1, 100)
+    print('{:<23} {}'.format('embeddings:', children.data.shape))
+    print('{:<23} {}'.format('reduced:', reduced.data))
+    print('{:<23} {}'.format('head-embedding before:', self.top.item.embedding.data))
+    self.top.item.embedding = reduced  # TODO: THIS IS THE PROBLEM!
+    print('{:<23} {}'.format('head-embedding after:', self.top.item.embedding.data))
+    print('{:<23} {}'.format('hidden before:', self.encoder.hx1.data))
+    print(len(self.encoder._hidden_states_1))
+    self.reset_hidden(sequence_len)
+    print('{:<23} {}'.format('hidden between:', self.encoder.hx1.data))
+    print(len(self.encoder._hidden_states_1))
+    print('{:<23} {}'.format('head-encoding before:', self.top.item.encoding.data))
+    self.top.item.encoding = self.encoder(self.top.item.embedding)  # TODO: THIS IS THE PROBLEM!
+    print(len(self.encoder._hidden_states_1))
+    print('{:<23} {}'.format('hidden after:', self.encoder.hx1.data))
+    print('{:<23} {}'.format('head-encoding after:', self.top.item.encoding.data))
+    self.top.close()  # No longer an open nonterminal
+    print('{:<23} {}'.format('top item is open:', self.top.is_open_nt))
+    self.num_open_nonterminals -= 1
+    del head, children, reduced
 
 
 def prepare_data(actions, sentence):
-    i2n = [PAD_TOKEN] + [a[3:-1] for a in actions if a.startswith('NT')]
+    i2n = [PAD_CHAR] + [a[3:-1] for a in actions if a.startswith('NT')]
     i2w = [w for w in list(set(sentence))]
     n2i = dict((n, i) for i, n in enumerate(i2n))
     w2i = dict((w, i) for i, w in enumerate(i2w))
@@ -105,7 +143,7 @@ def test_parser(actions, sentence, tree, dim=4):
     stack_encoder = StackLSTM(dim, dim, dropout=0.3)
     buffer_encoder = BufferLSTM(dim, dim, 2, dropout=0.3)
     history_encoder = HistoryLSTM(dim, dim, dropout=0.3)
-    parser = Parser(
+    parser = DiscParser(
         word_embedding,
         nt_embedding,
         action_embedding,
@@ -170,7 +208,7 @@ def test_train(actions, sentence, steps, dim=4):
     stack_encoder = StackLSTM(dim, dim, dropout=0.3)
     buffer_encoder = BufferLSTM(dim, dim, 2, dropout=0.3)
     history_encoder = HistoryLSTM(dim, dim, dropout=0.3)
-    parser = Parser(
+    parser = DiscParser(
         word_embedding,
         nt_embedding,
         action_embedding,

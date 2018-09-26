@@ -40,6 +40,9 @@ def worker(rank, size, model, batches, optimizer, return_dict, print_every=10):
         loss.backward()
         nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
         average_gradients(model)
+        ##
+        # quit()
+        ##
         optimizer.step()
 
         # Compute the average loss for logging.
@@ -68,9 +71,12 @@ def average_gradients(model):
     size = float(dist.get_world_size())
     for param in model.parameters():
         if param.grad is not None:  # some layers of model are not used and have no grad
-            dist.all_reduce(param.grad.data, op=dist.reduce_op.SUM)
-            param.grad.data /= size
-
+        # if param is not None and param.requires_grad:  # some layers of model are not used and have no grad
+            # print(param)
+            # dist.all_reduce(param.grad.data, op=dist.reduce_op.SUM)
+            # param.grad.data /= size
+            dist.all_reduce(param.grad, op=dist.reduce_op.SUM)
+            param.grad /= size
 
 def init_processes(fn, *args, backend='tcp'):
     """Initialize the distributed environment."""
@@ -226,26 +232,3 @@ def main(args):
          f'| test-fscore {test_fscore}'
     )
     print('-'*99)
-
-    # print(f'Evaluating model on development set to `{args.outdir}/{args.name}`...')
-    # model.eval()
-    # pred_path = os.path.join(args.outdir, f'{args.name}.dev.pred.trees')
-    # gold_path = os.path.join(args.data, 'dev', f'{args.name}.dev.trees')
-    # result_path = os.path.join(args.outdir, f'{args.name}.dev.result')
-    # predict(model, dev_batches, pred_path)
-    # dev_fscore = evalb(args.evalb_dir, pred_path, gold_path, result_path)
-    # print('Development f-score:', dev_fscore)
-    #
-    # with open(checkfile, 'wb') as f:
-    #     state = {
-    #         'args': args,
-    #         'model': model,
-    #         'dictionary': corpus.dictionary,
-    #         'optimizer': optimizer,
-    #         'epoch': 1,
-    #         'num-updates': 0,
-    #         'best-dev-fscore': dev_fscore,
-    #         'best-dev-epoch': dev_fscore,
-    #         'test-fscore': 0
-    #     }
-    #     torch.save(state, f)

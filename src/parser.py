@@ -29,7 +29,7 @@ class TransitionBase(nn.Module):
 
     @property
     def tokens(self):
-        return [item.token for item in self.items]
+        return [str(item.token) for item in self.items]
 
     @property
     def indices(self):
@@ -139,6 +139,10 @@ class Stack(TransitionBase):
         children.reverse()
         sequence_len = len(children) + 1
         head = self.pop()
+        ##
+        self.child_tokens = [str(child.item.token) for child in children]
+        self.head_token = str(head.item.token)
+        ##
         children = [child.item.embedding.unsqueeze(0) for child in children]
         children = torch.cat(children, 1)  # tensor (batch, seq_len, emb_dim)
         reduced = self.encoder.composition(head.item.embedding, children)
@@ -148,43 +152,6 @@ class Stack(TransitionBase):
         head.close()
         self.num_open_nonterminals -= 1
         self._items.append(head)
-
-    # def reduce(self):
-    #     children = []
-    #     while not self.top.is_open_nt:
-    #         children.append(self.pop())
-    #     children.reverse()
-    #     sequence_len = len(children) + 1
-    #     head = self.top
-    #     # Add nonterminal label to the beginning and end of children
-    #     # children = [child.item for child in children]  # List[Item]
-    #     # print('{:<23} {}'.format('head:', head.item))
-    #     # print('{:<23} {}'.format('reducing', [child.item.token for child in children]))
-    #     # Package embeddings as pytorch tensor
-    #     children = [child.item.embedding.unsqueeze(0) for child in children]  # List[Variable]
-    #     children = torch.cat(children, 1)  # tensor (batch, seq_len, emb_dim)
-    #     head = self.top.item.embedding
-    #     reduced = self.encoder.composition(head, children)  # TODO: THIS IS THE PROBLEM!
-    #     # reduced = torch.zeros(1, 100)
-    #     # print('{:<23} {}'.format('embeddings:', children.data.shape))
-    #     # print('{:<23} {}'.format('reduced:', reduced.data))
-    #     # print('{:<23} {}'.format('head-embedding before:', self.top.item.embedding.data))
-    #     self.top.item.embedding = reduced  # TODO: THIS IS THE PROBLEM!
-    #     # print('{:<23} {}'.format('head-embedding after:', self.top.item.embedding.data))
-    #     # print('{:<23} {}'.format('hidden before:', self.encoder.hx1.data))
-    #     # print(len(self.encoder._hidden_states_1))
-    #     self.reset_hidden(sequence_len)
-    #     # print('{:<23} {}'.format('hidden between:', self.encoder.hx1.data))
-    #     # print(len(self.encoder._hidden_states_1))
-    #     # print('{:<23} {}'.format('head-encoding before:', self.top.item.encoding.data))
-    #     self.top.item.encoding = self.encoder(self.top.item.embedding)  # TODO: THIS IS THE PROBLEM!
-    #     # print(len(self.encoder._hidden_states_1))
-    #     # print('{:<23} {}'.format('hidden after:', self.encoder.hx1.data))
-    #     # print('{:<23} {}'.format('head-encoding after:', self.top.item.encoding.data))
-    #     self.top.close()  # No longer an open nonterminal
-    #     # print('{:<23} {}'.format('top item is open:', self.top.is_open_nt))
-    #     self.num_open_nonterminals -= 1
-    #     del head, children, reduced
 
     def reset_hidden(self, sequence_len):
         self.encoder._reset_hidden(sequence_len)

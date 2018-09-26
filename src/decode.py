@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 from PYEVALB import parser, scorer
 
-from datatypes import Item, Word, Nonterminal, Action
+from datatypes import Token, Item, Word, Nonterminal, Action
 from actions import SHIFT, REDUCE, NT, GEN
 from parser import DiscParser
 from scripts.get_oracle import unkify
@@ -17,13 +17,13 @@ class Decoder:
     def __init__(self,
                  model=None,
                  dictionary=None,
-                 use_char=False,
+                 use_chars=False,
                  use_tokenizer=False,
                  verbose=False):
         self.model = model
         self.dictionary = dictionary
 
-        self.use_char = use_char  #  using character based input embedding
+        self.use_chars = use_chars  #  using character based input embedding
         self.use_tokenizer = use_tokenizer
         self.verbose = verbose
 
@@ -38,13 +38,16 @@ class Decoder:
 
     def _init_tokenizer(self):
         if self.verbose: print("Using spaCy's Engish tokenizer.")
-        from spacy.tokenizer import Tokenizer
-        nlp = spacy.load('en')
-        self.tokenizer = Tokenizer(nlp.vocab)
+        # from spacy.tokenizer import Tokenizer
+        # nlp = spacy.load('en')
+        # self.tokenizer = Tokenizer(nlp.vocab)
+        from nltk import word_tokenize
+        self.tokenizer = word_tokenize
 
     def _tokenize(self, sentence):
         if self.verbose: print('Tokenizing sentence...')
-        return [token.text for token in self.tokenizer(sentence)]
+        # return [token.text for token in self.tokenizer(sentence)]
+        return [token for token in self.tokenizer(sentence)]
 
     def _process_unks(self, sentence):
         if self.verbose: print(f'input: {sentence}')
@@ -60,19 +63,20 @@ class Decoder:
         return processed
 
     def _from_string(self, sentence):
-        if self.use_tokenizer:
-            sentence = self._tokenize(sentence)
-            if self.verbose: print(f'token: {sentence}')
-        sentence = sentence.split()
-        if not self.use_char:  # character embedding has no unk token
-            sentence = self._process_unks(sentence)
+        sentence = self._tokenize(sentence) if self.use_tokenizer else sentence.split()
+        if self.verbose: print(f'> {" ".join(sentence)}')
+        if not self.use_chars:  # character embedding has no unk token
+            processed = self._process_unks(sentence)
+        else:
+            processed = sentence
+        sentence = [Token(orig, proc) for orig, proc in zip(sentence, processed)]
         sentence_items = []
-        for word in sentence:
-            if self.use_char:
-                index = [self.dictionary.w2i[char] for char in word]
+        for token in sentence:
+            if self.use_chars:
+                index = [self.dictionary.w2i[char] for char in token.processed]
             else:
-                index = self.dictionary.w2i[word]
-            sentence_items.append(Word(word, index))
+                index = self.dictionary.w2i[token.processed]
+            sentence_items.append(Word(token, index))
         return sentence_items
 
     def _process_sentence(self, sentence):
@@ -120,15 +124,15 @@ class Decoder:
         return index, action
 
     def load_model(self, path):
+        print(f'Loading model from {path}...')
         with open(path, 'rb') as f:
-            print(f'Loading model from {path}...')
             state = torch.load(f)
-            epoch, fscore = state['epoch'], state['test-fscore']
-            print(f'Loaded model trained for {epoch} epochs with test-fscore {fscore}.')
-            self.model = state['model']
-            self.dictionary = state['dictionary']
-            self.use_char = state['args'].use_char
-            self.model.eval()  # Disable dropout.
+        epoch, fscore = state['epoch'], state['test-fscore']
+        print(f'Loaded model trained for {epoch} epochs with test-fscore {fscore}.')
+        self.model = state['model']
+        self.dictionary = state['dictionary']
+        self.use_chars = state['args'].use_chars
+        self.model.eval()  # Disable dropout.
 
     def get_tree(self):
         assert len(self.model.stack._items) > 1, 'no tree built yet'
@@ -153,6 +157,7 @@ class Decoder:
         prec, recall = result.prec, result.recall
         fscore = 2 * (prec * recall) / (prec + recall)
         return pred, fscore
+
 
 class GreedyDecoder(Decoder):
     """Greedy decoder for RNNG."""

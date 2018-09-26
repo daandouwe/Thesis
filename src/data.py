@@ -129,7 +129,7 @@ class Data:
     def read(self, path, dictionary, textline, max_lines):
         sents = get_sentences(path)  # a list of dict
         nlines = len(sents)
-        for i, sent_dict in enumerate(tqdm(sents)):  # tqdm: a progressbar
+        for i, sent_dict in enumerate(tqdm(sents)):
             if max_lines > 0 and i > max_lines:
                 break
             # Get sentence items.

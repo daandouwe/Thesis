@@ -97,8 +97,8 @@ class AttentionEncoder(nn.Module):
         """Forward pass that works for unpadded, i.e. equal length, batches."""
         # children shape (batch, seq, dim)
         # head shape (batch, dim)
-        xf = torch.cat((head.unsqueeze(1), children), dim=1)  # [NP, the, black, cat]
-        xb = torch.cat((head.unsqueeze(1), self._reverse(children)), dim=1)  # [NP, black, cat, the]
+        xf = children  # [the, black, cat]
+        xb = self._reverse(children)  # [black, cat, the]
 
         hf, _ = self.fwd_rnn(xf)  # (batch, seq, hidden_size//2)
         hb, _ = self.bwd_rnn(xb)  # (batch, seq, hidden_size//2)
@@ -117,6 +117,29 @@ class AttentionEncoder(nn.Module):
         g = self.sigmoid(self.linear(x))  # (batch, hidden_size)
         c = g * head + (1 - g) * m  # (batch, hidden_size)
         return c
+
+
+class LatentFactor(nn.Module):
+    """A bidirectional RNN encoder for unpadded batches."""
+    def __init__(self, input_size, hidden_size, num_layers, dropout, batch_first=True, device=None):
+        super(AttentionEncoder, self).__init__()
+        assert hidden_size % 2 == 0, 'hidden size must be even'
+        self.device = device
+        self.fwd_rnn = nn.LSTM(input_size, hidden_size//2, num_layers,
+                               batch_first=batch_first, dropout=dropout)
+        self.bwd_rnn = nn.LSTM(input_size, hidden_size//2, num_layers,
+                               batch_first=batch_first, dropout=dropout)
+        self.V = nn.Parameter(torch.ones((hidden_size, hidden_size), device=device, dtype=torch.float))
+        self.linear = nn.Linear(2*hidden_size, hidden_size)
+
+        self.softmax = nn.Softmax(dim=1)
+        self.sigmoid = nn.Sigmoid()
+
+        init_lstm(self.fwd_rnn)
+        init_lstm(self.bwd_rnn)
+        nn.init.xavier_uniform_(self.V)
+        self.to(device)
+
 
 
 class BaseLSTM(nn.Module):
