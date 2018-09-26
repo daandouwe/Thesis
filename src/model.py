@@ -74,6 +74,10 @@ class DiscRNNG(DiscParser):
                 nt = action.get_nt()
                 loss += self.loss_compute(nonterminal_logits, nt.index)
             self.parse_step(action)
+            # Add KL if we use latent factor encoder.
+            if self.stack.encoder.factor_comp and action == REDUCE:
+                alpha = self.stack.encoder.composition._alpha
+                loss += self.stack.encoder.composition.kl(alpha)
         return loss
 
     def parse(self, sentence):
@@ -301,7 +305,8 @@ def make_model(args, dictionary):
         args.word_lstm_hidden,
         args.dropout,
         args.device,
-        attn_comp=args.use_attn
+        attn_comp=args.use_attn,
+        factor_comp=args.use_factors
     )
     history_encoder = HistoryLSTM(
         args.emb_dim,

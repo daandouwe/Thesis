@@ -5,6 +5,7 @@ import argparse
 import train
 import predict_input
 import distributed
+import inspect_model
 
 
 def main():
@@ -12,8 +13,10 @@ def main():
     parser = argparse.ArgumentParser(description='Discriminative RNNG parser',
                                      fromfile_prefix_chars='@') # Enable loading args from textfile
     # Choose mode
-    parser.add_argument('mode', choices=['train', 'predict', 'dist'], help='what to do')
-    parser.add_argument('model', choices=['disc', 'gen'], help='use discriminative or generative model')
+    parser.add_argument('mode', choices=['train', 'predict', 'dist', 'inspect'],
+                        help='what to do')
+    parser.add_argument('model', choices=['disc', 'gen'],
+                        help='use discriminative or generative model')
 
     # Debugging
     parser.add_argument('-d', '--debug', action='store_true')
@@ -50,6 +53,8 @@ def main():
                         help='number of layers in lstm')
     parser.add_argument('--use-attn', action='store_true',
                         help='use attention in StackLSTM composition function')
+    parser.add_argument('--use-factors', action='store_true',
+                        help='use latent factors in StackLSTM composition function')
     parser.add_argument('--mlp-dim', type=int, default=128,
                         help='size of mlp hidden state')
     parser.add_argument('--mlp_nonlinearity', default='Tanh', choices=['Tanh', 'ReLU'],
@@ -107,7 +112,8 @@ def main():
         predict_input.main(args)
     elif args.mode == 'dist':
         distributed.main(args)
-
+    elif args.mode == 'inspect':
+        inspect_model.main(args)
 
 if __name__ == '__main__':
     main()

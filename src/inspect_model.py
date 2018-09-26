@@ -9,6 +9,7 @@ from PYEVALB import parser, scorer
 
 from datatypes import Token, Item, Word, Nonterminal, Action
 from actions import REDUCE, NT, GEN
+from data import Corpus
 from decode import Decoder
 from tests.test_parser import SHORT, LONG
 
@@ -50,8 +51,7 @@ class AttentionInspection(Decoder):
 
     def forward(self, sentence, actions):
         """Forward pass only used for training."""
-        sentence = self._process_sentence(sentence)
-        actions = self._process_actions(actions)
+        self.model.eval()
         self.model.initialize(sentence)
         loss = torch.zeros(1, device=self.model.device)
         for i, action in enumerate(actions):
@@ -66,14 +66,20 @@ class AttentionInspection(Decoder):
                 loss += self.model.loss_compute(nonterminal_logits, nt.index)
             self.model.parse_step(action)
             if action == REDUCE:
-                # We stored these internally
-                attention = self.model.stack.encoder.composition.attn
                 children = self.model.stack.child_tokens
                 head = self.model.stack.head_token
-                print()
-                print(head, '|', ' '.join(children))
-                print(attention.squeeze().data.numpy())
-                print()
+                if self.model.stack.encoder.attn_comp:
+                    # We stored these internally
+                    attention = self.model.stack.encoder.composition.attn.squeeze(0).data.numpy()
+                    attentive = [f'{child} ({attn:.2f})' for child, attn in zip(children, attention)]
+                    print('  ', head, '|', ' '.join(attentive))
+                elif self.model.stack.encoder.factor_comp:
+                    sample = self.model.stack.encoder.composition._sample
+                    alpha = self.model.stack.encoder.composition._alpha
+                    factors = sample.squeeze(0).data.numpy().astype(int)
+                    probs = nn.functional.sigmoid(
+                        self.model.stack.encoder.composition._alpha).squeeze(0).data.numpy()
+                    print('  ', head, '|', ' '.join(children), probs)
         return loss
 
     def _process_actions(self, actions):
@@ -91,17 +97,29 @@ class AttentionInspection(Decoder):
         return action_items
 
 
-def main(path):
-    sentence, actions = LONG['sentence'], LONG['actions']
-    print('>', sentence)
+def main(args):
     decoder = AttentionInspection(use_tokenizer=True)
-    decoder.load_model(path)
-    sentence = decoder.forward(sentence, actions)
-
-
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        path = sys.argv[1]
-        main(path)
+    decoder.load_model(args.checkpoint)
+    if True:
+        print(f'Loading data from `{args.data}`...')
+        corpus = Corpus(
+            data_path=args.data,
+            model=args.model,
+            textline=args.textline,
+            name=args.name,
+            use_chars=args.use_chars,
+            max_lines=args.max_lines
+        )
+        train_batches = corpus.train.batches(length_ordered=False, shuffle=True)
+        dev_batches = corpus.dev.batches(length_ordered=False, shuffle=False)
+        test_batches = corpus.test.batches(length_ordered=False, shuffle=False)
+        for sentence, actions in train_batches[:args.max_lines]:
+            print('>', ' '.join([str(token) for token in sentence]))
+            decoder.forward(sentence, actions)
+            print()
     else:
-        exit('Specify path')
+        sentence, actions = LONG['sentence'], LONG['actions']
+        sentence = decoder._process_sentence(sentence)
+        actions = decoder._process_actions(actions)
+        print('>', sentence)
+        sentence = decoder.forward(sentence, actions)

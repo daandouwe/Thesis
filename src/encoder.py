@@ -6,6 +6,7 @@ import torch.distributions as dist
 import torch.nn.init as init
 
 from data import wrap
+from concrete import BinaryConcrete, Concrete
 
 
 def orthogonal_init(lstm):
@@ -119,27 +120,60 @@ class AttentionEncoder(nn.Module):
         return c
 
 
-class LatentFactor(nn.Module):
-    """A bidirectional RNN encoder for unpadded batches."""
-    def __init__(self, input_size, hidden_size, num_layers, dropout, batch_first=True, device=None):
-        super(AttentionEncoder, self).__init__()
+class LatentFactorEncoder(nn.Module):
+    """A latent factor model for composition function."""
+    def __init__(self, num_factors, input_size, hidden_size, num_layers, dropout, binary=True, device=None):
+        super(LatentFactorEncoder, self).__init__()
         assert hidden_size % 2 == 0, 'hidden size must be even'
         self.device = device
-        self.fwd_rnn = nn.LSTM(input_size, hidden_size//2, num_layers,
-                               batch_first=batch_first, dropout=dropout)
-        self.bwd_rnn = nn.LSTM(input_size, hidden_size//2, num_layers,
-                               batch_first=batch_first, dropout=dropout)
-        self.V = nn.Parameter(torch.ones((hidden_size, hidden_size), device=device, dtype=torch.float))
-        self.linear = nn.Linear(2*hidden_size, hidden_size)
+        self.binary = binary
+        self.generative = nn.Linear(num_factors, hidden_size, bias=False)
+        self.inference = nn.Sequential(
+            BiRecurrentEncoder(input_size, hidden_size, num_layers, dropout, device=device),
+            nn.ReLU(),
+            nn.Linear(hidden_size, num_factors))
+        self.encoder = BiRecurrentEncoder(input_size, hidden_size, num_layers, dropout, device=device)
+        self.linear = nn.Linear(hidden_size, num_factors)
 
-        self.softmax = nn.Softmax(dim=1)
-        self.sigmoid = nn.Sigmoid()
+        self.softmax = nn.Softmax(dim=-1)
+        self.relu = nn.ReLU()
 
-        init_lstm(self.fwd_rnn)
-        init_lstm(self.bwd_rnn)
-        nn.init.xavier_uniform_(self.V)
-        self.to(device)
 
+    def encode(self, head, children):
+        h = self.encoder(head, children)
+        return self.linear(self.relu(h))
+        # return self.inference(head, children)
+
+    def decode(self, x):
+        return self.generative(x)
+
+    def sample(self, alpha, temp=1.0):
+        if self.binary:
+            if self.training:
+                return BinaryConcrete(alpha, temp).sample()
+            else:
+                return (alpha > 0.5).float()  # argmax for binary variable
+        else:
+            if self.training:
+                return Concrete(alpha, temp).sample()
+            else:
+                return dist.OneHotCategorical(logits=alpha).sample()
+
+    def forward(self, head, children, temp=0.7):
+        alpha = self.encode(head, children)
+        sample = self.sample(alpha, temp)
+        h = self.decode(sample)
+        self._alpha, self._sample = alpha, sample  # store internally
+        return h
+
+    def kl(self, alpha):
+        if self.binary:
+            kl = (self.softmax(alpha) *
+                (alpha - torch.log(torch.tensor(1.0) / 2.0))).sum()
+        else:
+            kl = (self.softmax(alpha) *
+                (alpha - torch.log(torch.tensor(1.0) / alpha.size(-1)))).sum()
+        return kl
 
 
 class BaseLSTM(nn.Module):
@@ -215,11 +249,16 @@ class BaseLSTM(nn.Module):
 
 class StackLSTM(BaseLSTM):
     """A Stack-LSTM used to encode the stack of a transition based parser."""
-    def __init__(self, input_size, hidden_size, dropout, device=None, attn_comp=False):
+    def __init__(self, input_size, hidden_size, dropout, device=None, attn_comp=False, factor_comp=False):
         super(StackLSTM, self).__init__(input_size, hidden_size, dropout, device)
         # Composition function.
+        assert not (attn_comp and factor_comp)
+        self.attn_comp = attn_comp
+        self.factor_comp = factor_comp
         if attn_comp:
             self.composition = AttentionEncoder(input_size, input_size, 2, dropout, device=device)
+        if factor_comp:
+            self.composition = LatentFactorEncoder(20, input_size, input_size, 2, dropout, device=device)
         else:
             self.composition = BiRecurrentEncoder(input_size, input_size, 2, dropout, device=device)
 
