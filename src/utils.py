@@ -2,6 +2,15 @@ import os
 import time
 
 
+def get_folders(args):
+    # Create folders for logging and checkpoints
+    subdir = get_subdir_string(args, with_params=False)  # Too many parameters for folder.
+    logdir = os.path.join(args.root, 'log', subdir)
+    checkdir = os.path.join(args.root, 'checkpoints', subdir)
+    outdir = os.path.join(args.root, 'out', subdir)
+    return subdir, logdir, checkdir, outdir
+
+
 def get_parameter_string(args):
     """Returns an identification string based on arguments in args.
 
@@ -24,15 +33,6 @@ def get_parameter_string(args):
             keys.append(key)
     params = [f'{key}_{args[key]}' for key in sorted(keys)]
     return '_'.join(params)
-
-
-def get_folders(args):
-    # Create folders for logging and checkpoints
-    subdir = get_subdir_string(args, with_params=False)  # Too many parameters for folder.
-    logdir = os.path.join(args.root, 'log', subdir)
-    checkdir = os.path.join(args.root, 'checkpoints', subdir)
-    outdir = os.path.join(args.root, 'out', subdir)
-    return subdir, logdir, checkdir, outdir
 
 
 def get_subdir_string(args, with_params=True):
