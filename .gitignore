@@ -1,8 +1,12 @@
 .remote-sync.json
+
+brain-data
 data
 tmp
+
 src/.*
 src/*.ipynb
 src/notebooks
 src/runs
+
 *.ipynb_checkpoints
