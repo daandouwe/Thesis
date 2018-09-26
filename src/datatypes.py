@@ -2,7 +2,20 @@
 With inspiration from kmkurn/pytorch-rnng:
     https://github.com/kmkurn/pytorch-rnng/blob/master/src/rnng/actions.py
 """
-import torch.nn as nn
+from typing import NamedTuple
+
+
+class Token(NamedTuple):
+    original: str
+    processed: str
+
+    def __str__(self):
+        """Used when print the token in a predicted tree."""
+        return self.original
+
+    def __repr__(self):
+        """Used for other purposes."""
+        return repr(self)
 
 
 class Item:
@@ -13,10 +26,10 @@ class Item:
         self.encoding = encoding
 
     def __str__(self):
-        return self.token
+        return str(self.token)
 
     def __repr__(self):
-        return f'{type(self).__name__}(token={self.token}, index={self.index})'
+        return f'{type(self).__name__}(token={repr(self.token)}, index={self.index})'
 
     def __eq__(self, other):
         if not type(self) == type(other):
@@ -69,7 +82,15 @@ class Action(Item):
 
 
 if __name__ == '__main__':
-    word = Word('The', 0)
+    token = Token('initially', 'UNK')
+    word = Word(token, 0)
+
+    print(token)
+    print(repr(token))
+    print()
+    print(word)
+    print(repr(word))
+
     word2 = Word('The', 0)
     nt = Nonterminal('NP', 4)
     print(word == word2)

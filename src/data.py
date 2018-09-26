@@ -6,9 +6,8 @@ from tqdm import tqdm
 import torch
 import numpy as np
 
-from datatypes import Word, Nonterminal, Action
+from datatypes import Token, Word, Nonterminal, Action
 from actions import SHIFT, REDUCE, NT, GEN
-from scripts.get_vocab import get_sentences
 
 
 PAD_CHAR = '_'
@@ -33,6 +32,31 @@ def wrap(batch, device):
         batch = pad(batch)
     tensor = torch.tensor(batch, device=device, dtype=torch.long)
     return tensor.to(device)
+
+
+def get_sentences(path):
+    """Chunks the oracle file into sentences."""
+    def get_sent_dict(sent):
+        d = {
+                'tree'    : sent[0],
+                'tags'    : sent[1],
+                'upper'   : sent[2],
+                'lower'   : sent[3],
+                'unked'   : sent[4],
+                'actions' : sent[5:]
+            }
+        return d
+
+    sentences = []
+    with open(path) as f:
+        sent = []
+        for line in f:
+            if line == '\n':
+                sentences.append(sent)
+                sent = []
+            else:
+                sent.append(line.rstrip())
+        return [get_sent_dict(sent) for sent in sentences if sent]
 
 
 class Dictionary:
@@ -109,30 +133,31 @@ class Data:
             if max_lines > 0 and i > max_lines:
                 break
             # Get sentence items.
-            sentence = sent_dict[textline].split()
+            original, processed = sent_dict['upper'].split(), sent_dict[textline].split()
+            sentence = [Token(orig, proc) for orig, proc in zip(original, processed)]
             sentence_items = []
             for token in sentence:
                 if self.use_chars:
-                    index = [dictionary.w2i[char] for char in token]
+                    index = [dictionary.w2i[char] for char in token.processed]
                 else:
-                    index = dictionary.w2i[token]
+                    index = dictionary.w2i[token.processed]
                 sentence_items.append(Word(token, index))
             # Get action items.
             actions = sent_dict['actions']
             action_items = []
-            word_idx = 0
-            for token in actions:
-                if token == 'SHIFT':
+            token_idx = 0
+            for a in actions:
+                if a == 'SHIFT':
                     if self.model == 'disc':
                         action = Action('SHIFT', Action.SHIFT_INDEX)
                     if self.model == 'gen':
-                        word = sentence[word_idx]
-                        action = GEN(Word(word, dictionary.w2i[word]))
-                        word_idx += 1
-                elif token == 'REDUCE':
+                        token = sentence[token_idx]
+                        action = GEN(Word(token, dictionary.w2i[token.processed]))
+                        token_idx += 1
+                elif a == 'REDUCE':
                     action = Action('REDUCE', Action.REDUCE_INDEX)
-                elif token.startswith('NT'):
-                    nt = token[3:-1]
+                elif a.startswith('NT'):
+                    nt = a[3:-1]
                     action = NT(Nonterminal(nt, dictionary.n2i[nt]))
                 action_items.append(action)
             self.sentences.append(sentence_items)
@@ -171,7 +196,7 @@ class Data:
 
 class Corpus:
     """A corpus of three datasets (train, development, and test) and a dictionary."""
-    def __init__(self, data_path='../tmp', model='disc', textline='unked', name='ptb', use_chars=False, max_lines=-1):
+    def __init__(self, data_path='../data', model='disc', textline='unked', name='ptb', use_chars=False, max_lines=-1):
         self.dictionary = Dictionary(path=os.path.join(data_path, 'vocab', textline), name=name, use_chars=use_chars)
         self.train = Data(path=os.path.join(data_path, 'train', name + '.train.oracle'),
                         dictionary=self.dictionary, model=model, textline=textline, use_chars=use_chars, max_lines=max_lines)
@@ -195,7 +220,7 @@ if __name__ == "__main__":
     import json
 
     # Example usage:
-    corpus = Corpus(data_path='../tmp', textline='unked', use_chars=False)
+    corpus = Corpus(data_path='../data', textline='unked', use_chars=False)
     batches = corpus.test.batches(1, length_ordered=False)
     sentence, actions = batches[0]
     print([word.token for word in sentence])

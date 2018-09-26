@@ -12,8 +12,8 @@ import numpy as np
 from data import Corpus
 from model import DiscRNNG, make_model
 from predict import predict
-from eval import true_evalb
-from util import Timer, get_subdir_string, make_folders
+from eval import evalb
+from utils import Timer, get_subdir_string, get_folders, write_args
 
 
 def clock_time(s):
@@ -85,7 +85,17 @@ def main(args):
     size = mp.cpu_count() if args.nprocs == -1 else args.nprocs
     args.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    make_folders(args)
+    # Make output folder structure.
+    if not args.disable_folders:
+        subdir, logdir, checkdir, outdir = get_folders(args)
+        args.logdir, args.checkdir, args.outdir = logdir, checkdir, outdir
+        os.mkdir(logdir); os.mkdir(checkdir); os.mkdir(outdir)
+        print(f'Output subdirectory: `{subdir}`.')
+    else:
+        print('Did not make output folders!')
+
+    # Save arguments.
+    write_args(args)
 
     # Initialize model and data.
     corpus = Corpus(
@@ -142,7 +152,7 @@ def main(args):
     pred_path = os.path.join(args.outdir, f'{args.name}.dev.pred.trees')
     gold_path = os.path.join(args.data, 'dev', f'{args.name}.dev.trees')
     result_path = os.path.join(args.outdir, f'{args.name}.result')
-    true_evalb(evalb_dir, pred_path, gold_path, result_path)
+    evalb(evalb_dir, pred_path, gold_path, result_path)
 
     with open(pred_path) as f:
         print(f.read())

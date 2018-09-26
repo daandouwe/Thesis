@@ -20,7 +20,7 @@ def main():
     parser.add_argument('-m', '--memory-debug', action='store_true')
 
     # Data arguments
-    parser.add_argument('--data', type=str, default='../tmp',
+    parser.add_argument('--data', type=str, default='../data',
                         help='location of the data corpus')
     parser.add_argument('--textline', type=str, choices=['unked', 'lower', 'upper'], default='unked',
                         help='textline to use from the oracle file')
@@ -37,7 +37,7 @@ def main():
     parser.add_argument('--max-lines', default=-1, type=int,
                         help='max number of training lines')
 
-
+    # Model arguments
     parser.add_argument('--use-chars', action='store_true',
                         help='use character-level word embeddings')
     parser.add_argument('--emb-dim', type=int, default=100,
@@ -96,7 +96,6 @@ def main():
     # Predict arguments
     parser.add_argument('--checkpoint', type=str, default='',
                         help='load model from this checkpoint')
-
     parser.add_argument('--evalb-dir', default='~/EVALB',
                         help='where the evalb excecutable is located')
 

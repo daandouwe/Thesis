@@ -5,28 +5,10 @@ import argparse
 import re
 import subprocess
 
-from PYEVALB.scorer import Scorer
-
-from scripts.get_vocab import get_sentences
+from data import get_sentences
 
 
-def evalb(outdir, datadir, name, set='test'):
-    assert set in ('train', 'dev', 'test')
-    pred_path = os.path.join(outdir, f'{name}.{set}.pred.trees')
-    gold_path = os.path.join(datadir, set, f'{name}.{set}.trees')
-    result_path = os.path.join(outdir, f'{name}.result')
-    scorer = Scorer()
-    scorer.evalb(gold_path, pred_path, result_path)
-    with open(result_path) as infile:
-        for line in infile:
-            match = re.match(r"Bracketing FMeasure:\s+(\d+\.\d+)", line)
-            if match:
-                fscore = float(match.group(1))
-                return fscore
-    return 0.0
-
-
-def true_evalb(evalb_dir, pred_path, gold_path, result_path, ignore_error=10000):
+def evalb(evalb_dir, pred_path, gold_path, result_path, ignore_error=10000):
     """Use original EVALB to score trees."""
     evalb_dir = os.path.expanduser(evalb_dir)
     assert os.path.exists(evalb_dir), f'Do you have EVALB installed at {evalb_dir}?'
@@ -39,6 +21,14 @@ def true_evalb(evalb_dir, pred_path, gold_path, result_path, ignore_error=10000)
         result_path
     )
     subprocess.run(command, shell=True)
+    # Read result path and get F-sore.
+    with open(result_path) as f:
+        for line in f:
+            match = re.match(r"Bracketing FMeasure\s+=\s+(\d+\.\d+)", line)
+            if match:
+                fscore = float(match.group(1))
+                return fscore
+    return 0.0
 
 
 def actions2tree(words, actions, tags=None):
@@ -63,6 +53,7 @@ def actions2tree(words, actions, tags=None):
             tree += f'({a} '
     return tree
 
+
 def eval_oracle(outdir, verbose=False):
     oracle_path = os.path.join(outdir, 'test.pred.oracle')
     pred_path   = os.path.join(outdir, 'test.pred.trees')
@@ -83,6 +74,7 @@ def eval_oracle(outdir, verbose=False):
     if verbose:
         with open(result_path) as f:
             print(f.read())
+
 
 def main(args):
     oracle_path = os.path.join(args.preddir, args.name + '.pred.oracle')

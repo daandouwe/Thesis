@@ -1,3 +1,4 @@
+import os
 import itertools
 
 import numpy as np
@@ -8,9 +9,9 @@ from data import Corpus
 from model import make_model
 from predict import predict
 from eval import evalb
-from util import Timer, write_losses, make_folders
+from utils import Timer, write_losses, get_folders, write_args
 
-##
+## Memory tests
 from test_memory import get_added_memory, get_num_objects, get_tensors
 
 from pprint import pprint
@@ -49,13 +50,22 @@ def main(args):
     args.device = torch.device("cuda" if use_cuda else "cpu")
     print(f'Device: {args.device}.')
 
+    # Make output folder structure.
     if not args.disable_folders:
-        make_folders(args)
+        subdir, logdir, checkdir, outdir = get_folders(args)
+        args.logdir, args.checkdir, args.outdir = logdir, checkdir, outdir
+        os.mkdir(logdir); os.mkdir(checkdir); os.mkdir(outdir)
+        print(f'Output subdirectory: `{subdir}`.')
     else:
         print('Did not make output folders!')
 
-    print(f'Created tensorboard summary writer at `{args.logdir}`.')
+    # Save arguments.
+    write_args(args)
+
     writer = SummaryWriter(args.logdir)
+    print(f'Savinf logs to `{args.logdir}`.')
+    print(f'Saving predictions to `{args.outdir}`.')
+    print(f'Saving models to `{args.checkdir}`.')
 
     print(f'Loading data from `{args.data}`...')
     corpus = Corpus(
@@ -71,15 +81,17 @@ def main(args):
     test_batches = corpus.test.batches(length_ordered=False, shuffle=False)
     print(corpus)
 
+    # Sometimes we don't want to use all data.
     if args.debug:
         print('Debug mode.')
-        train_batches = train_batches[:30]
-        dev_batches = dev_batches
-        test_batches = test_batches
+        train_batches = train_batches[:20]
+        dev_batches = dev_batches[:30]
+        test_batches = test_batches[:30]
     if args.max_lines != -1:
         dev_batches = dev_batches[:100]
         test_batches = test_batches[:100]
 
+    # Create model.
     model = make_model(args, corpus.dictionary)
     model.to(args.device)
 
@@ -99,9 +111,10 @@ def main(args):
     best_dev_fscore = -np.inf
     best_dev_epoch = None
     test_fscore = None
+    checkfile = os.path.join(checkdir, 'model.pt')
 
     def save_checkpoint():
-        with open(args.checkfile, 'wb') as f:
+        with open(checkfile, 'wb') as f:
             # Could move to using 'model': model.state_dict()
             # Then:
             # model_state_dict = state['model']
@@ -128,11 +141,15 @@ def main(args):
         nonlocal best_dev_epoch
 
         model.eval()
-        predict(model, dev_batches, args.outdir, name=args.name, set='dev')
-        dev_fscore = evalb(args.outdir, args.data, name=args.name, set='dev')
+        pred_path = os.path.join(args.outdir, f'{args.name}.dev.pred.trees')
+        gold_path = os.path.join(args.data, 'dev', f'{args.name}.dev.trees')
+        result_path = os.path.join(args.outdir, f'{args.name}.dev.result')
+        predict(model, dev_batches, pred_path)
+        dev_fscore = evalb(args.evalb_dir, pred_path, gold_path, result_path)
+        # Log score to tensorboard.
         writer.add_scalar('Dev/Fscore', dev_fscore, num_updates)
         if dev_fscore > best_dev_fscore:
-            print(f'Saving new best model to `{args.checkfile}`...')
+            print(f'Saving new best model to `{checkfile}`...')
             save_checkpoint()
             best_dev_epoch = epoch
             best_dev_fscore = dev_fscore
@@ -247,17 +264,17 @@ def main(args):
                 if (num_updates // args.batch_size + 1) > args.learning_rate_warmup_steps:
                     scheduler.step(best_dev_fscore)
 
-            print('-'*89)
+            print('-'*99)
             print(
                 f'| End of epoch {epoch:3d}/{args.epochs} '
-                f'| total-elapsed {epoch_timer.format_elapsed()}'
+                f'| total-elapsed {epoch_timer.format_elapsed()} '
                 f'| dev-fscore {dev_fscore:4.2f} '
                 f'| best dev-epoch {best_dev_epoch} '
                 f'| best dev-fscore {best_dev_fscore:4.2f} '
             )
-            print('-'*89)
+            print('-'*99)
     except KeyboardInterrupt:
-        print('-'*89)
+        print('-'*99)
         print('Exiting from training early.')
 
         # Save the losses for plotting and diagnostics
@@ -268,21 +285,24 @@ def main(args):
         print('Evaluating fscore on development set...')
         check_dev()
     # Load best saved model.
-    print(f'Loading best saved model (epoch {best_dev_epoch}) from `{args.checkfile}`...')
-    with open(args.checkfile, 'rb') as f:
+    print(f'Loading best saved model (epoch {best_dev_epoch}) from `{checkfile}`...')
+    with open(checkfile, 'rb') as f:
         state = torch.load(f)
         model = state['model']
 
     print('Evaluating loaded model on test set...')
-    predict(model, test_batches, args.outdir, name=args.name, set='test')
-    test_fscore = evalb(args.outdir, args.data, name=args.name, set='test')
+    pred_path = os.path.join(args.outdir, f'{args.name}.test.pred.trees')
+    gold_path = os.path.join(args.data, 'test', f'{args.name}.test.trees')
+    result_path = os.path.join(args.outdir, f'{args.name}.test.result')
+    predict(model, test_batches, pred_path)
+    test_fscore = evalb(args.evalb_dir, pred_path, gold_path, result_path)
     save_checkpoint()
 
-    print('-'*89)
+    print('-'*99)
     print(
          f'| End of training '
          f'| best dev-epoch {best_dev_epoch:2d} '
          f'| best dev-fscore {best_dev_fscore:4.2f} '
          f'| test-fscore {test_fscore}'
     )
-    print('-'*89)
+    print('-'*99)

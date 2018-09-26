@@ -4,27 +4,22 @@ import os
 
 ACTIONS = ('SHIFT', 'REDUCE', 'OPEN')
 
-
-def get_sent_dict(sent):
-    """Organize a sentence from the oracle file  as a dictionary."""
-    d = {
-            'tree'    : sent[0],
-            'tags'    : sent[1],
-            'upper'   : sent[2],
-            'lower'   : sent[3],
-            'unked'   : sent[4],
-            'actions' : sent[5:]
-        }
-    return d
-
+# TODO: load this from utils
+# But why does not work `from ..utils import get_sentences`?
 
 def get_sentences(path):
-    """Chunks the oracle file into sentences.
+    """Chunks the oracle file into sentences."""
+    def get_sent_dict(sent):
+        d = {
+                'tree'    : sent[0],
+                'tags'    : sent[1],
+                'upper'   : sent[2],
+                'lower'   : sent[3],
+                'unked'   : sent[4],
+                'actions' : sent[5:]
+            }
+        return d
 
-    Returns:
-        A list of sentences. Each sentence is dictionary as returned by
-        get_sent_dict.
-    """
     sentences = []
     with open(path) as f:
         sent = []
@@ -34,7 +29,6 @@ def get_sentences(path):
                 sent = []
             else:
                 sent.append(line.rstrip())
-        # sentences is of type [[str]]
         return [get_sent_dict(sent) for sent in sentences if sent]
 
 
