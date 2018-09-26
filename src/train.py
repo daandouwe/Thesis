@@ -115,13 +115,6 @@ def main(args):
 
     def save_checkpoint():
         with open(checkfile, 'wb') as f:
-            # Could move to using 'model': model.state_dict()
-            # Then:
-            # model_state_dict = state['model']
-            # args = state['args']
-            # dictionary = state['dictionary']
-            # model = load_model(args, dictionary)
-            # model.load_state_dict(model_state_dict)
             state = {
                 'args': args,
                 'model': model,
@@ -196,6 +189,7 @@ def main(args):
                 # Log to tensorboard.
                 writer.add_scalar('Train/Loss', loss, num_updates)
                 writer.add_scalar('Train/Learning-rate', get_lr(optimizer), num_updates)
+                percentage = step / num_batches * 100
                 avg_loss = np.mean(losses[-args.print_every:])
                 lr = get_lr(optimizer)
                 sents_per_sec = processed / train_timer.elapsed()
@@ -235,10 +229,11 @@ def main(args):
                     # print(79*'=')
                 else:
                     print(
-                        f'| step {step:6d}/{num_batches:5d} '
+                        f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) '
                         f'| loss {avg_loss:7.3f} '
                         f'| lr {lr:.1e} '
                         f'| {sents_per_sec:4.1f} sents/sec '
+                        f'| elapsed {train_timer.format(train_timer.elapsed())} '
                         f'| eta {train_timer.format(eta)} '
                     )
 
@@ -267,7 +262,7 @@ def main(args):
             print('-'*99)
             print(
                 f'| End of epoch {epoch:3d}/{args.epochs} '
-                f'| total-elapsed {epoch_timer.format_elapsed()} '
+                f'| elapsed {epoch_timer.format_elapsed()} '
                 f'| dev-fscore {dev_fscore:4.2f} '
                 f'| best dev-epoch {best_dev_epoch} '
                 f'| best dev-fscore {best_dev_fscore:4.2f} '

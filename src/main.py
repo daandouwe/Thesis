@@ -66,7 +66,7 @@ def main():
     # Training arguments
     parser.add_argument('--seed', type=int, default=42,
                         help='random seed to use')
-    parser.add_argument('--epochs', default=None,
+    parser.add_argument('--epochs', type=int, default=None,
                         help='max number of epochs')
     parser.add_argument('--batch-size', type=int, default=1,
                         help='size of mini batch')
