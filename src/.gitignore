@@ -1,6 +1,9 @@
 *.txt
 *.oracle
+
 log
 checkpoints
 out
+notebooks
+
 __pycache__

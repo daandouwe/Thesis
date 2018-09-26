@@ -64,20 +64,6 @@ python get_oracle.py \
     $TMP/test/$NAME.test.trees \
     > $TMP/test/$NAME.test.oracle
 
-# get generative oracles
-# python get_oracle_gen.py \
-#     $TMP/train/$NAME.train.trees \
-#     $TMP/train/$NAME.train.trees \
-#     > $TMP/train/$NAME.train.gen.oracle
-# python get_oracle_gen.py \
-#     $TMP/train/$NAME.train.trees \
-#     $TMP/dev/$NAME.dev.trees \
-#     > $TMP/dev/$NAME.dev.gen.oracle
-# python get_oracle_gen.py \
-#     $TMP/train/$NAME.train.trees \
-#     $TMP/test/$NAME.test.trees \
-#     > $TMP/test/$NAME.test.gen.oracle
-
 # make vocabularies for lower, upper and unked
 python get_vocab.py \
     $TMP/train/$NAME.train.oracle \
