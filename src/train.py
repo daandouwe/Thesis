@@ -11,13 +11,6 @@ from predict import predict
 from eval import evalb
 from utils import Timer, write_losses, get_folders, write_args
 
-## Memory tests
-from test_memory import get_added_memory, get_num_objects, get_tensors
-
-from pprint import pprint
-from collections import Counter
-##
-
 
 def schedule_lr(args, optimizer, update):
     update = update + 1
@@ -40,6 +33,10 @@ def batchify(batches, batch_size):
 
 
 def main(args):
+    if args.memory_debug:
+        from pprint import pprint
+        from collections import Counter
+        from test_memory import get_added_memory, get_num_objects, print_tensor_increase
 
     # Set random seeds.
     torch.manual_seed(args.seed)
@@ -105,6 +102,8 @@ def main(args):
         verbose=True,
     )
 
+    elbo_objective = (args.composition in ('latent-factors', 'latent-attention'))
+
     print('Training...')
     losses = list()
     num_updates = 0
@@ -159,11 +158,10 @@ def main(args):
         num_batches = num_sentences // args.batch_size
         processed = 0
 
-        ##
-        prev_mem = 0
-        prev_num_objects, prev_num_tensors, prev_num_strings = 0, 0, 0
-        old_tensors = []
-        ##
+        if args.memory_debug:
+            prev_mem = 0
+            prev_num_objects, prev_num_tensors, prev_num_strings = 0, 0, 0
+            old_tensors = []
 
         for step, minibatch in enumerate(batchify(train_batches, args.batch_size), 1):
             # Set learning rate.
@@ -195,47 +193,39 @@ def main(args):
                 sents_per_sec = processed / train_timer.elapsed()
                 eta = (num_sentences - processed) / sents_per_sec
 
-                ##
                 if args.memory_debug:
                     cur_mem, add_mem = get_added_memory(prev_mem)
                     prev_mem = cur_mem
                     num_objects, num_tensors, num_strings, num_ints = get_num_objects()
-
                     print(
                         f'| sent-length {len(sentence)} '
                         f'| total mem {cur_mem:.3f}M '
                         f'| added mem {add_mem:.3f}M '
                         f'| total {num_objects:,} '
                         f'| tensors {num_tensors:,} '
-                        # f'| ints {num_ints:,} '
-                        # f'| tensors {num_tensors - prev_num_tensors:,} '
-                        # f'| strings {num_strings - prev_num_strings:,} '
-                        # f'| increase {num_objects - prev_num_objects:,} '
                     )
+                    # Which shapes are the tensors that remain?
+                    print_tensor_increase()
+                    # Update values.
                     prev_num_objects = num_objects
                     prev_num_tensors = num_tensors
                     prev_num_strings = num_strings
-
-                    # # Which shapes are the tensors that remain?
-                    # print(79*'=')
-                    # print('After initializing parser.')
-                    # shapes = [(1, 100), (1, 102)] + [(i, 1, 50) for i in range(2, 10)]
-                    # tensors = [tensor for tensor in get_tensors() if tensor.shape in shapes]
-                    # counter = Counter(sorted([tensor.shape for tensor in tensors]))
-                    # pprint(counter)
-                    # print('Require grad:')
-                    # pprint(Counter([tensor.shape for tensor in tensors if tensor.requires_grad]))
-                    # print('Total number of tensors:', len(tensors))
-                    # print(79*'=')
                 else:
-                    print(
-                        f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) '
-                        f'| loss {avg_loss:7.3f} '
-                        f'| lr {lr:.1e} '
-                        f'| {sents_per_sec:4.1f} sents/sec '
-                        f'| elapsed {train_timer.format(train_timer.elapsed())} '
+                    message = (
+                        f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) ',
+                        f'| loss {avg_loss:7.3f} ',
+                        f'| lr {lr:.1e} ',
+                        f'| {sents_per_sec:4.1f} sents/sec ',
+                        f'| elapsed {train_timer.format(train_timer.elapsed())} ',
                         f'| eta {train_timer.format(eta)} '
                     )
+                    if elbo_objective:
+                        message += (
+                            f'| alpha {model.criterion.annealer._alpha:.3f} ',
+                            f'| temp {model.stack.encoder.composition.annealer._temp:.3f} '
+                        )
+                    print(''.join(message))
+
 
     epoch_timer = Timer()
     # At any point you can hit Ctrl + C to break out of training early.

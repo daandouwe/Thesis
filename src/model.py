@@ -12,7 +12,7 @@ from embedding import ConvolutionalCharEmbedding
 from nn import MLP
 from encoder import StackLSTM, HistoryLSTM, BufferLSTM, TerminalLSTM
 from parser import DiscParser, GenParser
-from loss import LossCompute
+from loss import LossCompute, ElboCompute
 
 
 class DiscRNNG(DiscParser):
@@ -27,7 +27,7 @@ class DiscRNNG(DiscParser):
                  history_encoder,
                  action_mlp,
                  nonterminal_mlp,
-                 loss_compute,
+                 criterion,
                  dropout,
                  device):
         super(DiscRNNG, self).__init__(
@@ -50,7 +50,9 @@ class DiscRNNG(DiscParser):
         self.dropout = nn.Dropout(p=dropout)
 
         # Loss computation
-        self.loss_compute = loss_compute
+        self.criterion = criterion
+        # Update counter
+        self.i = 0
 
     def get_input(self):
         stack, buffer, history = self.get_encoded_input()
@@ -62,22 +64,24 @@ class DiscRNNG(DiscParser):
         # so we make a copy so that the tensors do not hang around.
         sentence, actions = deepcopy(sentence), deepcopy(actions)  # Do not remove!
         self.initialize(sentence)
-        loss = torch.zeros(1, device=self.device)
+        self.i += 1
         for i, action in enumerate(actions):
             # Compute loss
             x = self.get_input()
             action_logits = self.action_mlp(x)
-            loss += self.loss_compute(action_logits, action.action_index)
+            self.criterion(action_logits, action.action_index)
             # If we open a nonterminal, predict which.
             if action.is_nt:
                 nonterminal_logits = self.nonterminal_mlp(x)
                 nt = action.get_nt()
-                loss += self.loss_compute(nonterminal_logits, nt.index)
+                self.criterion(nonterminal_logits, nt.index)
             self.parse_step(action)
             # Add KL if we use latent factor encoder.
-            if self.stack.encoder.factor_comp and action == REDUCE:
+            if (action == REDUCE) and self.stack.encoder.requires_kl:
                 alpha = self.stack.encoder.composition._alpha
-                loss += self.stack.encoder.composition.kl(alpha)
+                kl = self.stack.encoder.composition.kl(alpha)
+                self.criterion.add_kl(kl)
+        loss = self.criterion.get_loss(self.i)
         return loss
 
     def parse(self, sentence):
@@ -132,7 +136,7 @@ class GenRNNG(GenParser):
                  action_mlp,
                  nonterminal_mlp,
                  terminal_mlp,
-                 loss_compute,
+                 criterion,
                  dropout,
                  device):
         super(GenRNNG, self).__init__(
@@ -157,7 +161,7 @@ class GenRNNG(GenParser):
         self.dropout = nn.Dropout(p=dropout)
 
         # Loss computation
-        self.loss_compute = loss_compute
+        self.criterion = criterion
 
     def get_input(self):
         stack, terminals, history = self.get_encoded_input()
@@ -174,17 +178,17 @@ class GenRNNG(GenParser):
             # Compute loss
             x = self.get_input()
             action_logits = self.action_mlp(x)
-            loss += self.loss_compute(action_logits, action.action_index)
+            loss += self.criterion(action_logits, action.action_index)
             # If we open a nonterminal, predict which.
             if action.is_nt:
                 nonterminal_logits = self.nonterminal_mlp(x)
                 nt = action.get_nt()
-                loss += self.loss_compute(nonterminal_logits, nt.index)
+                loss += self.criterion(nonterminal_logits, nt.index)
             # If we generate a word, predict which.
             if action.is_gen:
                 terminal_logits = self.terminal_mlp(x)
                 word = action.get_word()
-                loss += self.loss_compute(terminal_logits, word.index)
+                loss += self.criterion(terminal_logits, word.index)
             self.parse_step(action)
         return loss
 
@@ -231,6 +235,7 @@ class GenRNNG(GenParser):
             return NT(Nonterminal('_', -1))
         elif index == Action.GEN_INDEX:
             return GEN(Word('_', -1))
+
 
 def set_embedding(embedding, tensor):
     """Sets the tensor as fixed weight tensor in embedding."""
@@ -305,8 +310,7 @@ def make_model(args, dictionary):
         args.word_lstm_hidden,
         args.dropout,
         args.device,
-        attn_comp=args.use_attn,
-        factor_comp=args.use_factors
+        composition=args.composition
     )
     history_encoder = HistoryLSTM(
         args.emb_dim,
@@ -339,7 +343,11 @@ def make_model(args, dictionary):
         activation=args.mlp_nonlinearity
     )
 
-    loss_compute = LossCompute(nn.CrossEntropyLoss, args.device)
+    elbo_objective = (args.composition in ('latent-factors', 'latent-attention'))
+    if elbo_objective:
+        criterion = ElboCompute(nn.CrossEntropyLoss, args.device, anneal=args.disable_kl_anneal)
+    else:
+        criterion = LossCompute(nn.CrossEntropyLoss, args.device)
     if args.model == 'disc':
         model = DiscRNNG(
             dictionary=dictionary,
@@ -351,7 +359,7 @@ def make_model(args, dictionary):
             history_encoder=history_encoder,
             action_mlp=action_mlp,
             nonterminal_mlp=nonterminal_mlp,
-            loss_compute=loss_compute,
+            criterion=criterion,
             dropout=args.dropout,
             device=args.device
         )
@@ -367,7 +375,7 @@ def make_model(args, dictionary):
             action_mlp=action_mlp,
             nonterminal_mlp=nonterminal_mlp,
             terminal_mlp=terminal_mlp,
-            loss_compute=loss_compute,
+            criterion=criterion,
             dropout=args.dropout,
             device=args.device
         )

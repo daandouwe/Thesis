@@ -3,177 +3,10 @@ import copy
 import torch
 import torch.nn as nn
 import torch.distributions as dist
-import torch.nn.init as init
 
 from data import wrap
-from concrete import BinaryConcrete, Concrete
-
-
-def orthogonal_init(lstm):
-    for name, param in lstm.named_parameters():
-        if name.startswith('weight'):
-            init.orthogonal_(param)
-
-
-def bias_init(lstm):
-    """Positive forget gate bias (Jozefowicz et al., 2015)."""
-    for name, param in lstm.named_parameters():
-        if name.startswith('bias'):
-            init.constant_(param, 0.)
-            dim = param.size(0)
-            param[dim//4:dim//2].data.fill_(1.)
-
-
-def init_lstm(lstm, orthogonal=True):
-    """Initialize the forget bias and weights of LSTM."""
-    bias_init(lstm)
-    if orthogonal:
-        orthogonal_init(lstm)
-
-
-class BiRecurrentEncoder(nn.Module):
-    """A bidirectional RNN encoder for unpadded batches."""
-    def __init__(self, input_size, hidden_size, num_layers, dropout, batch_first=True, device=None):
-        super(BiRecurrentEncoder, self).__init__()
-        assert hidden_size % 2 == 0, 'hidden size must be even'
-        self.device = device
-        self.fwd_rnn = nn.LSTM(input_size, hidden_size//2, num_layers,
-                               batch_first=batch_first, dropout=dropout)
-        self.bwd_rnn = nn.LSTM(input_size, hidden_size//2, num_layers,
-                               batch_first=batch_first, dropout=dropout)
-        init_lstm(self.fwd_rnn)
-        init_lstm(self.bwd_rnn)
-        self.to(device)
-
-    def _reverse(self, tensor):
-        idx = [i for i in range(tensor.size(1) - 1, -1, -1)]
-        idx = wrap(idx, device=self.device)
-        return tensor.index_select(1, idx)
-
-    def forward(self, head, children):
-        """Forward pass that works for unpadded, i.e. equal length, batches."""
-        # children shape (batch, seq, dim)
-        # head shape (batch, dim)
-        xf = torch.cat((head.unsqueeze(1), children), dim=1)  # [NP, the, black, cat]
-        xb = torch.cat((head.unsqueeze(1), self._reverse(children)), dim=1)  # [NP, cat, black, the]
-
-        hf, _ = self.fwd_rnn(xf)  # (batch, seq, hidden_size//2)
-        hb, _ = self.bwd_rnn(xb)  # (batch, seq, hidden_size//2)
-
-        # Select final representation.
-        hf = hf[:, -1, :]  # (batch, hidden_size//2)
-        hb = hb[:, -1, :]  # (batch, hidden_size//2)
-
-        h = torch.cat((hf, hb), dim=-1)  # (batch, hidden_size)
-        return h
-
-
-class AttentionEncoder(nn.Module):
-    """A bidirectional RNN encoder for unpadded batches."""
-    def __init__(self, input_size, hidden_size, num_layers, dropout, batch_first=True, device=None):
-        super(AttentionEncoder, self).__init__()
-        assert hidden_size % 2 == 0, 'hidden size must be even'
-        self.device = device
-        self.fwd_rnn = nn.LSTM(input_size, hidden_size//2, num_layers,
-                               batch_first=batch_first, dropout=dropout)
-        self.bwd_rnn = nn.LSTM(input_size, hidden_size//2, num_layers,
-                               batch_first=batch_first, dropout=dropout)
-        self.V = nn.Parameter(torch.ones((hidden_size, hidden_size), device=device, dtype=torch.float))
-        self.linear = nn.Linear(2*hidden_size, hidden_size)
-
-        self.softmax = nn.Softmax(dim=1)
-        self.sigmoid = nn.Sigmoid()
-
-        init_lstm(self.fwd_rnn)
-        init_lstm(self.bwd_rnn)
-        nn.init.xavier_uniform_(self.V)
-        self.to(device)
-
-    def _reverse(self, tensor):
-        idx = [i for i in range(tensor.size(1) - 1, -1, -1)]
-        idx = wrap(idx, device=self.device)
-        return tensor.index_select(1, idx)
-
-    def forward(self, head, children):
-        """Forward pass that works for unpadded, i.e. equal length, batches."""
-        # children shape (batch, seq, dim)
-        # head shape (batch, dim)
-        xf = children  # [the, black, cat]
-        xb = self._reverse(children)  # [black, cat, the]
-
-        hf, _ = self.fwd_rnn(xf)  # (batch, seq, hidden_size//2)
-        hb, _ = self.bwd_rnn(xb)  # (batch, seq, hidden_size//2)
-
-        c = torch.cat((hf, hb), dim=-1)  # (batch, seq, hidden_size)
-        a = c @ self.V @ head.transpose(0, 1)  # (batch, seq, 1)
-        a = a.squeeze(-1)  # (batch, seq)
-        a = self.softmax(a)  # (batch, seq)
-        m = a @ c  # (batch, seq) @ (batch, seq, hidden_size) = (batch, 1, hidden_size)
-        m = m.squeeze(1)  # (batch, hidden_size)
-
-        # Optional: store computed attention internally for retreival.
-        self.attn = a
-
-        x = torch.cat((head, m), dim=-1)  # (batch, 2*hidden_size)
-        g = self.sigmoid(self.linear(x))  # (batch, hidden_size)
-        c = g * head + (1 - g) * m  # (batch, hidden_size)
-        return c
-
-
-class LatentFactorEncoder(nn.Module):
-    """A latent factor model for composition function."""
-    def __init__(self, num_factors, input_size, hidden_size, num_layers, dropout, binary=True, device=None):
-        super(LatentFactorEncoder, self).__init__()
-        assert hidden_size % 2 == 0, 'hidden size must be even'
-        self.device = device
-        self.binary = binary
-        self.generative = nn.Linear(num_factors, hidden_size, bias=False)
-        self.inference = nn.Sequential(
-            BiRecurrentEncoder(input_size, hidden_size, num_layers, dropout, device=device),
-            nn.ReLU(),
-            nn.Linear(hidden_size, num_factors))
-        self.encoder = BiRecurrentEncoder(input_size, hidden_size, num_layers, dropout, device=device)
-        self.linear = nn.Linear(hidden_size, num_factors)
-
-        self.softmax = nn.Softmax(dim=-1)
-        self.relu = nn.ReLU()
-
-
-    def encode(self, head, children):
-        h = self.encoder(head, children)
-        return self.linear(self.relu(h))
-        # return self.inference(head, children)
-
-    def decode(self, x):
-        return self.generative(x)
-
-    def sample(self, alpha, temp=1.0):
-        if self.binary:
-            if self.training:
-                return BinaryConcrete(alpha, temp).sample()
-            else:
-                return (alpha > 0.5).float()  # argmax for binary variable
-        else:
-            if self.training:
-                return Concrete(alpha, temp).sample()
-            else:
-                return dist.OneHotCategorical(logits=alpha).sample()
-
-    def forward(self, head, children, temp=0.7):
-        alpha = self.encode(head, children)
-        sample = self.sample(alpha, temp)
-        h = self.decode(sample)
-        self._alpha, self._sample = alpha, sample  # store internally
-        return h
-
-    def kl(self, alpha):
-        if self.binary:
-            kl = (self.softmax(alpha) *
-                (alpha - torch.log(torch.tensor(1.0) / 2.0))).sum()
-        else:
-            kl = (self.softmax(alpha) *
-                (alpha - torch.log(torch.tensor(1.0) / alpha.size(-1)))).sum()
-        return kl
+from nn import init_lstm
+from composition import BiRecurrentComposition, AttentionComposition, LatentFactorComposition
 
 
 class BaseLSTM(nn.Module):
@@ -249,39 +82,24 @@ class BaseLSTM(nn.Module):
 
 class StackLSTM(BaseLSTM):
     """A Stack-LSTM used to encode the stack of a transition based parser."""
-    def __init__(self, input_size, hidden_size, dropout, device=None, attn_comp=False, factor_comp=False):
+    def __init__(self, input_size, hidden_size, dropout, device=None, composition='basic'):
         super(StackLSTM, self).__init__(input_size, hidden_size, dropout, device)
         # Composition function.
-        assert not (attn_comp and factor_comp)
-        self.attn_comp = attn_comp
-        self.factor_comp = factor_comp
-        if attn_comp:
-            self.composition = AttentionEncoder(input_size, input_size, 2, dropout, device=device)
-        if factor_comp:
-            self.composition = LatentFactorEncoder(20, input_size, input_size, 2, dropout, device=device)
+        assert composition in (
+            'basic', 'attention', 'latent-factors', 'latent-attention'), composition
+        self.requires_kl = (composition in ('latent-factors', 'latent-attention'))
+        if composition == 'attention':
+            self.composition = AttentionComposition(input_size, 2, dropout, device=device)
+        if composition == 'latent-factors':
+            self.composition = LatentFactorComposition(20, input_size, 2, dropout, device=device)
         else:
-            self.composition = BiRecurrentEncoder(input_size, input_size, 2, dropout, device=device)
+            self.composition = BiRecurrentComposition(input_size, 2, dropout, device=device)
 
     def _reset_hidden(self, sequence_len):
         """Reset the hidden state to before opening the sequence."""
         del self._hidden_states_1[-sequence_len:], self._hidden_states_2[-sequence_len:]
-        # self._hidden_states_1 = self._hidden_states_1[:-sequence_len]
-        # self._hidden_states_2 = self._hidden_states_2[:-sequence_len]
         self.hx1, self.cx1 = self._hidden_states_1[-1]
         self.hx2, self.cx2 = self._hidden_states_2[-1]
-
-    def reduce(self, children, head):
-        """Reduce a nonterminal sequence.
-
-        Computes a BiRNN represesentation for the sequence, then replaces
-        the reduced sequence of hidden states with this one representation.
-        """
-        # Length of sequence (length of children plus one head node).
-        length = children.size(1) + 1
-        # Move hidden state back to before we opened the nonterminal.
-        self._reset_hidden(length)
-        # Return computed composition.
-        return self.composition(head, children)
 
 
 class HistoryLSTM(BaseLSTM):

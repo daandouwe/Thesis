@@ -22,7 +22,7 @@ def clock_time(s):
     return int(h), int(m), int(s)
 
 
-def worker(rank, size, model, batches, optimizer, return_dict, print_every=10):
+def worker(rank, size, model, batches, optimizer, return_dict, elbo_objective, print_every=10):
     """Distributed Synchronous SGD."""
     # Restrict each processor to use only 1 thread.
     torch.set_num_threads(1)  # Without this it won't work on Lisa (and slow down on laptop)!
@@ -40,9 +40,6 @@ def worker(rank, size, model, batches, optimizer, return_dict, print_every=10):
         loss.backward()
         nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
         average_gradients(model)
-        ##
-        # quit()
-        ##
         optimizer.step()
 
         # Compute the average loss for logging.
@@ -52,13 +49,16 @@ def worker(rank, size, model, batches, optimizer, return_dict, print_every=10):
         if i % print_every == 0 and rank == 0:
             sents_per_sec = print_every * size / (time.time() - t0)
             t0 = time.time()
-            print('step {}/{} ({:.0f}%) | loss {:.3f} | {:.3f} sents/sec | elapsed {}h{:02}m{:02}s '
-                  '| eta {}h{:02}m{:02}s'.format(
+            message = 'step {}/{} ({:.0f}%) | loss {:.3f} | {:.3f} sents/sec | elapsed {}h{:02}m{:02}s | eta {}h{:02}m{:02}s'.format(
                     i, num_steps, i/num_steps * 100,
                     np.mean(losses[-print_every:]),
                     sents_per_sec,
                     *clock_time(time.time() - start_time),
-                    *clock_time((len(batches) - i*size) / sents_per_sec)))
+                    *clock_time((len(batches) - i*size) / sents_per_sec))
+            if elbo_objective:
+                message += (f'| alpha {model.criterion.annealer._alpha:.3f} ' +
+                    f'| temp {model.stack.encoder.composition.annealer._temp:.3f} ')
+            print(message)
             # Save model every now and then.
             return_dict['model'] = model
     # Save model when finished.
@@ -82,12 +82,12 @@ def init_processes(fn, *args, backend='tcp'):
     """Initialize the distributed environment."""
     os.environ['MASTER_ADDR'] = '127.0.0.1'
     os.environ['MASTER_PORT'] = '29500'
-    rank, size, model, train_batches, optimizer, return_dict = args
+    rank, size, *rest = args
     dist.init_process_group(backend, rank=rank, world_size=size)
     fn(*args)
 
 
-def train_epoch(size, model, train_batches, optimizer):
+def train_epoch(size, model, train_batches, optimizer, elbo_objective):
     try:
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -95,7 +95,7 @@ def train_epoch(size, model, train_batches, optimizer):
         for rank in range(size):
             p = mp.Process(
                 target=init_processes,
-                args=(worker, rank, size, model, train_batches, optimizer, return_dict)
+                args=(worker, rank, size, model, train_batches, optimizer, return_dict, elbo_objective)
             )
             p.start()
             processes.append(p)
@@ -189,6 +189,8 @@ def main(args):
             best_dev_fscore = dev_fscore
         return dev_fscore
 
+    elbo_objective = (args.composition in ('latent-factors', 'latent-attention'))
+    print(f'ELBO objective: {elbo_objective}.')
 
     epoch_timer = Timer()
     for epoch in range(1, args.epochs+1):
@@ -196,7 +198,7 @@ def main(args):
         np.random.shuffle(train_batches)
 
         # Train one epoch.
-        model = train_epoch(size, model, train_batches, optimizer)
+        model = train_epoch(size, model, train_batches, optimizer, elbo_objective)
 
         dev_fscore = check_dev()
 

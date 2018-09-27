@@ -19,6 +19,19 @@ def print_memory(message):
     print()
 
 
+def print_tensor_increase():
+    print(79*'=')
+    print('After initializing parser.')
+    shapes = [(1, 100), (1, 102)] + [(i, 1, 50) for i in range(2, 10)]
+    tensors = [tensor for tensor in get_tensors() if tensor.shape in shapes]
+    counter = Counter(sorted([tensor.shape for tensor in tensors]))
+    pprint(counter)
+    print('Require grad:')
+    pprint(Counter([tensor.shape for tensor in tensors if tensor.requires_grad]))
+    print('Total number of tensors:', len(tensors))
+    print(79*'=')
+
+
 def get_added_memory(prev_mem):
     process = psutil.Process(os.getpid())
     cur_mem = process.memory_info().rss / 10**6

@@ -49,38 +49,39 @@ class AttentionInspection(Decoder):
                     print()
             return self.get_tree(), logprob, num_actions
 
-    def forward(self, sentence, actions):
+    def forward(self, sentence, actions, composition):
         """Forward pass only used for training."""
         self.model.eval()
         self.model.initialize(sentence)
-        loss = torch.zeros(1, device=self.model.device)
         for i, action in enumerate(actions):
             # Compute loss
             x = self.model.get_input()
             action_logits = self.model.action_mlp(x)
-            loss += self.model.loss_compute(action_logits, action.action_index)
             # If we open a nonterminal, predict which.
             if action.is_nt:
                 nonterminal_logits = self.model.nonterminal_mlp(x)
                 nt = action.get_nt()
-                loss += self.model.loss_compute(nonterminal_logits, nt.index)
             self.model.parse_step(action)
             if action == REDUCE:
                 children = self.model.stack.child_tokens
                 head = self.model.stack.head_token
-                if self.model.stack.encoder.attn_comp:
+                if composition == 'attention':
+                    print(type(self.model.stack.encoder.composition).__name__)
                     # We stored these internally
                     attention = self.model.stack.encoder.composition.attn.squeeze(0).data.numpy()
+                    gate = self.model.stack.encoder.composition.gate.squeeze().data.numpy()
                     attentive = [f'{child} ({attn:.2f})' for child, attn in zip(children, attention)]
-                    print('  ', head, '|', ' '.join(attentive))
-                elif self.model.stack.encoder.factor_comp:
+                    print('  ', head, '|', ' '.join(attentive), f'[{gate}]')
+                elif composition == 'latent-factors':
                     sample = self.model.stack.encoder.composition._sample
                     alpha = self.model.stack.encoder.composition._alpha
                     factors = sample.squeeze(0).data.numpy().astype(int)
-                    probs = nn.functional.sigmoid(
-                        self.model.stack.encoder.composition._alpha).squeeze(0).data.numpy()
-                    print('  ', head, '|', ' '.join(children), probs)
-        return loss
+                    # print('  ', head, '|', ' '.join(children), factors)
+                    # probs = nn.functional.sigmoid(
+                    #     self.model.stack.encoder.composition._alpha).squeeze(0).data.numpy()
+                    probs = nn.functional.softmax(
+                        self.model.stack.encoder.composition._alpha, dim=-1).squeeze(0).data.numpy()
+                    print('  ', head, probs)
 
     def _process_actions(self, actions):
         action_items = []
@@ -115,11 +116,11 @@ def main(args):
         test_batches = corpus.test.batches(length_ordered=False, shuffle=False)
         for sentence, actions in train_batches[:args.max_lines]:
             print('>', ' '.join([str(token) for token in sentence]))
-            decoder.forward(sentence, actions)
+            decoder.forward(sentence, actions, composition=args.composition)
             print()
     else:
         sentence, actions = LONG['sentence'], LONG['actions']
         sentence = decoder._process_sentence(sentence)
         actions = decoder._process_actions(actions)
         print('>', sentence)
-        sentence = decoder.forward(sentence, actions)
+        sentence = decoder.forward(sentence, actions, composition=args.composition)

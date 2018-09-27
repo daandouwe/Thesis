@@ -2,7 +2,8 @@ import argparse
 
 from parser import DiscParser
 from data import PAD_CHAR, PAD_INDEX
-from encoder import BiRecurrentEncoder, StackLSTM, BufferLSTM, HistoryLSTM
+from encoder import StackLSTM, BufferLSTM, HistoryLSTM
+from composition import BiRecurrentComposition
 from nn import MLP
 from loss import LossCompute
 

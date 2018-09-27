@@ -6,6 +6,28 @@ import torch.nn as nn
 from data import wrap
 
 
+def orthogonal_init(lstm):
+    for name, param in lstm.named_parameters():
+        if name.startswith('weight'):
+            nn.init.orthogonal_(param)
+
+
+def bias_init(lstm):
+    """Positive forget gate bias (Jozefowicz et al., 2015)."""
+    for name, param in lstm.named_parameters():
+        if name.startswith('bias'):
+            nn.init.constant_(param, 0.)
+            dim = param.size(0)
+            param[dim//4:dim//2].data.fill_(1.)
+
+
+def init_lstm(lstm, orthogonal=True):
+    """Initialize the forget bias and weights of LSTM."""
+    bias_init(lstm)
+    if orthogonal:
+        orthogonal_init(lstm)
+
+
 class MLP(nn.Module):
     """A simple multilayer perceptron with one hidden layer and dropout."""
     def __init__(self, input_size, hidden_size, output_size, dropout=0., activation='Tanh'):

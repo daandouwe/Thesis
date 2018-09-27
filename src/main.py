@@ -51,10 +51,8 @@ def main():
                         help='size of lstm hidden states for history encoder')
     parser.add_argument('--lstm-num-layers', type=int, default=2,
                         help='number of layers in lstm')
-    parser.add_argument('--use-attn', action='store_true',
-                        help='use attention in StackLSTM composition function')
-    parser.add_argument('--use-factors', action='store_true',
-                        help='use latent factors in StackLSTM composition function')
+    parser.add_argument('--composition', default='basic', choices=['basic', 'attention', 'latent-factors'],
+                        help='composition function used by StackLSTM')
     parser.add_argument('--mlp-dim', type=int, default=128,
                         help='size of mlp hidden state')
     parser.add_argument('--mlp_nonlinearity', default='Tanh', choices=['Tanh', 'ReLU'],
@@ -87,6 +85,8 @@ def main():
                         help='scheduler parameter')
     parser.add_argument('--step-decay-factor', type=float,default=0.5,
                         help='scheduler parameter')
+    parser.add_argument('--disable-kl-anneal', action='store_false',
+                        help='do not anneal the kl in the elbo objective')
     parser.add_argument('--disable-glorot', action='store_true',
                         help='do not override custom lstm initialization with glorot')
     parser.add_argument('--clip', type=float, default=5.,
