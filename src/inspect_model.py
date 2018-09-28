@@ -63,25 +63,21 @@ class AttentionInspection(Decoder):
                 nt = action.get_nt()
             self.model.parse_step(action)
             if action == REDUCE:
-                children = self.model.stack.child_tokens
-                head = self.model.stack.head_token
+                items = self.model.reduced_items()
+                head, children = items['head'], items['children']
                 if composition == 'attention':
-                    print(type(self.model.stack.encoder.composition).__name__)
-                    # We stored these internally
-                    attention = self.model.stack.encoder.composition.attn.squeeze(0).data.numpy()
-                    gate = self.model.stack.encoder.composition.gate.squeeze().data.numpy()
-                    attentive = [f'{child} ({attn:.2f})' for child, attn in zip(children, attention)]
-                    print('  ', head, '|', ' '.join(attentive), f'[{gate}]')
+                    attention = items['attention'].squeeze(0).data.numpy()
+                    gate = items['gate'].squeeze(0).data.numpy()
+                    attentive = [f'{child.token} ({attn:.2f})' for child, attn in zip(children, attention)]
+                    print('  ', head.token, '|', ' '.join(attentive), f'[{gate.mean():.2f}]')
                 elif composition == 'latent-factors':
-                    sample = self.model.stack.encoder.composition._sample
-                    alpha = self.model.stack.encoder.composition._alpha
+                    sample = items['sample'].squeeze(0)
+                    alpha = items['alpha'].squeeze(0)
                     factors = sample.squeeze(0).data.numpy().astype(int)
-                    # print('  ', head, '|', ' '.join(children), factors)
-                    # probs = nn.functional.sigmoid(
-                    #     self.model.stack.encoder.composition._alpha).squeeze(0).data.numpy()
-                    probs = nn.functional.softmax(
-                        self.model.stack.encoder.composition._alpha, dim=-1).squeeze(0).data.numpy()
-                    print('  ', head, probs)
+                    # print('  ', head.token, '|', ' '.join(children), factors)
+                    # probs = nn.functional.sigmoid(alpha).data.numpy()
+                    probs = nn.functional.softmax(alpha).data.numpy()
+                    print('  ', head.token, probs)
 
     def _process_actions(self, actions):
         action_items = []

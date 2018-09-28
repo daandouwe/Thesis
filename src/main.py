@@ -3,7 +3,7 @@ import os
 import argparse
 
 import train
-import predict_input
+import predict
 import distributed
 import inspect_model
 
@@ -103,13 +103,15 @@ def main():
                         help='load model from this checkpoint')
     parser.add_argument('--evalb-dir', default='~/EVALB',
                         help='where the evalb excecutable is located')
+    parser.add_argument('--use-tokenizer', action='store_true',
+                        help='tokenize user input')
 
     args = parser.parse_args()
 
     if args.mode == 'train':
         train.main(args)
     elif args.mode == 'predict':
-        predict_input.main(args)
+        predict.main(args)
     elif args.mode == 'dist':
         distributed.main(args)
     elif args.mode == 'inspect':

@@ -13,7 +13,7 @@ from scripts.get_oracle import unkify
 
 
 class Decoder:
-    """Decoder base class for discriminative RNNG."""
+    """Decoder base class for prediction with discriminative RNNG."""
     def __init__(self,
                  model=None,
                  dictionary=None,
@@ -37,7 +37,7 @@ class Decoder:
         pass
 
     def _init_tokenizer(self):
-        if self.verbose: print("Using spaCy's Engish tokenizer.")
+        if self.verbose: print("Using NLTK's tokenizer.")
         # from spacy.tokenizer import Tokenizer
         # nlp = spacy.load('en')
         # self.tokenizer = Tokenizer(nlp.vocab)
@@ -83,8 +83,12 @@ class Decoder:
         assert sentence, f'decoder received empty sentence'
         if isinstance(sentence, str):
             return self._from_string(sentence)
-        elif isinstance(sentence, list) and isinstance(sentence[0], str):
-            return self._from_string(' '.join(sentence))
+        elif isinstance(sentence, list):
+            assert len(sentence) > 0
+            if isinstance(sentence[0], str):
+                return self._from_string(' '.join(sentence))
+            if isinstance(sentence[0], Item):
+                return sentence
         else:
             raise ValueError(f'sentence format not recognized: {sentence}')
 
@@ -109,15 +113,13 @@ class Decoder:
 
     def _valid_actions_mask(self):
         mask = torch.Tensor(
-            [self.model.is_valid_action(self._make_action(i)) for i in range(3)]
-        )
+            [self.model.is_valid_action(self._make_action(i)) for i in range(3)])
         return mask
 
     def _best_valid_action(self, logits):
         mask = self._valid_actions_mask()
         masked_logits = torch.Tensor(
-            [logit if allowed else -np.inf for logit, allowed in zip(logits, mask)]
-        )
+            [logit if allowed else -np.inf for logit, allowed in zip(logits, mask)])
         masked_logits, ids = masked_logits.sort(descending=True)
         index = ids[0]
         action = self._make_action(index)
@@ -164,9 +166,9 @@ class GreedyDecoder(Decoder):
     def __call__(self, sentence):
         logprob = 0.0
         num_actions = 0
+        self.model.eval()
+        sentence = self._process_sentence(sentence)
         with torch.no_grad():
-            self.model.eval()
-            sentence = self._process_sentence(sentence)
             self.model.initialize(sentence)
             while not self.model.stack.is_empty():
                 num_actions += 1
@@ -191,8 +193,8 @@ class SamplingDecoder(Decoder):
     def __call__(self, sentence, alpha=1.0):
         logprob = 0.0
         num_actions = 0
+        self.model.eval()
         with torch.no_grad():
-            self.model.eval()
             sentence = self._process_sentence(sentence)
             self.model.initialize(sentence)
             while not self.model.stack.is_empty():
@@ -202,16 +204,14 @@ class SamplingDecoder(Decoder):
                 mask = self._valid_actions_mask()
                 action_probs = self._compute_probs(action_logits, mask=mask, alpha=alpha)
                 index = np.random.choice(
-                    range(action_probs.size(0)), p=action_probs.data.numpy()
-                )
+                    range(action_probs.size(0)), p=action_probs.data.numpy())
                 action = self._make_action(index)
                 logprob += self.logsoftmax(action_logits)[index]
                 if action.is_nt:
                     nt_logits = self.model.nonterminal_mlp(x).squeeze(0)  # tensor (num_nonterminals)
                     nt_probs = self._compute_probs(nt_logits, alpha)
                     index = np.random.choice(
-                        range(nt_probs.size(0)), p=nt_probs.data.numpy()
-                    )
+                        range(nt_probs.size(0)), p=nt_probs.data.numpy())
                     X = Nonterminal(self.dictionary.i2n[index], index)
                     action = NT(X)
                     logprob += self.logsoftmax(nt_logits)[index]
@@ -257,11 +257,9 @@ class BeamSearchDecoder(Decoder):
     def _best_k_valid_actions(self, parser, logits):
         k = min(self.k, logits.size(0))
         mask = torch.Tensor(
-            [parser.is_valid_action(self._make_action(i)) for i in range(3)]
-        )
+            [parser.is_valid_action(self._make_action(i)) for i in range(3)])
         masked_logits = torch.Tensor(
-            [logit if allowed else -np.inf for logit, allowed in zip(logits, mask)]
-        )
+            [logit if allowed else -np.inf for logit, allowed in zip(logits, mask)])
         masked_logits, ids = masked_logits.sort(descending=True)
         indices = [i.item() for i in ids[:k] if mask[i]]
         return indices, [self._make_action(i) for i in indices]

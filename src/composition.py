@@ -98,12 +98,14 @@ class AttentionComposition(nn.Module):
 
         x = torch.cat((head, m), dim=-1)  # (batch, 2*input_size)
         g = self.sigmoid(self.gating(x))  # (batch, input_size)
-        t = self.head(head)
+        # t = self.head(head)
+        t = head
         c = g * t + (1 - g) * m  # (batch, input_size)
 
-        # Optional: store internally for inspection during prediction.
-        self.attn = a
-        self.gate = g
+        if not self.training:
+            # Store internally for inspection during prediction.
+            self._attn = a
+            self._gate = g
         return c
 
 

@@ -7,7 +7,7 @@ from tensorboardX import SummaryWriter
 
 from data import Corpus
 from model import make_model
-from predict import predict
+from decode import GreedyDecoder
 from eval import evalb
 from utils import Timer, write_losses, get_folders, write_args
 
@@ -128,6 +128,18 @@ def main(args):
             }
             torch.save(state, f)
 
+    def predict(batches):
+        trees = []
+        decoder = GreedyDecoder(
+            model=model, dictionary=corpus.dictionary, use_chars=args.use_chars)
+        for i, batch in enumerate(batches):
+            sentence, actions = batch
+            tree, *rest = decoder(sentence)
+            trees.append(tree)
+            if i % 10 == 0:
+                print(f'Predicting sentence {i}/{len(batches)}...', end='\r')
+        return trees
+
     def check_dev():
         nonlocal best_dev_fscore
         nonlocal best_dev_epoch
@@ -136,7 +148,11 @@ def main(args):
         pred_path = os.path.join(args.outdir, f'{args.name}.dev.pred.trees')
         gold_path = os.path.join(args.data, 'dev', f'{args.name}.dev.trees')
         result_path = os.path.join(args.outdir, f'{args.name}.dev.result')
-        predict(model, dev_batches, pred_path)
+        # Predict trees.
+        trees = predict(dev_batches)
+        with open(pred_path, 'w') as f:
+            print('\n'.join([tree.linearize() for tree in trees]), file=f)
+        # Compute f-score.
         dev_fscore = evalb(args.evalb_dir, pred_path, gold_path, result_path)
         # Log score to tensorboard.
         writer.add_scalar('Dev/Fscore', dev_fscore, num_updates)
@@ -279,7 +295,9 @@ def main(args):
     pred_path = os.path.join(args.outdir, f'{args.name}.test.pred.trees')
     gold_path = os.path.join(args.data, 'test', f'{args.name}.test.trees')
     result_path = os.path.join(args.outdir, f'{args.name}.test.result')
-    predict(model, test_batches, pred_path)
+    trees = predict(test_batches)
+    with open(pred_path, 'w') as f:
+        print('\n'.join([tree.linearize() for tree in trees]), file=f)
     test_fscore = evalb(args.evalb_dir, pred_path, gold_path, result_path)
     save_checkpoint()
 

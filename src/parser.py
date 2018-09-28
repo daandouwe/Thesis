@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import torch
 import torch.nn as nn
 
@@ -133,19 +135,23 @@ class Stack(TransitionBase):
         self._items.append(node)
 
     def reduce(self):
+        # Gather children.
         children = []
         while not self.top.is_open_nt:
             children.append(self.pop())
         children.reverse()
         sequence_len = len(children) + 1
         head = self.pop()
-        ##
-        self.child_tokens = [str(child.item.token) for child in children]
-        self.head_token = str(head.item.token)
-        ##
-        children = [child.item.embedding.unsqueeze(0) for child in children]
-        children = torch.cat(children, 1)  # tensor (batch, seq_len, emb_dim)
-        reduced = self.encoder.composition(head.item.embedding, children)
+        # Compute new representation.
+        child_embeddings = [child.item.embedding.unsqueeze(0) for child in children]
+        child_embeddings = torch.cat(child_embeddings, 1)  # tensor (batch, seq_len, emb_dim)
+        reduced = self.encoder.composition(head.item.embedding, child_embeddings)
+        if not self.training:
+            # Store these for inspection during prediction.
+            self._reduced_head_item = head.item
+            self._reduced_child_items = [child.item for child in children]
+            self._reduced_embedding = reduced.data
+        # Set new representation.
         head.item.embedding = reduced
         self.reset_hidden(sequence_len)
         head.item.encoding = self.encoder(reduced)

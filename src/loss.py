@@ -5,41 +5,6 @@ import numpy as np
 from data import wrap
 
 
-class AnnealKL:
-    """Anneal the KL in an ELBO objective."""
-    def __init__(self, method='logistic', step=2.5e-3, rate=2500):
-        assert method in ('logistic', 'linear')
-        self.method = method
-        self.rate = rate
-        self.step = step
-        self.i = 0
-
-    def alpha(self):
-        self.i += 1
-        if self.method == 'logistic':
-            alpha = float(1 / (1 + np.exp(-self.step*(self.i - self.rate))))
-        if self.method == 'linear':
-            alpha = min(1, self.i / self.rate)
-        self._alpha = alpha
-        return alpha
-
-
-class AnnealTemperature:
-    def __init__(self, temp_interval=300, start_temp=1.0, min_temp=0.5, rate=0.00009):
-        self.temp_interval = temp_interval
-        self.start_temp = start_temp
-        self.min_temp = min_temp
-        self.rate = rate
-        self.i = 0
-
-    def temp(self):
-        self.i += 1
-        if self.i % self.temp_interval == 0:
-            temp = np.exp(-self.start_temp*self.i*self.rate)
-        self._temp = temp
-        return max(temp, self.min_temp)
-
-
 class LossCompute:
     def __init__(self, criterion, device):
         self.criterion = criterion()
@@ -51,12 +16,10 @@ class LossCompute:
         self._loss = []
 
     def __call__(self, logits, y):
-        """Compute loss.
-
-            logits (tensor): model predictions.
-            y (int): the correct index.
-        """
+        assert isinstance(logits, torch.Tensor), logits
         assert isinstance(y, int), y
+        assert logits.size(0) == 1, logits.size()
+        assert logits.size(1) == len(y), logits.size()
         y = wrap([y], self.device)
         loss = self.criterion(logits, y)
         self._loss.append(loss)
@@ -102,6 +65,41 @@ class ElboCompute(LossCompute):
         return neg_elbo
 
 
+class AnnealKL:
+    """Anneal the KL in an ELBO objective."""
+    def __init__(self, method='logistic', step=2.5e-3, rate=2500):
+        assert method in ('logistic', 'linear')
+        self.method = method
+        self.rate = rate
+        self.step = step
+        self.i = 0
+
+    def alpha(self):
+        self.i += 1
+        if self.method == 'logistic':
+            alpha = float(1 / (1 + np.exp(-self.step*(self.i - self.rate))))
+        if self.method == 'linear':
+            alpha = min(1, self.i / self.rate)
+        self._alpha = alpha
+        return alpha
+
+
+class AnnealTemperature:
+    def __init__(self, temp_interval=300, start_temp=1.0, min_temp=0.5, rate=0.00009):
+        self.temp_interval = temp_interval
+        self.start_temp = start_temp
+        self.min_temp = min_temp
+        self.rate = rate
+        self.i = 0
+
+    def temp(self):
+        self.i += 1
+        if self.i % self.temp_interval == 0:
+            temp = np.exp(-self.start_temp*self.i*self.rate)
+        self._temp = temp
+        return max(temp, self.min_temp)
+
+
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
@@ -109,4 +107,4 @@ if __name__ == '__main__':
 
     alphas = [annealer(step) for step in range(5000)]
     plt.plot(alphas)
-    plt.savefig('alphas.pdf')
+    plt.savefig('anneal-alphas.pdf')

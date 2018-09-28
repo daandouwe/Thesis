@@ -10,7 +10,7 @@ from data import PAD_INDEX
 from glove import load_glove, get_vectors
 from embedding import ConvolutionalCharEmbedding
 from nn import MLP
-from encoder import StackLSTM, HistoryLSTM, BufferLSTM, TerminalLSTM
+from encoder import LATENT_COMPOSITIONS, StackLSTM, HistoryLSTM, BufferLSTM, TerminalLSTM
 from parser import DiscParser, GenParser
 from loss import LossCompute, ElboCompute
 
@@ -41,6 +41,9 @@ class DiscRNNG(DiscParser):
         )
         self.dictionary = dictionary
         self.device = device
+
+        self.composition_type = stack_encoder.composition_type
+        self.elbo_objective = self.stack.encoder.requires_kl
 
         # MLP for action classifiction
         self.action_mlp = action_mlp
@@ -77,50 +80,24 @@ class DiscRNNG(DiscParser):
                 self.criterion(nonterminal_logits, nt.index)
             self.parse_step(action)
             # Add KL if we use latent factor encoder.
-            if (action == REDUCE) and self.stack.encoder.requires_kl:
+            if action == REDUCE and self.elbo_objective:
                 alpha = self.stack.encoder.composition._alpha
                 kl = self.stack.encoder.composition.kl(alpha)
                 self.criterion.add_kl(kl)
         loss = self.criterion.get_loss(self.i)
         return loss
 
-    def parse(self, sentence):
-        """Parsing with greedy decoding."""
-        assert not self.training, f'set model.eval() to enable parsing'
-        self.initialize(sentence)
-        t = 0
-        while not self.stack.is_empty():
-            t += 1
-            # Compute loss
-            x = self.get_input()
-            action_logits = self.action_mlp(x)
-
-            # Get highest scoring valid predictions.
-            vals, ids = action_logits.sort(descending=True)
-            vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
-            i = 0
-            action = self.make_action(ids[i])
-            while not self.is_valid_action(action):
-                i += 1
-                action = self.make_action(ids[i])
-            if action.is_nt:
-                nonterminal_logits = self.nonterminal_mlp(x)
-                vals, ids = nonterminal_logits.sort(descending=True)
-                vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
-                X = Nonterminal(self.dictionary.i2n[ids[0]], ids[0])
-                action = NT(X)
-            self.parse_step(action)
-        return self.stack.get_tree()
-
-    def make_action(self, index):
-        """Maps index to action."""
-        assert index in range(3), index
-        if index == SHIFT.index:
-            return SHIFT
-        elif index == REDUCE.index:
-            return REDUCE
-        elif index == Action.NT_INDEX:
-            return NT(Nonterminal('_', -1))
+    def reduced_items(self):
+        items = dict()
+        items['head'] = self.stack._reduced_head_item
+        items['children'] = self.stack._reduced_child_items
+        if self.composition_type == 'attention':
+            items['attention'] = self.stack.encoder.composition._attn
+            items['gate'] = self.stack.encoder.composition._gate
+        elif self.composition_type == 'latent-factors':
+            items['sample'] = self.model.stack.encoder.composition._sample
+            items['alpha'] = self.model.stack.encoder.composition._alpha
+        return items
 
 
 class GenRNNG(GenParser):
@@ -192,50 +169,6 @@ class GenRNNG(GenParser):
             self.parse_step(action)
         return loss
 
-    def parse(self, sentence, predict_words=False):
-        """Parsing with greedy decoding."""
-        assert not self.training, f'set `model.eval()` to enable parsing'
-        self.initialize(sentence)
-        t = 0
-        while not self.stack.is_empty():
-            t += 1
-            # Compute loss
-            x = self.get_input()
-            action_logits = self.action_mlp(x)
-
-            # Get highest scoring valid predictions.
-            vals, ids = action_logits.sort(descending=True)
-            vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
-            i = 0
-            action = self.make_action(ids[i])
-            while not self.is_valid_action(action):
-                i += 1
-                action = self.make_action(ids[i])
-            if action.is_nt:
-                nonterminal_logits = self.nonterminal_mlp(x)
-                vals, ids = nonterminal_logits.sort(descending=True)
-                vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
-                X = Nonterminal(self.dictionary.i2n[ids[0]], ids[0])
-                action = NT(X)
-            if action.is_gen and predict_words:
-                    terminal_logits = self.terminal_mlp(x)
-                    vals, ids = terminal_logits.sort(descending=True)
-                    vals, ids = vals.data.squeeze(0), ids.data.squeeze(0)
-                    word = Word(self.dictionary.i2w[ids[0]], ids[0])
-                    action = GEN(word)
-            self.parse_step(action)
-        return self.stack.get_tree()
-
-    def make_action(self, index):
-        """Maps index to action."""
-        assert index in range(3), index
-        if index == REDUCE.index:
-            return REDUCE
-        elif index == Action.NT_INDEX:
-            return NT(Nonterminal('_', -1))
-        elif index == Action.GEN_INDEX:
-            return GEN(Word('_', -1))
-
 
 def set_embedding(embedding, tensor):
     """Sets the tensor as fixed weight tensor in embedding."""
@@ -271,11 +204,11 @@ def make_model(args, dictionary):
             logfile = open(os.path.join(args.logdir, 'glove.error.txt'), 'w')
             if args.glove_torchtext:
                 from torchtext.vocab import GloVe
-                print(f'Loading GloVe vectors glove.42B.{args.emb_dim}d (torchtext)...')
+                print(f'Loading GloVe vectors `glove.42B.{args.emb_dim}d` (torchtext loader)...')
                 glove = GloVe(name='42B', dim=args.emb_dim)
                 embeddings = get_vectors(words, glove, args.emb_dim, logfile)
             else:
-                print(f'Loading GloVe vectors glove.6B.{args.emb_dim}d (custom)...')
+                print(f'Loading GloVe vectors `glove.6B.{args.emb_dim}d` (custom loader)...')
                 embeddings = load_glove(words, args.emb_dim, args.glove_dir, logfile)
             set_embedding(word_embedding, embeddings)
             logfile.close()
@@ -343,7 +276,7 @@ def make_model(args, dictionary):
         activation=args.mlp_nonlinearity
     )
 
-    elbo_objective = (args.composition in ('latent-factors', 'latent-attention'))
+    elbo_objective = (args.composition in LATENT_COMPOSITIONS)
     if elbo_objective:
         criterion = ElboCompute(nn.CrossEntropyLoss, args.device, anneal=args.disable_kl_anneal)
     else:
