@@ -34,8 +34,6 @@ def predict(args):
 
 
 if __name__ == '__main__':
-    main(args)
-
     # TODO: Log embeddings while predicting:
     if writer:
         print(f'Created tensorboard summary writer at {args.logdir}.')

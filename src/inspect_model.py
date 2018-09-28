@@ -39,14 +39,7 @@ class AttentionInspection(Decoder):
                     logprob += self.logsoftmax(nt_logits)[0]
                 self.model.parse_step(action)
                 if action == REDUCE:
-                    # We stored these internally
-                    attention = self.model.stack.encoder.composition.attn
-                    children = self.model.stack.children
-                    head = self.model.stack.head
-                    print()
-                    print(head, '|', ' '.join(children))
-                    print(attention.squeeze().data.numpy())
-                    print()
+                    self._inspect_reduce()
             return self.get_tree(), logprob, num_actions
 
     def forward(self, sentence, actions, composition):
@@ -63,22 +56,27 @@ class AttentionInspection(Decoder):
                 nt = action.get_nt()
             self.model.parse_step(action)
             if action == REDUCE:
-                items = self.model.reduced_items()
-                head, children = items['head'], items['children']
-                if composition == 'attention':
-                    attention = items['attention'].squeeze(0).data.numpy()
-                    gate = items['gate'].squeeze(0).data.numpy()
-                    attentive = [f'{child.token} ({attn:.2f})'
-                        for child, attn in zip(children, attention)]
-                    print('  ', head.token, '|', ' '.join(attentive), f'[{gate.mean():.2f}]')
-                elif composition == 'latent-factors':
-                    sample = items['sample'].squeeze(0)
-                    alpha = items['alpha'].squeeze(0)
-                    factors = sample.squeeze(0).data.numpy().astype(int)
-                    # print('  ', head.token, '|', ' '.join(children), factors)
-                    # probs = nn.functional.sigmoid(alpha).data.numpy()
-                    probs = nn.functional.softmax(alpha).data.numpy()
-                    print('  ', head.token, probs)
+                self._inspect_reduce()
+
+    def _inspect_reduce(self):
+        items = self.model.reduced_items()
+        head, children = items['head'], items['children']
+        reduced = items['reduced'].squeeze(0).numpy()
+        if composition == 'attention':
+            attention = items['attention'].squeeze(0).data.numpy()
+            gate = items['gate'].squeeze(0).data.numpy()
+            attentive = [f'{child.token} ({attn:.2f})'
+                for child, attn in zip(children, attention)]
+            print('  ', head.token, '|', ' '.join(attentive), f'[{gate.mean():.2f}]')
+        elif composition == 'latent-factors':
+            sample = items['sample'].squeeze(0)
+            alpha = items['alpha'].squeeze(0)
+            factors = sample.squeeze(0).data.numpy().astype(int)
+            # print('  ', head.token, '|', ' '.join(children), factors)
+            # probs = nn.functional.sigmoid(alpha).data.numpy()
+            probs = nn.functional.softmax(alpha).data.numpy()
+            print('  ', head.token, list(map(lambda x: round(x, 2), probs)))
+            print('  ', head.token, factors)
 
     def _process_actions(self, actions):
         action_items = []

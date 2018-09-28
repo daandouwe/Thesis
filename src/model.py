@@ -91,12 +91,13 @@ class DiscRNNG(DiscParser):
         items = dict()
         items['head'] = self.stack._reduced_head_item
         items['children'] = self.stack._reduced_child_items
+        items['reduced'] = self.stack._reduced_embedding
         if self.composition_type == 'attention':
             items['attention'] = self.stack.encoder.composition._attn
             items['gate'] = self.stack.encoder.composition._gate
         elif self.composition_type == 'latent-factors':
-            items['sample'] = self.model.stack.encoder.composition._sample
-            items['alpha'] = self.model.stack.encoder.composition._alpha
+            items['sample'] = self.stack.encoder.composition._sample
+            items['alpha'] = self.stack.encoder.composition._alpha
         return items
 
 

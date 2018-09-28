@@ -16,10 +16,10 @@ class BiRecurrentComposition(nn.Module):
         super(BiRecurrentComposition, self).__init__()
         assert input_size % 2 == 0, 'hidden size must be even'
         self.device = device
-        self.fwd_rnn = nn.LSTM(input_size, input_size//2, num_layers,
-                               batch_first=batch_first, dropout=dropout)
-        self.bwd_rnn = nn.LSTM(input_size, input_size//2, num_layers,
-                               batch_first=batch_first, dropout=dropout)
+        self.fwd_rnn = nn.LSTM(
+            input_size, input_size//2, num_layers, batch_first=batch_first, dropout=dropout)
+        self.bwd_rnn = nn.LSTM(
+            input_size, input_size//2, num_layers, batch_first=batch_first, dropout=dropout)
         init_lstm(self.fwd_rnn)
         init_lstm(self.bwd_rnn)
         self.to(device)
@@ -55,10 +55,10 @@ class AttentionComposition(nn.Module):
         super(AttentionComposition, self).__init__()
         assert input_size % 2 == 0, 'hidden size must be even'
         self.device = device
-        self.fwd_rnn = nn.LSTM(input_size, input_size//2, num_layers,
-                               batch_first=batch_first, dropout=dropout)
-        self.bwd_rnn = nn.LSTM(input_size, input_size//2, num_layers,
-                               batch_first=batch_first, dropout=dropout)
+        self.fwd_rnn = nn.LSTM(
+            input_size, input_size//2, num_layers, batch_first=batch_first, dropout=dropout)
+        self.bwd_rnn = nn.LSTM(
+            input_size, input_size//2, num_layers, batch_first=batch_first, dropout=dropout)
         self.V = nn.Parameter(torch.ones((input_size, input_size), device=device, dtype=torch.float))
         self.gating = nn.Linear(2*input_size, input_size)
         self.head = nn.Linear(input_size, input_size)
@@ -119,10 +119,11 @@ class LatentFactorComposition(nn.Module):
         self.binary = binary
         self.generative = nn.Linear(num_factors, input_size, bias=False)
         self.inference = nn.Sequential(
-            BiRecurrentComposition(input_size, input_size, num_layers, dropout, device=device),
+            BiRecurrentComposition(input_size, num_layers, dropout, device=device),
             nn.ReLU(),
             nn.Linear(input_size, num_factors))
-        self.encoder = BiRecurrentComposition(input_size, input_size, num_layers, dropout, device=device)
+
+        self.encoder = BiRecurrentComposition(input_size, num_layers, dropout, device=device)
         self.linear = nn.Linear(input_size, num_factors)
 
         self.softmax = nn.Softmax(dim=-1)

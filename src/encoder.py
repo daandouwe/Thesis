@@ -10,6 +10,7 @@ from composition import BiRecurrentComposition, AttentionComposition, LatentFact
 
 
 COMPOSITIONS = ('basic', 'attention', 'latent-factors', 'latent-attention')
+
 LATENT_COMPOSITIONS = ('latent-factors', 'latent-attention')
 
 
@@ -123,8 +124,9 @@ class BufferLSTM(nn.Module):
     """A straightforward lstm but wrapped to hide internals such as selection of output."""
     def __init__(self, input_size, hidden_size, num_layers, dropout, device=None):
         super(BufferLSTM, self).__init__()
-        self.rnn = nn.LSTM(input_size, hidden_size, dropout=dropout, num_layers=num_layers,
-                           batch_first=True, bidirectional=False)
+        self.rnn = nn.LSTM(
+            input_size, hidden_size, dropout=dropout, num_layers=num_layers,
+            batch_first=True, bidirectional=False)
 
     def forward(self, x):
         """Encode and return the output hidden states."""
