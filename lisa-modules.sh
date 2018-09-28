@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 module load eb
 module load Python/3.6.3-foss-2017b
