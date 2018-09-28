@@ -6,6 +6,7 @@ from data import wrap
 
 
 class LossCompute:
+    """Compute a classification loss using the given criterion."""
     def __init__(self, criterion, device):
         self.criterion = criterion()
         self.device = device
@@ -19,7 +20,7 @@ class LossCompute:
         assert isinstance(logits, torch.Tensor), logits
         assert isinstance(y, int), y
         assert logits.size(0) == 1, logits.size()
-        assert logits.size(1) == len(y), logits.size()
+        assert logits.size(1) >= y, y
         y = wrap([y], self.device)
         loss = self.criterion(logits, y)
         self._loss.append(loss)
@@ -33,6 +34,7 @@ class LossCompute:
 
 
 class ElboCompute(LossCompute):
+    """An ELBO objective consisting of a classification loss and a KL term."""
     def __init__(self, criterion, device,
                  anneal=True, anneal_method='logistic', anneal_step=2.5e-3, anneal_rate=500):
         super(ElboCompute, self).__init__(criterion, device)
@@ -85,6 +87,7 @@ class AnnealKL:
 
 
 class AnnealTemperature:
+    """Anneal the temperature for discrete latent variables."""
     def __init__(self, temp_interval=300, start_temp=1.0, min_temp=0.5, rate=0.00009):
         self.temp_interval = temp_interval
         self.start_temp = start_temp

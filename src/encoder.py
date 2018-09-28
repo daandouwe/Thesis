@@ -14,28 +14,30 @@ LATENT_COMPOSITIONS = ('latent-factors', 'latent-attention')
 
 
 class BaseLSTM(nn.Module):
-    """A simple two-layered LSTM inherited by StackLSTM and HistoryLSTM."""
+    """A two-layered LSTM."""
     def __init__(self, input_size, hidden_size, dropout, device=None):
         super(BaseLSTM, self).__init__()
+        assert (hidden_size % 2 == 0), f'hidden size must be even: {hidden_size}'
         self.input_size = input_size
-        self.hidden_size = hidden_size  # Must be even number, see composition function.
-        self.device = device  # GPU or CPU
+        self.hidden_size = hidden_size
+        self.device = device
 
-        self.rnn_1 = nn.LSTMCell(input_size, hidden_size)
-        self.rnn_2 = nn.LSTMCell(hidden_size, hidden_size)
+        self.rnn1 = nn.LSTMCell(input_size, hidden_size)
+        self.rnn2 = nn.LSTMCell(hidden_size, hidden_size)
 
         # Were we store all intermediate computed hidden states.
         # Last item in _hidden_states_layer2 is used as the representation.
-        self._hidden_states_layer1 = []  # layer 1
-        self._hidden_states_layer2 = []  # layer 2
+        self._hidden_states_layer1 = []
+        self._hidden_states_layer2 = []
 
         # Used for custom dropout.
         self.keep_prob = 1.0 - dropout
         self.bernoulli = dist.Bernoulli(
-            probs=torch.tensor([self.keep_prob], device=device)
-        )
-        init_lstm(self.rnn_1)
-        init_lstm(self.rnn_2)
+            probs=torch.tensor([self.keep_prob], device=device))
+
+        # Initialize all layers.
+        init_lstm(self.rnn1)
+        init_lstm(self.rnn2)
         self.initialize_hidden()
         self.to(device)
 
@@ -53,6 +55,7 @@ class BaseLSTM(nn.Module):
         """Set initial hidden state to zeros."""
         self._hidden_states_layer1 = []
         self._hidden_states_layer2 = []
+        # TODO: make first hidden states trainable.
         h0 = torch.zeros(batch_size, self.hidden_size, device=self.device)
         c0 = torch.zeros(batch_size, self.hidden_size, device=self.device)
         self.hx1, self.cx1 = h0, c0
@@ -62,27 +65,27 @@ class BaseLSTM(nn.Module):
         self.sample_recurrent_dropout_mask(batch_size)
 
     def forward(self, x):
-        """Compute the next hidden state with input x and the previous hidden state.
-        Args:
-            x (tensor): shape (batch, input_size).
-        """
+        """Compute the next hidden state with input x and the previous hidden state."""
         # First layer
-        self.hx1, self.cx1 = self.rnn_1(x, (self.hx1, self.cx1))
+        hx1, cx1 = self.rnn1(x, (self.hx1, self.cx1))
         if self.training:
-            self.hx1, self.cx1 = self.dropout(self.hx1), self.dropout(self.cx1)
+            hx1, cx1 = self.dropout(hx1), self.dropout(cx1)
         # Second layer
-        self.hx2, self.cx2 = self.rnn_2(self.hx1, (self.hx2, self.cx2))
+        hx2, cx2 = self.rnn2(hx1, (self.hx2, self.cx2))
         if self.training:
-            self.hx2, self.cx2 = self.dropout(self.hx2), self.dropout(self.cx2)
+            hx2, cx2 = self.dropout(hx2), self.dropout(cx2)
         # Add cell states to history.
-        self._hidden_states_layer1.append((self.hx1, self.cx1))
-        self._hidden_states_layer2.append((self.hx2, self.cx2))
+        self._hidden_states_layer1.append((hx1, cx1))
+        self._hidden_states_layer2.append((hx2, cx2))
+        # Set new current hidden states
+        self.hx1, self.cx1 = hx1, cx1
+        self.hx2, self.cx2 = hx2, cx2
         # Return hidden state of second layer
-        return self.hx2
+        return hx2
 
 
 class StackLSTM(BaseLSTM):
-    """A Stack-LSTM used to encode the stack of a transition based parser."""
+    """LSTM used to encode the stack of a transition based parser."""
     def __init__(self, input_size, hidden_size, dropout, device=None, composition='basic'):
         super(StackLSTM, self).__init__(input_size, hidden_size, dropout, device)
         # Composition function.
@@ -94,7 +97,7 @@ class StackLSTM(BaseLSTM):
         elif composition == 'attention':
             self.composition = AttentionComposition(input_size, 2, dropout, device=device)
         elif composition == 'latent-factors':
-            self.composition = LatentFactorComposition(20, input_size, 2, dropout, device=device)
+            self.composition = LatentFactorComposition(10, input_size, 2, dropout, device=device)
 
     def _reset_hidden(self, sequence_len):
         """Reset the hidden state to right before the sequence was opened."""
@@ -105,14 +108,14 @@ class StackLSTM(BaseLSTM):
 
 
 class HistoryLSTM(BaseLSTM):
-    """An LSTM used to encode the history of actions of a transition based parser."""
-    def __init__(*args):
+    """LSTM used to encode the history of actions of a transition based parser."""
+    def __init__(self, *args):
         super(HistoryLSTM, self).__init__(*args)
 
 
 class TerminalLSTM(BaseLSTM):
-    """An LSTM used to encode the history of actions of a transition based parser."""
-    def __init__(*args):
+    """LSTM used to encode the generated word of a generative transition based parser."""
+    def __init__(self, *args):
         super(TerminalLSTM, self).__init__(*args)
 
 

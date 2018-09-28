@@ -68,7 +68,8 @@ class AttentionInspection(Decoder):
                 if composition == 'attention':
                     attention = items['attention'].squeeze(0).data.numpy()
                     gate = items['gate'].squeeze(0).data.numpy()
-                    attentive = [f'{child.token} ({attn:.2f})' for child, attn in zip(children, attention)]
+                    attentive = [f'{child.token} ({attn:.2f})'
+                        for child, attn in zip(children, attention)]
                     print('  ', head.token, '|', ' '.join(attentive), f'[{gate.mean():.2f}]')
                 elif composition == 'latent-factors':
                     sample = items['sample'].squeeze(0)

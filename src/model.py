@@ -8,10 +8,10 @@ from datatypes import Item, Word, Nonterminal, Action
 from actions import SHIFT, REDUCE, NT, GEN
 from data import PAD_INDEX
 from glove import load_glove, get_vectors
-from embedding import ConvolutionalCharEmbedding
-from nn import MLP
-from encoder import LATENT_COMPOSITIONS, StackLSTM, HistoryLSTM, BufferLSTM, TerminalLSTM
 from parser import DiscParser, GenParser
+from embedding import ConvolutionalCharEmbedding
+from encoder import LATENT_COMPOSITIONS, StackLSTM, HistoryLSTM, BufferLSTM, TerminalLSTM
+from nn import MLP
 from loss import LossCompute, ElboCompute
 
 

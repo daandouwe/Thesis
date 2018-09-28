@@ -111,7 +111,7 @@ def main():
     if args.mode == 'train':
         train.main(args)
     elif args.mode == 'predict':
-        predict.main(args)
+        predict.predict(args)
     elif args.mode == 'dist':
         distributed.main(args)
     elif args.mode == 'inspect':
