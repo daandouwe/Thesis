@@ -88,7 +88,8 @@ class DiscRNNG(DiscParser):
         return loss
 
     def reduced_items(self):
-        items = dict()
+        names = ('head', 'children', 'reduced', 'attention', 'gate', 'sample', 'alpha')
+        items = dict((name, None) for name in names)
         items['head'] = self.stack._reduced_head_item
         items['children'] = self.stack._reduced_child_items
         items['reduced'] = self.stack._reduced_embedding
@@ -99,7 +100,6 @@ class DiscRNNG(DiscParser):
             items['sample'] = self.stack.encoder.composition._sample
             items['alpha'] = self.stack.encoder.composition._alpha
         return items
-
 
 class GenRNNG(GenParser):
     """Generative Recurrent Neural Network Grammar."""

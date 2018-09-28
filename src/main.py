@@ -32,9 +32,9 @@ def main():
     parser.add_argument('--root', type=str, default='.',
                         help='root dir to make output log and checkpoint folders')
     parser.add_argument('--logdir', default=None,
-                        help='to be constructed by util.make_folders')
+                        help='to be constructed in main')
     parser.add_argument('--logfile', default=None,
-                        help='to be constructed by util.make_folders')
+                        help='to be constructed in main')
     parser.add_argument('--disable-folders', action='store_true',
                         help='do not make output folders (debug)')
     parser.add_argument('--max-lines', default=-1, type=int,
@@ -62,7 +62,7 @@ def main():
     parser.add_argument('--use-fasttext', action='store_true',
                         help='using pretrained fasttext embeddings')
     parser.add_argument('--glove-dir', type=str, default='~/embeddings/glove',
-                        help='to be constructed by util.make_folders')
+                        help='to be constructed in main')
     parser.add_argument('--glove-torchtext', action='store_true',
                         help='loading glove with torchtext')
 
