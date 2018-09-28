@@ -1,0 +1,15 @@
+
+*** These modified files were found in JOE when it aborted on Fri Sep 28 14:48:25 2018
+*** JOE was aborted by UNIX signal 1
+
+*** File '(Unnamed)'
+python
+
+*** File 'python'
+:q
+
+*** File '* Startup Log *'
+Processing '/usr/local/Cellar/joe/4.6/etc/joe/joerc'...
+Processing '/usr/local/Cellar/joe/4.6/etc/joe/ftyperc'...
+Finished processing /usr/local/Cellar/joe/4.6/etc/joe/ftyperc
+Finished processing /usr/local/Cellar/joe/4.6/etc/joe/joerc

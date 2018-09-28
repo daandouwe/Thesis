@@ -2,7 +2,7 @@
 
 # Dowloads EVALB.
 
-cd  # Install EVALB in home directory.
+cd  # Install in home directory.
 echo 'Downloading EVALB...'
 wget https://nlp.cs.nyu.edu/evalb/EVALB.tgz
 tar -xzf EVALB.tgz
