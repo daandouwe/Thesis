@@ -57,10 +57,10 @@ def main(args):
         print('Did not make output folders!')
 
     # Save arguments.
-    write_args(args)
+    write_args(args, logdir)
 
     writer = SummaryWriter(args.logdir)
-    print(f'Savinf logs to `{args.logdir}`.')
+    print(f'Saving logs to `{args.logdir}`.')
     print(f'Saving predictions to `{args.outdir}`.')
     print(f'Saving models to `{args.checkdir}`.')
 
@@ -197,11 +197,22 @@ def main(args):
             torch.nn.utils.clip_grad_norm_(trainable_parameters, args.clip)
             optimizer.step()
 
-            loss = loss.item()
-            losses.append(loss)
+
+            losses.append(loss.item())
+
+            ##
+            if torch.isnan(loss.data):
+                with open('checkpoints/nan-model.pt', 'w') as f:
+                    torch.save(model, f)
+                for param in model.parameters():
+                    if torch.isnan(param.data).sum() > 0:
+                        print(param)
+                        print()
+            ##
+
             if step % args.print_every == 0:
                 # Log to tensorboard.
-                writer.add_scalar('Train/Loss', loss, num_updates)
+                writer.add_scalar('Train/Loss', loss.item(), num_updates)
                 writer.add_scalar('Train/Learning-rate', get_lr(optimizer), num_updates)
                 percentage = step / num_batches * 100
                 avg_loss = np.mean(losses[-args.print_every:])

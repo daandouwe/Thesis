@@ -12,7 +12,7 @@ Currently, I have code that works on one node. It is completely synchronous. It 
 My code looks roughly like this, and is adapted from this [this PyTorch tutorial](https://pytorch.org/tutorials/intermediate/dist_tuto.html). The code is self-sufficient, I hope, and I've teste it on a single Lisa node.
 
 ```python
-#!/usr/bin/env python
+#!/usr/bin/env pythonw
 """run.py:"""
 import os
 

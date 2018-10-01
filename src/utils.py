@@ -52,7 +52,7 @@ def get_subdir_string(args, with_params=True):
         return f'{date}_{timestamp}'
 
 
-def write_args(args, positional=('mode',)):
+def write_args(args, logdir, positional=('mode',)):
     """Writes args to a file to be later used as input in the command line.
 
     Only works for arguments with double dash, e.g. --verbose, and
@@ -63,7 +63,7 @@ def write_args(args, positional=('mode',)):
 
     TODO: There should be a more robust way to do this!
     """
-    with open(os.path.join(args.logdir, 'args.txt'), 'w') as f:
+    with open(os.path.join(logdir, 'args.txt'), 'w') as f:
         for k, v in vars(args).items():
             if k not in positional: # skip positional arguments
                 print(f'--{k}={v}', file=f)

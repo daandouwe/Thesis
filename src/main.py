@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import os
 import argparse
+from math import inf
 
-import train
+import train_ as train
 import predict
 import distributed
 import inspect_model
@@ -71,6 +72,10 @@ def main():
                         help='random seed to use')
     parser.add_argument('--epochs', type=int, default=None,
                         help='max number of epochs')
+    parser.add_argument('--max-epochs', type=int, default=inf,
+                        help='max number of epochs')
+    parser.add_argument('--max-time', type=int, default=inf,
+                        help='max time in seconds')
     parser.add_argument('--batch-size', type=int, default=1,
                         help='size of mini batch')
     parser.add_argument('--dropout', type=float, default=0.2,

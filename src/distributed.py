@@ -11,7 +11,7 @@ import numpy as np
 
 from data import Corpus
 from model import DiscRNNG, make_model
-from predict import predict
+from decode import GreedyDecoder
 from eval import evalb
 from utils import Timer, get_subdir_string, get_folders, write_args
 
@@ -147,6 +147,10 @@ def main(args):
     parameters = filter(lambda p: p.requires_grad, model.parameters())
     optimizer = torch.optim.Adam(parameters, lr=args.lr)
 
+    dev_pred_path = os.path.join(args.outdir, f'{args.name}.dev.pred.trees')
+    dev_gold_path = os.path.join(args.data, 'dev', f'{args.name}.dev.trees')
+    dev_result_path = os.path.join(args.outdir, f'{args.name}.dev.result')
+
 
     print(f'Training with {size} processes...')
     losses = list()
@@ -189,17 +193,13 @@ def main(args):
         nonlocal best_dev_epoch
 
         model.eval()
-        pred_path = os.path.join(args.outdir, f'{args.name}.dev.pred.trees')
-        gold_path = os.path.join(args.data, 'dev', f'{args.name}.dev.trees')
-        result_path = os.path.join(args.outdir, f'{args.name}.dev.result')
         # Predict trees.
         trees = predict(dev_batches)
-        with open(pred_path, 'w') as f:
+        with open(dev_pred_path, 'w') as f:
             print('\n'.join([tree.linearize() for tree in trees]), file=f)
         # Compute f-score.
-        dev_fscore = evalb(args.evalb_dir, pred_path, gold_path, result_path)
+        dev_fscore = evalb(args.evalb_dir, dev_pred_path, dev_gold_path, dev_result_path)
         # Log score to tensorboard.
-        writer.add_scalar('Dev/Fscore', dev_fscore, num_updates)
         if dev_fscore > best_dev_fscore:
             print(f'Saving new best model to `{checkfile}`...')
             save_checkpoint()
@@ -238,13 +238,13 @@ def main(args):
         model = state['model']
 
     print('Evaluating loaded model on test set...')
-    pred_path = os.path.join(args.outdir, f'{args.name}.test.pred.trees')
-    gold_path = os.path.join(args.data, 'test', f'{args.name}.test.trees')
-    result_path = os.path.join(args.outdir, f'{args.name}.test.result')
+    test_pred_path = os.path.join(args.outdir, f'{args.name}.test.pred.trees')
+    test_gold_path = os.path.join(args.data, 'test', f'{args.name}.test.trees')
+    test_result_path = os.path.join(args.outdir, f'{args.name}.test.result')
     trees = predict(test_batches)
-    with open(pred_path, 'w') as f:
+    with open(test_pred_path, 'w') as f:
         print('\n'.join([tree.linearize() for tree in trees]), file=f)
-    test_fscore = evalb(args.evalb_dir, pred_path, gold_path, result_path)
+    test_fscore = evalb(args.evalb_dir, test_pred_path, test_gold_path, test_result_path)
     save_checkpoint()
 
     print('-'*99)
