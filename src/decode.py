@@ -9,11 +9,12 @@ from PYEVALB import parser, scorer
 from datatypes import Token, Item, Word, Nonterminal, Action
 from actions import SHIFT, REDUCE, NT, GEN
 from parser import DiscParser
-from scripts.get_oracle import unkify
+from model import DiscRNNG, GenRNNG
+from scripts.get_oracle import unkify, get_actions
 
 
 class Decoder:
-    """Decoder base class for prediction with discriminative RNNG."""
+    """Decoder base class for prediction with RNNG."""
     def __init__(self,
                  model=None,
                  dictionary=None,
@@ -37,10 +38,10 @@ class Decoder:
         pass
 
     def _init_tokenizer(self):
-        if self.verbose: print("Using NLTK's tokenizer.")
         # from spacy.tokenizer import Tokenizer
         # nlp = spacy.load('en')
         # self.tokenizer = Tokenizer(nlp.vocab)
+        if self.verbose: print("Using NLTK's tokenizer.")
         from nltk import word_tokenize
         self.tokenizer = word_tokenize
 
@@ -101,16 +102,6 @@ class Decoder:
         probs /= probs.sum()  # Renormalize.
         return probs
 
-    def _make_action(self, index):
-        """Maps index to action."""
-        assert index in range(3), f'invalid action index {index}'
-        if index == SHIFT.index:
-            return SHIFT
-        elif index == REDUCE.index:
-            return REDUCE
-        elif index == Action.NT_INDEX:
-            return NT(Nonterminal('_', -1))  # Content doesn't matter in this case, only type.
-
     def _valid_actions_mask(self):
         mask = torch.Tensor(
             [self.model.is_valid_action(self._make_action(i)) for i in range(3)])
@@ -129,7 +120,7 @@ class Decoder:
         print(f'Loading model from {path}...')
         with open(path, 'rb') as f:
             state = torch.load(f)
-        epoch, fscore = state['epoch'], state['test-fscore']
+        epoch, fscore = state['epochs'], state['test-fscore']
         print(f'Loaded model trained for {epoch} epochs with test-fscore {fscore}.')
         self.model = state['model']
         self.dictionary = state['dictionary']
@@ -161,7 +152,145 @@ class Decoder:
         return pred, fscore
 
 
-class GreedyDecoder(Decoder):
+class DiscriminativeDecoder(Decoder):
+    """Decoder for discriminative RNNG."""
+    def _make_action(self, index):
+        """Maps index to action."""
+        assert index in range(3), f'invalid action index {index}'
+        if index == SHIFT.index:
+            return SHIFT
+        elif index == REDUCE.index:
+            return REDUCE
+        elif index == Action.NT_INDEX:
+            return NT(Nonterminal('_', -1))  # Content doesn't matter in this case, only type.
+
+
+class GenerativeDecoder(Decoder):
+    """Decoder for generative RNNG by importance sampling."""
+    def __init__(self,
+                 model=None,
+                 proposal=None,
+                 dictionary=None,
+                 num_samples=100,
+                 alpha=0.8,
+                 use_chars=False,
+                 use_tokenizer=False,
+                 verbose=False):
+        super(GenerativeDecoder, self).__init__(
+            model,
+            dictionary,
+            use_chars,
+            use_tokenizer,
+            verbose
+        )
+        self.proposal = SamplingDecoder(
+            model=proposal, dictionary=dictionary, use_chars=use_chars)
+        self.num_samples = num_samples
+        self.alpha = alpha
+
+    def _make_action(self, index):
+        """Maps index to action."""
+        assert index in range(3), f'invalid action index {index}'
+        if index == Action.GEN_INDEX:
+            return GEN(Word('_', -1))  # Content doesn't matter in this case, only type.
+        elif index == REDUCE.index:
+            return REDUCE
+        elif index == Action.NT_INDEX:
+            return NT(Nonterminal('_', -1))  # Content doesn't matter in this case, only type.
+
+    def load_models(self, gen_path, disc_path):
+        print(f'Loading generative model from `{gen_path}` and discriminative proposal from `{disc_path}`...')
+        with open(gen_path, 'rb') as f:
+            gen_state = torch.load(f)
+        with open(disc_path, 'rb') as f:
+            disc_state = torch.load(f)
+        gen_epoch, gen_fscore = gen_state['epochs'], gen_state['test-fscore']
+        disc_epoch, disc_fscore = disc_state['epochs'], disc_state['test-fscore']
+        model = gen_state['model']
+        proposal = disc_state['model']
+        dictionary = gen_state['dictionary']
+        use_chars = gen_state['args'].use_chars
+        assert isinstance(model, GenRNNG), type(model)
+        assert isinstance(proposal, DiscRNNG), type(proposal)
+        print(f'Loaded generative model trained for {gen_epoch} epochs with test-fscore {gen_fscore}.')
+        print(f'Loaded discriminative model trained for {disc_epoch} epochs with test-fscore {disc_fscore}.')
+        self.model = model
+        self.proposal = SamplingDecoder(model=proposal, dictionary=dictionary, use_chars=use_chars)
+        self.dictionary = dictionary
+        self.use_chars = use_chars
+        self.model.eval()  # Disable dropout.
+        self.proposal.model.eval()  # Disable dropout.
+
+    def map_tree(self, sentence):
+        """Estimate the MAP tree."""
+        scored = self.rank(sentence)
+        ranked = sorted(scored, reverse=True, key=lambda t: t[-1])
+        best_tree, proposal_logprob, logprob = ranked[0]
+        return best_tree, proposal_logprob, logprob
+
+    def prob(self, sentence):
+        """Estimate the probability of the sentence using importance sampling."""
+        prob = torch.zeros(1)
+        scored = self.rank(sentence)
+        # TODO make this log-sum-exp.
+        for _, marginal_logprob, joint_logprob in scored:
+            prob += (joint_logprob - marginal_logprob).exp()
+        prob /= len(scored)
+        return prob
+
+    def rank(self, sentence):
+        sentence = self._process_sentence(sentence)
+        samples = [self.sample(sentence) for _ in range(self.num_samples)]
+        scored = [(tree, proposal_logprob, self.score(sentence, tree))
+            for tree, proposal_logprob in samples]
+        return scored
+
+    def score(self, sentence, tree):
+        """Compute p(x,y) under the generative model."""
+        self.model.eval()
+        words = (word.token.processed for word in sentence)
+        actions = self.get_gen_oracle(tree, words)
+        self.model.initialize(sentence)
+        logprob = 0.0
+        for i, action in enumerate(actions):
+            # Compute loss
+            x = self.model.get_input()
+            action_logits = self.model.action_mlp(x).squeeze(0)
+            logprob += self.logsoftmax(action_logits)[action.action_index]
+            # If we open a nonterminal, predict which.
+            if action.is_nt:
+                nonterminal_logits = self.model.nonterminal_mlp(x).squeeze(0)
+                nt = action.get_nt()
+                logprob += self.logsoftmax(nonterminal_logits)[nt.index]
+            # If we generate a word, predict which.
+            if action.is_gen:
+                terminal_logits = self.model.terminal_mlp(x).squeeze(0)
+                word = action.get_word()
+                logprob += self.logsoftmax(terminal_logits)[word.index]
+            self.model.parse_step(action)
+        return logprob
+
+    def sample(self, sentence):
+        tree, logprob, _ = self.proposal(sentence, self.alpha)
+        return tree, logprob
+
+    def get_gen_oracle(self, tree, sentence):
+        actions = get_actions(tree.linearize())
+        action_items = []
+        for a in actions:
+            if a == 'SHIFT':
+                token = next(sentence)
+                action = GEN(Word(token, self.dictionary.w2i[token]))
+            elif a == 'REDUCE':
+                action = Action('REDUCE', Action.REDUCE_INDEX)
+            elif a.startswith('NT'):
+                nt = a[3:-1]
+                action = NT(Nonterminal(nt, self.dictionary.n2i[nt]))
+            action_items.append(action)
+        return action_items
+
+
+class GreedyDecoder(DiscriminativeDecoder):
     """Greedy decoder for RNNG."""
     def __call__(self, sentence):
         logprob = 0.0
@@ -188,7 +317,7 @@ class GreedyDecoder(Decoder):
             return self.get_tree(), logprob, num_actions
 
 
-class SamplingDecoder(Decoder):
+class SamplingDecoder(DiscriminativeDecoder):
     """Ancestral sampling decoder for RNNG."""
     def __call__(self, sentence, alpha=1.0):
         logprob = 0.0
