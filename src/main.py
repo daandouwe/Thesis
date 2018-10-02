@@ -3,7 +3,7 @@ import os
 import argparse
 from math import inf
 
-import train_ as train
+import train
 import predict
 import distributed
 import inspect_model
@@ -100,7 +100,7 @@ def main():
                         help='when to print training progress')
     parser.add_argument('--disable-cuda', action='store_true',
                         help='disable CUDA')
-    parser.add_argument('--nprocs', type=int, default=-1,
+    parser.add_argument('--nprocs', type=int, default=1,
                         help='number of processes to spawn for parallel training')
 
     # Predict arguments

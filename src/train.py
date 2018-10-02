@@ -7,36 +7,12 @@ from tensorboardX import SummaryWriter
 
 from data import Corpus
 from model import make_model
-from decode import GreedyDecoder
+from trainer import Trainer
 from eval import evalb
 from utils import Timer, write_losses, get_folders, write_args
 
 
-def schedule_lr(args, optimizer, update):
-    update = update + 1
-    warmup_coeff = args.lr / args.learning_rate_warmup_steps
-    if update <= args.learning_rate_warmup_steps:
-        for param_group in optimizer.param_groups:
-            param_group['lr'] = update * warmup_coeff
-
-
-def get_lr(optimizer):
-    for param_group in optimizer.param_groups:
-        return param_group['lr']
-
-
-def batchify(batches, batch_size):
-    def ceil_div(a, b):
-        return ((a - 1) // b) + 1
-    return [batches[i*batch_size:(i+1)*batch_size]
-            for i in range(ceil_div(len(batches), batch_size))]
-
-
 def main(args):
-    if args.memory_debug:
-        from pprint import pprint
-        from collections import Counter
-        from test_memory import get_added_memory, get_num_objects, print_tensor_increase
 
     # Set random seeds.
     torch.manual_seed(args.seed)
@@ -50,8 +26,9 @@ def main(args):
     # Make output folder structure.
     if not args.disable_folders:
         subdir, logdir, checkdir, outdir = get_folders(args)
-        args.logdir, args.checkdir, args.outdir = logdir, checkdir, outdir
-        os.mkdir(logdir); os.mkdir(checkdir); os.mkdir(outdir)
+        os.mkdir(logdir)
+        os.mkdir(checkdir)
+        os.mkdir(outdir)
         print(f'Output subdirectory: `{subdir}`.')
     else:
         print('Did not make output folders!')
@@ -59,10 +36,9 @@ def main(args):
     # Save arguments.
     write_args(args, logdir)
 
-    writer = SummaryWriter(args.logdir)
-    print(f'Saving logs to `{args.logdir}`.')
-    print(f'Saving predictions to `{args.outdir}`.')
-    print(f'Saving models to `{args.checkdir}`.')
+    print(f'Saving logs to `{logdir}`.')
+    print(f'Saving predictions to `{outdir}`.')
+    print(f'Saving models to `{checkdir}`.')
 
     print(f'Loading data from `{args.data}`...')
     corpus = Corpus(
@@ -73,24 +49,26 @@ def main(args):
         use_chars=args.use_chars,
         max_lines=args.max_lines
     )
-    train_batches = corpus.train.batches(length_ordered=False, shuffle=True)
-    dev_batches = corpus.dev.batches(length_ordered=False, shuffle=False)
-    test_batches = corpus.test.batches(length_ordered=False, shuffle=False)
+    train_dataset = corpus.train.batches(shuffle=True)
+    dev_dataset = corpus.dev.batches()
+    test_dataset = corpus.test.batches()
     print(corpus)
 
     # Sometimes we don't want to use all data.
     if args.debug:
         print('Debug mode.')
-        train_batches = train_batches[:20]
-        dev_batches = dev_batches[:30]
-        test_batches = test_batches[:30]
+        train_dataset = train_dataset[:20]
+        dev_dataset = dev_dataset[:30]
+        test_dataset = test_dataset[:30]
     if args.max_lines != -1:
-        dev_batches = dev_batches[:100]
-        test_batches = test_batches[:100]
+        dev_dataset = dev_dataset[:100]
+        test_dataset = test_dataset[:100]
 
     # Create model.
     model = make_model(args, corpus.dictionary)
     model.to(args.device)
+
+    elbo_objective = (args.composition in ('latent-factors', 'latent-attention'))
 
     trainable_parameters = [param for param in model.parameters() if param.requires_grad]
     # Learning rate is set during training by set_lr().
@@ -102,221 +80,30 @@ def main(args):
         verbose=True,
     )
 
-    elbo_objective = (args.composition in ('latent-factors', 'latent-attention'))
-
-    print('Training...')
-    losses = list()
-    num_updates = 0
-    best_dev_fscore = -np.inf
-    best_dev_epoch = None
-    test_fscore = None
-    checkfile = os.path.join(checkdir, 'model.pt')
-
-    def save_checkpoint():
-        with open(checkfile, 'wb') as f:
-            state = {
-                'args': args,
-                'model': model,
-                'dictionary': corpus.dictionary,
-                'optimizer': optimizer,
-                'scheduler': scheduler,
-                'epoch': epoch,
-                'num-updates': num_updates,
-                'best-dev-fscore': best_dev_fscore,
-                'best-dev-epoch': best_dev_epoch,
-                'test-fscore': test_fscore
-            }
-            torch.save(state, f)
-
-    def predict(batches):
-        trees = []
-        decoder = GreedyDecoder(
-            model=model, dictionary=corpus.dictionary, use_chars=args.use_chars)
-        for i, batch in enumerate(batches):
-            sentence, actions = batch
-            tree, *rest = decoder(sentence)
-            trees.append(tree)
-            if i % 10 == 0:
-                print(f'Predicting sentence {i}/{len(batches)}...', end='\r')
-        return trees
-
-    def check_dev():
-        nonlocal best_dev_fscore
-        nonlocal best_dev_epoch
-
-        model.eval()
-        pred_path = os.path.join(args.outdir, f'{args.name}.dev.pred.trees')
-        gold_path = os.path.join(args.data, 'dev', f'{args.name}.dev.trees')
-        result_path = os.path.join(args.outdir, f'{args.name}.dev.result')
-        # Predict trees.
-        trees = predict(dev_batches)
-        with open(pred_path, 'w') as f:
-            print('\n'.join([tree.linearize() for tree in trees]), file=f)
-        # Compute f-score.
-        dev_fscore = evalb(args.evalb_dir, pred_path, gold_path, result_path)
-        # Log score to tensorboard.
-        writer.add_scalar('Dev/Fscore', dev_fscore, num_updates)
-        if dev_fscore > best_dev_fscore:
-            print(f'Saving new best model to `{checkfile}`...')
-            save_checkpoint()
-            best_dev_epoch = epoch
-            best_dev_fscore = dev_fscore
-        return dev_fscore
-
-    def train_epoch():
-        """One epoch of training."""
-        nonlocal num_updates
-        nonlocal losses
-
-        model.train()
-        train_timer = Timer()
-        num_sentences = len(train_batches)
-        num_batches = num_sentences // args.batch_size
-        processed = 0
-
-        if args.memory_debug:
-            prev_mem = 0
-            prev_num_objects, prev_num_tensors, prev_num_strings = 0, 0, 0
-            old_tensors = []
-
-        for step, minibatch in enumerate(batchify(train_batches, args.batch_size), 1):
-            # Set learning rate.
-            num_updates += 1
-            processed += args.batch_size
-            schedule_lr(args, optimizer, num_updates)
-
-            # Compute loss over minibatch.
-            loss = torch.zeros(1, device=args.device)
-            for batch in minibatch:
-                sentence, actions = batch
-                loss += model(sentence, actions)
-            loss /= args.batch_size
-
-            optimizer.zero_grad()
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(trainable_parameters, args.clip)
-            optimizer.step()
-
-
-            losses.append(loss.item())
-
-            ##
-            if torch.isnan(loss.data):
-                with open('checkpoints/nan-model.pt', 'w') as f:
-                    torch.save(model, f)
-                for param in model.parameters():
-                    if torch.isnan(param.data).sum() > 0:
-                        print(param)
-                        print()
-            ##
-
-            if step % args.print_every == 0:
-                # Log to tensorboard.
-                writer.add_scalar('Train/Loss', loss.item(), num_updates)
-                writer.add_scalar('Train/Learning-rate', get_lr(optimizer), num_updates)
-                percentage = step / num_batches * 100
-                avg_loss = np.mean(losses[-args.print_every:])
-                lr = get_lr(optimizer)
-                sents_per_sec = processed / train_timer.elapsed()
-                eta = (num_sentences - processed) / sents_per_sec
-
-                if args.memory_debug:
-                    cur_mem, add_mem = get_added_memory(prev_mem)
-                    prev_mem = cur_mem
-                    num_objects, num_tensors, num_strings, num_ints = get_num_objects()
-                    print(
-                        f'| sent-length {len(sentence)} '
-                        f'| total mem {cur_mem:.3f}M '
-                        f'| added mem {add_mem:.3f}M '
-                        f'| total {num_objects:,} '
-                        f'| tensors {num_tensors:,} '
-                    )
-                    # Which shapes are the tensors that remain?
-                    print_tensor_increase()
-                    # Update values.
-                    prev_num_objects = num_objects
-                    prev_num_tensors = num_tensors
-                    prev_num_strings = num_strings
-                else:
-                    message = (
-                        f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) ',
-                        f'| loss {avg_loss:7.3f} ',
-                        f'| lr {lr:.1e} ',
-                        f'| {sents_per_sec:4.1f} sents/sec ',
-                        f'| elapsed {train_timer.format(train_timer.elapsed())} ',
-                        f'| eta {train_timer.format(eta)} '
-                    )
-                    if elbo_objective:
-                        message += (
-                            f'| alpha {model.criterion.annealer._alpha:.3f} ',
-                            f'| temp {model.stack.encoder.composition.annealer._temp:.3f} '
-                        )
-                    print(''.join(message))
-
-
-    epoch_timer = Timer()
-    # At any point you can hit Ctrl + C to break out of training early.
-    try:
-        # No upper limit of epochs
-        for epoch in itertools.count(start=1):
-            if args.epochs is not None and epoch > args.epochs:
-                break
-
-            # Shuffle batches each epoch.
-            np.random.shuffle(train_batches)
-
-            # Train one epoch.
-            train_epoch()
-
-            print('Evaluating fscore on development set...')
-            dev_fscore = check_dev()
-
-            # Scheduler for learning rate.
-            if args.step_decay:
-                if (num_updates // args.batch_size + 1) > args.learning_rate_warmup_steps:
-                    scheduler.step(best_dev_fscore)
-
-            print('-'*99)
-            print(
-                f'| End of epoch {epoch:3d}/{args.epochs} '
-                f'| elapsed {epoch_timer.format_elapsed()} '
-                f'| dev-fscore {dev_fscore:4.2f} '
-                f'| best dev-epoch {best_dev_epoch} '
-                f'| best dev-fscore {best_dev_fscore:4.2f} '
-            )
-            print('-'*99)
-    except KeyboardInterrupt:
-        print('-'*99)
-        print('Exiting from training early.')
-
-        # Save the losses for plotting and diagnostics
-        save_checkpoint()
-
-        write_losses(args, losses)
-        # TODO(not sure) writer.export_scalars_to_json('scalars.json')
-        print('Evaluating fscore on development set...')
-        check_dev()
-    # Load best saved model.
-    print(f'Loading best saved model (epoch {best_dev_epoch}) from `{checkfile}`...')
-    with open(checkfile, 'rb') as f:
-        state = torch.load(f)
-        model = state['model']
-
-    print('Evaluating loaded model on test set...')
-    pred_path = os.path.join(args.outdir, f'{args.name}.test.pred.trees')
-    gold_path = os.path.join(args.data, 'test', f'{args.name}.test.trees')
-    result_path = os.path.join(args.outdir, f'{args.name}.test.result')
-    trees = predict(test_batches)
-    with open(pred_path, 'w') as f:
-        print('\n'.join([tree.linearize() for tree in trees]), file=f)
-    test_fscore = evalb(args.evalb_dir, pred_path, gold_path, result_path)
-    save_checkpoint()
-
-    print('-'*99)
-    print(
-         f'| End of training '
-         f'| best dev-epoch {best_dev_epoch:2d} '
-         f'| best dev-fscore {best_dev_fscore:4.2f} '
-         f'| test-fscore {test_fscore}'
+    trainer = Trainer(
+        model=model,
+        optimizer=optimizer,
+        scheduler=scheduler,
+        train_dataset=train_dataset,
+        dev_dataset=dev_dataset,
+        test_dataset=test_dataset,
+        num_procs=args.nprocs,
+        lr=args.lr,
+        print_every=args.print_every,
+        batch_size=args.batch_size,
+        elbo_objective=elbo_objective,
+        max_epochs=args.max_epochs,
+        max_time=args.max_time,
+        name=args.name,
+        checkpoint_dir=checkdir,
+        output_dir=outdir,
+        log_dir=logdir,
+        data_dir=args.data,
+        evalb_dir=args.evalb_dir,
+        device=args.device,
+        step_decay=args.step_decay,
+        learning_rate_warmup_steps=args.learning_rate_warmup_steps,
+        max_grad_norm=args.clip,
+        args=args,
     )
-    print('-'*99)
+    trainer.train()

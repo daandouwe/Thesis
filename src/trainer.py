@@ -55,8 +55,8 @@ class Trainer:
         self.batch_size = batch_size
         self.device = device
 
-        self.elbo_objective = elbo_objective
         self.lr = lr
+        self.elbo_objective = elbo_objective
         self.step_decay = step_decay
         self.learning_rate_warmup_steps = learning_rate_warmup_steps
         self.max_grad_norm = max_grad_norm
@@ -79,13 +79,12 @@ class Trainer:
         self.evalb_dir = evalb_dir
         self.construct_paths()
 
+        self.losses = []
+        self.num_updates = 0
         self.current_dev_fscore = -inf
         self.best_dev_fscore = -inf
         self.best_dev_epoch = None
         self.test_fscore = None
-
-        self.losses = []
-        self.num_updates = 0
 
         self.timer = Timer()
         self.tensorboard_writer = SummaryWriter(log_dir)
@@ -307,19 +306,27 @@ class Trainer:
                 sents_per_sec = processed / train_timer.elapsed()
                 eta = (num_sentences - processed) / sents_per_sec
 
-                # message = self.get_training_message()
-                message = (
-                    f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) ',
-                    f'| loss {avg_loss:7.3f} ',
-                    f'| lr {lr:.1e} ',
-                    f'| {sents_per_sec:4.1f} sents/sec ',
-                    f'| elapsed {train_timer.format(train_timer.elapsed())} ',
-                    f'| eta {train_timer.format(eta)} '
-                )
                 if self.elbo_objective:
-                    message += (
+                    message = (
+                        f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) ',
+                        f'| neg-elbo {avg_loss:7.3f} ',
+                        f'| loss {np.mean(self.model.criterion._train_losses[-self.print_every:]):.3f} ',
+                        f'| kl {np.mean(self.model.criterion._train_kl[-self.print_every:]):.3f} ',
+                        f'| lr {lr:.1e} ',
                         f'| alpha {self.model.criterion.annealer._alpha:.3f} ',
                         f'| temp {self.model.stack.encoder.composition.annealer._temp:.3f} '
+                        f'| {sents_per_sec:4.1f} sents/sec ',
+                        f'| elapsed {train_timer.format(train_timer.elapsed())} ',
+                        f'| eta {train_timer.format(eta)} '
+                    )
+                else:
+                    message = (
+                        f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) ',
+                        f'| loss {avg_loss:7.3f} ',
+                        f'| lr {lr:.1e} ',
+                        f'| {sents_per_sec:4.1f} sents/sec ',
+                        f'| elapsed {train_timer.format(train_timer.elapsed())} ',
+                        f'| eta {train_timer.format(eta)} '
                     )
                 print(''.join(message))
 
