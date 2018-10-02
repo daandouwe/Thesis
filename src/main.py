@@ -32,7 +32,7 @@ def main():
                         help='name of dataset for ptb.train.oracle, ptb.test.trees, etc.')
     parser.add_argument('--root', type=str, default='.',
                         help='root dir to make output log and checkpoint folders')
-    parser.add_argument('--logdir', default=None,
+    parser.add_argument('--logdir', default='log',
                         help='to be constructed in main')
     parser.add_argument('--logfile', default=None,
                         help='to be constructed in main')
@@ -100,12 +100,14 @@ def main():
                         help='when to print training progress')
     parser.add_argument('--disable-cuda', action='store_true',
                         help='disable CUDA')
-    parser.add_argument('--nprocs', type=int, default=1,
+    parser.add_argument('--num-procs', type=int, default=1,
                         help='number of processes to spawn for parallel training')
 
     # Predict arguments
     parser.add_argument('--checkpoint', type=str, default='',
                         help='load model from this checkpoint')
+    parser.add_argument('--proposal', type=str, default='',
+                        help='load discriminative model (as proposal for generative model) from this checkpoint')
     parser.add_argument('--evalb-dir', default='~/EVALB',
                         help='where the evalb excecutable is located')
     parser.add_argument('--use-tokenizer', action='store_true',

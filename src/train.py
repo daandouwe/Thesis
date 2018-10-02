@@ -87,7 +87,7 @@ def main(args):
         train_dataset=train_dataset,
         dev_dataset=dev_dataset,
         test_dataset=test_dataset,
-        num_procs=args.nprocs,
+        num_procs=args.num_procs,
         lr=args.lr,
         print_every=args.print_every,
         batch_size=args.batch_size,

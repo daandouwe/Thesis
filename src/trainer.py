@@ -83,8 +83,8 @@ class Trainer:
         self.num_updates = 0
         self.current_dev_fscore = -inf
         self.best_dev_fscore = -inf
-        self.best_dev_epoch = None
-        self.test_fscore = None
+        self.best_dev_epoch = 0
+        self.test_fscore = -inf
 
         self.timer = Timer()
         self.tensorboard_writer = SummaryWriter(log_dir)
@@ -286,7 +286,7 @@ class Trainer:
 
             ## NaN debugging
             if torch.isnan(loss.data):
-                with open('checkpoints/nan-model.pt', 'w') as f:
+                with open('checkpoints/nan-model.pt', 'wb') as f:
                     torch.save(self.model, f)
                 for param in self.model.parameters():
                     if torch.isnan(param.data).sum() > 0:
@@ -329,19 +329,6 @@ class Trainer:
                         f'| eta {train_timer.format(eta)} '
                     )
                 print(''.join(message))
-
-        test_fscore = self.check_test()
-        print('-'*99)
-        print(
-             f'| End of training '
-             f'| best dev-epoch {self.best_dev_epoch:2d} '
-             f'| best dev-fscore {self.best_dev_fscore:4.2f} '
-             f'| test-fscore {test_fscore}'
-        )
-        print('-'*99)
-        # Save with test fscore information.
-        self.test_fscore = test_fscore
-        self.save_checkpoint()
 
     def schedule_lr(self):
         warmup_coeff = self.lr / self.learning_rate_warmup_steps
@@ -392,6 +379,8 @@ class Trainer:
 
     def check_dev(self):
         """Evaluate the current model on the test dataset."""
+        if self.args.model == 'gen':
+            return 0
         self.model.eval()
         # Predict trees.
         trees = self.predict(self.dev_dataset)
@@ -412,6 +401,8 @@ class Trainer:
 
     def check_test(self):
         """Evaluate the model with best development f-score on the test dataset."""
+        if self.args.model == 'gen':
+            return 0
         print(f'Loading best saved model from `{self.checkpoint_path}` '
               f'(epoch {self.best_dev_epoch}, fscore {self.best_dev_fscore})...')
         with open(self.checkpoint_path, 'rb') as f:

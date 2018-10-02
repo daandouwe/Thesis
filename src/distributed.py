@@ -114,7 +114,7 @@ def train_epoch(size, model, train_batches, optimizer, elbo_objective):
 
 def main(args):
 
-    size = mp.cpu_count() if args.nprocs == -1 else args.nprocs
+    size = mp.cpu_count() if args.num_procs == -1 else args.num_procs
     args.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Make output folder structure.
