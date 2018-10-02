@@ -60,4 +60,4 @@ class LeafNode(Node):
             return "{}".format(self.item)
 
     def leaves(self):
-        yield self
+        yield str(self.item)
