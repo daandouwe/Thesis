@@ -175,8 +175,7 @@ class Data:
         np.random.shuffle(new_order)
         self._order(new_order)
 
-    def batches(self, shuffle=True,
-                length_ordered=False, cuda=False):
+    def batches(self, shuffle=False, length_ordered=False):
         n = len(self.sentences)
         if shuffle:
             self.shuffle()

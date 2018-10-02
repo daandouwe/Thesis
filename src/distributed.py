@@ -2,11 +2,11 @@
 import os
 import sys
 import time
+import multiprocessing as mp
 
 import torch
 import torch.nn as nn
 import torch.distributed as dist
-import multiprocessing as mp
 import numpy as np
 
 from data import Corpus
@@ -78,6 +78,7 @@ def average_gradients(model):
             dist.all_reduce(param.grad, op=dist.reduce_op.SUM)
             param.grad /= size
 
+
 def init_processes(fn, *args, backend='tcp'):
     """Initialize the distributed environment."""
     os.environ['MASTER_ADDR'] = '127.0.0.1'
@@ -101,7 +102,7 @@ def train_epoch(size, model, train_batches, optimizer, elbo_objective):
             processes.append(p)
         for p in processes:
             p.join()
-    except:
+    except KeyboardInterrupt:
         # Close open processes.
         for p in processes:
             p.join()
@@ -126,7 +127,7 @@ def main(args):
         print('Did not make output folders!')
 
     # Save arguments.
-    write_args(args)
+    write_args(args, logdir)
 
     # Initialize model and data.
     corpus = Corpus(
