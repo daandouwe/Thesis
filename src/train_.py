@@ -33,10 +33,6 @@ def batchify(batches, batch_size):
 
 
 def main(args):
-    if args.memory_debug:
-        from pprint import pprint
-        from collections import Counter
-        from test_memory import get_added_memory, get_num_objects, print_tensor_increase
 
     # Set random seeds.
     torch.manual_seed(args.seed)
@@ -73,9 +69,9 @@ def main(args):
         use_chars=args.use_chars,
         max_lines=args.max_lines
     )
-    train_dataset = corpus.train.batches(length_ordered=False, shuffle=True)
-    dev_dataset = corpus.dev.batches(length_ordered=False, shuffle=False)
-    test_dataset = corpus.test.batches(length_ordered=False, shuffle=False)
+    train_dataset = corpus.train.batches(shuffle=True)
+    dev_dataset = corpus.dev.batches()
+    test_dataset = corpus.test.batches()
     print(corpus)
 
     # Sometimes we don't want to use all data.
@@ -92,6 +88,8 @@ def main(args):
     model = make_model(args, corpus.dictionary)
     model.to(args.device)
 
+    elbo_objective = (args.composition in ('latent-factors', 'latent-attention'))
+
     trainable_parameters = [param for param in model.parameters() if param.requires_grad]
     # Learning rate is set during training by set_lr().
     optimizer = torch.optim.Adam(trainable_parameters, lr=1., betas=(0.9, 0.98), eps=1e-9)
@@ -102,25 +100,24 @@ def main(args):
         verbose=True,
     )
 
-    elbo_objective = (args.composition in ('latent-factors', 'latent-attention'))
-
     trainer = Trainer(
         model=model,
         optimizer=optimizer,
         scheduler=scheduler,
-        nprocs=args.nprocs,
-        lr=args.lr,
-        elbo_objective=elbo_objective,
         train_dataset=train_dataset,
         dev_dataset=dev_dataset,
         test_dataset=test_dataset,
+        num_procs=args.nprocs,
+        lr=args.lr,
         print_every=args.print_every,
         batch_size=args.batch_size,
+        elbo_objective=elbo_objective,
         max_epochs=args.max_epochs,
         max_time=args.max_time,
         name=args.name,
         checkpoint_dir=checkdir,
         output_dir=outdir,
+        log_dir=logdir,
         data_dir=args.data,
         evalb_dir=args.evalb_dir,
         device=args.device,
@@ -129,7 +126,4 @@ def main(args):
         max_grad_norm=args.clip,
         args=args,  # Used for saving model.
     )
-
     trainer.train()
-
-    trainer.check_test()

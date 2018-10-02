@@ -1,9 +1,13 @@
 import os
 import itertools
+import time
+import multiprocessing as mp
 from math import inf
 
 import numpy as np
 import torch
+import torch.nn as nn
+import torch.distributed as dist
 from tensorboardX import SummaryWriter
 
 from data import Corpus
@@ -21,22 +25,22 @@ class Trainer:
         optimizer=None,
         scheduler=None,
         lr=None,
-        step_decay=None,
+        step_decay=False,
         learning_rate_warmup_steps=None,
         train_dataset=[],
         dev_dataset=[],
         test_dataset=[],
         batch_size=1,
-        nprocs=1,
+        num_procs=1,
         elbo_objective=False,
         max_epochs=inf,
         max_time=inf,
-        name='',
-        checkpoint_dir='',
-        output_dir='',
-        data_dir='',
-        evalb_dir='',
-        log_dir='',
+        name=None,
+        checkpoint_dir=None,
+        output_dir=None,
+        data_dir=None,
+        evalb_dir=None,
+        log_dir=None,
         max_grad_norm=5.0,
         print_every=100,
         device=None,
@@ -57,8 +61,8 @@ class Trainer:
         self.learning_rate_warmup_steps = learning_rate_warmup_steps
         self.max_grad_norm = max_grad_norm
 
-        self.nprocs = nprocs
-        self.distributed = (nprocs > 1)
+        self.num_procs = mp.cpu_count() if num_procs == -1 else num_procs
+        self.distributed = (self.num_procs > 1)
         self.print_every = print_every
         self.max_epochs = max_epochs
         self.max_time = max_time
@@ -84,11 +88,11 @@ class Trainer:
         self.num_updates = 0
 
         self.timer = Timer()
-
         self.tensorboard_writer = SummaryWriter(log_dir)
 
     def construct_paths(self):
         self.checkpoint_path = os.path.join(self.checkpoint_dir, 'model.pt')
+        self.loss_path = os.path.join(self.log_dir, 'loss.csv')
 
         self.dev_pred_path = os.path.join(self.output_dir, f'{self.name}.dev.pred.trees')
         self.dev_gold_path = os.path.join(self.data_dir, 'dev', f'{self.name}.dev.trees')
@@ -104,7 +108,7 @@ class Trainer:
         At any point you can hit Ctrl + C to break out of training early.
         """
         try:
-            print('Training')
+            print('Training...')
             # No upper limit of epochs.
             for epoch in itertools.count(start=1):
                 if epoch > self.max_epochs:
@@ -120,7 +124,6 @@ class Trainer:
 
                 print('Evaluating fscore on development set...')
                 self.check_dev()
-
                 # Scheduler for learning rate.
                 if self.step_decay:
                     if (self.num_updates // self.batch_size + 1) > self.learning_rate_warmup_steps:
@@ -139,12 +142,113 @@ class Trainer:
             print('-'*99)
             print('Exiting from training early.')
             # Save the losses for plotting and diagnostics
-            self.save_checkpoint()
             self.write_losses()
             print('Evaluating fscore on development set...')
             self.check_dev()
 
+        print('Evaluating fscore on test set...')
+        test_fscore = self.check_test()
+        print('-'*99)
+        print(
+             f'| End of training '
+             f'| best dev-epoch {self.best_dev_epoch:2d} '
+             f'| best dev-fscore {self.best_dev_fscore:4.2f} '
+             f'| test-fscore {test_fscore}'
+        )
+        print('-'*99)
+        # Save model again but with test fscore information.
+        self.test_fscore = test_fscore
+        self.save_checkpoint()
+
     def train_epoch(self):
+        if self.distributed:
+            self.train_epoch_distributed()
+        else:
+            self.train_epoch_sequential()
+
+    def train_epoch_distributed(self):
+        def init_processes(fn, *args, backend='tcp'):
+            """Initialize the distributed environment."""
+            os.environ['MASTER_ADDR'] = '127.0.0.1'
+            os.environ['MASTER_PORT'] = '29500'
+            rank, size, *rest = args
+            dist.init_process_group(backend, rank=rank, world_size=size)
+            fn(*args)
+
+        def average_gradients(model, size):
+            """Gradient averaging."""
+            for param in model.parameters():
+                if param is not None and param.requires_grad:  # some layers of model are not used and have no grad
+                    # dist.all_reduce(param.grad.data, op=dist.reduce_op.SUM)
+                    # param.grad.data /= size
+                    dist.all_reduce(param.grad.data, op=dist.reduce_op.SUM)
+                    param.grad /= size
+
+        def worker(rank, size, model, batches, optimizer, elbo_objective, return_dict, print_every):
+            """Distributed training."""
+            def clock_time(s):
+                h, s = divmod(s, 3600)
+                m, s = divmod(s, 60)
+                return int(h), int(m), int(s)
+
+            # Restrict each processor to use only 1 thread.
+            torch.set_num_threads(1)  # Without this it won't work on Lisa (and slow down on laptop)!
+            num_steps = len(batches) // size
+            losses = []
+            start_time = time.time()
+            t0 = time.time()
+            chunk_size = len(batches) // dist.get_world_size()
+            start, stop = rank*chunk_size, (rank+1)*chunk_size
+            for i, batch in enumerate(batches[start:stop], 1):
+                sentence, actions = batch
+                loss = model(sentence, actions)
+                optimizer.zero_grad()
+                loss.backward()
+                nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
+                average_gradients(model, size)
+                optimizer.step()
+
+                # Compute the average loss for logging.
+                dist.all_reduce(loss, op=dist.reduce_op.SUM)  # inplace operation
+                losses.append(loss.data.item() / size)
+
+                if i % print_every == 0 and rank == 0:
+                    sents_per_sec = print_every * size / (time.time() - t0)
+                    t0 = time.time()
+                    message = 'step {}/{} ({:.0f}%) | loss {:.3f} | {:.3f} sents/sec | elapsed {}h{:02}m{:02}s | eta {}h{:02}m{:02}s'.format(
+                            i, num_steps, i/num_steps * 100,
+                            np.mean(losses[-print_every:]),
+                            sents_per_sec,
+                            *clock_time(time.time() - start_time),
+                            *clock_time((len(batches) - i*size) / sents_per_sec))
+                    if elbo_objective:
+                        message += (f'| alpha {model.criterion.annealer._alpha:.3f} ' +
+                            f'| temp {model.stack.encoder.composition.annealer._temp:.3f} ')
+                    print(message)
+                    # Save model every now and then.
+                    return_dict['model'] = model
+            # Save model when finished.
+            if rank == 0:
+                return_dict['model'] = model
+
+        manager = mp.Manager()
+        return_dict = manager.dict()
+        processes = []
+        for rank in range(self.num_procs):
+            args = (rank, self.num_procs, self.model, self.train_dataset,
+                self.optimizer, self.elbo_objective, return_dict, self.print_every)
+            p = mp.Process(
+                target=init_processes,
+                args=(worker, *args)
+            )
+            p.start()
+            processes.append(p)
+        for p in processes:
+            p.join()
+        # Catch trained model.
+        self.model = return_dict['model']
+
+    def train_epoch_sequential(self):
         """One epoch of training."""
         self.model.train()
         train_timer = Timer()
@@ -181,7 +285,7 @@ class Trainer:
 
             self.losses.append(loss.item())
 
-            ##
+            ## NaN debugging
             if torch.isnan(loss.data):
                 with open('checkpoints/nan-model.pt', 'w') as f:
                     torch.save(self.model, f)
@@ -203,6 +307,7 @@ class Trainer:
                 sents_per_sec = processed / train_timer.elapsed()
                 eta = (num_sentences - processed) / sents_per_sec
 
+                # message = self.get_training_message()
                 message = (
                     f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) ',
                     f'| loss {avg_loss:7.3f} ',
@@ -217,6 +322,19 @@ class Trainer:
                         f'| temp {self.model.stack.encoder.composition.annealer._temp:.3f} '
                     )
                 print(''.join(message))
+
+        test_fscore = self.check_test()
+        print('-'*99)
+        print(
+             f'| End of training '
+             f'| best dev-epoch {self.best_dev_epoch:2d} '
+             f'| best dev-fscore {self.best_dev_fscore:4.2f} '
+             f'| test-fscore {test_fscore}'
+        )
+        print('-'*99)
+        # Save with test fscore information.
+        self.test_fscore = test_fscore
+        self.save_checkpoint()
 
     def schedule_lr(self):
         warmup_coeff = self.lr / self.learning_rate_warmup_steps
@@ -253,7 +371,7 @@ class Trainer:
             torch.save(state, f)
 
     def predict(self, batches):
-        """Predict trees for the batches with the current model."""
+        """Use current model to predict trees for batches using greedy decoding."""
         decoder = GreedyDecoder(
             model=self.model, dictionary=self.dictionary, use_chars=self.dictionary.use_chars)
         trees = []
@@ -283,6 +401,7 @@ class Trainer:
             self.best_dev_epoch = self.current_epoch
             self.best_dev_fscore = dev_fscore
             self.save_checkpoint()
+        return dev_fscore
 
     def check_test(self):
         """Evaluate the model with best development f-score on the test dataset."""
@@ -296,22 +415,12 @@ class Trainer:
         with open(self.test_pred_path, 'w') as f:
             print('\n'.join([tree.linearize() for tree in trees]), file=f)
         # Compute f-score.
-        self.test_fscore = evalb(
+        test_fscore = evalb(
             self.evalb_dir, self.test_pred_path, self.test_gold_path, self.test_result_path)
-        print('-'*99)
-        print(
-             f'| End of training '
-             f'| best dev-epoch {self.best_dev_epoch:2d} '
-             f'| best dev-fscore {self.best_dev_fscore:4.2f} '
-             f'| test-fscore {self.test_fscore}'
-        )
-        print('-'*99)
-        # Save with test fscore information.
-        self.save_checkpoint()
+        return test_fscore
 
     def write_losses(self):
-        path = os.path.join(self.log_dir, 'loss.csv')
-        with open(path, 'w') as f:
+        with open(self.loss_path, 'w') as f:
             print('loss', file=f)
             for loss in self.losses:
                 print(loss, file=f)
