@@ -117,10 +117,10 @@ def predict_input_gen(args):
     while True:
         sentence = input('Input a sentence: ')
 
-        # prob = decoder.prob(sentence)
-        # nll = prob.log() / len(sentence)
-        # perplexity = nll.exp().item()
-        # print('Perplexity {:.2f}'.format(perplexity))
+        prob = decoder.prob(sentence)
+        nll = prob.log() / len(sentence)
+        perplexity = nll.exp().item()
+        print('Perplexity {:.2f}'.format(perplexity))
 
         print('Tree:')
         tree, proposal_logprob, logprob = decoder.map_tree(sentence)

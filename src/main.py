@@ -26,7 +26,7 @@ def main():
     # Data arguments
     parser.add_argument('--data', type=str, default='../data',
                         help='location of the data corpus')
-    parser.add_argument('--textline', type=str, choices=['unked', 'lower', 'upper'], default='unked',
+    parser.add_argument('--textline', type=str, choices=['unked', 'lower', 'original'], default='unked',
                         help='textline to use from the oracle file')
     parser.add_argument('--name', type=str, default='ptb',
                         help='name of dataset for ptb.train.oracle, ptb.test.trees, etc.')

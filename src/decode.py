@@ -186,6 +186,12 @@ class DiscriminativeDecoder(Decoder):
         elif index == Action.NT_INDEX:
             return NT(Nonterminal('_', -1))  # Content doesn't matter in this case, only type.
 
+    def load_model(self, path):
+        """Load the discriminative model."""
+        super(Decoder, self).load_model(path)
+        message  = f'must be a discriminative model, got `{type(self.model)}`.'
+        assert isinstance(self.model, DiscRNNG), message
+
 
 class GenerativeDecoder(Decoder):
     """Decoder for generative RNNG by importance sampling."""
@@ -304,7 +310,8 @@ class GenerativeDecoder(Decoder):
     def load_model(self, path):
         """Load the (generative) model."""
         super(GenerativeDecoder, self).load_model(path)
-        assert isinstance(self.model, GenRNNG), type(self.model)
+        message = f'must be a generative model, got `{type(self.model)}`.'
+        assert isinstance(self.model, GenRNNG), message
 
     def load_proposal_model(self, path):
         """Load the proposal (discriminative) model to sample from."""
