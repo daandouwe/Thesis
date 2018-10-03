@@ -33,9 +33,11 @@ def main():
     parser.add_argument('--root', type=str, default='.',
                         help='root dir to make output log and checkpoint folders')
     parser.add_argument('--logdir', default='log',
-                        help='to be constructed in main')
-    parser.add_argument('--logfile', default=None,
-                        help='to be constructed in main')
+                        help='directory for logs')
+    parser.add_argument('--outdir', default='out',
+                        help='directory for predictions')
+    parser.add_argument('--checkdir', default='checkpoints',
+                        help='directory to save models')
     parser.add_argument('--disable-folders', action='store_true',
                         help='do not make output folders (debug)')
     parser.add_argument('--max-lines', default=-1, type=int,
@@ -106,19 +108,25 @@ def main():
     # Predict arguments
     parser.add_argument('--checkpoint', type=str, default='',
                         help='load model from this checkpoint')
-    parser.add_argument('--proposal', type=str, default='',
+    parser.add_argument('--proposal-model', type=str, default='',
                         help='load discriminative model (as proposal for generative model) from this checkpoint')
-    parser.add_argument('--evalb-dir', default='~/EVALB',
-                        help='where the evalb excecutable is located')
+    parser.add_argument('--proposal-samples', type=str, default='',
+                        help='load proposal samples from ')
+    parser.add_argument('--from-input', action='store_true',
+                        help='predict for user input')
+    parser.add_argument('--from-file', action='store_true',
+                        help='predict for user input')
     parser.add_argument('--use-tokenizer', action='store_true',
                         help='tokenize user input')
+    parser.add_argument('--evalb-dir', default='~/EVALB',
+                        help='where the evalb excecutable is located')
 
     args = parser.parse_args()
 
     if args.mode == 'train':
         train.main(args)
     elif args.mode == 'predict':
-        predict.predict(args)
+        predict.main(args)
     elif args.mode == 'dist':
         distributed.main(args)
     elif args.mode == 'inspect':

@@ -1,15 +1,17 @@
 from copy import deepcopy
 from typing import NamedTuple
+import tempfile
 
 import numpy as np
 import torch
 import torch.nn as nn
-from PYEVALB import parser, scorer
+from nltk import Tree
 
 from datatypes import Token, Item, Word, Nonterminal, Action
 from actions import SHIFT, REDUCE, NT, GEN
 from parser import DiscParser
 from model import DiscRNNG, GenRNNG
+from eval import evalb
 from scripts.get_oracle import unkify, get_actions
 
 
@@ -35,6 +37,18 @@ class Decoder:
             self._init_tokenizer()
 
     def __call__(self, sentence):
+        """Decode the sentence with the model.
+
+        This method is different for each deocoder.
+        The sentence can be given in various datatypes,
+        and will be processed first by `_process_sentence`
+
+        Arguments
+        ---------
+            sentence: sentence to decode, can be of the following types:
+                str, List[str], List[Word].
+        """
+
         pass
 
     def _init_tokenizer(self):
@@ -81,23 +95,23 @@ class Decoder:
         return sentence_items
 
     def _process_sentence(self, sentence):
-        assert sentence, f'decoder received empty sentence'
+        assert len(sentence) > 0, f'decoder received empty sentence'
         if isinstance(sentence, str):
             return self._from_string(sentence)
         elif isinstance(sentence, list):
-            assert len(sentence) > 0
-            if isinstance(sentence[0], str):
+            if all(isinstance(word, str) for word in sentence):
                 return self._from_string(' '.join(sentence))
-            if isinstance(sentence[0], Item):
+            if all(isinstance(word, Word) for word in sentence):
                 return sentence
         else:
             raise ValueError(f'sentence format not recognized: {sentence}')
 
-    def _compute_probs(self, logits, mask=None, alpha=None):
+    def _compute_probs(self, logits, mask=None, alpha=1.0):
         probs = self.softmax(logits)  # Compute probs.
-        if alpha is not None:
+        if alpha != 1.0:
             probs = probs.pow(alpha)  # Apply temperature scaling.
         if mask is not None:
+            assert (mask.shape == probs.shape), mask.shape
             probs = mask * probs
         probs /= probs.sum()  # Renormalize.
         return probs
@@ -137,23 +151,31 @@ class Decoder:
         Input should be a unicode string in the :
             u'(S (NP (DT The) (NN equity) (NN market)) (VP (VBD was) (ADJP (JJ illiquid))) (. .))'
         """
-        evalb = scorer.Scorer()
-        try:
-            gold_tree = parser.create_from_bracket_string(gold)
-        except:
-            raise ValueError(f'probably not a proper tree: {gold}')
-        sent = gold_tree.sentence
+        evalb_dir = os.path.expanduser('~/EVALB')  # TODO: this should be part of args.
+        # Make a temporay directory for the EVALB files.
+        temp_dir = tempfile.TemporaryDirectory(prefix='evalb-')
+        gold_path = os.path.join(temp_dir.name, 'gold.txt')
+        pred_path = os.path.join(temp_dir.name, 'predicted.txt')
+        result_path = os.path.join(temp_dir.name, 'output.txt')
+        # Extract sentence from the gold tree.
+        sent = Tree.fromstring(gold).leaves()
+        # Predict a tree for the sentence.
         pred, *rest = self(sent)
         pred = pred.linearize()
-        pred_tree = parser.create_from_bracket_string(pred)
-        result = evalb.score_trees(gold_tree, pred_tree)
-        prec, recall = result.prec, result.recall
-        fscore = 2 * (prec * recall) / (prec + recall)
+        # Dump these in the temp-file.
+        with open(gold_path, 'w') as f:
+            print(gold, file=f)
+        with open(pred_path, 'w') as f:
+            print(pred, file=f)
+        fscore = evalb(evalb_dir, pred_path, gold_path, result_path)
+        # Cleanup the temporary directory.
+        temp_dir.cleanup()
         return pred, fscore
 
 
 class DiscriminativeDecoder(Decoder):
     """Decoder for discriminative RNNG."""
+
     def _make_action(self, index):
         """Maps index to action."""
         assert index in range(3), f'invalid action index {index}'
@@ -187,60 +209,39 @@ class GenerativeDecoder(Decoder):
             model=proposal, dictionary=dictionary, use_chars=use_chars)
         self.num_samples = num_samples
         self.alpha = alpha
+        self.i = 0  # current sample index
 
-    def _make_action(self, index):
-        """Maps index to action."""
-        assert index in range(3), f'invalid action index {index}'
-        if index == Action.GEN_INDEX:
-            return GEN(Word('_', -1))  # Content doesn't matter in this case, only type.
-        elif index == REDUCE.index:
-            return REDUCE
-        elif index == Action.NT_INDEX:
-            return NT(Nonterminal('_', -1))  # Content doesn't matter in this case, only type.
-
-    def load_models(self, gen_path, disc_path):
-        print(f'Loading generative model from `{gen_path}` and discriminative proposal from `{disc_path}`...')
-        with open(gen_path, 'rb') as f:
-            gen_state = torch.load(f)
-        with open(disc_path, 'rb') as f:
-            disc_state = torch.load(f)
-        gen_epoch, gen_fscore = gen_state['epochs'], gen_state['test-fscore']
-        disc_epoch, disc_fscore = disc_state['epochs'], disc_state['test-fscore']
-        model = gen_state['model']
-        proposal = disc_state['model']
-        dictionary = gen_state['dictionary']
-        use_chars = gen_state['args'].use_chars
-        assert isinstance(model, GenRNNG), type(model)
-        assert isinstance(proposal, DiscRNNG), type(proposal)
-        print(f'Loaded generative model trained for {gen_epoch} epochs with test-fscore {gen_fscore}.')
-        print(f'Loaded discriminative model trained for {disc_epoch} epochs with test-fscore {disc_fscore}.')
-        self.model = model
-        self.proposal = SamplingDecoder(model=proposal, dictionary=dictionary, use_chars=use_chars)
-        self.dictionary = dictionary
-        self.use_chars = use_chars
-        self.model.eval()  # Disable dropout.
-        self.proposal.model.eval()  # Disable dropout.
+    def __call__(self, sentence):
+        return self.map_tree(sentence)
 
     def map_tree(self, sentence):
         """Estimate the MAP tree."""
-        scored = self.rank(sentence)
+        sentence = self._process_sentence(sentence)
+        scored = self.scored_samples(sentence)
         ranked = sorted(scored, reverse=True, key=lambda t: t[-1])
         best_tree, proposal_logprob, logprob = ranked[0]
         return best_tree, proposal_logprob, logprob
 
     def prob(self, sentence):
-        """Estimate the probability of the sentence using importance sampling."""
+        """Estimate the probability of the sentence."""
+        sentence = self._process_sentence(sentence)
         prob = torch.zeros(1)
-        scored = self.rank(sentence)
+        scored = self.scored_samples(sentence)
         # TODO make this log-sum-exp.
         for _, marginal_logprob, joint_logprob in scored:
             prob += (joint_logprob - marginal_logprob).exp()
         prob /= len(scored)
         return prob
 
-    def rank(self, sentence):
-        sentence = self._process_sentence(sentence)
-        samples = [self.sample(sentence) for _ in range(self.num_samples)]
+    def scored_samples(self, sentence):
+        """Return a list of proposal samples that are scored by the model."""
+        if self.use_samples:
+            # Retrieve the samples that we've loaded.
+            samples = self.samples[self.i]
+            self.i += 1
+        else:
+            # Sample with the proposal model that we've loaded.
+            samples = [self.sample(sentence) for _ in range(self.num_samples)]
         scored = [(tree, proposal_logprob, self.score(sentence, tree))
             for tree, proposal_logprob in samples]
         return scored
@@ -271,13 +272,13 @@ class GenerativeDecoder(Decoder):
         return logprob
 
     def sample(self, sentence):
-        tree, logprob, _ = self.proposal(sentence, self.alpha)
+        tree, logprob, _ = self.proposal(sentence, alpha=self.alpha)
         return tree, logprob
 
     def get_gen_oracle(self, tree, sentence):
-        actions = get_actions(tree.linearize())
-        action_items = []
-        for a in actions:
+        actions = []
+        tree = tree if isinstance(tree, str) else tree.linearize()
+        for a in get_actions(tree):
             if a == 'SHIFT':
                 token = next(sentence)
                 action = GEN(Word(token, self.dictionary.w2i[token]))
@@ -286,8 +287,59 @@ class GenerativeDecoder(Decoder):
             elif a.startswith('NT'):
                 nt = a[3:-1]
                 action = NT(Nonterminal(nt, self.dictionary.n2i[nt]))
-            action_items.append(action)
-        return action_items
+            actions.append(action)
+        return actions
+
+    def _make_action(self, index):
+        """Maps index to action."""
+        assert index in range(3), f'invalid action index {index}'
+        if index == Action.GEN_INDEX:
+            return GEN(Word('_', -1))  # Content doesn't matter in this case, only type.
+        elif index == REDUCE.index:
+            return REDUCE
+        elif index == Action.NT_INDEX:
+            return NT(Nonterminal('_', -1))  # Content doesn't matter in this case, only type.
+
+    def load_model(self, path):
+        """Load the (generative) model."""
+        super(GenerativeDecoder, self).load_model(path)
+        assert isinstance(self.model, GenRNNG), type(self.model)
+
+    def load_proposal_model(self, path):
+        """Load the proposal (discriminative) model."""
+        print(f'Loading discriminative model (proposal) from `{path}`...')
+        with open(path, 'rb') as f:
+            state = torch.load(f)
+        proposal = state['model']
+        assert isinstance(proposal, DiscRNNG), type(proposal)
+        epoch, fscore = state['epochs'], state['test-fscore']
+        print(f'Loaded discriminative model trained for {epoch} epochs with test-fscore {fscore}.')
+        self.proposal = SamplingDecoder(model=proposal, dictionary=dictionary, use_chars=use_chars)
+        self.use_samples = False
+
+    def load_proposal_samples(self, path):
+        print(f'Loading discriminative samples (proposal) from `{path}`...')
+        samples = self._read_samples(path)
+        assert all(len(samples[i]) == self.num_samples for i in samples.keys())
+        self.samples = samples
+        self.use_samples = True
+
+    def _read_samples(self, path):
+        with open(path) as f:
+            lines = [line.strip() for line in f.readlines()]
+        idx = 0
+        samples = []
+        idx2samples = dict()
+        for line in lines:
+            line_idx, logprob, tree = line.split('|||')
+            line_idx, logprob, tree = int(line_idx), float(logprob), tree.strip()
+            if line_idx > idx:
+                idx2samples[idx] = samples
+                idx = line_idx
+                samples = []
+            samples.append((tree, logprob))
+        idx2samples[line_idx] = samples
+        return idx2samples
 
 
 class GreedyDecoder(DiscriminativeDecoder):
@@ -338,7 +390,7 @@ class SamplingDecoder(DiscriminativeDecoder):
                 logprob += self.logsoftmax(action_logits)[index]
                 if action.is_nt:
                     nt_logits = self.model.nonterminal_mlp(x).squeeze(0)  # tensor (num_nonterminals)
-                    nt_probs = self._compute_probs(nt_logits, alpha)
+                    nt_probs = self._compute_probs(nt_logits, alpha=alpha)
                     index = np.random.choice(
                         range(nt_probs.size(0)), p=nt_probs.data.numpy())
                     X = Nonterminal(self.dictionary.i2n[index], index)

@@ -101,7 +101,6 @@ class AttentionComposition(nn.Module):
         # t = self.head(head)
         t = head
         c = g * t + (1 - g) * m  # (batch, input_size)
-
         if not self.training:
             # Store internally for inspection during prediction.
             self._attn = a

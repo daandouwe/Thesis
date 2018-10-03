@@ -32,13 +32,12 @@ def main(args):
         print(f'Output subdirectory: `{subdir}`.')
     else:
         print('Did not make output folders!')
-
-    # Save arguments.
-    write_args(args, logdir)
-
     print(f'Saving logs to `{logdir}`.')
     print(f'Saving predictions to `{outdir}`.')
     print(f'Saving models to `{checkdir}`.')
+
+    # Save arguments.
+    write_args(args, logdir)
 
     print(f'Loading data from `{args.data}`...')
     corpus = Corpus(
