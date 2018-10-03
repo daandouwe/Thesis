@@ -8,10 +8,14 @@ import numpy as np
 
 from datatypes import Token, Word, Nonterminal, Action
 from actions import SHIFT, REDUCE, NT, GEN
+from scripts.get_oracle import unkify
 
 
 PAD_CHAR = '_'
+BASE_UNK_TOKEN = 'UNK'
+
 PAD_INDEX = 0
+BASE_UNK_INDEX = 1
 
 
 def pad(batch):
@@ -38,12 +42,12 @@ def get_sentences(path):
     """Chunks the oracle file into sentences."""
     def get_sent_dict(sent):
         d = {
-                'tree'    : sent[0],
-                'tags'    : sent[1],
-                'upper'   : sent[2],
-                'lower'   : sent[3],
-                'unked'   : sent[4],
-                'actions' : sent[5:]
+                'tree'     : sent[0],
+                'tags'     : sent[1],
+                'original' : sent[2],
+                'lower'    : sent[3],
+                'unked'    : sent[4],
+                'actions'  : sent[5:]
             }
         return d
 
@@ -72,7 +76,9 @@ class Dictionary:
 
     def initialize(self):
         self.w2i[PAD_CHAR] = PAD_INDEX
+        self.w2i[BASE_UNK_TOKEN] = BASE_UNK_INDEX
         self.i2w.append(PAD_CHAR)
+        self.i2w.append(BASE_UNK_TOKEN)
 
     def read(self, path, name):
         with open(os.path.join(path, name + '.vocab'), 'r') as f:
@@ -97,7 +103,7 @@ class Dictionary:
                 self.i2n.append(s)
 
     @property
-    def unks(self, unk_start='UNK'):
+    def unks(self, unk_start=BASE_UNK_TOKEN):
         return [w for w in self.w2i if w.startswith(unk_start)]
 
     @property
@@ -111,13 +117,21 @@ class Dictionary:
 
 class Data:
     """A dataset with parse configurations."""
-    def __init__(self, path, dictionary, model, textline, use_chars=False, max_lines=-1):
+    def __init__(self,
+                 path,
+                 dictionary,
+                 model,
+                 textline,
+                 use_chars=False,
+                 max_lines=-1):
+        assert textline in ('original', 'lower', 'unked'), textline
         self.dictionary = dictionary
         self.sentences = []
         self.actions = []
         self.use_chars = use_chars
         self.model = model
-        self.read(path, dictionary, textline, max_lines)
+        self.textline = textline
+        self.read(path, max_lines)
 
     def __str__(self):
         return f'{len(self.sentences):,} sentences'
@@ -126,42 +140,67 @@ class Data:
         self.sentences = [self.sentences[i] for i in new_order]
         self.actions = [self.actions[i] for i in new_order]
 
-    def read(self, path, dictionary, textline, max_lines):
-        sents = get_sentences(path)  # a list of dict
-        nlines = len(sents)
+    def _process(self, token):
+        assert isinstance(token, Token)
+        if self.use_chars:
+            index = [self.dictionary.w2i[char] for char in token.original]
+        else:
+            try:
+                index = self.dictionary.w2i[token.processed]
+            except KeyError:
+                # Unkify the token.
+                unked = unkify([token.original], self.dictionary.w2i)[0]
+                # Maybe the unkified word is not in the dictionary.
+                try:
+                    index = self.dictionary.w2i[unked]
+                except KeyError:
+                    index = self.dictionary.w2i[BASE_UNK_TOKEN]
+                    unked = BASE_UNK_TOKEN
+                token = Token(token.original, unked)
+        return token, index
+
+    def _get_tokens(self, original, processed):
+        assert all(isinstance(word, str) for word in original), original
+        assert all(isinstance(word, str) for word in processed), processed
+        sentence = [Token(orig, proc) for orig, proc in zip(original, processed)]
+        sentence_items = []
+        for token in sentence:
+            token, index = self._process(token)
+            sentence_items.append(Word(token, index))
+        return sentence_items
+
+    def _get_actions(self, sentence, actions):
+        assert all(isinstance(action, str) for action in actions), actions
+        assert all(isinstance(word, Word) for word in sentence), sentence
+        action_items = []
+        token_idx = 0
+        for a in actions:
+            if a == 'SHIFT':
+                if self.model == 'disc':
+                    action = Action('SHIFT', Action.SHIFT_INDEX)
+                if self.model == 'gen':
+                    word = sentence[token_idx]
+                    action = GEN(Word(word, self.dictionary.w2i[word.token.processed]))
+                    token_idx += 1
+            elif a == 'REDUCE':
+                action = Action('REDUCE', Action.REDUCE_INDEX)
+            elif a.startswith('NT'):
+                nt = a[3:-1]
+                action = NT(Nonterminal(nt, self.dictionary.n2i[nt]))
+            action_items.append(action)
+        return action_items
+
+    def read(self, path, max_lines):
+        sents = get_sentences(path)  # a list of dictionaries
         for i, sent_dict in enumerate(tqdm(sents)):
             if max_lines > 0 and i > max_lines:
                 break
-            # Get sentence items.
-            original, processed = sent_dict['upper'].split(), sent_dict[textline].split()
-            sentence = [Token(orig, proc) for orig, proc in zip(original, processed)]
-            sentence_items = []
-            for token in sentence:
-                if self.use_chars:
-                    index = [dictionary.w2i[char] for char in token.processed]
-                else:
-                    index = dictionary.w2i[token.processed]
-                sentence_items.append(Word(token, index))
-            # Get action items.
-            actions = sent_dict['actions']
-            action_items = []
-            token_idx = 0
-            for a in actions:
-                if a == 'SHIFT':
-                    if self.model == 'disc':
-                        action = Action('SHIFT', Action.SHIFT_INDEX)
-                    if self.model == 'gen':
-                        token = sentence[token_idx]
-                        action = GEN(Word(token, dictionary.w2i[token.processed]))
-                        token_idx += 1
-                elif a == 'REDUCE':
-                    action = Action('REDUCE', Action.REDUCE_INDEX)
-                elif a.startswith('NT'):
-                    nt = a[3:-1]
-                    action = NT(Nonterminal(nt, dictionary.n2i[nt]))
-                action_items.append(action)
-            self.sentences.append(sentence_items)
-            self.actions.append(action_items)
+            original_tokens = sent_dict['original'].split()
+            processed_tokens = sent_dict[self.textline].split()
+            sentence = self._get_tokens(original_tokens, processed_tokens)
+            actions = self._get_actions(sentence, sent_dict['actions'])
+            self.sentences.append(sentence)
+            self.actions.append(actions)
         self.lengths = [len(sent) for sent in self.sentences]
 
     def order(self):
@@ -188,21 +227,39 @@ class Data:
             batches.append((sentence, actions))
         return batches
 
-    @property
-    def textline(self):
-        return self.textline
-
 
 class Corpus:
     """A corpus of three datasets (train, development, and test) and a dictionary."""
-    def __init__(self, data_path='../data', model='disc', textline='unked', name='ptb', use_chars=False, max_lines=-1):
-        self.dictionary = Dictionary(path=os.path.join(data_path, 'vocab', textline), name=name, use_chars=use_chars)
-        self.train = Data(path=os.path.join(data_path, 'train', name + '.train.oracle'),
-                        dictionary=self.dictionary, model=model, textline=textline, use_chars=use_chars, max_lines=max_lines)
-        self.dev = Data(path=os.path.join(data_path, 'dev', name + '.dev.oracle'),
-                        dictionary=self.dictionary, model=model, textline=textline, use_chars=use_chars)
-        self.test = Data(path=os.path.join(data_path, 'test', name + '.test.oracle'),
-                        dictionary=self.dictionary, model=model, textline=textline, use_chars=use_chars)
+    def __init__(self,
+                 data_path='../data',
+                 model='disc',
+                 textline='unked',
+                 name='ptb',
+                 use_chars=False,
+                 max_lines=-1):
+        self.dictionary = Dictionary(
+            path=os.path.join(data_path, 'vocab', textline),
+            name=name,
+            use_chars=use_chars)
+        self.train = Data(
+            path=os.path.join(data_path, 'train', name + '.train.oracle'),
+            dictionary=self.dictionary,
+            model=model,
+            textline=textline,
+            use_chars=use_chars,
+            max_lines=max_lines)
+        self.dev = Data(
+            path=os.path.join(data_path, 'dev', name + '.dev.oracle'),
+            dictionary=self.dictionary,
+            model=model,
+            textline=textline,
+            use_chars=use_chars)
+        self.test = Data(
+            path=os.path.join(data_path, 'test', name + '.test.oracle'),
+            dictionary=self.dictionary,
+            model=model,
+            textline=textline,
+            use_chars=use_chars)
 
     def __str__(self):
         items = (
