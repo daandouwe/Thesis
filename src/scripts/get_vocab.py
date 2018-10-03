@@ -11,12 +11,12 @@ def get_sentences(path):
     """Chunks the oracle file into sentences."""
     def get_sent_dict(sent):
         d = {
-                'tree'    : sent[0],
-                'tags'    : sent[1],
-                'upper'   : sent[2],
-                'lower'   : sent[3],
-                'unked'   : sent[4],
-                'actions' : sent[5:]
+                'tree'     : sent[0],
+                'tags'     : sent[1],
+                'original' : sent[2],
+                'lower'    : sent[3],
+                'unked'    : sent[4],
+                'actions'  : sent[5:]
             }
         return d
 
@@ -92,7 +92,7 @@ if __name__ == '__main__':
                         help='name of dataset')
     parser.add_argument('--outdir', type=str, default='../tmp',
                         help='path to output vocabulary')
-    parser.add_argument('--textline', type=str, choices=['unked', 'lower', 'upper'], default='unked',
+    parser.add_argument('--textline', type=str, choices=['unked', 'lower', 'original'], default='unked',
                         help='textline to use from the oracle file')
     args = parser.parse_args()
 

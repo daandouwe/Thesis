@@ -13,7 +13,7 @@ mkdir -p \
     $TMP/test \
     $TMP/vocab/lower \
     $TMP/vocab/unked \
-    $TMP/vocab/upper
+    $TMP/vocab/original
 
 # from mrg files to linearized one-tree-per-line and train/dev/test splits.
 python transform_ptb.py \
@@ -64,7 +64,7 @@ python get_oracle.py \
     $TMP/test/$NAME.test.trees \
     > $TMP/test/$NAME.test.oracle
 
-# make vocabularies for lower, upper and unked
+# make vocabularies for lower, original and unked
 python get_vocab.py \
     $TMP/train/$NAME.train.oracle \
     $TMP/dev/$NAME.dev.oracle \
@@ -84,5 +84,5 @@ python get_vocab.py \
     $TMP/dev/$NAME.dev.oracle \
     $TMP/test/$NAME.test.oracle \
     --name $NAME \
-    --textline upper \
-    --outdir $TMP/vocab/upper
+    --textline original \
+    --outdir $TMP/vocab/original
