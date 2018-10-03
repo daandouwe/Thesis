@@ -276,6 +276,7 @@ class GenerativeDecoder(Decoder):
         return tree, logprob
 
     def get_gen_oracle(self, tree, sentence):
+        """Extract the generative action sequence from the sentence."""
         actions = []
         tree = tree if isinstance(tree, str) else tree.linearize()
         for a in get_actions(tree):
@@ -306,7 +307,7 @@ class GenerativeDecoder(Decoder):
         assert isinstance(self.model, GenRNNG), type(self.model)
 
     def load_proposal_model(self, path):
-        """Load the proposal (discriminative) model."""
+        """Load the proposal (discriminative) model to sample from."""
         print(f'Loading discriminative model (proposal) from `{path}`...')
         with open(path, 'rb') as f:
             state = torch.load(f)
@@ -318,6 +319,7 @@ class GenerativeDecoder(Decoder):
         self.use_samples = False
 
     def load_proposal_samples(self, path):
+        """Load samples from the proposal models."""
         print(f'Loading discriminative samples (proposal) from `{path}`...')
         samples = self._read_samples(path)
         assert all(len(samples[i]) == self.num_samples for i in samples.keys())
