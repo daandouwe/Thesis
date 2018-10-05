@@ -6,7 +6,8 @@ import tempfile
 from tqdm import tqdm
 from nltk import Tree
 
-from decode import GreedyDecoder, BeamSearchDecoder, SamplingDecoder, GenerativeDecoder
+from decode import (GreedyDecoder, BeamSearchDecoder, SamplingDecoder,
+    GenerativeImportanceDecoder, GenerativeSamplingDecoder)
 from eval import evalb
 
 
@@ -30,7 +31,8 @@ def get_checkfile(checkpoint):
 
 
 def is_tree(line):
-    """Simple `oracle` to know if line is a tree."""
+    """Simple `oracle` to see if line is a tree."""
+    assert isinstance(line, str), line
     try:
         Tree.fromstring(line)
         return True
@@ -53,7 +55,7 @@ def predict_file(args):
         decoder.load_model(path=checkfile)
     elif args.model == 'gen':
         print('Predicting with generative model.')
-        decoder = GenerativeDecoder(use_tokenizer=False)
+        decoder = GenerativeImportanceDecoder(use_tokenizer=False)
         decoder.load_model(path=checkfile)
         if args.proposal_model:
             decoder.load_proposal_model(path=args.proposal_model)
@@ -108,11 +110,11 @@ def predict_input_disc(args):
 
 def predict_input_gen(args):
     print('Predicting with generative model.')
-    disc_checkfile = args.proposal_model
-    gen_checkfile = args.checkpoint
+    assert os.path.exists(args.proposal_model), 'specify valid proposal model.'
 
-    decoder = GenerativeDecoder(use_tokenizer=args.use_tokenizer)
-    decoder.load_models(gen_path=gen_checkfile, disc_path=disc_checkfile)
+    decoder = GenerativeImportanceDecoder(use_tokenizer=args.use_tokenizer)
+    decoder.load_model(path=args.checkpoint)
+    decoder.load_proposal_model(path=args.proposal_model)
 
     while True:
         sentence = input('Input a sentence: ')
@@ -142,6 +144,19 @@ def predict_input_gen(args):
         print()
 
 
+def sample_gen(args):
+    print('Sampling from the generative model.')
+
+    decoder = GenerativeSamplingDecoder(use_tokenizer=args.use_tokenizer)
+    decoder.load_model(path=args.checkpoint)
+
+    print('Samples:')
+    for i in range(5):
+        tree, logprob, _ = decoder()
+        print('>', tree.linearize(with_tag=False))
+        print()
+
+
 def main(args):
     if args.from_input:
         if args.model == 'disc':
@@ -150,6 +165,10 @@ def main(args):
             predict_input_gen(args)
     elif args.from_file:
         predict_file(args)
+    elif args.sample_gen:
+        sample_gen(args)
+    else:
+        exit('Specify type of prediction. Use --from-input, --from-file or --sample-gen.')
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
+import os
+import tempfile
 from copy import deepcopy
 from typing import NamedTuple
-import tempfile
 
 import numpy as np
 import torch
@@ -11,8 +12,10 @@ from datatypes import Token, Item, Word, Nonterminal, Action
 from actions import SHIFT, REDUCE, NT, GEN
 from parser import DiscParser
 from model import DiscRNNG, GenRNNG
+from tree import Node
 from eval import evalb
-from scripts.get_oracle import unkify, get_actions
+from data_scripts.get_oracle import unkify, get_actions, get_actions_no_tags
+from utils import add_dummy_tags, substitute_leaves
 
 
 class Decoder:
@@ -45,13 +48,13 @@ class Decoder:
 
         Arguments
         ---------
-            sentence: sentence to decode, can be of the following types:
-                str, List[str], List[Word].
+        sentence: sentence to decode, can be of the following types:
+            str, List[str], List[Word].
         """
-
         pass
 
     def _init_tokenizer(self):
+        # TODO: problems loading spacy.
         # from spacy.tokenizer import Tokenizer
         # nlp = spacy.load('en')
         # self.tokenizer = Tokenizer(nlp.vocab)
@@ -101,8 +104,10 @@ class Decoder:
         elif isinstance(sentence, list):
             if all(isinstance(word, str) for word in sentence):
                 return self._from_string(' '.join(sentence))
-            if all(isinstance(word, Word) for word in sentence):
+            elif all(isinstance(word, Word) for word in sentence):
                 return sentence
+            else:
+                raise ValueError(f'sentence format not recognized: {sentence}')
         else:
             raise ValueError(f'sentence format not recognized: {sentence}')
 
@@ -113,7 +118,7 @@ class Decoder:
         if mask is not None:
             assert (mask.shape == probs.shape), mask.shape
             probs = mask * probs
-        probs /= probs.sum()  # Renormalize.
+        probs /= probs.sum(dim=-1)  # Renormalize.
         return probs
 
     def _valid_actions_mask(self):
@@ -131,7 +136,8 @@ class Decoder:
         return index, action
 
     def load_model(self, path):
-        print(f'Loading model from {path}...')
+        print(f'Loading model from `{path}`...')
+        assert os.path.exists(path), path
         with open(path, 'rb') as f:
             state = torch.load(f)
         epoch, fscore = state['epochs'], state['test-fscore']
@@ -194,108 +200,7 @@ class DiscriminativeDecoder(Decoder):
 
 
 class GenerativeDecoder(Decoder):
-    """Decoder for generative RNNG by importance sampling."""
-    def __init__(self,
-                 model=None,
-                 proposal=None,
-                 dictionary=None,
-                 num_samples=100,
-                 alpha=0.8,
-                 use_chars=False,
-                 use_tokenizer=False,
-                 verbose=False):
-        super(GenerativeDecoder, self).__init__(
-            model,
-            dictionary,
-            use_chars,
-            use_tokenizer,
-            verbose
-        )
-        self.proposal = SamplingDecoder(
-            model=proposal, dictionary=dictionary, use_chars=use_chars)
-        self.num_samples = num_samples
-        self.alpha = alpha
-        self.i = 0  # current sample index
-
-    def __call__(self, sentence):
-        return self.map_tree(sentence)
-
-    def map_tree(self, sentence):
-        """Estimate the MAP tree."""
-        sentence = self._process_sentence(sentence)
-        scored = self.scored_samples(sentence)
-        ranked = sorted(scored, reverse=True, key=lambda t: t[-1])
-        best_tree, proposal_logprob, logprob = ranked[0]
-        return best_tree, proposal_logprob, logprob
-
-    def prob(self, sentence):
-        """Estimate the probability of the sentence."""
-        sentence = self._process_sentence(sentence)
-        prob = torch.zeros(1)
-        scored = self.scored_samples(sentence)
-        # TODO make this log-sum-exp.
-        for _, marginal_logprob, joint_logprob in scored:
-            prob += (joint_logprob - marginal_logprob).exp()
-        prob /= len(scored)
-        return prob
-
-    def scored_samples(self, sentence):
-        """Return a list of proposal samples that are scored by the model."""
-        if self.use_samples:
-            # Retrieve the samples that we've loaded.
-            samples = self.samples[self.i]
-            self.i += 1
-        else:
-            # Sample with the proposal model that we've loaded.
-            samples = [self.sample(sentence) for _ in range(self.num_samples)]
-        scored = [(tree, proposal_logprob, self.score(sentence, tree))
-            for tree, proposal_logprob in samples]
-        return scored
-
-    def score(self, sentence, tree):
-        """Compute p(x,y) under the generative model."""
-        self.model.eval()
-        words = (word.token.processed for word in sentence)
-        actions = self.get_gen_oracle(tree, words)
-        self.model.initialize(sentence)
-        logprob = 0.0
-        for i, action in enumerate(actions):
-            # Compute loss
-            x = self.model.get_input()
-            action_logits = self.model.action_mlp(x).squeeze(0)
-            logprob += self.logsoftmax(action_logits)[action.action_index]
-            # If we open a nonterminal, predict which.
-            if action.is_nt:
-                nonterminal_logits = self.model.nonterminal_mlp(x).squeeze(0)
-                nt = action.get_nt()
-                logprob += self.logsoftmax(nonterminal_logits)[nt.index]
-            # If we generate a word, predict which.
-            if action.is_gen:
-                terminal_logits = self.model.terminal_mlp(x).squeeze(0)
-                word = action.get_word()
-                logprob += self.logsoftmax(terminal_logits)[word.index]
-            self.model.parse_step(action)
-        return logprob
-
-    def sample(self, sentence):
-        tree, logprob, _ = self.proposal(sentence, alpha=self.alpha)
-        return tree, logprob
-
-    def get_gen_oracle(self, tree, sentence):
-        """Extract the generative action sequence from the sentence."""
-        actions = []
-        tree = tree if isinstance(tree, str) else tree.linearize()
-        for a in get_actions(tree):
-            if a == 'SHIFT':
-                token = next(sentence)
-                action = GEN(Word(token, self.dictionary.w2i[token]))
-            elif a == 'REDUCE':
-                action = Action('REDUCE', Action.REDUCE_INDEX)
-            elif a.startswith('NT'):
-                nt = a[3:-1]
-                action = NT(Nonterminal(nt, self.dictionary.n2i[nt]))
-            actions.append(action)
-        return actions
+    """Decoder for generative discriminative RNNG."""
 
     def _make_action(self, index):
         """Maps index to action."""
@@ -313,46 +218,13 @@ class GenerativeDecoder(Decoder):
         message = f'must be a generative model, got `{type(self.model)}`.'
         assert isinstance(self.model, GenRNNG), message
 
-    def load_proposal_model(self, path):
-        """Load the proposal (discriminative) model to sample from."""
-        print(f'Loading discriminative model (proposal) from `{path}`...')
-        with open(path, 'rb') as f:
-            state = torch.load(f)
-        proposal = state['model']
-        assert isinstance(proposal, DiscRNNG), type(proposal)
-        epoch, fscore = state['epochs'], state['test-fscore']
-        print(f'Loaded discriminative model trained for {epoch} epochs with test-fscore {fscore}.')
-        self.proposal = SamplingDecoder(model=proposal, dictionary=dictionary, use_chars=use_chars)
-        self.use_samples = False
 
-    def load_proposal_samples(self, path):
-        """Load samples from the proposal models."""
-        print(f'Loading discriminative samples (proposal) from `{path}`...')
-        samples = self._read_samples(path)
-        assert all(len(samples[i]) == self.num_samples for i in samples.keys())
-        self.samples = samples
-        self.use_samples = True
-
-    def _read_samples(self, path):
-        with open(path) as f:
-            lines = [line.strip() for line in f.readlines()]
-        idx = 0
-        samples = []
-        idx2samples = dict()
-        for line in lines:
-            line_idx, logprob, tree = line.split('|||')
-            line_idx, logprob, tree = int(line_idx), float(logprob), tree.strip()
-            if line_idx > idx:
-                idx2samples[idx] = samples
-                idx = line_idx
-                samples = []
-            samples.append((tree, logprob))
-        idx2samples[line_idx] = samples
-        return idx2samples
-
+# %%%%%%%%%%%%%%%%%%%%%%%%%%% #
+#   Discriminative decoders   #
+# %%%%%%%%%%%%%%%%%%%%%%%%%%% #
 
 class GreedyDecoder(DiscriminativeDecoder):
-    """Greedy decoder for RNNG."""
+    """Greedy decoder for discriminative RNNG."""
     def __call__(self, sentence):
         logprob = 0.0
         num_actions = 0
@@ -379,7 +251,7 @@ class GreedyDecoder(DiscriminativeDecoder):
 
 
 class SamplingDecoder(DiscriminativeDecoder):
-    """Ancestral sampling decoder for RNNG."""
+    """Ancestral sampling decoder for discriminative RNNG."""
     def __call__(self, sentence, alpha=1.0):
         logprob = 0.0
         num_actions = 0
@@ -414,9 +286,10 @@ class Beam(NamedTuple):
     logprob: float
 
 
-class BeamSearchDecoder(Decoder):
-    """Beam search decoder for RNNG."""
+class BeamSearchDecoder(DiscriminativeDecoder):
+    """Beam search decoder for discriminative RNNG."""
     def __call__(self, sentence, k=10):
+        """"""
         with torch.no_grad():
             sentence = self._process_sentence(sentence)
             parser = DiscParser(
@@ -490,6 +363,248 @@ class BeamSearchDecoder(Decoder):
         new_beams = sorted(new_beams, key=lambda x: x[1])[-self.k:]
         self.finished += [beam for beam in new_beams if beam.parser.stack.is_empty()]
         self.open_beams = [beam for beam in new_beams if not beam.parser.stack.is_empty()]
+
+
+# %%%%%%%%%%%%%%%%%%%%%%% #
+#   Generative decoders   #
+# %%%%%%%%%%%%%%%%%%%%%%% #
+
+class GenerativeSamplingDecoder(GenerativeDecoder):
+    """Ancestral sampling decoder for generative RNNG."""
+    def __call__(self, alpha=1.0):
+        """Returns a sample (x,y) from the model."""
+        self.model.eval()
+        logprob = 0.0
+        num_actions = 0
+        self.model.initialize()
+        with torch.no_grad():
+            while not self.model.stack.is_empty():
+                num_actions += 1
+                x = self.model.get_input()
+                action_logits = self.model.action_mlp(x).squeeze(0)  # tensor (num_actions)
+                mask = self._valid_actions_mask()
+                action_probs = self._compute_probs(action_logits, mask=mask, alpha=alpha)
+                index = np.random.choice(
+                    range(action_probs.size(0)), p=action_probs.data.numpy())
+                action = self._make_action(index)
+                logprob += self.logsoftmax(action_logits)[index]
+                if action.is_nt:
+                    nt_logits = self.model.nonterminal_mlp(x).squeeze(0)  # tensor (num_nonterminals)
+                    nt_probs = self._compute_probs(nt_logits, alpha=alpha)
+                    index = np.random.choice(
+                        range(nt_probs.size(0)), p=nt_probs.data.numpy())
+                    X = Nonterminal(self.dictionary.i2n[index], index)
+                    action = NT(X)
+                    logprob += self.logsoftmax(nt_logits)[index]
+                if action.is_gen:
+                    terminal_logits = self.model.terminal_mlp(x).squeeze(0)  # tensor (num_nonterminals)
+                    terminal_probs = self._compute_probs(terminal_logits, alpha=alpha)
+                    index = np.random.choice(
+                        range(terminal_probs.size(0)), p=terminal_probs.data.numpy())
+                    token = self.dictionary.i2w[index]
+                    word = Word(Token(token, token), index)
+                    action = GEN(word)
+                    logprob += self.logsoftmax(terminal_logits)[index]
+                self.model.parse_step(action)
+            return self.get_tree(), logprob, num_actions
+
+
+class GenerativeImportanceDecoder(GenerativeDecoder):
+    """Decoder for generative RNNG by importance sampling."""
+    def __init__(self,
+                 model=None,
+                 proposal=None,
+                 dictionary=None,
+                 num_samples=100,
+                 alpha=0.8,
+                 use_chars=False,
+                 use_tokenizer=False,
+                 verbose=False):
+        super(GenerativeDecoder, self).__init__(
+            model,
+            dictionary,
+            use_chars,
+            use_tokenizer,
+            verbose
+        )
+        self.proposal = SamplingDecoder(
+            model=proposal, dictionary=dictionary, use_chars=use_chars)
+        self.num_samples = num_samples
+        self.alpha = alpha
+        self.i = 0  # current sample index
+
+    def __call__(self, sentence):
+        """Return the estimated MAP tree for the sentence."""
+        return self.map_tree(sentence)
+
+    def map_tree(self, sentence):
+        """Estimate the MAP tree."""
+        sentence = self._process_sentence(sentence)
+        scored = self._scored_samples(sentence, remove_duplicates=True)  # Do not need duplicates for MAP tree
+        ranked = sorted(scored, reverse=True, key=lambda t: t[-1])
+        best_tree, proposal_logprob, logprob = ranked[0]
+        return best_tree, proposal_logprob, logprob
+
+    def prob(self, sentence):
+        """Estimate the probability of the sentence."""
+        sentence = self._process_sentence(sentence)
+        prob = torch.zeros(1)
+        scored = self._scored_samples(sentence)  # Do not need duplicates for perplexity
+        # TODO make this log-sum-exp.
+        for _, marginal_logprob, joint_logprob in scored:
+            prob += (joint_logprob - marginal_logprob).exp()
+        prob /= len(scored)
+        return prob
+
+    def scored_samples(self, sentence):
+        sentence = self._process_sentence(sentence)
+        return self._scored_samples(sentence)
+
+    def _scored_samples(self, sentence, remove_duplicates=False):
+        """Return a list of proposal samples that are scored by the model."""
+        def filter(samples):
+            """Filter out duplicate trees from the samples."""
+            output = []
+            seen = set()
+            for tree, logprob in samples:
+                if tree not in seen:
+                    output.append((tree, logprob))
+                    seen.add(tree)
+            return output
+
+        def replace_unks(samples, words):
+            output = []
+            seen = set()
+            for tree, logprob in samples:
+                if tree not in seen:
+                    tree = substitute_leaves(tree, words)
+                    output.append((tree, logprob))
+                    seen.add(tree)
+            return output
+
+        assert isinstance(sentence, list), sentence
+        assert all(isinstance(word, Word) for word in sentence), sentence
+        if self.use_samples:
+            # Retrieve the samples that we've loaded.
+            samples = self.samples[self.i]
+            # TODO: if not all(is_tree_without_tags(tree) for tree, _ in samples) ...
+            samples = replace_unks(samples, [word.token.original for word in sentence])
+            self.i += 1
+        else:
+            # Sample with the proposal model that we've loaded.
+            samples = [self._sample_proposal(sentence) for _ in range(self.num_samples)]
+        if remove_duplicates:
+            samples = filter(samples)
+        # Score the samples.
+        scores = [self.score(sentence, tree) for tree, _ in samples]
+        # Add dummy tags if trees were loaded from file.
+        if self.use_samples:
+            scored = [(add_dummy_tags(tree), proposal_logprob, logprob)
+                for (tree, proposal_logprob), logprob in zip(samples, scores)]
+        else:
+            scored = [(tree, proposal_logprob, logprob)
+                for (tree, proposal_logprob), logprob in zip(samples, scores)]
+        return scored
+
+    def score(self, sentence, tree):
+        """Compute log p(x,y) under the generative model."""
+        assert isinstance(sentence, list), sentence
+        assert all(isinstance(word, Word) for word in sentence)
+        tree = tree.linearize(with_tag=False) if isinstance(tree, Node) else tree
+        self.model.eval()
+        actions = self._get_gen_oracle(tree, sentence)
+        with torch.no_grad():
+            self.model.initialize()
+            logprob = 0.0
+            for i, action in enumerate(actions):
+                # Compute loss
+                x = self.model.get_input()
+                action_logits = self.model.action_mlp(x).squeeze(0)
+                logprob += self.logsoftmax(action_logits)[action.action_index]
+                # If we open a nonterminal, predict which.
+                if action.is_nt:
+                    nonterminal_logits = self.model.nonterminal_mlp(x).squeeze(0)
+                    nt = action.get_nt()
+                    logprob += self.logsoftmax(nonterminal_logits)[nt.index]
+                # If we generate a word, predict which.
+                if action.is_gen:
+                    terminal_logits = self.model.terminal_mlp(x).squeeze(0)
+                    word = action.get_word()
+                    logprob += self.logsoftmax(terminal_logits)[word.index]
+                self.model.parse_step(action)
+        return logprob
+
+    def _sample_proposal(self, sentence):
+        assert isinstance(sentence, list), sentence
+        assert all(isinstance(word, Word) for word in sentence), sentence
+        tree, logprob, _ = self.proposal(sentence, alpha=self.alpha)
+        return tree, logprob
+
+    def _get_gen_oracle(self, tree, sentence):
+        """Extract the generative action sequence from the tree and sentence."""
+        assert isinstance(sentence, list), sentence
+        assert all(isinstance(word, Word) for word in sentence), sentence
+        assert isinstance(tree, str), tree
+        # TODO:
+        # if is_tree_without_tags(tree):
+        #     action_sequence = get_actions_no_tags(tree)
+        # else:
+        #     action_sequence = get_actions(tree)
+        sentence = iter(sentence)
+        actions = []
+        for a in get_actions_no_tags(tree):
+            # TODO: actually use a generative oracle instead of this workaround.
+            if a == 'SHIFT':
+                word = next(sentence)
+                action = GEN(word)
+            elif a.startswith('NT'):
+                nt = a[3:-1]
+                action = NT(Nonterminal(nt, self.dictionary.n2i[nt]))
+            elif a == 'REDUCE':
+                action = Action('REDUCE', Action.REDUCE_INDEX)
+            actions.append(action)
+        return actions
+
+    def load_proposal_model(self, path):
+        """Load the proposal (discriminative) model to sample from."""
+        print(f'Loading discriminative (proposal) model from `{path}`...')
+        assert os.path.exists(path), path
+        with open(path, 'rb') as f:
+            state = torch.load(f)
+        proposal = state['model']
+        dictionary = state['dictionary']
+        use_chars = state['args'].use_chars
+        assert isinstance(proposal, DiscRNNG), type(proposal)
+        epoch, fscore = state['epochs'], state['test-fscore']
+        print(f'Loaded discriminative model trained for {epoch} epochs with test-fscore {fscore}.')
+        self.proposal = SamplingDecoder(model=proposal, dictionary=dictionary, use_chars=use_chars)
+        self.use_samples = False
+
+    def load_proposal_samples(self, path):
+        """Load samples from the proposal models."""
+        print(f'Loading discriminative (proposal) samples from `{path}`...')
+        assert os.path.exists(path), path
+        samples = self._read_samples(path)
+        assert all(len(samples[i]) == self.num_samples for i in samples.keys())
+        self.samples = samples
+        self.use_samples = True
+
+    def _read_samples(self, path):
+        with open(path) as f:
+            lines = [line.strip() for line in f.readlines()]
+        idx = 0
+        samples = []
+        idx2samples = dict()
+        for line in lines:
+            line_idx, logprob, tree = line.split('|||')
+            line_idx, logprob, tree = int(line_idx), float(logprob), tree.strip()
+            if line_idx > idx:
+                idx2samples[idx] = samples
+                idx = line_idx
+                samples = []
+            samples.append((tree, logprob))
+        idx2samples[line_idx] = samples
+        return idx2samples
 
 
 if __name__ == '__main__':
