@@ -1,6 +1,8 @@
 import os
 import time
 
+from nltk import Tree
+
 
 def get_folders(args):
     # Create folders for logging and checkpoints
@@ -107,3 +109,75 @@ class Timer:
 
     def format_elapsed(self):
         return self.format(self.elapsed())
+
+
+# TODO: move these to a sensible place.
+
+def add_dummy_tags(tree, tag='*'):
+    """Turns (NP The tagless tree) into (NP (* The) (* tagless) (* tree))."""
+    assert isinstance(tree, str), tree
+    i = 0
+    max_idx = (len(tree) - 1)
+    new_tree = ''
+    while i <= max_idx:
+        if tree[i] == '(':
+            new_tree += tree[i]
+            i += 1
+            while tree[i] != ' ':
+                new_tree += tree[i]
+                i += 1
+        elif tree[i] == ')':
+            new_tree += tree[i]
+            if i == max_idx:
+                break
+            i += 1
+        else: # it's a terminal symbol
+            new_tree += f'({tag} '
+            while tree[i] not in (' ', ')'):
+                new_tree += tree[i]
+                i += 1
+            new_tree += ')'
+        while tree[i] == ' ':
+            if i == max_idx:
+                break
+            new_tree += tree[i]
+            i += 1
+    assert i == max_idx, i
+    return new_tree
+
+
+def substitute_leaves(tree, new_leaves):
+    assert isinstance(tree, str), tree
+    assert all(isinstance(leaf, str) for leaf in new_leaves), new_leaves
+    old_leaves = Tree.fromstring(tree).leaves()
+    message = f'inconsistent lengths:\nOld: {list(old_leaves)}\nNew {list(new_leaves)}'
+    assert len(old_leaves) == len(list(new_leaves)), message
+    new_leaves = iter(new_leaves)
+    i = 0
+    max_idx = (len(tree) - 1)
+    new_tree = ''
+    while i <= max_idx:
+        assert tree[i] != ' '
+        if tree[i] == '(':
+            new_tree += tree[i]
+            i += 1
+            while tree[i] != ' ':
+                new_tree += tree[i]
+                i += 1
+        elif tree[i] == ')':
+            new_tree += tree[i]
+            if i == max_idx:
+                break
+            i += 1
+        else: # it's a terminal symbol
+            while tree[i] not in (' ', ')'):
+                i += 1
+            new_tree += next(new_leaves)
+        # Skip whitespace.
+        while tree[i] == ' ':
+            if i == max_idx:
+                break
+            new_tree += tree[i]
+            i += 1
+    assert i == max_idx, i
+    return new_tree

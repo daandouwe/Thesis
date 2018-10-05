@@ -444,7 +444,7 @@ class GenParser(nn.Module):
     def __str__(self):
         return '\n'.join(('Parser', str(self.stack), str(self.terminals), str(self.history)))
 
-    def initialize(self, sentence):
+    def initialize(self):
         """Initialize all the components of the parser."""
         self.stack.initialize()
         self.terminals.initialize()

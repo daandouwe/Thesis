@@ -12,7 +12,7 @@ from tensorboardX import SummaryWriter
 
 from data import Corpus
 from model import make_model
-from decode import GreedyDecoder
+from decode import GreedyDecoder, GenerativeImportanceDecoder
 from eval import evalb
 from utils import Timer, get_folders, write_args
 
@@ -21,7 +21,9 @@ class Trainer:
     """Trainer for RNNG."""
     def __init__(
         self,
+        rnng_type='disc',
         model=None,
+        dictionary=None,
         optimizer=None,
         scheduler=None,
         lr=None,
@@ -30,6 +32,8 @@ class Trainer:
         train_dataset=[],
         dev_dataset=[],
         test_dataset=[],
+        dev_proposal_samples=None,
+        test_proposal_samples=None,
         batch_size=1,
         num_procs=1,
         elbo_objective=False,
@@ -44,19 +48,21 @@ class Trainer:
         max_grad_norm=5.0,
         print_every=100,
         device=None,
-        args=None,  # Used for saving model.
+        args=None,  # Used when saving model.
     ):
+        assert rnng_type in ('disc', 'gen'), rnng_type
 
-        self.args = args
+        self.rnng_type = rnng_type
         self.model = model
-        self.dictionary = model.dictionary
-        self.optimizer = optimizer
-        self.scheduler = scheduler
-        self.batch_size = batch_size
+        self.dictionary = dictionary
         self.device = device
+        self.args = args
 
+        self.batch_size = batch_size
+        self.optimizer = optimizer
         self.lr = lr
         self.elbo_objective = elbo_objective
+        self.scheduler = scheduler
         self.step_decay = step_decay
         self.learning_rate_warmup_steps = learning_rate_warmup_steps
         self.max_grad_norm = max_grad_norm
@@ -70,6 +76,8 @@ class Trainer:
         self.train_dataset = train_dataset
         self.dev_dataset = dev_dataset
         self.test_dataset = test_dataset
+
+        self.dev_proposal_samples = dev_proposal_samples
 
         self.name = name
         self.data_dir = data_dir
@@ -106,6 +114,9 @@ class Trainer:
 
         At any point you can hit Ctrl + C to break out of training early.
         """
+        if self.rnng_type == 'gen':
+            assert self.dev_proposal_samples is not None, 'specify proposal samples with --proposal-samples.'
+            assert os.path.exists(self.dev_proposal_samples), self.dev_proposal_samples
         try:
             print('Training...')
             # No upper limit of epochs.
@@ -250,7 +261,7 @@ class Trainer:
     def train_epoch_sequential(self):
         """One epoch of training."""
         self.model.train()
-        train_timer = Timer()
+        epoch_timer = Timer()
         num_sentences = len(self.train_dataset)
         num_batches = num_sentences // self.batch_size
         processed = 0
@@ -262,7 +273,7 @@ class Trainer:
 
         batches = self.batchify(self.train_dataset)
         for step, minibatch in enumerate(batches, 1):
-            if train_timer.elapsed() > self.max_time:
+            if self.timer.elapsed() > self.max_time:
                 break
 
             # Set learning rate.
@@ -303,7 +314,7 @@ class Trainer:
                 percentage = step / num_batches * 100
                 avg_loss = np.mean(self.losses[-self.print_every:])
                 lr = self.get_lr()
-                sents_per_sec = processed / train_timer.elapsed()
+                sents_per_sec = processed / epoch_timer.elapsed()
                 eta = (num_sentences - processed) / sents_per_sec
 
                 if self.elbo_objective:
@@ -316,8 +327,8 @@ class Trainer:
                         f'| alpha {self.model.criterion.annealer._alpha:.3f} ',
                         f'| temp {self.model.stack.encoder.composition.annealer._temp:.3f} '
                         f'| {sents_per_sec:4.1f} sents/sec ',
-                        f'| elapsed {train_timer.format(train_timer.elapsed())} ',
-                        f'| eta {train_timer.format(eta)} '
+                        f'| elapsed {epoch_timer.format(epoch_timer.elapsed())} ',
+                        f'| eta {epoch_timer.format(eta)} '
                     )
                 else:
                     message = (
@@ -325,8 +336,8 @@ class Trainer:
                         f'| loss {avg_loss:7.3f} ',
                         f'| lr {lr:.1e} ',
                         f'| {sents_per_sec:4.1f} sents/sec ',
-                        f'| elapsed {train_timer.format(train_timer.elapsed())} ',
-                        f'| eta {train_timer.format(eta)} '
+                        f'| elapsed {epoch_timer.format(epoch_timer.elapsed())} ',
+                        f'| eta {epoch_timer.format(eta)} '
                     )
                 print(''.join(message))
 
@@ -366,12 +377,20 @@ class Trainer:
 
     def predict(self, batches):
         """Use current model to predict trees for batches using greedy decoding."""
-        decoder = GreedyDecoder(
-            model=self.model, dictionary=self.dictionary, use_chars=self.dictionary.use_chars)
+        if self.rnng_type == 'disc':
+            decoder = GreedyDecoder(
+                model=self.model, dictionary=self.dictionary, use_chars=self.dictionary.use_chars)
+        elif self.rnng_type == 'gen':
+            decoder = GenerativeImportanceDecoder(
+                model=self.model, dictionary=self.dictionary, use_chars=self.dictionary.use_chars)
+            decoder.load_proposal_samples(path=self.dev_proposal_samples)
+            batches = batches[:100]  # Otherwise this will take 50 minutes.
+
         trees = []
         for i, batch in enumerate(batches):
             sentence, actions = batch
             tree, *rest = decoder(sentence)
+            tree = tree if isinstance(tree, str) else tree.linearize()
             trees.append(tree)
             if i % 10 == 0:
                 print(f'Predicting sentence {i}/{len(batches)}...', end='\r')
@@ -379,13 +398,11 @@ class Trainer:
 
     def check_dev(self):
         """Evaluate the current model on the test dataset."""
-        if self.args.model == 'gen':
-            return 0
         self.model.eval()
         # Predict trees.
         trees = self.predict(self.dev_dataset)
         with open(self.dev_pred_path, 'w') as f:
-            print('\n'.join([tree.linearize() for tree in trees]), file=f)
+            print('\n'.join(trees), file=f)
         # Compute f-score.
         dev_fscore = evalb(
             self.evalb_dir, self.dev_pred_path, self.dev_gold_path, self.dev_result_path)
@@ -401,8 +418,6 @@ class Trainer:
 
     def check_test(self):
         """Evaluate the model with best development f-score on the test dataset."""
-        if self.args.model == 'gen':
-            return 0
         print(f'Loading best saved model from `{self.checkpoint_path}` '
               f'(epoch {self.best_dev_epoch}, fscore {self.best_dev_fscore})...')
         with open(self.checkpoint_path, 'rb') as f:
@@ -411,7 +426,7 @@ class Trainer:
         # Predict trees.
         trees = self.predict(self.test_dataset)
         with open(self.test_pred_path, 'w') as f:
-            print('\n'.join([tree.linearize() for tree in trees]), file=f)
+            print('\n'.join(trees), file=f)
         # Compute f-score.
         test_fscore = evalb(
             self.evalb_dir, self.test_pred_path, self.test_gold_path, self.test_result_path)

@@ -140,6 +140,8 @@ def get_actions(line):
     line_strip = line.rstrip()
     i = 0
     max_idx = (len(line_strip) - 1)
+    print(max_idx)
+    print(line_strip)
     while i <= max_idx:
         assert line_strip[i] == '(' or line_strip[i] == ')'
         if line_strip[i] == '(':
@@ -165,6 +167,41 @@ def get_actions(line):
                  i += 1
     assert i == max_idx
     return output_actions
+
+
+def get_actions_no_tags(line):
+    """Get actions for a tree without tags.
+
+    Author: Daan van Stigt
+    """
+    output_actions = []
+    line_strip = line.rstrip()
+    i = 0
+    max_idx = (len(line_strip) - 1)
+    while i <= max_idx:
+        if line_strip[i] == '(':
+            NT = ''
+            i += 1
+            while line_strip[i] != ' ':
+                NT += line_strip[i]
+                i += 1
+            output_actions.append('NT(' + NT + ')')
+        elif line_strip[i] == ')':
+             output_actions.append('REDUCE')
+             if i == max_idx:
+                 break
+             i += 1
+        else: # it's a terminal symbol
+            output_actions.append('SHIFT')
+            while line_strip[i] not in (' ', ')'):
+                i += 1
+        while line_strip[i] == ' ':
+            if i == max_idx:
+                break
+            i += 1
+    assert i == max_idx
+    return output_actions
+
 
 def main():
     if len(sys.argv) != 3:

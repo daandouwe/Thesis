@@ -24,4 +24,4 @@ def evalb(evalb_dir, pred_path, gold_path, result_path, ignore_error=10000):
             if match:
                 fscore = float(match.group(1))
                 return fscore
-    return 0.0
+    return -1

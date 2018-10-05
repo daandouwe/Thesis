@@ -11,11 +11,11 @@ import inspect_model
 
 def main():
 
-    parser = argparse.ArgumentParser(description='Discriminative RNNG parser',
+    parser = argparse.ArgumentParser(description='RNNG parser',
                                      fromfile_prefix_chars='@') # Enable loading args from textfile
     # Choose mode
     parser.add_argument('mode', choices=['train', 'predict', 'dist', 'inspect'],
-                        help='what to do')
+                        help='what would you like to do?')
     parser.add_argument('model', choices=['disc', 'gen'],
                         help='use discriminative or generative model')
 
@@ -101,7 +101,7 @@ def main():
     parser.add_argument('--print-every', type=int, default=1,
                         help='when to print training progress')
     parser.add_argument('--disable-cuda', action='store_true',
-                        help='disable CUDA')
+                        help='disable cuda')
     parser.add_argument('--num-procs', type=int, default=1,
                         help='number of processes to spawn for parallel training')
 
@@ -109,13 +109,15 @@ def main():
     parser.add_argument('--checkpoint', type=str, default='',
                         help='load model from this checkpoint')
     parser.add_argument('--proposal-model', type=str, default='',
-                        help='load discriminative model (as proposal for generative model) from this checkpoint')
-    parser.add_argument('--proposal-samples', type=str, default='',
-                        help='load proposal samples from ')
+                        help='load discriminative model (proposal for generative model) from this checkpoint')
+    parser.add_argument('--proposal-samples', type=str, default='../data/proposal-samples/dev.props',
+                        help='load proposal samples')
     parser.add_argument('--from-input', action='store_true',
                         help='predict for user input')
     parser.add_argument('--from-file', action='store_true',
                         help='predict for user input')
+    parser.add_argument('--sample-gen', action='store_true',
+                        help='sample from generative model')
     parser.add_argument('--use-tokenizer', action='store_true',
                         help='tokenize user input')
     parser.add_argument('--evalb-dir', default='~/EVALB',

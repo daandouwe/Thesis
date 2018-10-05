@@ -101,6 +101,7 @@ class DiscRNNG(DiscParser):
             items['alpha'] = self.stack.encoder.composition._alpha
         return items
 
+
 class GenRNNG(GenParser):
     """Generative Recurrent Neural Network Grammar."""
     def __init__(self,
@@ -150,7 +151,7 @@ class GenRNNG(GenParser):
         # We change the items in sentence and actions in-place,
         # so we make a copy so that the tensors do not hang around.
         sentence, actions = deepcopy(sentence), deepcopy(actions)  # Do not remove!
-        self.initialize(sentence)
+        self.initialize()
         loss = torch.zeros(1, device=self.device)
         for i, action in enumerate(actions):
             # Compute loss

@@ -29,6 +29,13 @@ def load_glove(words, dim, dir, logfile):
             for line in f:
                 line = line.strip().split()
                 word, vec = line[0], line[1:]
+                # TODO: Hack! On Lisa: Splitting a word like `nguyễn` ended up as `nguyễn` and `n`
+                # Using encoding='utf-8' threw yet another error.
+                # But this is an ugly fix!
+                i = 2
+                while len(vec) > dim:
+                    word, vec = ' '.join(line[:i]), line[i:]
+                    i += 1
                 vec = np.array([float(val) for val in vec])
                 glove[word] = vec
     # Get the glove vector for each word in the dictionary and log words not found.

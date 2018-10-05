@@ -56,10 +56,10 @@ def main(args):
     # Sometimes we don't want to use all data.
     if args.debug:
         print('Debug mode.')
-        train_dataset = train_dataset[:20]
+        train_dataset = train_dataset[:30]
         dev_dataset = dev_dataset[:30]
         test_dataset = test_dataset[:30]
-    if args.max_lines != -1:
+    elif args.max_lines != -1:
         dev_dataset = dev_dataset[:100]
         test_dataset = test_dataset[:100]
 
@@ -70,8 +70,7 @@ def main(args):
     elbo_objective = (args.composition in ('latent-factors', 'latent-attention'))
 
     trainable_parameters = [param for param in model.parameters() if param.requires_grad]
-    # Learning rate is set during training by set_lr().
-    optimizer = torch.optim.Adam(trainable_parameters, lr=1., betas=(0.9, 0.98), eps=1e-9)
+    optimizer = torch.optim.Adam(trainable_parameters, lr=args.lr, betas=(0.9, 0.98), eps=1e-9)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, 'max',
         factor=args.step_decay_factor,
@@ -80,12 +79,15 @@ def main(args):
     )
 
     trainer = Trainer(
+        rnng_type = args.model,
         model=model,
+        dictionary=corpus.dictionary,
         optimizer=optimizer,
         scheduler=scheduler,
         train_dataset=train_dataset,
         dev_dataset=dev_dataset,
         test_dataset=test_dataset,
+        dev_proposal_samples=args.proposal_samples,
         num_procs=args.num_procs,
         lr=args.lr,
         print_every=args.print_every,

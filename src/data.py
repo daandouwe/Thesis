@@ -8,7 +8,7 @@ import numpy as np
 
 from datatypes import Token, Word, Nonterminal, Action
 from actions import SHIFT, REDUCE, NT, GEN
-from scripts.get_oracle import unkify
+from data_scripts.get_oracle import unkify
 
 
 PAD_CHAR = '_'
