@@ -18,6 +18,10 @@ from data_scripts.get_oracle import unkify, get_actions, get_actions_no_tags
 from utils import add_dummy_tags, substitute_leaves
 
 
+# %%%%%%%%%%%%%%%%%%%%% #
+#      Base classes     #
+# %%%%%%%%%%%%%%%%%%%%% #
+
 class Decoder:
     """Decoder base class for prediction with RNNG."""
     def __init__(self,
@@ -51,7 +55,11 @@ class Decoder:
         sentence: sentence to decode, can be of the following types:
             str, List[str], List[Word].
         """
-        pass
+        raise NotImplementedError
+
+    def _make_action(self, index):
+        """Maps index to action."""
+        raise NotImplementedError
 
     def _init_tokenizer(self):
         # TODO: problems loading spacy.
@@ -200,7 +208,7 @@ class DiscriminativeDecoder(Decoder):
 
 
 class GenerativeDecoder(Decoder):
-    """Decoder for generative discriminative RNNG."""
+    """Decoder for generative RNNG."""
 
     def _make_action(self, index):
         """Maps index to action."""
@@ -292,6 +300,8 @@ class BeamSearchDecoder(DiscriminativeDecoder):
         """"""
         with torch.no_grad():
             sentence = self._process_sentence(sentence)
+            # Use a separate parser to manage the different beams
+            # (each beam is a separate continuation of this parser.)
             parser = DiscParser(
                 word_embedding=self.model.history.word_embedding,
                 nt_embedding=self.model.history.nt_embedding,
@@ -439,28 +449,29 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
 
     def map_tree(self, sentence):
         """Estimate the MAP tree."""
-        sentence = self._process_sentence(sentence)
-        scored = self._scored_samples(sentence, remove_duplicates=True)  # Do not need duplicates for MAP tree
+        scored = self.scored_samples(sentence, remove_duplicates=True)  # Do not need duplicates for MAP tree
         ranked = sorted(scored, reverse=True, key=lambda t: t[-1])
         best_tree, proposal_logprob, logprob = ranked[0]
         return best_tree, proposal_logprob, logprob
 
-    def prob(self, sentence):
+    def logprob(self, sentence):
         """Estimate the probability of the sentence."""
-        sentence = self._process_sentence(sentence)
-        prob = torch.zeros(1)
-        scored = self._scored_samples(sentence)  # Do not need duplicates for perplexity
-        # TODO make this log-sum-exp.
-        for _, marginal_logprob, joint_logprob in scored:
-            prob += (joint_logprob - marginal_logprob).exp()
-        prob /= len(scored)
-        return prob
+        scored = self.scored_samples(sentence, remove_duplicates=False)  # Do need duplicates for perplexity
+        logprobs = torch.zeros(self.num_samples)
+        for i, (tree, marginal_logprob, joint_logprob) in enumerate(scored):
+            logprobs[i] = joint_logprob - marginal_logprob
+        a = logprobs.max()
+        logprob = a + (logprobs - a).exp().mean().log()
+        return logprob
 
-    def scored_samples(self, sentence):
-        sentence = self._process_sentence(sentence)
-        return self._scored_samples(sentence)
+    def perplexity(self, sentence):
+        return torch.exp(-self.logprob(sentence)/len(sentence))
 
-    def _scored_samples(self, sentence, remove_duplicates=False):
+    def scored_samples(self, sentence, remove_duplicates=False):
+        sentence = self._process_sentence(sentence)
+        return self._scored_samples(sentence, remove_duplicates)
+
+    def _scored_samples(self, sentence, remove_duplicates):
         """Return a list of proposal samples that are scored by the model."""
         def filter(samples):
             """Filter out duplicate trees from the samples."""
@@ -487,7 +498,6 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
         if self.use_samples:
             # Retrieve the samples that we've loaded.
             samples = self.samples[self.i]
-            # TODO: if not all(is_tree_without_tags(tree) for tree, _ in samples) ...
             samples = replace_unks(samples, [word.token.original for word in sentence])
             self.i += 1
         else:
@@ -499,6 +509,7 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
         scores = [self.score(sentence, tree) for tree, _ in samples]
         # Add dummy tags if trees were loaded from file.
         if self.use_samples:
+            # TODO: if not all(is_tree_without_tags(tree) for tree, _ in samples) ...
             scored = [(add_dummy_tags(tree), proposal_logprob, logprob)
                 for (tree, proposal_logprob), logprob in zip(samples, scores)]
         else:

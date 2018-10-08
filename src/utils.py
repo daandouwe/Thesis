@@ -150,7 +150,7 @@ def substitute_leaves(tree, new_leaves):
     assert isinstance(tree, str), tree
     assert all(isinstance(leaf, str) for leaf in new_leaves), new_leaves
     old_leaves = Tree.fromstring(tree).leaves()
-    message = f'inconsistent lengths:\nOld: {list(old_leaves)}\nNew {list(new_leaves)}'
+    message = f'inconsistent lengths:\nOld: {list(old_leaves)}\nNew: {list(new_leaves)}'
     assert len(old_leaves) == len(list(new_leaves)), message
     new_leaves = iter(new_leaves)
     i = 0

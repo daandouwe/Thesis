@@ -112,26 +112,24 @@ def predict_input_gen(args):
     print('Predicting with generative model.')
     assert os.path.exists(args.proposal_model), 'specify valid proposal model.'
 
-    decoder = GenerativeImportanceDecoder(use_tokenizer=args.use_tokenizer)
+    num_samples = 100
+    decoder = GenerativeImportanceDecoder(use_tokenizer=True, num_samples=num_samples)
     decoder.load_model(path=args.checkpoint)
     decoder.load_proposal_model(path=args.proposal_model)
 
     while True:
         sentence = input('Input a sentence: ')
 
-        prob = decoder.prob(sentence)
-        nll = prob.log() / len(sentence)
-        perplexity = nll.exp().item()
-        print('Perplexity {:.2f}'.format(perplexity))
+        print('Perplexity: {:.2f}'.format(decoder.perplexity(sentence)))
 
-        print('Tree:')
+        print('MAP tree:')
         tree, proposal_logprob, logprob = decoder.map_tree(sentence)
         print('  {} {:.2f} {:.2f}'.format(tree.linearize(with_tag=False), logprob, proposal_logprob))
         print()
 
         scored = decoder.scored_samples(sentence)
         scored = remove_duplicates(scored)  # For printing purposes.
-        print(f'Number of unique samples: {len(scored)}.')
+        print(f'Unique samples: {len(scored)}/{num_samples}.')
         print('Highest q(y|x):')
         scored = sorted(scored, reverse=True, key=lambda t: t[1])
         for tree, proposal_logprob, logprob in scored[:4]:
@@ -147,7 +145,7 @@ def predict_input_gen(args):
 def sample_gen(args):
     print('Sampling from the generative model.')
 
-    decoder = GenerativeSamplingDecoder(use_tokenizer=args.use_tokenizer)
+    decoder = GenerativeSamplingDecoder()
     decoder.load_model(path=args.checkpoint)
 
     print('Samples:')

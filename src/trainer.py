@@ -78,6 +78,7 @@ class Trainer:
         self.test_dataset = test_dataset
 
         self.dev_proposal_samples = dev_proposal_samples
+        self.test_proposal_samples = test_proposal_samples
 
         self.name = name
         self.data_dir = data_dir
@@ -101,18 +102,18 @@ class Trainer:
         self.checkpoint_path = os.path.join(self.checkpoint_dir, 'model.pt')
         self.loss_path = os.path.join(self.log_dir, 'loss.csv')
 
-        self.dev_pred_path = os.path.join(self.output_dir, f'{self.name}.dev.pred.trees')
         self.dev_gold_path = os.path.join(self.data_dir, 'dev', f'{self.name}.dev.trees')
+        self.dev_pred_path = os.path.join(self.output_dir, f'{self.name}.dev.pred.trees')
         self.dev_result_path = os.path.join(self.output_dir, f'{self.name}.dev.result')
 
-        self.test_pred_path = os.path.join(self.output_dir, f'{self.name}.test.pred.trees')
         self.test_gold_path = os.path.join(self.data_dir, 'test', f'{self.name}.test.trees')
+        self.test_pred_path = os.path.join(self.output_dir, f'{self.name}.test.pred.trees')
         self.test_result_path = os.path.join(self.output_dir, f'{self.name}.test.result')
 
     def train(self):
-        """Train the model.
-
-        At any point you can hit Ctrl + C to break out of training early.
+        """
+        Train the model. At any point you can
+        hit Ctrl + C to break out of training early.
         """
         if self.rnng_type == 'gen':
             assert self.dev_proposal_samples is not None, 'specify proposal samples with --proposal-samples.'
@@ -375,15 +376,16 @@ class Trainer:
             }
             torch.save(state, f)
 
-    def predict(self, batches):
+    def predict(self, batches, proposal_samples=None):
         """Use current model to predict trees for batches using greedy decoding."""
         if self.rnng_type == 'disc':
             decoder = GreedyDecoder(
                 model=self.model, dictionary=self.dictionary, use_chars=self.dictionary.use_chars)
         elif self.rnng_type == 'gen':
+            assert proposal_samples is not None, 'path to samples required for generative decoding.'
             decoder = GenerativeImportanceDecoder(
                 model=self.model, dictionary=self.dictionary, use_chars=self.dictionary.use_chars)
-            decoder.load_proposal_samples(path=self.dev_proposal_samples)
+            decoder.load_proposal_samples(path=proposal_samples)
             batches = batches[:100]  # Otherwise this will take 50 minutes.
 
         trees = []
@@ -400,7 +402,7 @@ class Trainer:
         """Evaluate the current model on the test dataset."""
         self.model.eval()
         # Predict trees.
-        trees = self.predict(self.dev_dataset)
+        trees = self.predict(self.dev_dataset, proposal_samples=self.dev_proposal_samples)
         with open(self.dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
         # Compute f-score.
@@ -424,7 +426,7 @@ class Trainer:
             state = torch.load(f)
             self.model = state['model']
         # Predict trees.
-        trees = self.predict(self.test_dataset)
+        trees = self.predict(self.test_dataset, proposal_samples=self.test_proposal_samples)
         with open(self.test_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
         # Compute f-score.
