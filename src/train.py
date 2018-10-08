@@ -13,7 +13,6 @@ from utils import Timer, write_losses, get_folders, write_args
 
 
 def main(args):
-
     # Set random seeds.
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
@@ -24,14 +23,11 @@ def main(args):
     print(f'Device: {args.device}.')
 
     # Make output folder structure.
-    if not args.disable_folders:
-        subdir, logdir, checkdir, outdir = get_folders(args)
-        os.mkdir(logdir)
-        os.mkdir(checkdir)
-        os.mkdir(outdir)
-        print(f'Output subdirectory: `{subdir}`.')
-    else:
-        print('Did not make output folders!')
+    subdir, logdir, checkdir, outdir = get_folders(args)
+    os.mkdir(logdir)
+    os.mkdir(checkdir)
+    os.mkdir(outdir)
+    print(f'Output subdirectory: `{subdir}`.')
     print(f'Saving logs to `{logdir}`.')
     print(f'Saving predictions to `{outdir}`.')
     print(f'Saving models to `{checkdir}`.')
@@ -107,4 +103,26 @@ def main(args):
         max_grad_norm=args.clip,
         args=args,
     )
-    trainer.train()
+
+    # Train the model.
+    print(f'Training with {args.num_procs} processes...')
+    try:
+        trainer.train()
+    except KeyboardInterrupt:
+        print('-'*99)
+        print('Exiting from training early.')
+
+    # Save the losses for plotting and diagnostics
+    trainer.write_losses()
+    print('Evaluating fscore on development set...')
+    trainer.check_dev()
+
+    print('Evaluating fscore on test set...')
+    test_fscore = trainer.check_test()
+    print('='*99)
+    print('| End of training | best dev-epoch {:2d} | best dev-fscore {:4.2f} | test-fscore {}'.format(
+        trainer.best_dev_epoch, trainer.best_dev_fscore, test_fscore))
+    print('='*99)
+    # Save model again but with test fscore information.
+    trainer.test_fscore = test_fscore
+    trainer.save_checkpoint()

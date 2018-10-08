@@ -5,7 +5,6 @@ from math import inf
 
 import train
 import predict
-import distributed
 import inspect_model
 
 
@@ -14,7 +13,7 @@ def main():
     parser = argparse.ArgumentParser(description='RNNG parser',
                                      fromfile_prefix_chars='@') # Enable loading args from textfile
     # Choose mode
-    parser.add_argument('mode', choices=['train', 'predict', 'dist', 'inspect'],
+    parser.add_argument('mode', choices=['train', 'predict', 'inspect'],
                         help='what would you like to do?')
     parser.add_argument('model', choices=['disc', 'gen'],
                         help='use discriminative or generative model')
@@ -129,8 +128,6 @@ def main():
         train.main(args)
     elif args.mode == 'predict':
         predict.main(args)
-    elif args.mode == 'dist':
-        distributed.main(args)
     elif args.mode == 'inspect':
         inspect_model.main(args)
 

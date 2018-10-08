@@ -81,7 +81,7 @@ class Stack(TransitionBase):
             device: device on which computation is done (gpu or cpu).
         """
         super(Stack, self).__init__()
-        assert word_embedding.embedding_dim == nt_embedding.embedding_dim
+        assert (word_embedding.embedding_dim == nt_embedding.embedding_dim)
         self.embedding_dim = word_embedding.embedding_dim
         self.word_embedding = word_embedding
         self.nt_embedding = nt_embedding

@@ -118,61 +118,34 @@ class Trainer:
         if self.rnng_type == 'gen':
             assert self.dev_proposal_samples is not None, 'specify proposal samples with --proposal-samples.'
             assert os.path.exists(self.dev_proposal_samples), self.dev_proposal_samples
-        try:
-            print('Training...')
-            # No upper limit of epochs.
-            for epoch in itertools.count(start=1):
-                if epoch > self.max_epochs:
-                    break
 
-                self.current_epoch = epoch
+        # No upper limit of epochs.
+        for epoch in itertools.count(start=1):
+            self.current_epoch = epoch
+            if epoch > self.max_epochs:
+                break
 
-                # Shuffle batches each epoch.
-                np.random.shuffle(self.train_dataset)
+            # Shuffle batches each epoch.
+            np.random.shuffle(self.train_dataset)
 
-                # Train one epoch.
-                self.train_epoch()
+            # Train one epoch.
+            self.train_epoch()
 
-                print('Evaluating fscore on development set...')
-                self.check_dev()
-                # Scheduler for learning rate.
-                if self.step_decay:
-                    if (self.num_updates // self.batch_size + 1) > self.learning_rate_warmup_steps:
-                        self.scheduler.step(self.best_dev_fscore)
-
-                print('-'*99)
-                print(
-                    f'| End of epoch {epoch:3d}/{self.max_epochs} '
-                    f'| elapsed {self.timer.format_elapsed()} '
-                    f'| dev-fscore {self.current_dev_fscore:4.2f} '
-                    f'| best dev-epoch {self.best_dev_epoch} '
-                    f'| best dev-fscore {self.best_dev_fscore:4.2f} ',
-                )
-                print('-'*99)
-        except KeyboardInterrupt:
-            print('-'*99)
-            print('Exiting from training early.')
-            # Save the losses for plotting and diagnostics
-            self.write_losses()
             print('Evaluating fscore on development set...')
             self.check_dev()
+            # Scheduler for learning rate.
+            if self.step_decay:
+                if (self.num_updates // self.batch_size + 1) > self.learning_rate_warmup_steps:
+                    self.scheduler.step(self.best_dev_fscore)
 
-        print('Evaluating fscore on test set...')
-        test_fscore = self.check_test()
-        print('-'*99)
-        print(
-             f'| End of training '
-             f'| best dev-epoch {self.best_dev_epoch:2d} '
-             f'| best dev-fscore {self.best_dev_fscore:4.2f} '
-             f'| test-fscore {test_fscore}'
-        )
-        print('-'*99)
-        # Save model again but with test fscore information.
-        self.test_fscore = test_fscore
-        self.save_checkpoint()
+            print('-'*99)
+            print('| End of epoch {:3d}/{} | elapsed {} | dev-fscore {:4.2f} | best dev-fscore {:4.2f} | best dev-epoch {}'.format(
+                epoch, self.max_epochs, self.timer.format_elapsed(), self.current_dev_fscore, self.best_dev_fscore, self.best_dev_epoch))
+            print('-'*99)
 
     def train_epoch(self):
         if self.distributed:
+            assert (self.batch_size == 1), self.batch_size
             self.train_epoch_distributed()
         else:
             self.train_epoch_sequential()
@@ -190,52 +163,98 @@ class Trainer:
             """Gradient averaging."""
             for param in model.parameters():
                 if param is not None and param.requires_grad:  # some layers of model are not used and have no grad
-                    # dist.all_reduce(param.grad.data, op=dist.reduce_op.SUM)
-                    # param.grad.data /= size
                     dist.all_reduce(param.grad.data, op=dist.reduce_op.SUM)
-                    param.grad /= size
+                    param.grad.data /= size
 
-        def worker(rank, size, model, batches, optimizer, elbo_objective, return_dict, print_every):
+        def chunk_batches(batches, size):
+            chunk_size = len(batches) // size
+            for rank in range(size):
+                start, stop = rank*chunk_size, (rank+1)*chunk_size
+                yield batches[start:stop]
+
+        def worker(rank, size, model, batches, optimizer, return_dict):
             """Distributed training."""
-            def clock_time(s):
-                h, s = divmod(s, 3600)
-                m, s = divmod(s, 60)
-                return int(h), int(m), int(s)
-
+            model.train()
             # Restrict each processor to use only 1 thread.
-            torch.set_num_threads(1)  # Without this it won't work on Lisa (and slow down on laptop)!
-            num_steps = len(batches) // size
-            losses = []
-            start_time = time.time()
-            t0 = time.time()
-            chunk_size = len(batches) // dist.get_world_size()
-            start, stop = rank*chunk_size, (rank+1)*chunk_size
-            for i, batch in enumerate(batches[start:stop], 1):
+            # Without this it won't work on Lisa (and slow down on laptop)!
+            torch.set_num_threads(1)
+            epoch_timer = Timer()
+            num_sentences = len(batches)
+            num_batches = num_sentences
+            processed = 0
+            for step, batch in enumerate(batches, 1):
+                if self.timer.elapsed() > self.max_time:
+                    break
+
+                # Set learning rate.
+                self.num_updates += 1
+                processed += 1
+                self.schedule_lr()
+
                 sentence, actions = batch
                 loss = model(sentence, actions)
+
                 optimizer.zero_grad()
                 loss.backward()
-                nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
+                nn.utils.clip_grad_norm_(model.parameters(), max_norm=self.max_grad_norm)
                 average_gradients(model, size)
                 optimizer.step()
 
                 # Compute the average loss for logging.
                 dist.all_reduce(loss, op=dist.reduce_op.SUM)  # inplace operation
-                losses.append(loss.data.item() / size)
+                if rank == 0:
+                    self.losses.append(loss.data.item() / size)
 
-                if i % print_every == 0 and rank == 0:
-                    sents_per_sec = print_every * size / (time.time() - t0)
-                    t0 = time.time()
-                    message = 'step {}/{} ({:.0f}%) | loss {:.3f} | {:.3f} sents/sec | elapsed {}h{:02}m{:02}s | eta {}h{:02}m{:02}s'.format(
-                            i, num_steps, i/num_steps * 100,
-                            np.mean(losses[-print_every:]),
-                            sents_per_sec,
-                            *clock_time(time.time() - start_time),
-                            *clock_time((len(batches) - i*size) / sents_per_sec))
-                    if elbo_objective:
-                        message += (f'| alpha {model.criterion.annealer._alpha:.3f} ' +
-                            f'| temp {model.stack.encoder.composition.annealer._temp:.3f} ')
-                    print(message)
+                # if i % self.print_every == 0 and rank == 0:
+                #     sents_per_sec = self.print_every * size / (time.time() - t0)
+                #     t0 = time.time()
+                #     message = 'step {}/{} ({:.0f}%) | loss {:.3f} | {:.3f} sents/sec | elapsed {}h{:02}m{:02}s | eta {}h{:02}m{:02}s'.format(
+                #             i, num_steps, i/num_steps * 100,
+                #             np.mean(losses[-self.print_every:]),
+                #             sents_per_sec,
+                #             *clock_time(time.time() - start_time),
+                #             *clock_time((len(batches) - i*size) / sents_per_sec))
+                #     if self.elbo_objective:
+                #         message += (f'| alpha {model.criterion.annealer._alpha:.3f} ' +
+                #             f'| temp {model.stack.encoder.composition.annealer._temp:.3f} ')
+                #     print(message)
+
+                if step % self.print_every == 0 and rank == 0:
+                    # Log to tensorboard.
+                    # self.tensorboard_writer.add_scalar(
+                    #     'Train/Loss', loss.item(), self.num_updates)
+                    # self.tensorboard_writer.add_scalar(
+                    #     'Train/Learning-rate', self.get_lr(), self.num_updates)
+                    percentage = step / num_batches * 100
+                    avg_loss = np.mean(self.losses[-self.print_every:])
+                    lr = self.get_lr()
+                    sents_per_sec = processed / epoch_timer.elapsed()
+                    eta = (num_sentences - processed) / sents_per_sec
+
+                    if self.elbo_objective:
+                        message = (
+                            f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) ',
+                            f'| neg-elbo {avg_loss:7.3f} ',
+                            f'| loss {np.mean(self.model.criterion._train_losses[-self.print_every:]):.3f} ',
+                            f'| kl {np.mean(self.model.criterion._train_kl[-self.print_every:]):.3f} ',
+                            f'| lr {lr:.1e} ',
+                            f'| alpha {self.model.criterion.annealer._alpha:.3f} ',
+                            f'| temp {self.model.stack.encoder.composition.annealer._temp:.3f} '
+                            f'| {sents_per_sec:4.1f} sents/sec ',
+                            f'| elapsed {epoch_timer.format(epoch_timer.elapsed())} ',
+                            f'| eta {epoch_timer.format(eta)} '
+                        )
+                    else:
+                        message = (
+                            f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) ',
+                            f'| loss {avg_loss:7.3f} ',
+                            f'| lr {lr:.1e} ',
+                            f'| {size*sents_per_sec:4.1f} sents/sec ',
+                            f'| elapsed {epoch_timer.format(epoch_timer.elapsed())} ',
+                            f'| eta {epoch_timer.format(eta)} '
+                        )
+                    print(''.join(message))
+
                     # Save model every now and then.
                     return_dict['model'] = model
             # Save model when finished.
@@ -245,9 +264,10 @@ class Trainer:
         manager = mp.Manager()
         return_dict = manager.dict()
         processes = []
+        chunked_batches = chunk_batches(self.train_dataset, self.num_procs)
         for rank in range(self.num_procs):
-            args = (rank, self.num_procs, self.model, self.train_dataset,
-                self.optimizer, self.elbo_objective, return_dict, self.print_every)
+            batches = next(chunked_batches)
+            args = (rank, self.num_procs, self.model, batches, self.optimizer, return_dict)
             p = mp.Process(
                 target=init_processes,
                 args=(worker, *args)
