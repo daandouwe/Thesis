@@ -202,7 +202,7 @@ class DiscriminativeDecoder(Decoder):
 
     def load_model(self, path):
         """Load the discriminative model."""
-        super(Decoder, self).load_model(path)
+        super(DiscriminativeDecoder, self).load_model(path)
         message  = f'must be a discriminative model, got `{type(self.model)}`.'
         assert isinstance(self.model, DiscRNNG), message
 

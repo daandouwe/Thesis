@@ -2,13 +2,16 @@
 import os
 import glob
 import tempfile
+import multiprocessing as mp
 
+import torch
 from tqdm import tqdm
 from nltk import Tree
 
 from decode import (GreedyDecoder, BeamSearchDecoder, SamplingDecoder,
     GenerativeImportanceDecoder, GenerativeSamplingDecoder)
 from eval import evalb
+from utils import ceil_div
 
 
 def remove_duplicates(samples):
@@ -142,7 +145,7 @@ def predict_input_gen(args):
         print()
 
 
-def sample_gen(args):
+def sample_generative(args):
     print('Sampling from the generative model.')
 
     decoder = GenerativeSamplingDecoder()
@@ -155,25 +158,117 @@ def sample_gen(args):
         print()
 
 
+def sample_proposals_(args):
+    assert os.path.exists(args.data), 'specifiy file to parse with --data.'
+
+    print(f'Sampling proposal trees for lines in `{args.data}`.')
+    with open(args.data, 'r') as f:
+        lines = [line.strip() for line in f.readlines()]
+    if is_tree(lines[0]):
+        lines = [Tree.fromstring(line).leaves() for line in lines]
+
+    checkfile = get_checkfile(args.checkpoint)
+    decoder = SamplingDecoder(use_tokenizer=False)
+    decoder.load_model(path=checkfile)
+
+    samples = []
+    for i, line in enumerate(tqdm(lines)):
+        for _ in range(args.num_samples):
+            tree, logprob, _ = decoder(line)  # sample a tree
+            samples.append(' ||| '.join((str(i), str(logprob.item()), tree.linearize(with_tag=False))))
+    with open(args.out, 'w') as f:
+        print('\n'.join(samples), file=f, end='')
+
+
+def sample_proposals(args):
+    assert os.path.exists(args.data), 'specifiy file to parse with --data.'
+
+    print(f'Sampling proposal trees for lines in `{args.data}`.')
+    with open(args.data, 'r') as f:
+        lines = [line.strip() for line in f.readlines()]
+    if is_tree(lines[0]):
+        lines = [Tree.fromstring(line).leaves() for line in lines]
+
+    checkfile = get_checkfile(args.checkpoint)
+    decoder = SamplingDecoder(use_tokenizer=False)
+    decoder.load_model(path=checkfile)
+
+    num_procs = mp.cpu_count() if args.num_procs == -1 else args.num_procs
+    if num_procs > 1:
+        print(f'Sampling proposals with {num_procs} processors...')
+        # Divide the lines among `num_procs` processors.
+        chunk_size = ceil_div(len(lines), num_procs)
+        partitioned = [lines[i:i+chunk_size] for i in range(0, len(lines), chunk_size)]
+
+        def worker(rank, lines, return_dict):
+            """Worker to generate proposal samples."""
+            torch.set_num_threads(1)
+            all_samples = []
+            lines = tqdm(lines) if rank == 0 else lines
+            for line in lines:
+                samples = []
+                for _ in range(args.num_samples):
+                    tree, logprob, _ = decoder(line)  # sample a tree
+                    samples.append((logprob.item(), tree.linearize(with_tag=False)))
+                all_samples.append(samples)
+            return_dict[rank] = all_samples
+
+        # Use multiprocessing to parallelize.
+        manager = mp.Manager()
+        return_dict = manager.dict()
+        processes = []
+        for rank in range(num_procs):
+            p = mp.Process(
+                target=worker,
+                args=(rank, partitioned[rank], return_dict))
+            p.start()
+            processes.append(p)
+        for p in processes:
+            p.join()
+        # Join results.
+        all_samples = []
+        for rank in range(num_procs):
+            all_samples.extend(return_dict[rank])
+        # Some checks.
+        assert len(all_samples) == len(lines), (len(all_samples), len(lines))
+        assert all(len(samples) == args.num_samples for samples in all_samples)
+
+        samples = [' ||| '.join((str(i), str(logprob), tree))
+            for i, samples in enumerate(all_samples) for logprob, tree in samples]
+    else:
+        samples = []
+        for i, line in enumerate(tqdm(lines)):
+            for _ in range(args.num_samples):
+                tree, logprob, _ = decoder(line)  # sample a tree
+                samples.append(' ||| '.join((str(i), str(logprob.item()), tree.linearize(with_tag=False))))
+
+    # Write samples.
+    with open(args.out, 'w') as f:
+        print('\n'.join(samples), file=f, end='')
+
+
 def main(args):
     if args.from_input:
         if args.model == 'disc':
             predict_input_disc(args)
         elif args.model == 'gen':
             predict_input_gen(args)
+    elif args.sample_proposals:
+        assert args.model == 'disc', 'only discriminative model can generate proposal samples'
+        sample_proposals(args)
     elif args.from_file:
         predict_file(args)
     elif args.sample_gen:
-        sample_gen(args)
+        sample_generative(args)
     else:
         exit('Specify type of prediction. Use --from-input, --from-file or --sample-gen.')
 
 
 if __name__ == '__main__':
     # TODO: Log embeddings while predicting:
-    if writer:
-        print(f'Created tensorboard summary writer at {args.logdir}.')
-        writer = SummaryWriter(latest_dir)
+    from tensorboardX import SummaryWriter
+
+    writer = SummaryWriter(latest_dir)
 
     tree = model.stack.tree.linearize() # partial tree
     top_token = model.stack.top_item.token
