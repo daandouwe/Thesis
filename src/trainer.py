@@ -67,7 +67,7 @@ class Trainer:
         self.learning_rate_warmup_steps = learning_rate_warmup_steps
         self.max_grad_norm = max_grad_norm
 
-        self.num_procs = mp.cpu_count() if num_procs == -1 else num_procs
+        self.num_procs = num_procs
         self.distributed = (self.num_procs > 1)
         self.print_every = print_every
         self.max_epochs = max_epochs
@@ -151,32 +151,31 @@ class Trainer:
             self.train_epoch_sequential()
 
     def train_epoch_distributed(self):
-        def init_processes(fn, *args, backend='tcp'):
+        def init_processes(worker, rank, backend='tcp'):
             """Initialize the distributed environment."""
             os.environ['MASTER_ADDR'] = '127.0.0.1'
             os.environ['MASTER_PORT'] = '29500'
-            rank, size, *rest = args
-            dist.init_process_group(backend, rank=rank, world_size=size)
-            fn(*args)
+            dist.init_process_group(backend, rank=rank, world_size=self.num_procs)
+            worker(rank)
 
-        def average_gradients(model, size):
+        def average_gradients():
             """Gradient averaging."""
-            for param in model.parameters():
-                if param is not None and param.requires_grad:  # some layers of model are not used and have no grad
+            for param in self.model.parameters():
+                if param.grad is not None and param.requires_grad:  # some layers of model are not used and have no grad
                     dist.all_reduce(param.grad.data, op=dist.reduce_op.SUM)
-                    param.grad.data /= size
+                    param.grad.data /= self.num_procs
 
-        def chunk_batches(batches, size):
-            chunk_size = len(batches) // size
-            for rank in range(size):
-                start, stop = rank*chunk_size, (rank+1)*chunk_size
-                yield batches[start:stop]
+        def get_batch_chunk(batches, rank):
+            chunk_size = len(batches) // self.num_procs
+            start, stop = rank*chunk_size, (rank+1)*chunk_size
+            return batches[start:stop]
 
-        def worker(rank, size, model, batches, optimizer, return_dict):
+        def worker(rank):
             """Distributed training."""
-            model.train()
+            self.model.train()
+            batches = get_batch_chunk(self.train_dataset, rank)
             # Restrict each processor to use only 1 thread.
-            # Without this it won't work on Lisa (and slow down on laptop)!
+            # Without this it won't work on Lisa (and cause slow-down on laptop)!
             torch.set_num_threads(1)
             epoch_timer = Timer()
             num_sentences = len(batches)
@@ -192,39 +191,25 @@ class Trainer:
                 self.schedule_lr()
 
                 sentence, actions = batch
-                loss = model(sentence, actions)
+                loss = self.model(sentence, actions)
 
-                optimizer.zero_grad()
+                self.optimizer.zero_grad()
                 loss.backward()
-                nn.utils.clip_grad_norm_(model.parameters(), max_norm=self.max_grad_norm)
-                average_gradients(model, size)
-                optimizer.step()
+                nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=self.max_grad_norm)
+                average_gradients()
+                self.optimizer.step()
 
                 # Compute the average loss for logging.
                 dist.all_reduce(loss, op=dist.reduce_op.SUM)  # inplace operation
                 if rank == 0:
-                    self.losses.append(loss.data.item() / size)
-
-                # if i % self.print_every == 0 and rank == 0:
-                #     sents_per_sec = self.print_every * size / (time.time() - t0)
-                #     t0 = time.time()
-                #     message = 'step {}/{} ({:.0f}%) | loss {:.3f} | {:.3f} sents/sec | elapsed {}h{:02}m{:02}s | eta {}h{:02}m{:02}s'.format(
-                #             i, num_steps, i/num_steps * 100,
-                #             np.mean(losses[-self.print_every:]),
-                #             sents_per_sec,
-                #             *clock_time(time.time() - start_time),
-                #             *clock_time((len(batches) - i*size) / sents_per_sec))
-                #     if self.elbo_objective:
-                #         message += (f'| alpha {model.criterion.annealer._alpha:.3f} ' +
-                #             f'| temp {model.stack.encoder.composition.annealer._temp:.3f} ')
-                #     print(message)
+                    self.losses.append(loss.data.item() / self.num_procs)
 
                 if step % self.print_every == 0 and rank == 0:
                     # Log to tensorboard.
-                    # self.tensorboard_writer.add_scalar(
-                    #     'Train/Loss', loss.item(), self.num_updates)
-                    # self.tensorboard_writer.add_scalar(
-                    #     'Train/Learning-rate', self.get_lr(), self.num_updates)
+                    self.tensorboard_writer.add_scalar(
+                        'Train/Loss', loss.item(), self.num_updates)
+                    self.tensorboard_writer.add_scalar(
+                        'Train/Learning-rate', self.get_lr(), self.num_updates)
                     percentage = step / num_batches * 100
                     avg_loss = np.mean(self.losses[-self.print_every:])
                     lr = self.get_lr()
@@ -249,28 +234,23 @@ class Trainer:
                             f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) ',
                             f'| loss {avg_loss:7.3f} ',
                             f'| lr {lr:.1e} ',
-                            f'| {size*sents_per_sec:4.1f} sents/sec ',
+                            f'| {self.num_procs*sents_per_sec:4.1f} sents/sec ',
                             f'| elapsed {epoch_timer.format(epoch_timer.elapsed())} ',
                             f'| eta {epoch_timer.format(eta)} '
                         )
                     print(''.join(message))
-
-                    # Save model every now and then.
-                    return_dict['model'] = model
+                    # return_dict['model'] = self.model  # save model every now and then
             # Save model when finished.
             if rank == 0:
-                return_dict['model'] = model
+                return_dict['model'] = self.model
 
         manager = mp.Manager()
         return_dict = manager.dict()
         processes = []
-        chunked_batches = chunk_batches(self.train_dataset, self.num_procs)
         for rank in range(self.num_procs):
-            batches = next(chunked_batches)
-            args = (rank, self.num_procs, self.model, batches, self.optimizer, return_dict)
             p = mp.Process(
                 target=init_processes,
-                args=(worker, *args)
+                args=(worker, rank)
             )
             p.start()
             processes.append(p)
@@ -286,12 +266,6 @@ class Trainer:
         num_sentences = len(self.train_dataset)
         num_batches = num_sentences // self.batch_size
         processed = 0
-
-        # if args.memory_debug:
-        #     prev_mem = 0
-        #     prev_num_objects, prev_num_tensors, prev_num_strings = 0, 0, 0
-        #     old_tensors = []
-
         batches = self.batchify(self.train_dataset)
         for step, minibatch in enumerate(batches, 1):
             if self.timer.elapsed() > self.max_time:
@@ -323,7 +297,7 @@ class Trainer:
                 for param in self.model.parameters():
                     if torch.isnan(param.data).sum() > 0:
                         print(param)
-                        print()
+                        quit()
             ##
 
             if step % self.print_every == 0:

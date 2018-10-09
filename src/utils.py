@@ -4,6 +4,10 @@ import time
 from nltk import Tree
 
 
+def ceil_div(a, b):
+    return ((a - 1) // b) + 1
+
+
 def get_folders(args):
     # Create folders for logging and checkpoints
     subdir = get_subdir_string(args, with_params=False)  # Too many parameters for folder.

@@ -1,5 +1,6 @@
 import os
 import itertools
+import multiprocessing as mp
 
 import numpy as np
 import torch
@@ -74,6 +75,8 @@ def main(args):
         verbose=True,
     )
 
+    num_procs = mp.cpu_count() if args.num_procs == -1 else args.num_procs
+
     trainer = Trainer(
         rnng_type = args.model,
         model=model,
@@ -84,7 +87,7 @@ def main(args):
         dev_dataset=dev_dataset,
         test_dataset=test_dataset,
         dev_proposal_samples=args.proposal_samples,
-        num_procs=args.num_procs,
+        num_procs=num_procs,
         lr=args.lr,
         print_every=args.print_every,
         batch_size=args.batch_size,
@@ -105,7 +108,7 @@ def main(args):
     )
 
     # Train the model.
-    print(f'Training with {args.num_procs} processes...')
+    print(f'Training with {num_procs} processes...')
     try:
         trainer.train()
     except KeyboardInterrupt:

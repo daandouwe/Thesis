@@ -53,7 +53,7 @@ def main():
                         help='size of lstm hidden states for history encoder')
     parser.add_argument('--lstm-num-layers', type=int, default=2,
                         help='number of layers in lstm')
-    parser.add_argument('--composition', default='basic', choices=['basic', 'attention', 'latent-factors'],
+    parser.add_argument('--composition', default='attention', choices=['basic', 'attention', 'latent-factors'],
                         help='composition function used by StackLSTM')
     parser.add_argument('--mlp-dim', type=int, default=128,
                         help='size of mlp hidden state')
@@ -117,10 +117,16 @@ def main():
                         help='predict for user input')
     parser.add_argument('--sample-gen', action='store_true',
                         help='sample from generative model')
+    parser.add_argument('--sample-proposals', action='store_true',
+                        help='sample proposals from discriminative model')
+    parser.add_argument('--num-samples', type=int, default=100,
+                        help='number of proposal samples')
     parser.add_argument('--use-tokenizer', action='store_true',
                         help='tokenize user input')
     parser.add_argument('--evalb-dir', default='~/EVALB',
                         help='where the evalb excecutable is located')
+    parser.add_argument('--out', default='.',
+                        help='output to write samples/trees/predictions to')
 
     args = parser.parse_args()
 
