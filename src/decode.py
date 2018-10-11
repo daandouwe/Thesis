@@ -2,7 +2,9 @@ import os
 import tempfile
 from copy import deepcopy
 from typing import NamedTuple
+import multiprocessing as mp
 
+from tqdm import tqdm
 import numpy as np
 import torch
 import torch.nn as nn
@@ -15,7 +17,7 @@ from model import DiscRNNG, GenRNNG
 from tree import Node
 from eval import evalb
 from data_scripts.get_oracle import unkify, get_actions, get_actions_no_tags
-from utils import add_dummy_tags, substitute_leaves
+from utils import add_dummy_tags, substitute_leaves, ceil_div
 
 
 # %%%%%%%%%%%%%%%%%%%%% #
@@ -62,17 +64,12 @@ class Decoder:
         raise NotImplementedError
 
     def _init_tokenizer(self):
-        # TODO: problems loading spacy.
-        # from spacy.tokenizer import Tokenizer
-        # nlp = spacy.load('en')
-        # self.tokenizer = Tokenizer(nlp.vocab)
         if self.verbose: print("Using NLTK's tokenizer.")
         from nltk import word_tokenize
         self.tokenizer = word_tokenize
 
     def _tokenize(self, sentence):
         if self.verbose: print('Tokenizing sentence...')
-        # return [token.text for token in self.tokenizer(sentence)]
         return [token for token in self.tokenizer(sentence)]
 
     def _process_unks(self, sentence):
@@ -186,6 +183,42 @@ class Decoder:
         temp_dir.cleanup()
         return pred, fscore
 
+    def decode_parallel(self, sentences, num_procs=-1, with_tag=True, progress_bar=True):
+        """Use multiprocessing to parallelize decoding across sentences."""
+        def worker(rank, sentences, return_dict):
+            """Worker to decode sentences."""
+            torch.set_num_threads(1)
+            trees = []
+            sentences = tqdm(sentences) if (rank == 0 and progress_bar) else sentences
+            for line in sentences:
+                tree, logprob, _ = self(line)  # decode
+                trees.append((tree.linearize(with_tag=with_tag), logprob.item()))
+            return_dict[rank] = trees
+
+        num_procs = mp.cpu_count() if num_procs == -1 else num_procs
+        # Divide the sentences among `num_procs` processors.
+        chunk_size = ceil_div(len(sentences), num_procs)  # ceiling division to not loose any sentences.
+        partitioned = [sentences[i:i+chunk_size]
+            for i in range(0, len(sentences), chunk_size)]
+        # Use multiprocessing to parallelize.
+        manager = mp.Manager()
+        return_dict = manager.dict()  # used to return trees in
+        processes = []
+        for rank in range(num_procs):
+            p = mp.Process(
+                target=worker,
+                args=(rank, partitioned[rank], return_dict))
+            p.start()
+            processes.append(p)
+        for p in processes:
+            p.join()
+        # Join results.
+        trees = []
+        for rank in range(num_procs):
+            trees.extend(return_dict[rank])
+        assert len(trees) == len(sentences)
+        return trees
+
 
 class DiscriminativeDecoder(Decoder):
     """Decoder for discriminative RNNG."""
@@ -287,6 +320,12 @@ class SamplingDecoder(DiscriminativeDecoder):
                     logprob += self.logsoftmax(nt_logits)[index]
                 self.model.parse_step(action)
             return self.get_tree(), logprob, num_actions
+
+    def sample_parallel(self, sentence, num_samples, num_procs=-1, with_tag=False):
+        """Use parallel decoding to sample multiple trees for the sentence."""
+        sentences = [sentence for _ in range(num_samples)]
+        return self.decode_parallel(
+            sentences, num_procs=num_procs, with_tag=with_tag, progress_bar=False)
 
 
 class Beam(NamedTuple):
@@ -449,14 +488,14 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
 
     def map_tree(self, sentence):
         """Estimate the MAP tree."""
-        scored = self.scored_samples(sentence, remove_duplicates=True)  # Do not need duplicates for MAP tree
+        scored = self.scored_samples(sentence, remove_duplicates=True)  # do not need duplicates for MAP tree
         ranked = sorted(scored, reverse=True, key=lambda t: t[-1])
         best_tree, proposal_logprob, logprob = ranked[0]
         return best_tree, proposal_logprob, logprob
 
     def logprob(self, sentence):
         """Estimate the probability of the sentence."""
-        scored = self.scored_samples(sentence, remove_duplicates=False)  # Do need duplicates for perplexity
+        scored = self.scored_samples(sentence, remove_duplicates=False)  # do need duplicates for perplexity
         logprobs = torch.zeros(self.num_samples)
         for i, (tree, marginal_logprob, joint_logprob) in enumerate(scored):
             logprobs[i] = joint_logprob - marginal_logprob
@@ -503,6 +542,7 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
         else:
             # Sample with the proposal model that we've loaded.
             samples = [self._sample_proposal(sentence) for _ in range(self.num_samples)]
+        # Remove duplicates if we are only interested in reranking.
         if remove_duplicates:
             samples = filter(samples)
         # Score the samples.
@@ -619,6 +659,7 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
 
 
 if __name__ == '__main__':
+    # A demonstration.
     sentence = u'This is a short sentence but it will do for now .'
     tree = u'(S (NP (DT The) (ADJP (RBS most) (JJ troublesome)) (NN report)) (VP (MD may) ' + \
             '(VP (VB be) (NP (NP (DT the) (NNP August) (NN merchandise) (NN trade) (NN deficit)) ' + \

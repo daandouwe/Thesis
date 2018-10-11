@@ -1,5 +1,6 @@
 import os
 import time
+from datetime import datetime
 
 from nltk import Tree
 
@@ -10,10 +11,14 @@ def ceil_div(a, b):
 
 def get_folders(args):
     # Create folders for logging and checkpoints
-    subdir = get_subdir_string(args, with_params=False)  # Too many parameters for folder.
-    logdir = os.path.join(args.root, args.logdir, subdir)
-    checkdir = os.path.join(args.root, args.checkdir, subdir)
-    outdir = os.path.join(args.root, args.outdir, subdir)
+    if args.disable_subdir:
+        subdir, logdir, checkdir, outdir = (
+            None, args.logdir, args.checkdir, args.outdir)
+    else:
+        subdir = get_subdir_string(args, with_params=False)  # Too many parameters for folder.
+        logdir = os.path.join(args.logdir, subdir)
+        checkdir = os.path.join(args.checkdir, subdir)
+        outdir = os.path.join(args.outdir, subdir)
     return subdir, logdir, checkdir, outdir
 
 
@@ -51,6 +56,8 @@ def get_subdir_string(args, with_params=True):
     """
     date = time.strftime('%Y%m%d')
     timestamp = time.strftime('%H%M%S')
+    # now = datetime.now()
+    # timestamp = now.strftime('%H%M%S.%f')
     if with_params:
         params = get_parameter_string(args)
         return f'{date}_{timestamp}_{params}'

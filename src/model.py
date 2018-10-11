@@ -7,12 +7,12 @@ import torch.nn as nn
 from datatypes import Item, Word, Nonterminal, Action
 from actions import SHIFT, REDUCE, NT, GEN
 from data import PAD_INDEX
-from glove import load_glove, get_vectors
 from parser import DiscParser, GenParser
 from embedding import ConvolutionalCharEmbedding
 from encoder import LATENT_COMPOSITIONS, StackLSTM, HistoryLSTM, BufferLSTM, TerminalLSTM
 from nn import MLP
 from loss import LossCompute, ElboCompute
+from glove import load_glove, get_vectors
 
 
 class DiscRNNG(DiscParser):
@@ -54,6 +54,7 @@ class DiscRNNG(DiscParser):
 
         # Loss computation
         self.criterion = criterion
+
         # Update counter
         self.i = 0
 
@@ -88,8 +89,9 @@ class DiscRNNG(DiscParser):
         return loss
 
     def reduced_items(self):
-        names = ('head', 'children', 'reduced', 'attention', 'gate', 'sample', 'alpha')
-        items = dict((name, None) for name in names)
+        """Returns a dictionay with the items that were ivolved in the most recent reduce action."""
+        items = dict((name, None)
+            for name in ('head', 'children', 'reduced', 'attention', 'gate', 'sample', 'alpha'))
         items['head'] = self.stack._reduced_head_item
         items['children'] = self.stack._reduced_child_items
         items['reduced'] = self.stack._reduced_embedding
@@ -116,6 +118,7 @@ class GenRNNG(GenParser):
                  nonterminal_mlp,
                  terminal_mlp,
                  criterion,
+                 approximate_criterion,
                  dropout,
                  device):
         super(GenRNNG, self).__init__(
@@ -141,6 +144,9 @@ class GenRNNG(GenParser):
 
         # Loss computation
         self.criterion = criterion
+        # Approximate loss computation (for terminal prediction)
+        self.approximate_criterion = approximate_criterion
+
 
     def get_input(self):
         stack, terminals, history = self.get_encoded_input()
@@ -311,6 +317,7 @@ def make_model(args, dictionary):
             nonterminal_mlp=nonterminal_mlp,
             terminal_mlp=terminal_mlp,
             criterion=criterion,
+            approximate_criterion=criterion,  # TODO: replace with SoftmaxApprox
             dropout=args.dropout,
             device=args.device
         )

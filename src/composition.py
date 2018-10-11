@@ -10,6 +10,12 @@ from loss import AnnealTemperature
 from nn import init_lstm
 
 
+COMPOSITIONS = ('basic', 'attention', 'latent-factors', 'latent-attention')
+
+
+LATENT_COMPOSITIONS = ('latent-factors', 'latent-attention')
+
+
 class BiRecurrentComposition(nn.Module):
     """Bidirectional RNN composition function."""
     def __init__(self, input_size, num_layers, dropout, batch_first=True, device=None):
@@ -59,7 +65,8 @@ class AttentionComposition(nn.Module):
             input_size, input_size//2, num_layers, batch_first=batch_first, dropout=dropout)
         self.bwd_rnn = nn.LSTM(
             input_size, input_size//2, num_layers, batch_first=batch_first, dropout=dropout)
-        self.V = nn.Parameter(torch.ones((input_size, input_size), device=device, dtype=torch.float))
+        self.V = nn.Parameter(
+            torch.ones((input_size, input_size), device=device, dtype=torch.float))
         self.gating = nn.Linear(2*input_size, input_size)
         self.head = nn.Linear(input_size, input_size)
 
@@ -98,8 +105,7 @@ class AttentionComposition(nn.Module):
 
         x = torch.cat((head, m), dim=-1)  # (batch, 2*input_size)
         g = self.sigmoid(self.gating(x))  # (batch, input_size)
-        # t = self.head(head)
-        t = head
+        t = self.head(head)  # (batch, input_size)
         c = g * t + (1 - g) * m  # (batch, input_size)
         if not self.training:
             # Store internally for inspection during prediction.

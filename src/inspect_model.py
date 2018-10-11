@@ -56,9 +56,9 @@ class AttentionInspection(Decoder):
                 nt = action.get_nt()
             self.model.parse_step(action)
             if action == REDUCE:
-                self._inspect_reduce()
+                self._inspect_reduce(composition)
 
-    def _inspect_reduce(self):
+    def _inspect_reduce(self, composition):
         items = self.model.reduced_items()
         head, children = items['head'], items['children']
         reduced = items['reduced'].squeeze(0).numpy()

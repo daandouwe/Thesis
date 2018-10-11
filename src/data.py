@@ -192,7 +192,7 @@ class Data:
 
     def read(self, path, max_lines):
         sents = get_sentences(path)  # a list of dictionaries
-        for i, sent_dict in enumerate(tqdm(sents)):
+        for i, sent_dict in enumerate(tqdm(sents, file=sys.stdout)):
             if max_lines > 0 and i > max_lines:
                 break
             original_tokens = sent_dict['original'].split()

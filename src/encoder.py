@@ -6,12 +6,8 @@ import torch.distributions as dist
 
 from data import wrap
 from nn import init_lstm
-from composition import BiRecurrentComposition, AttentionComposition, LatentFactorComposition
-
-
-COMPOSITIONS = ('basic', 'attention', 'latent-factors', 'latent-attention')
-
-LATENT_COMPOSITIONS = ('latent-factors', 'latent-attention')
+from composition import (BiRecurrentComposition, AttentionComposition, LatentFactorComposition,
+    COMPOSITIONS, LATENT_COMPOSITIONS)
 
 
 class BaseLSTM(nn.Module):
@@ -75,7 +71,7 @@ class BaseLSTM(nn.Module):
         hx2, cx2 = self.rnn2(hx1, (self.hx2, self.cx2))
         if self.training:
             hx2, cx2 = self.dropout(hx2), self.dropout(cx2)
-        # Add cell states to history.
+        # Add cell states to history
         self._hidden_states_layer1.append((hx1, cx1))
         self._hidden_states_layer2.append((hx2, cx2))
         # Set new current hidden states

@@ -31,6 +31,8 @@ def main():
                         help='name of dataset for ptb.train.oracle, ptb.test.trees, etc.')
     parser.add_argument('--root', type=str, default='.',
                         help='root dir to make output log and checkpoint folders')
+    parser.add_argument('--disable-subdir', action='store_true',
+                        help='do not make subdirectory inside `logdir`, `checkdir` and `outdir`')
     parser.add_argument('--logdir', default='log',
                         help='directory for logs')
     parser.add_argument('--outdir', default='out',
@@ -47,9 +49,9 @@ def main():
                         help='use character-level word embeddings')
     parser.add_argument('--emb-dim', type=int, default=100,
                         help='dim of all embeddings (words, actions, nonterminals)')
-    parser.add_argument('--word-lstm-hidden', type=int, default=100,
+    parser.add_argument('--word-lstm-hidden', type=int, default=128,
                         help='size of lstm hidden states for StackLSTM and BufferLSTM')
-    parser.add_argument('--action-lstm-hidden', type=int, default=100,
+    parser.add_argument('--action-lstm-hidden', type=int, default=128,
                         help='size of lstm hidden states for history encoder')
     parser.add_argument('--lstm-num-layers', type=int, default=2,
                         help='number of layers in lstm')
@@ -66,13 +68,11 @@ def main():
     parser.add_argument('--glove-dir', type=str, default='~/embeddings/glove',
                         help='to be constructed in main')
     parser.add_argument('--glove-torchtext', action='store_true',
-                        help='loading glove with torchtext')
+                        help='loading glove with torchtext instead of custom loader')
 
     # Training arguments
     parser.add_argument('--seed', type=int, default=42,
                         help='random seed to use')
-    parser.add_argument('--epochs', type=int, default=None,
-                        help='max number of epochs')
     parser.add_argument('--max-epochs', type=int, default=inf,
                         help='max number of epochs')
     parser.add_argument('--max-time', type=int, default=inf,
@@ -81,8 +81,12 @@ def main():
                         help='size of mini batch')
     parser.add_argument('--dropout', type=float, default=0.2,
                         help='dropout rate for embeddings, lstm, and mlp')
+    parser.add_argument('--optimizer', choices=['adam', 'sgd', 'rmsprop'], default='adam',
+                        help='optimizer used')
     parser.add_argument('--lr', type=float, default=0.0008,
                         help='initial learning rate')
+    parser.add_argument('--momentum', type=float, default=0,
+                        help='momentum for sgd')
     parser.add_argument('--learning-rate-warmup_steps', type=int,
                         default=160)
     parser.add_argument('--step-decay', type=bool, default=True,
@@ -97,19 +101,24 @@ def main():
                         help='do not override custom lstm initialization with glorot')
     parser.add_argument('--clip', type=float, default=5.,
                         help='clipping gradient norm at this value')
-    parser.add_argument('--print-every', type=int, default=1,
+    parser.add_argument('--print-every', type=int, default=10,
                         help='when to print training progress')
     parser.add_argument('--disable-cuda', action='store_true',
                         help='disable cuda')
     parser.add_argument('--num-procs', type=int, default=1,
                         help='number of processes to spawn for parallel training')
+    parser.add_argument('--dev-proposal-samples', type=str, default='../data/proposal-samples/dev.props',
+                        help='proposal samples for development set')
+    parser.add_argument('--test-proposal-samples', type=str, default='../data/proposal-samples/test.props',
+                        help='proposal samples for test set')
+
 
     # Predict arguments
     parser.add_argument('--checkpoint', type=str, default='',
                         help='load model from this checkpoint')
     parser.add_argument('--proposal-model', type=str, default='',
                         help='load discriminative model (proposal for generative model) from this checkpoint')
-    parser.add_argument('--proposal-samples', type=str, default='../data/proposal-samples/dev.props',
+    parser.add_argument('--proposal-samples', type=str, default='../data/proposal-samples',
                         help='load proposal samples')
     parser.add_argument('--from-input', action='store_true',
                         help='predict for user input')

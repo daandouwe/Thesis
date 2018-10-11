@@ -14,7 +14,7 @@ from data import Corpus
 from model import make_model
 from decode import GreedyDecoder, GenerativeImportanceDecoder
 from eval import evalb
-from utils import Timer, get_folders, write_args
+from utils import Timer, get_folders, write_args, ceil_div
 
 
 class Trainer:
@@ -25,10 +25,10 @@ class Trainer:
         model=None,
         dictionary=None,
         optimizer=None,
-        scheduler=None,
         lr=None,
-        step_decay=False,
-        learning_rate_warmup_steps=None,
+        learning_rate_decay=4.0,
+        max_grad_norm=5.0,
+        print_every=1,
         train_dataset=[],
         dev_dataset=[],
         test_dataset=[],
@@ -45,10 +45,8 @@ class Trainer:
         data_dir=None,
         evalb_dir=None,
         log_dir=None,
-        max_grad_norm=5.0,
-        print_every=100,
         device=None,
-        args=None,  # Used when saving model.
+        args=None,  # used when saving model
     ):
         assert rnng_type in ('disc', 'gen'), rnng_type
 
@@ -61,10 +59,8 @@ class Trainer:
         self.batch_size = batch_size
         self.optimizer = optimizer
         self.lr = lr
+        self.learning_rate_decay = learning_rate_decay
         self.elbo_objective = elbo_objective
-        self.scheduler = scheduler
-        self.step_decay = step_decay
-        self.learning_rate_warmup_steps = learning_rate_warmup_steps
         self.max_grad_norm = max_grad_norm
 
         self.num_procs = num_procs
@@ -119,10 +115,12 @@ class Trainer:
             assert self.dev_proposal_samples is not None, 'specify proposal samples with --proposal-samples.'
             assert os.path.exists(self.dev_proposal_samples), self.dev_proposal_samples
 
-        # No upper limit of epochs.
+        # No upper limit of epochs when not specified.
         for epoch in itertools.count(start=1):
             self.current_epoch = epoch
             if epoch > self.max_epochs:
+                break
+            if self.timer.elapsed() > self.max_time:
                 break
 
             # Shuffle batches each epoch.
@@ -131,17 +129,18 @@ class Trainer:
             # Train one epoch.
             self.train_epoch()
 
-            print('Evaluating fscore on development set...')
             self.check_dev()
-            # Scheduler for learning rate.
-            if self.step_decay:
-                if (self.num_updates // self.batch_size + 1) > self.learning_rate_warmup_steps:
-                    self.scheduler.step(self.best_dev_fscore)
+
+            # Anneal learning rate
+            if self.current_dev_fscore > self.best_dev_fscore:
+                lr = self.get_lr() / self.learning_rate_decay
+                self.set_lr(lr)
 
             print('-'*99)
-            print('| End of epoch {:3d}/{} | elapsed {} | dev-fscore {:4.2f} | best dev-fscore {:4.2f} | best dev-epoch {}'.format(
+            print('| End of epoch {:3d}/{} | Elapsed {} | Current dev F1 {:4.2f} | Best dev F1 {:4.2f} (epoch {:2d})'.format(
                 epoch, self.max_epochs, self.timer.format_elapsed(), self.current_dev_fscore, self.best_dev_fscore, self.best_dev_epoch))
             print('-'*99)
+
 
     def train_epoch(self):
         if self.distributed:
@@ -150,7 +149,73 @@ class Trainer:
         else:
             self.train_epoch_sequential()
 
+    def train_epoch_sequential(self):
+        """One epoch of sequential training."""
+        self.model.train()
+        epoch_timer = Timer()
+        num_sentences = len(self.train_dataset)
+        num_batches = num_sentences // self.batch_size
+        processed = 0
+        batches = self.batchify(self.train_dataset)
+        for step, minibatch in enumerate(batches, 1):
+            if self.timer.elapsed() > self.max_time:
+                break
+
+            # Set learning rate.
+            self.num_updates += 1
+            processed += self.batch_size
+
+            # Compute loss over minibatch.
+            loss = torch.zeros(1).to(self.device)
+            for batch in minibatch:
+                sentence, actions = batch
+                loss += self.model(sentence, actions)
+            loss /= self.batch_size
+
+            self.optimizer.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.max_grad_norm)
+            self.optimizer.step()
+
+            self.losses.append(loss.item())
+
+            if step % self.print_every == 0:
+                percentage = step / num_batches * 100
+                avg_loss = np.mean(self.losses[-self.print_every:])
+                lr = self.get_lr()
+                sents_per_sec = processed / epoch_timer.elapsed()
+                eta = (num_sentences - processed) / sents_per_sec
+                # Log to tensorboard.
+                self.tensorboard_writer.add_scalar(
+                    'Train/Loss', avg_loss, self.num_updates)
+                self.tensorboard_writer.add_scalar(
+                    'Train/Learning-rate', self.get_lr(), self.num_updates)
+                if self.elbo_objective:
+                    message = (
+                        f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) ',
+                        f'| neg-elbo {avg_loss:7.3f} ',
+                        f'| loss {np.mean(self.model.criterion._train_losses[-self.print_every:]):.3f} ',
+                        f'| kl {np.mean(self.model.criterion._train_kl[-self.print_every:]):.3f} ',
+                        f'| lr {lr:.1e} ',
+                        f'| alpha {self.model.criterion.annealer._alpha:.3f} ',
+                        f'| temp {self.model.stack.encoder.composition.annealer._temp:.3f} '
+                        f'| {sents_per_sec:4.1f} sents/sec ',
+                        f'| elapsed {epoch_timer.format(epoch_timer.elapsed())} ',
+                        f'| eta {epoch_timer.format(eta)} '
+                    )
+                else:
+                    message = (
+                        f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) ',
+                        f'| loss {avg_loss:7.3f} ',
+                        f'| lr {lr:.1e} ',
+                        f'| {sents_per_sec:4.1f} sents/sec ',
+                        f'| elapsed {epoch_timer.format(epoch_timer.elapsed())} ',
+                        f'| eta {epoch_timer.format(eta)} '
+                    )
+                print(''.join(message))
+
     def train_epoch_distributed(self):
+        """One epoch of distributed training."""
         def init_processes(worker, rank, backend='tcp'):
             """Initialize the distributed environment."""
             os.environ['MASTER_ADDR'] = '127.0.0.1'
@@ -188,7 +253,6 @@ class Trainer:
                 # Set learning rate.
                 self.num_updates += 1
                 processed += 1
-                self.schedule_lr()
 
                 sentence, actions = batch
                 loss = self.model(sentence, actions)
@@ -259,97 +323,15 @@ class Trainer:
         # Catch trained model.
         self.model = return_dict['model']
 
-    def train_epoch_sequential(self):
-        """One epoch of training."""
-        self.model.train()
-        epoch_timer = Timer()
-        num_sentences = len(self.train_dataset)
-        num_batches = num_sentences // self.batch_size
-        processed = 0
-        batches = self.batchify(self.train_dataset)
-        for step, minibatch in enumerate(batches, 1):
-            if self.timer.elapsed() > self.max_time:
-                break
-
-            # Set learning rate.
-            self.num_updates += 1
-            processed += self.batch_size
-            self.schedule_lr()
-
-            # Compute loss over minibatch.
-            loss = torch.zeros(1).to(self.device)
-            for batch in minibatch:
-                sentence, actions = batch
-                loss += self.model(sentence, actions)
-            loss /= self.batch_size
-
-            self.optimizer.zero_grad()
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.max_grad_norm)
-            self.optimizer.step()
-
-            self.losses.append(loss.item())
-
-            ## NaN debugging
-            if torch.isnan(loss.data):
-                with open('checkpoints/nan-model.pt', 'wb') as f:
-                    torch.save(self.model, f)
-                for param in self.model.parameters():
-                    if torch.isnan(param.data).sum() > 0:
-                        print(param)
-                        quit()
-            ##
-
-            if step % self.print_every == 0:
-                # Log to tensorboard.
-                self.tensorboard_writer.add_scalar(
-                    'Train/Loss', loss.item(), self.num_updates)
-                self.tensorboard_writer.add_scalar(
-                    'Train/Learning-rate', self.get_lr(), self.num_updates)
-                percentage = step / num_batches * 100
-                avg_loss = np.mean(self.losses[-self.print_every:])
-                lr = self.get_lr()
-                sents_per_sec = processed / epoch_timer.elapsed()
-                eta = (num_sentences - processed) / sents_per_sec
-
-                if self.elbo_objective:
-                    message = (
-                        f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) ',
-                        f'| neg-elbo {avg_loss:7.3f} ',
-                        f'| loss {np.mean(self.model.criterion._train_losses[-self.print_every:]):.3f} ',
-                        f'| kl {np.mean(self.model.criterion._train_kl[-self.print_every:]):.3f} ',
-                        f'| lr {lr:.1e} ',
-                        f'| alpha {self.model.criterion.annealer._alpha:.3f} ',
-                        f'| temp {self.model.stack.encoder.composition.annealer._temp:.3f} '
-                        f'| {sents_per_sec:4.1f} sents/sec ',
-                        f'| elapsed {epoch_timer.format(epoch_timer.elapsed())} ',
-                        f'| eta {epoch_timer.format(eta)} '
-                    )
-                else:
-                    message = (
-                        f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) ',
-                        f'| loss {avg_loss:7.3f} ',
-                        f'| lr {lr:.1e} ',
-                        f'| {sents_per_sec:4.1f} sents/sec ',
-                        f'| elapsed {epoch_timer.format(epoch_timer.elapsed())} ',
-                        f'| eta {epoch_timer.format(eta)} '
-                    )
-                print(''.join(message))
-
-    def schedule_lr(self):
-        warmup_coeff = self.lr / self.learning_rate_warmup_steps
-        if self.num_updates <= self.learning_rate_warmup_steps:
-            for param_group in self.optimizer.param_groups:
-                param_group['lr'] = self.num_updates * warmup_coeff
-
     def get_lr(self):
         for param_group in self.optimizer.param_groups:
             return param_group['lr']
 
-    def batchify(self, data):
-        def ceil_div(a, b):
-            return ((a - 1) // b) + 1
+    def set_lr(self, lr):
+        for param_group in self.optimizer.param_groups:
+            param_group['lr'] = lr
 
+    def batchify(self, data):
         batches = [data[i*self.batch_size:(i+1)*self.batch_size]
             for i in range(ceil_div(len(data), self.batch_size))]
         return batches
@@ -361,7 +343,6 @@ class Trainer:
                 'model': self.model,
                 'dictionary': self.dictionary,
                 'optimizer': self.optimizer,
-                'scheduler': self.scheduler,
                 'epochs': self.current_epoch,
                 'num-updates': self.num_updates,
                 'best-dev-fscore': self.best_dev_fscore,
@@ -369,6 +350,23 @@ class Trainer:
                 'test-fscore': self.test_fscore
             }
             torch.save(state, f)
+
+    def load_checkpoint(self):
+        with open(self.checkpoint_path, 'rb') as f:
+            state = torch.load(f)
+            self.model = state['model']
+        self._flatten_parameters()
+
+    def _flatten_parameters(self):
+        """Flatten all rnn parameters in model."""
+        self.model.buffer.encoder.rnn.flatten_parameters()
+        try:
+            self.model.stack.encoder.composition.fwd_rnn.flatten_parameters()
+            self.model.stack.encoder.composition.bwd_rnn.flatten_parameters()
+        except AttributeError:
+            # In the case of LatentFactorComposition
+            self.model.stack.encoder.composition.encoder.fwd_rnn.flatten_parameters()
+            self.model.stack.encoder.composition.encoder.bwd_rnn.flatten_parameters()
 
     def predict(self, batches, proposal_samples=None):
         """Use current model to predict trees for batches using greedy decoding."""
@@ -394,6 +392,7 @@ class Trainer:
 
     def check_dev(self):
         """Evaluate the current model on the test dataset."""
+        print('Evaluating F1 on development set...')
         self.model.eval()
         # Predict trees.
         trees = self.predict(self.dev_dataset, proposal_samples=self.dev_proposal_samples)
@@ -414,11 +413,10 @@ class Trainer:
 
     def check_test(self):
         """Evaluate the model with best development f-score on the test dataset."""
+        print('Evaluating F1 on test set...')
         print(f'Loading best saved model from `{self.checkpoint_path}` '
               f'(epoch {self.best_dev_epoch}, fscore {self.best_dev_fscore})...')
-        with open(self.checkpoint_path, 'rb') as f:
-            state = torch.load(f)
-            self.model = state['model']
+        self.load_checkpoint()
         # Predict trees.
         trees = self.predict(self.test_dataset, proposal_samples=self.test_proposal_samples)
         with open(self.test_pred_path, 'w') as f:
@@ -433,3 +431,8 @@ class Trainer:
             print('loss', file=f)
             for loss in self.losses:
                 print(loss, file=f)
+
+
+class SemiSupervisedTrainer(Trainer):
+    def __init__(self, *args, **kwargs):
+        super(SemiSupervisedTrainer, self).__init__(*args, **kwargs)

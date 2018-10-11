@@ -66,10 +66,14 @@ def predict_file(args):
             decoder.load_proposal_samples(path=args.proposal_samples)
 
     print(f'Predicting trees for `{args.data}`...')
-    trees = []
-    for line in tqdm(lines):
-        tree, *rest = decoder(line)
-        trees.append(tree)
+    if args.num_procs == 1:
+        trees = []
+        for line in tqdm(lines):
+            tree, *rest = decoder(line)
+            trees.append(tree)
+    else:
+        tuples = decoder.decode_parallel(lines, num_procs=args.num_procs, with_tag=True)  # (tree, logprob) tuples
+        trees, _ = zip(*tuples)
 
     # Make a temporay directory for the EVALB files.
     pred_path = os.path.join(args.outdir, 'predicted.txt')
@@ -158,28 +162,6 @@ def sample_generative(args):
         print()
 
 
-def sample_proposals_(args):
-    assert os.path.exists(args.data), 'specifiy file to parse with --data.'
-
-    print(f'Sampling proposal trees for lines in `{args.data}`.')
-    with open(args.data, 'r') as f:
-        lines = [line.strip() for line in f.readlines()]
-    if is_tree(lines[0]):
-        lines = [Tree.fromstring(line).leaves() for line in lines]
-
-    checkfile = get_checkfile(args.checkpoint)
-    decoder = SamplingDecoder(use_tokenizer=False)
-    decoder.load_model(path=checkfile)
-
-    samples = []
-    for i, line in enumerate(tqdm(lines)):
-        for _ in range(args.num_samples):
-            tree, logprob, _ = decoder(line)  # sample a tree
-            samples.append(' ||| '.join((str(i), str(logprob.item()), tree.linearize(with_tag=False))))
-    with open(args.out, 'w') as f:
-        print('\n'.join(samples), file=f, end='')
-
-
 def sample_proposals(args):
     assert os.path.exists(args.data), 'specifiy file to parse with --data.'
 
@@ -194,54 +176,21 @@ def sample_proposals(args):
     decoder.load_model(path=checkfile)
 
     num_procs = mp.cpu_count() if args.num_procs == -1 else args.num_procs
-    if num_procs > 1:
-        print(f'Sampling proposals with {num_procs} processors...')
-        # Divide the lines among `num_procs` processors.
-        chunk_size = ceil_div(len(lines), num_procs)
-        partitioned = [lines[i:i+chunk_size] for i in range(0, len(lines), chunk_size)]
-
-        def worker(rank, lines, return_dict):
-            """Worker to generate proposal samples."""
-            torch.set_num_threads(1)
-            all_samples = []
-            lines = tqdm(lines) if rank == 0 else lines
-            for line in lines:
-                samples = []
-                for _ in range(args.num_samples):
-                    tree, logprob, _ = decoder(line)  # sample a tree
-                    samples.append((logprob.item(), tree.linearize(with_tag=False)))
-                all_samples.append(samples)
-            return_dict[rank] = all_samples
-
-        # Use multiprocessing to parallelize.
-        manager = mp.Manager()
-        return_dict = manager.dict()
-        processes = []
-        for rank in range(num_procs):
-            p = mp.Process(
-                target=worker,
-                args=(rank, partitioned[rank], return_dict))
-            p.start()
-            processes.append(p)
-        for p in processes:
-            p.join()
-        # Join results.
-        all_samples = []
-        for rank in range(num_procs):
-            all_samples.extend(return_dict[rank])
-        # Some checks.
-        assert len(all_samples) == len(lines), (len(all_samples), len(lines))
-        assert all(len(samples) == args.num_samples for samples in all_samples)
-
-        samples = [' ||| '.join((str(i), str(logprob), tree))
-            for i, samples in enumerate(all_samples) for logprob, tree in samples]
-    else:
+    if num_procs == 1:
         samples = []
         for i, line in enumerate(tqdm(lines)):
             for _ in range(args.num_samples):
                 tree, logprob, _ = decoder(line)  # sample a tree
-                samples.append(' ||| '.join((str(i), str(logprob.item()), tree.linearize(with_tag=False))))
-
+                samples.append(
+                    ' ||| '.join((str(i), str(logprob.item()), tree.linearize(with_tag=False))))
+    else:
+        print(f'Sampling proposals with {num_procs} processors...')
+        samples = []
+        for i, line in enumerate(tqdm(lines)):
+            tuples = decoder.sample_parallel(line, args.num_samples, with_tag=False)
+            for tree, logprob in tuples:
+                samples.append(
+                    ' ||| '.join((str(i), str(logprob), tree)))
     # Write samples.
     with open(args.out, 'w') as f:
         print('\n'.join(samples), file=f, end='')
@@ -254,11 +203,12 @@ def main(args):
         elif args.model == 'gen':
             predict_input_gen(args)
     elif args.sample_proposals:
-        assert args.model == 'disc', 'only discriminative model can generate proposal samples'
+        assert args.model == 'disc'
         sample_proposals(args)
     elif args.from_file:
         predict_file(args)
     elif args.sample_gen:
+        assert args.model == 'gen'
         sample_generative(args)
     else:
         exit('Specify type of prediction. Use --from-input, --from-file or --sample-gen.')

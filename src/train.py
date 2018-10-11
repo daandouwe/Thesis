@@ -13,6 +13,9 @@ from eval import evalb
 from utils import Timer, write_losses, get_folders, write_args
 
 
+DEBUG_NUM_LINES = 10
+
+
 def main(args):
     # Set random seeds.
     torch.manual_seed(args.seed)
@@ -25,16 +28,19 @@ def main(args):
 
     # Make output folder structure.
     subdir, logdir, checkdir, outdir = get_folders(args)
-    os.mkdir(logdir)
-    os.mkdir(checkdir)
-    os.mkdir(outdir)
     print(f'Output subdirectory: `{subdir}`.')
     print(f'Saving logs to `{logdir}`.')
     print(f'Saving predictions to `{outdir}`.')
     print(f'Saving models to `{checkdir}`.')
+    os.makedirs(logdir, exist_ok=True)
+    os.makedirs(checkdir, exist_ok=True)
+    os.makedirs(outdir, exist_ok=True)
 
     # Save arguments.
     write_args(args, logdir)
+
+    if args.debug:
+        args.max_lines = DEBUG_NUM_LINES
 
     print(f'Loading data from `{args.data}`...')
     corpus = Corpus(
@@ -53,9 +59,8 @@ def main(args):
     # Sometimes we don't want to use all data.
     if args.debug:
         print('Debug mode.')
-        train_dataset = train_dataset[:30]
-        dev_dataset = dev_dataset[:30]
-        test_dataset = test_dataset[:30]
+        dev_dataset = dev_dataset[:DEBUG_NUM_LINES]
+        test_dataset = test_dataset[:DEBUG_NUM_LINES]
     elif args.max_lines != -1:
         dev_dataset = dev_dataset[:100]
         test_dataset = test_dataset[:100]
@@ -64,17 +69,23 @@ def main(args):
     model = make_model(args, corpus.dictionary)
     model.to(args.device)
 
+    # Do we have a KL term the loss?
     elbo_objective = (args.composition in ('latent-factors', 'latent-attention'))
 
+    # Choose optimizer.
     trainable_parameters = [param for param in model.parameters() if param.requires_grad]
-    optimizer = torch.optim.Adam(trainable_parameters, lr=args.lr, betas=(0.9, 0.98), eps=1e-9)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, 'max',
-        factor=args.step_decay_factor,
-        patience=args.step_decay_patience,
-        verbose=True,
-    )
+    if args.optimizer == 'adam':
+        name = 'Adam'
+        optimizer = torch.optim.Adam(trainable_parameters, lr=args.lr)
+    elif args.optimizer == 'sgd':
+        name = 'SGD'
+        optimizer = torch.optim.SGD(trainable_parameters, lr=args.lr, momentum=args.momentum)
+    elif args.optimizer == 'rmsprop':
+        name = 'RMSprop'
+        optimizer = torch.optim.RMSprop(trainable_parameters, lr=args.lr)
+    print(f'Using {name} optimizer with initial learning rate {args.lr} and momentum {args.momentum}.')
 
+    # Training minibatches accross multiple processors?
     num_procs = mp.cpu_count() if args.num_procs == -1 else args.num_procs
 
     trainer = Trainer(
@@ -82,11 +93,11 @@ def main(args):
         model=model,
         dictionary=corpus.dictionary,
         optimizer=optimizer,
-        scheduler=scheduler,
         train_dataset=train_dataset,
         dev_dataset=dev_dataset,
         test_dataset=test_dataset,
-        dev_proposal_samples=args.proposal_samples,
+        dev_proposal_samples=args.dev_proposal_samples,
+        test_proposal_samples=args.test_proposal_samples,
         num_procs=num_procs,
         lr=args.lr,
         print_every=args.print_every,
@@ -101,8 +112,6 @@ def main(args):
         data_dir=args.data,
         evalb_dir=args.evalb_dir,
         device=args.device,
-        step_decay=args.step_decay,
-        learning_rate_warmup_steps=args.learning_rate_warmup_steps,
         max_grad_norm=args.clip,
         args=args,
     )
@@ -114,18 +123,17 @@ def main(args):
     except KeyboardInterrupt:
         print('-'*99)
         print('Exiting from training early.')
+        print('Evaluating F1 on development set...')
+        trainer.check_dev()
 
-    # Save the losses for plotting and diagnostics
+    # Save the losses for plotting and diagnostics.
     trainer.write_losses()
-    print('Evaluating fscore on development set...')
-    trainer.check_dev()
 
-    print('Evaluating fscore on test set...')
     test_fscore = trainer.check_test()
     print('='*99)
-    print('| End of training | best dev-epoch {:2d} | best dev-fscore {:4.2f} | test-fscore {}'.format(
-        trainer.best_dev_epoch, trainer.best_dev_fscore, test_fscore))
+    print('| End of training | Best dev F1 {:3.2f} (epoch {:2d}) | Test F1 {:3.2f}'.format(
+        trainer.best_dev_fscore, trainer.best_dev_epoch, test_fscore))
     print('='*99)
-    # Save model again but with test fscore information.
+    # Save model again but with test fscore.
     trainer.test_fscore = test_fscore
     trainer.save_checkpoint()
