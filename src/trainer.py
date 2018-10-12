@@ -26,9 +26,10 @@ class Trainer:
         dictionary=None,
         optimizer=None,
         lr=None,
-        learning_rate_decay=4.0,
+        learning_rate_decay=4.0,  # lr /= learning_rate_decay
         max_grad_norm=5.0,
         print_every=1,
+        eval_every=-1,  # default is every epoch (-1)
         train_dataset=[],
         dev_dataset=[],
         test_dataset=[],
@@ -86,6 +87,7 @@ class Trainer:
 
         self.losses = []
         self.num_updates = 0
+        self.eval_every = eval_every
         self.current_dev_fscore = -inf
         self.best_dev_fscore = -inf
         self.best_dev_epoch = 0
@@ -129,12 +131,10 @@ class Trainer:
             # Train one epoch.
             self.train_epoch()
 
+            # Check development f-score.
             self.check_dev()
-
-            # Anneal learning rate
-            if self.current_dev_fscore > self.best_dev_fscore:
-                lr = self.get_lr() / self.learning_rate_decay
-                self.set_lr(lr)
+            # Anneal learning rate depending on development set.
+            self.anneal_lr()
 
             print('-'*99)
             print('| End of epoch {:3d}/{} | Elapsed {} | Current dev F1 {:4.2f} | Best dev F1 {:4.2f} (epoch {:2d})'.format(
@@ -213,6 +213,11 @@ class Trainer:
                         f'| eta {epoch_timer.format(eta)} '
                     )
                 print(''.join(message))
+
+            if (self.eval_every != -1) and (self.num_updates % self.eval_every == 0):
+                self.check_dev()
+                self.anneal_lr()
+                self.model.train()  # Back to training mode.
 
     def train_epoch_distributed(self):
         """One epoch of distributed training."""
@@ -336,6 +341,13 @@ class Trainer:
             for i in range(ceil_div(len(data), self.batch_size))]
         return batches
 
+    def anneal_lr(self):
+        """Anneal learning rate depending on current development F1."""
+        if self.current_dev_fscore < self.best_dev_fscore:  # if current F1 is worse
+            print('Annealed the learning rate.')
+            lr = self.get_lr() / self.learning_rate_decay
+            self.set_lr(lr)
+
     def save_checkpoint(self):
         with open(self.checkpoint_path, 'wb') as f:
             state = {
@@ -401,6 +413,8 @@ class Trainer:
         # Compute f-score.
         dev_fscore = evalb(
             self.evalb_dir, self.dev_pred_path, self.dev_gold_path, self.dev_result_path)
+        print('Current development F1 {:4.2f} (best {:4.2f} epoch {:2d})'.format(
+            self.current_dev_fscore, self.best_dev_fscore, self.best_dev_epoch))
         # Log score to tensorboard.
         self.tensorboard_writer.add_scalar('Dev/Fscore', dev_fscore, self.num_updates)
         self.current_dev_fscore = dev_fscore
@@ -417,6 +431,7 @@ class Trainer:
         print(f'Loading best saved model from `{self.checkpoint_path}` '
               f'(epoch {self.best_dev_epoch}, fscore {self.best_dev_fscore})...')
         self.load_checkpoint()
+        self.model.eval()
         # Predict trees.
         trees = self.predict(self.test_dataset, proposal_samples=self.test_proposal_samples)
         with open(self.test_pred_path, 'w') as f:

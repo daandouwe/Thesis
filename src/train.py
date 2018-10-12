@@ -76,13 +76,16 @@ def main(args):
     trainable_parameters = [param for param in model.parameters() if param.requires_grad]
     if args.optimizer == 'adam':
         name = 'Adam'
-        optimizer = torch.optim.Adam(trainable_parameters, lr=args.lr)
+        optimizer = torch.optim.Adam(
+            trainable_parameters, lr=args.lr, weight_decay=args.weight_decay)
     elif args.optimizer == 'sgd':
         name = 'SGD'
-        optimizer = torch.optim.SGD(trainable_parameters, lr=args.lr, momentum=args.momentum)
+        optimizer = torch.optim.SGD(
+            trainable_parameters, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
     elif args.optimizer == 'rmsprop':
         name = 'RMSprop'
-        optimizer = torch.optim.RMSprop(trainable_parameters, lr=args.lr)
+        optimizer = torch.optim.RMSprop(
+            trainable_parameters, lr=args.lr, weight_decay=args.weight_decay)
     print(f'Using {name} optimizer with initial learning rate {args.lr} and momentum {args.momentum}.')
 
     # Training minibatches accross multiple processors?
@@ -101,6 +104,7 @@ def main(args):
         num_procs=num_procs,
         lr=args.lr,
         print_every=args.print_every,
+        eval_every=args.eval_every,
         batch_size=args.batch_size,
         elbo_objective=elbo_objective,
         max_epochs=args.max_epochs,
@@ -123,8 +127,8 @@ def main(args):
     except KeyboardInterrupt:
         print('-'*99)
         print('Exiting from training early.')
-        print('Evaluating F1 on development set...')
-        trainer.check_dev()
+
+    trainer.check_dev()
 
     # Save the losses for plotting and diagnostics.
     trainer.write_losses()

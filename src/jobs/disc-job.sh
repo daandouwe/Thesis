@@ -36,7 +36,7 @@
 #    `The Marginal Value of Adaptive Gradient Methods in Machine Learning`
 #
 # Important: `MAX_TIME` should be a function of `-lwalltime` to make sure that
-# training finishes within requeste amount of time.
+# training finishes within requested amount of time.
 # Suggestion: use (number of hours in -lwalltime) - 1 hours for training.
 # ============================================================================== #
 

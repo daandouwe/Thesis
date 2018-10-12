@@ -22,7 +22,7 @@ def bias_init(lstm):
 
 
 def init_lstm(lstm, orthogonal=True):
-    """Initialize the forget bias and weights of LSTM."""
+    """Initialize the weights and forget bias of an LSTM."""
     bias_init(lstm)
     if orthogonal:
         orthogonal_init(lstm)

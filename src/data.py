@@ -270,19 +270,3 @@ class Corpus:
              f'test: {str(self.test)}',
         )
         return '\n'.join(items)
-
-
-if __name__ == "__main__":
-    import json
-
-    # Example usage:
-    corpus = Corpus(data_path='../data', textline='unked', use_chars=False)
-    batches = corpus.test.batches(1, length_ordered=False)
-    sentence, actions = batches[0]
-    print([word.token for word in sentence])
-    print([action.token for action in actions])
-
-    with open('w2i.json', 'w') as f:
-        json.dump(corpus.dictionary.w2i, f, sort_keys=True, indent=4)
-    with open('n2i.json', 'w') as f:
-        json.dump(corpus.dictionary.n2i, f, sort_keys=True, indent=4)

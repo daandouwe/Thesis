@@ -95,7 +95,7 @@ class Stack(TransitionBase):
         return f'Stack ({self.num_open_nonterminals} open NTs): {self.tokens}'
 
     def _reset(self):
-        self.encoder.initialize_hidden()
+        self.encoder.initialize()
         empty = Item(
             self.EMPTY_TOKEN, self.EMPTY_INDEX, self.empty_emb, self.encoder(self.empty_emb))
         self._items = [InternalNode(empty)]
@@ -249,7 +249,7 @@ class Terminals(TransitionBase):
         self.empty_emb = nn.Parameter(torch.zeros(1, self.embedding_dim, device=device))
 
     def _reset(self):
-        self.encoder.initialize_hidden()
+        self.encoder.initialize()
         empty = Word(
             self.EMPTY_TOKEN, self.EMPTY_INDEX, self.empty_emb, self.encoder(self.empty_emb))
         self._items = [empty]
@@ -287,7 +287,7 @@ class History(TransitionBase):
         self.empty_emb = nn.Parameter(torch.zeros(1, self.embedding_dim, device=device))
 
     def _reset(self):
-        self.encoder.initialize_hidden()
+        self.encoder.initialize()
         empty = Action(
             self.EMPTY_TOKEN, self.EMPTY_INDEX, self.empty_emb, self.encoder(self.empty_emb))
         self._items = [empty]

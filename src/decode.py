@@ -659,6 +659,13 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
 
 
 if __name__ == '__main__':
+    import sys
+
+    if len(sys.argv) < 2:
+        exit('Specify model checkpoint to load.')
+    else:
+        checkpoint = sys.argv[1]
+
     # A demonstration.
     sentence = u'This is a short sentence but it will do for now .'
     tree = u'(S (NP (DT The) (ADJP (RBS most) (JJ troublesome)) (NN report)) (VP (MD may) ' + \
@@ -666,13 +673,13 @@ if __name__ == '__main__':
             '(ADJP (JJ due) (ADVP (IN out)) (NP (NN tomorrow)))))) (. .))'
 
     greedy = GreedyDecoder()
-    greedy.load_model(path='checkpoints/20180815_170655/model.pt')
+    greedy.load_model(path=checkpoint)
 
     beamer = BeamSearchDecoder()
-    beamer.load_model(path='checkpoints/20180815_170655/model.pt')
+    beamer.load_model(path=checkpoint)
 
     sampler = SamplingDecoder()
-    sampler.load_model(path='checkpoints/20180815_170655/model.pt')
+    sampler.load_model(path=checkpoint)
 
     print('Greedy decoder:')
     tree, logprob, num_actions = greedy(sentence)

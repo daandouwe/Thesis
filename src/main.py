@@ -81,20 +81,14 @@ def main():
                         help='size of mini batch')
     parser.add_argument('--dropout', type=float, default=0.2,
                         help='dropout rate for embeddings, lstm, and mlp')
+    parser.add_argument('--weight-decay', type=float, default=1e-3,
+                        help='weight decay (also when using dropout!)')
     parser.add_argument('--optimizer', choices=['adam', 'sgd', 'rmsprop'], default='adam',
                         help='optimizer used')
-    parser.add_argument('--lr', type=float, default=0.0008,
+    parser.add_argument('--lr', type=float, default=0.001,
                         help='initial learning rate')
     parser.add_argument('--momentum', type=float, default=0,
                         help='momentum for sgd')
-    parser.add_argument('--learning-rate-warmup_steps', type=int,
-                        default=160)
-    parser.add_argument('--step-decay', type=bool, default=True,
-                        help='scheduler parameter')
-    parser.add_argument('--step-decay-patience', type=int,default=1,
-                        help='scheduler parameter')
-    parser.add_argument('--step-decay-factor', type=float,default=0.5,
-                        help='scheduler parameter')
     parser.add_argument('--disable-kl-anneal', action='store_false',
                         help='do not anneal the kl in the elbo objective')
     parser.add_argument('--disable-glorot', action='store_true',
@@ -103,6 +97,8 @@ def main():
                         help='clipping gradient norm at this value')
     parser.add_argument('--print-every', type=int, default=10,
                         help='when to print training progress')
+    parser.add_argument('--eval-every', type=int, default=-1,
+                        help='evaluate model on development (default: every epoch (-1))')
     parser.add_argument('--disable-cuda', action='store_true',
                         help='disable cuda')
     parser.add_argument('--num-procs', type=int, default=1,
