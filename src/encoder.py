@@ -37,11 +37,11 @@ class VarLSTMCell(nn.Module):
 
     def sample_recurrent_dropout_masks(self, batch_size):
         """Fix a new dropout mask used for recurrent dropout."""
-        # Dropout mask for input.
-        self.zx = self.bernoulli.sample(  # Naming follows formula (7) in Gal and Ghahramani (2016).
+        # Dropout mask for input (see formula (7) in Gal and Ghahramani (2016))
+        self.zx = self.bernoulli.sample(
             (batch_size, self.input_size)).squeeze(-1)
         # Dropout mask for hidden state.
-        self.zh = self.bernoulli.sample(  # Naming follows formula (7) in Gal and Ghahramani (2016).
+        self.zh = self.bernoulli.sample(
             (batch_size, self.hidden_size)).squeeze(-1)
 
     def forward(self, x, hidden):
@@ -74,6 +74,9 @@ class BaseLSTM(nn.Module):
 
     def reset_hidden(self, batch_size):
         """Reset initial hidden states to zeros."""
+        # Empty history.
+        self._hidden_states = []
+        # Add initial hidden states.
         h = torch.zeros(batch_size, self.hidden_size, device=self.device)
         self._hidden_states.append(
             [(deepcopy(h), deepcopy(h)) for _ in range(self.num_layers)])
