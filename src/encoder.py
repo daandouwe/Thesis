@@ -37,7 +37,7 @@ class VarLSTMCell(nn.Module):
 
     def sample_recurrent_dropout_masks(self, batch_size):
         """Fix a new dropout mask used for recurrent dropout."""
-        # Dropout mask for input (see formula (7) in Gal and Ghahramani (2016))
+        # Dropout mask for input.
         self.zx = self.bernoulli.sample(
             (batch_size, self.input_size)).squeeze(-1)
         # Dropout mask for hidden state.
@@ -51,7 +51,6 @@ class VarLSTMCell(nn.Module):
         if self.training and self.use_dropout:
             x = x.mul(self.zx).div(self.keep_prob)
             h = h.mul(self.zh).div(self.keep_prob)
-            # c = c.mul(self.zh).div(self.keep_prob)  # This causes NaN!
         h, c = self.rnn(x, (h, c))
         return h, c
 
@@ -70,6 +69,7 @@ class BaseLSTM(nn.Module):
         self.layers = nn.ModuleList(
             [VarLSTMCell(input, hidden, dropout=dropout, device=device)
                 for input, hidden in zip(dims[:-1], dims[1:])])
+        # Store hidden states of sequence internally.
         self._hidden_states = []
 
     def reset_hidden(self, batch_size):
@@ -89,8 +89,8 @@ class BaseLSTM(nn.Module):
 
     def forward(self, x):
         """Compute the next hidden state with input x and the previous hidden state."""
-        new_states = []
         prev_states = self._hidden_states[-1]
+        new_states = []
         input = x
         for i, layer in enumerate(self.layers):
             # Get previous hidden states at this layer.
@@ -105,131 +105,6 @@ class BaseLSTM(nn.Module):
         self._hidden_states.append(new_states)
         return hx
 
-
-# class BaseLSTM_(nn.Module):
-#     """A two-layered LSTM."""
-#     # TODO: refactor it to easily deal with variable number of layers.
-#     def __init__(self, input_size, hidden_size, dropout, device=None):
-#         super(BaseLSTM, self).__init__()
-#         assert (hidden_size % 2 == 0), f'hidden size must be even: {hidden_size}'
-#         assert (dropout < 1), 'sorry, cannot drop out everything!'
-#         self.input_size = input_size
-#         self.hidden_size = hidden_size
-#         self.device = device
-#
-#         self.rnn1 = VarLSTMCell(input_size, hidden_size, dropout=dropout, device=device)
-#         self.rnn2 = VarLSTMCell(hidden_size, hidden_size, dropout=dropout, device=device)
-#
-#         # We store all intermediate computed hidden states. Last hidden state
-#         # in `self._hidden_states_layer2` is used as the output representation.
-#         self._hidden_states_layer1 = []
-#         self._hidden_states_layer2 = []
-#
-#     def reset_hidden(self, batch_size):
-#         """Reset initial hidden states to zeros."""
-#         h0 = torch.zeros(batch_size, self.hidden_size, device=self.device)
-#         c0 = torch.zeros(batch_size, self.hidden_size, device=self.device)
-#         self.hx1, self.cx1 = h0, c0
-#         self.hx2, self.cx2 = deepcopy(h0), deepcopy(c0)
-#         self._hidden_states_layer1 = [(self.hx1, self.cx1)]
-#         self._hidden_states_layer2 = [(self.hx2, self.cx2)]
-#
-#     def initialize(self, batch_size=1):
-#         """Initialize the LSTM for a new sequence."""
-#         self.reset_hidden(batch_size)
-#         # Sample new dropout masks.
-#         self.rnn1.sample_recurrent_dropout_masks(batch_size)
-#         self.rnn2.sample_recurrent_dropout_masks(batch_size)
-#
-#     def forward(self, x):
-#         """Compute the next hidden state with input x and the previous hidden state."""
-#         # Forward layers.
-#         hx1, cx1 = self.rnn1(x, (self.hx1, self.cx1))
-#         hx2, cx2 = self.rnn2(hx1, (self.hx2, self.cx2))
-#         # Add cell states to history.
-#         self._hidden_states_layer1.append((hx1, cx1))
-#         self._hidden_states_layer2.append((hx2, cx2))
-#         # Set new current hidden states.
-#         self.hx1, self.cx1 = hx1, cx1
-#         self.hx2, self.cx2 = hx2, cx2
-#         # Return hidden state of second layer.
-#         return hx2
-#
-#
-# class BaseLSTM__(nn.Module):
-#     """A two-layered LSTM."""
-#     def __init__(self, input_size, hidden_size, dropout, device=None):
-#         super(BaseLSTM, self).__init__()
-#         assert (hidden_size % 2 == 0), f'hidden size must be even: {hidden_size}'
-#         assert (dropout < 1), 'sorry, cannot drop out everything!'
-#         self.input_size = input_size
-#         self.hidden_size = hidden_size
-#         self.device = device
-#
-#         self.rnn1 = nn.LSTMCell(input_size, hidden_size)
-#         self.rnn2 = nn.LSTMCell(hidden_size, hidden_size)
-#
-#         # Were we store all intermediate computed hidden states.
-#         # Last item in _hidden_states_layer2 is used as the representation.
-#         self._hidden_states_layer1 = []
-#         self._hidden_states_layer2 = []
-#
-#         # Used for custom dropout.
-#         self.use_dropout = (dropout > 0)  # only use dropout when value is actually positive
-#         self.keep_prob = 1.0 - dropout
-#         self.bernoulli = dist.Bernoulli(
-#             probs=torch.tensor([self.keep_prob], device=device))
-#
-#         # Initialize all layers.
-#         init_lstm(self.rnn1)
-#         init_lstm(self.rnn2)
-#         self.initialize()
-#         self.to(device)
-#
-#     def sample_recurrent_dropout_mask(self, batch_size):
-#         """Fix a new dropout mask used for recurrent dropout."""
-#         self._dropout_mask = self.bernoulli.sample(
-#             (batch_size, self.hidden_size)).squeeze(-1)
-#         # self._dropout_mask = torch.bernoulli(
-#             # torch.Tensor(batch_size, self.hidden_size, device=self.device).fill_(self.keep_prob))
-#
-#     def dropout(self, x):
-#         """Custom recurrent dropout, kept fixed for the entire sequence."""
-#         # Scale the weights up to compensate for dropping out.
-#         return x.mul(self._dropout_mask).div(self.keep_prob)
-#
-#     def initialize(self, batch_size=1):
-#         """Set initial hidden state to zeros and sample new recurrent dropout mask."""
-#         # TODO: make first hidden states trainable?
-#         h0 = torch.zeros(batch_size, self.hidden_size, device=self.device)
-#         c0 = torch.zeros(batch_size, self.hidden_size, device=self.device)
-#         self.hx1, self.cx1 = h0, c0
-#         self.hx2, self.cx2 = deepcopy(h0), deepcopy(c0)
-#         self._hidden_states_layer1 = [(self.hx1, self.cx1)]
-#         self._hidden_states_layer2 = [(self.hx2, self.cx2)]
-#         self.sample_recurrent_dropout_mask(batch_size)
-#
-#     def forward(self, x):
-#         """Compute the next hidden state with input x and the previous hidden state."""
-#         # First layer
-#         hx1, cx1 = self.rnn1(x, (self.hx1, self.cx1))
-#         if self.training and self.use_dropout:
-#             # hx1, cx1 = self.dropout(hx1), self.dropout(cx1) # NOTE: dropping out cell state we get NaN
-#             hx1 = self.dropout(hx1)
-#         # Second layer
-#         hx2, cx2 = self.rnn2(hx1, (self.hx2, self.cx2))
-#         if self.training and self.use_dropout:
-#             # hx2, cx2 = self.dropout(hx2), self.dropout(cx2) # NOTE: dropping out cell state we get NaN
-#             hx2 = self.dropout(hx2)
-#         # Add cell states to history
-#         self._hidden_states_layer1.append((hx1, cx1))
-#         self._hidden_states_layer2.append((hx2, cx2))
-#         # Set new current hidden states
-#         self.hx1, self.cx1 = hx1, cx1
-#         self.hx2, self.cx2 = hx2, cx2
-#         # Return hidden state of second layer
-#         return hx2
-#
 
 class StackLSTM(BaseLSTM):
     """LSTM used to encode the stack of a transition based parser."""
@@ -250,25 +125,17 @@ class StackLSTM(BaseLSTM):
         """Reset the hidden state to right before the sequence was opened."""
         del self._hidden_states[-sequence_len:]
 
-    # NOTE: old stuff
-    # def _reset_hidden_(self, sequence_len):
-    #     """Reset the hidden state to right before the sequence was opened."""
-    #     del self._hidden_states_layer1[-sequence_len:]
-    #     del self._hidden_states_layer2[-sequence_len:]
-    #     self.hx1, self.cx1 = self._hidden_states_layer1[-1]
-    #     self.hx2, self.cx2 = self._hidden_states_layer2[-1]
-
 
 class HistoryLSTM(BaseLSTM):
     """LSTM used to encode the history of actions of a transition based parser."""
-    def __init__(self, *args):
-        super(HistoryLSTM, self).__init__(*args)
+    def __init__(self, *args, **kwargs):
+        super(HistoryLSTM, self).__init__(*args, **kwargs)
 
 
 class TerminalLSTM(BaseLSTM):
     """LSTM used to encode the generated word of a generative transition based parser."""
-    def __init__(self, *args):
-        super(TerminalLSTM, self).__init__(*args)
+    def __init__(self, *args, **kwargs):
+        super(TerminalLSTM, self).__init__(*args, **kwargs)
 
 
 class BufferLSTM(nn.Module):

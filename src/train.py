@@ -103,6 +103,7 @@ def main(args):
         test_proposal_samples=args.test_proposal_samples,
         num_procs=num_procs,
         lr=args.lr,
+        fine_tune_embeddings=args.fine_tune_embeddings,
         print_every=args.print_every,
         eval_every=args.eval_every,
         batch_size=args.batch_size,

@@ -19,36 +19,35 @@ from utils import Timer, get_folders, write_args, ceil_div
 
 class Trainer:
     """Trainer for RNNG."""
-    def __init__(
-        self,
-        rnng_type='disc',
-        model=None,
-        dictionary=None,
-        optimizer=None,
-        lr=None,
-        learning_rate_decay=4.0,  # lr /= learning_rate_decay
-        max_grad_norm=5.0,
-        print_every=1,
-        eval_every=-1,  # default is every epoch (-1)
-        train_dataset=[],
-        dev_dataset=[],
-        test_dataset=[],
-        dev_proposal_samples=None,
-        test_proposal_samples=None,
-        batch_size=1,
-        num_procs=1,
-        elbo_objective=False,
-        max_epochs=inf,
-        max_time=inf,
-        name=None,
-        checkpoint_dir=None,
-        output_dir=None,
-        data_dir=None,
-        evalb_dir=None,
-        log_dir=None,
-        device=None,
-        args=None,  # used when saving model
-    ):
+    def __init__(self,
+                 rnng_type='disc',
+                 model=None,
+                 dictionary=None,
+                 optimizer=None,
+                 lr=None,
+                 learning_rate_decay=2.0,  # lr /= learning_rate_decay
+                 max_grad_norm=5.0,
+                 fine_tune_embeddings=False,
+                 print_every=1,
+                 eval_every=-1,  # default is every epoch (-1)
+                 train_dataset=[],
+                 dev_dataset=[],
+                 test_dataset=[],
+                 dev_proposal_samples=None,
+                 test_proposal_samples=None,
+                 batch_size=1,
+                 num_procs=1,
+                 elbo_objective=False,
+                 max_epochs=inf,
+                 max_time=inf,
+                 name=None,
+                 checkpoint_dir=None,
+                 output_dir=None,
+                 data_dir=None,
+                 evalb_dir=None,
+                 log_dir=None,
+                 device=None,
+                 args=None):  # used when saving model
         assert rnng_type in ('disc', 'gen'), rnng_type
 
         self.rnng_type = rnng_type
@@ -63,6 +62,7 @@ class Trainer:
         self.learning_rate_decay = learning_rate_decay
         self.elbo_objective = elbo_objective
         self.max_grad_norm = max_grad_norm
+        self.fine_tune_embeddings = fine_tune_embeddings
 
         self.num_procs = num_procs
         self.distributed = (self.num_procs > 1)
@@ -114,10 +114,13 @@ class Trainer:
         hit Ctrl + C to break out of training early.
         """
         if self.rnng_type == 'gen':
-            assert self.dev_proposal_samples is not None, 'specify proposal samples with --proposal-samples.'
+            # These are needed for evaluation.
+            assert self.dev_proposal_samples is not None, 'specify proposal samples with --dev-proposal-samples.'
+            assert self.test_proposal_samples is not None, 'specify proposal samples with --test-proposal-samples.'
             assert os.path.exists(self.dev_proposal_samples), self.dev_proposal_samples
+            assert os.path.exists(self.test_proposal_samples), self.test_proposal_samples
 
-        # No upper limit of epochs when not specified.
+        # No upper limit of epochs or time when not specified.
         for epoch in itertools.count(start=1):
             self.current_epoch = epoch
             if epoch > self.max_epochs:
@@ -131,20 +134,21 @@ class Trainer:
             # Train one epoch.
             self.train_epoch()
 
-            # Check development f-score.
-            self.check_dev()
-            # Anneal learning rate depending on development set.
-            self.anneal_lr()
+            if self.eval_every == -1:
+                # Check development f-score.
+                self.check_dev()
+                # Anneal learning rate depending on development set f-score.
+                self.anneal_lr()
 
             print('-'*99)
             print('| End of epoch {:3d}/{} | Elapsed {} | Current dev F1 {:4.2f} | Best dev F1 {:4.2f} (epoch {:2d})'.format(
                 epoch, self.max_epochs, self.timer.format_elapsed(), self.current_dev_fscore, self.best_dev_fscore, self.best_dev_epoch))
             print('-'*99)
 
-
     def train_epoch(self):
         if self.distributed:
             assert (self.batch_size == 1), self.batch_size
+            assert (self.eval_every == -1), 'only evaluation after entire epoch supported.'
             self.train_epoch_distributed()
         else:
             self.train_epoch_sequential()
@@ -172,6 +176,9 @@ class Trainer:
                 loss += self.model(sentence, actions)
             loss /= self.batch_size
 
+            if self.fine_tune_embeddings:
+                loss += self.model.stack.word_embedding.delta_penalty()
+
             self.optimizer.zero_grad()
             loss.backward()
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.max_grad_norm)
@@ -180,16 +187,23 @@ class Trainer:
             self.losses.append(loss.item())
 
             if step % self.print_every == 0:
+                # Info for terminal.
                 percentage = step / num_batches * 100
                 avg_loss = np.mean(self.losses[-self.print_every:])
                 lr = self.get_lr()
                 sents_per_sec = processed / epoch_timer.elapsed()
                 eta = (num_sentences - processed) / sents_per_sec
+
                 # Log to tensorboard.
                 self.tensorboard_writer.add_scalar(
                     'Train/Loss', avg_loss, self.num_updates)
                 self.tensorboard_writer.add_scalar(
                     'Train/Learning-rate', self.get_lr(), self.num_updates)
+                if self.fine_tune_embeddings:
+                    self.tensorboard_writer.add_scalar(
+                        'Train/Embedding-L2', self.model.stack.word_embedding.delta_norm().item(),
+                        self.num_updates)
+
                 if self.elbo_objective:
                     message = (
                         f'| step {step:6d}/{num_batches:5d} ({percentage:.0f}%) ',
@@ -214,13 +228,19 @@ class Trainer:
                     )
                 print(''.join(message))
 
-            if (self.eval_every != -1) and (self.num_updates % self.eval_every == 0):
+            if self.eval_every != -1 and self.num_updates % self.eval_every == 0:
                 self.check_dev()
+                print('Current development F1 {:4.2f} (best {:4.2f} epoch {:2d})'.format(
+                    self.current_dev_fscore, self.best_dev_fscore, self.best_dev_epoch))
                 self.anneal_lr()
-                self.model.train()  # Back to training mode.
+                self.model.train()  # back to training mode
 
     def train_epoch_distributed(self):
         """One epoch of distributed training."""
+
+        # Gradient problems...
+        self._grad_none = 0
+
         def init_processes(worker, rank, backend='tcp'):
             """Initialize the distributed environment."""
             os.environ['MASTER_ADDR'] = '127.0.0.1'
@@ -228,10 +248,21 @@ class Trainer:
             dist.init_process_group(backend, rank=rank, world_size=self.num_procs)
             worker(rank)
 
-        def average_gradients():
+        def average_gradients(sent):
             """Gradient averaging."""
-            for param in self.model.parameters():
-                if param.grad is not None and param.requires_grad:  # some layers of model are not used and have no grad
+            # for i, param in enumerate(self.model.parameters()):
+            for i, (name, param) in enumerate(self.model.named_parameters()):
+                if param.requires_grad:  # some layers of model are not used and have no grad
+                    # TODO: this ugly hack!
+                    if param.grad is None:
+                        print('Warning gradient None ||', param.shape, '||', name, '||', ' '.join([str(word) for word in sent]))
+                        self._grad_none += 1
+                        # There is something very fishy about this solution.
+                        # The problem occurs with in the AttentionComposition.V parameter,
+                        # which has grad None on the tree `(NP (NN SUGAR) (: :))`.
+                        # Why? This only occurs if the parameter is not called during computation.
+                        # But there is at least one REDUCE action for the tree, wo why not called!?
+                        param.grad = torch.zeros_like(param)
                     dist.all_reduce(param.grad.data, op=dist.reduce_op.SUM)
                     param.grad.data /= self.num_procs
 
@@ -262,10 +293,13 @@ class Trainer:
                 sentence, actions = batch
                 loss = self.model(sentence, actions)
 
+                if self.fine_tune_embeddings:
+                    loss += self.model.stack.word_embedding.delta_penalty()
+
                 self.optimizer.zero_grad()
                 loss.backward()
                 nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=self.max_grad_norm)
-                average_gradients()
+                average_gradients(sentence)
                 self.optimizer.step()
 
                 # Compute the average loss for logging.
@@ -274,16 +308,23 @@ class Trainer:
                     self.losses.append(loss.data.item() / self.num_procs)
 
                 if step % self.print_every == 0 and rank == 0:
-                    # Log to tensorboard.
-                    self.tensorboard_writer.add_scalar(
-                        'Train/Loss', loss.item(), self.num_updates)
-                    self.tensorboard_writer.add_scalar(
-                        'Train/Learning-rate', self.get_lr(), self.num_updates)
+                    # Info for terminal.
                     percentage = step / num_batches * 100
                     avg_loss = np.mean(self.losses[-self.print_every:])
                     lr = self.get_lr()
                     sents_per_sec = processed / epoch_timer.elapsed()
                     eta = (num_sentences - processed) / sents_per_sec
+
+                    # NOTE: this causes a freeze after 50 updates! Why??
+                    # # Log to tensorboard.
+                    # self.tensorboard_writer.add_scalar(
+                    #     'Train/Loss', avg_loss, self.num_updates)
+                    # self.tensorboard_writer.add_scalar(
+                    #     'Train/Learning-rate', self.get_lr(), self.num_updates)
+                    # if self.fine_tune_embeddings:
+                    #     self.tensorboard_writer.add_scalar(
+                    #         'Train/Embedding-L2', self.model.stack.word_embedding.delta_norm().item(),
+                    #         self.num_updates)
 
                     if self.elbo_objective:
                         message = (
@@ -308,7 +349,6 @@ class Trainer:
                             f'| eta {epoch_timer.format(eta)} '
                         )
                     print(''.join(message))
-                    # return_dict['model'] = self.model  # save model every now and then
             # Save model when finished.
             if rank == 0:
                 return_dict['model'] = self.model
@@ -327,6 +367,10 @@ class Trainer:
             p.join()
         # Catch trained model.
         self.model = return_dict['model']
+        # Let's see how often grad is None.
+        print('=*==*==*==*==*==*==*==*==*==*==*==*==*==*=')
+        print(f'=*= Gradient None: {self._grad_none} times =*=')
+        print('=*==*==*==*==*==*==*==*==*==*==*==*==*==*=')
 
     def get_lr(self):
         for param_group in self.optimizer.param_groups:
@@ -370,7 +414,7 @@ class Trainer:
         self._flatten_parameters()
 
     def _flatten_parameters(self):
-        """Flatten all rnn parameters in model."""
+        """Flatten all rnn parameters in model after loading from checkpoint."""
         self.model.buffer.encoder.rnn.flatten_parameters()
         try:
             self.model.stack.encoder.composition.fwd_rnn.flatten_parameters()
@@ -413,8 +457,6 @@ class Trainer:
         # Compute f-score.
         dev_fscore = evalb(
             self.evalb_dir, self.dev_pred_path, self.dev_gold_path, self.dev_result_path)
-        print('Current development F1 {:4.2f} (best {:4.2f} epoch {:2d})'.format(
-            self.current_dev_fscore, self.best_dev_fscore, self.best_dev_epoch))
         # Log score to tensorboard.
         self.tensorboard_writer.add_scalar('Dev/Fscore', dev_fscore, self.num_updates)
         self.current_dev_fscore = dev_fscore

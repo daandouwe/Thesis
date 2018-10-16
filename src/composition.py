@@ -96,7 +96,6 @@ class AttentionComposition(nn.Module):
         hb, _ = self.bwd_rnn(xb)  # (batch, seq, input_size//2)
         c = torch.cat((hf, hb), dim=-1)  # (batch, seq, input_size)
 
-        # TODO: torch.cat(u, head) where u is stack representation.
         a = c @ self.V @ head.transpose(0, 1)  # (batch, seq, 1)
         a = a.squeeze(-1)  # (batch, seq)
         a = self.softmax(a)  # (batch, seq)
@@ -140,7 +139,7 @@ class LatentFactorComposition(nn.Module):
     def encode(self, head, children):
         h = self.encoder(head, children)
         return self.linear(self.relu(h))
-        # return self.inference(head, children)
+        # return self.inference(head, children)  # TODO: make this work. NOTE: then change `_flatten_parameters` in Trainer class.
 
     def decode(self, x):
         return self.generative(x)

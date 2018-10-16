@@ -108,7 +108,7 @@ def predict_input_disc(args):
         print()
 
         print('Sampling decoder:')
-        for _ in range(3):
+        for _ in range(10):
             tree, logprob, *rest = sampler(sentence)
             print('  {} {:.2f}'.format(tree.linearize(with_tag=False), logprob))
         print('-'*79)

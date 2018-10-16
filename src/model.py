@@ -8,11 +8,14 @@ from datatypes import Item, Word, Nonterminal, Action
 from actions import SHIFT, REDUCE, NT, GEN
 from data import PAD_INDEX
 from parser import DiscParser, GenParser
-from embedding import ConvolutionalCharEmbedding
+from embedding import ConvolutionalCharEmbedding, FineTuneEmbedding
 from encoder import LATENT_COMPOSITIONS, StackLSTM, HistoryLSTM, BufferLSTM, TerminalLSTM
 from nn import MLP
 from loss import LossCompute, ElboCompute
 from glove import load_glove, get_vectors
+
+
+NUM_ACTIONS = 3
 
 
 class DiscRNNG(DiscParser):
@@ -182,14 +185,13 @@ def set_embedding(embedding, tensor):
     """Sets the tensor as fixed weight tensor in embedding."""
     assert tensor.shape == embedding.weight.shape
     embedding.weight = nn.Parameter(tensor)
-    embedding.weight.requires_grad = False
+    embedding.weight.requires_grad = True
 
 
 def make_model(args, dictionary):
     # Embeddings
     num_words = dictionary.num_words
     num_nonterminals = dictionary.num_nonterminals
-    num_actions = 3
     if args.use_chars:
         word_embedding = ConvolutionalCharEmbedding(
                 num_words,
@@ -200,22 +202,25 @@ def make_model(args, dictionary):
             )
     else:
         if args.use_fasttext:
-            print('FasText only availlable in 300 dimensions: changed word-emb-dim accordingly.')
+            print('FastText only availlable in 300 dimensions: changed --emb-dim accordingly.')
             args.emb_dim = 300
-        word_embedding = nn.Embedding(
-                num_words, args.emb_dim, padding_idx=PAD_INDEX)
-        # Get words in order.
-        words = [dictionary.i2w[i] for i in range(num_words)]
+        # Construct embedding layer.
+        word_embedding = nn.Embedding(num_words, args.emb_dim, padding_idx=PAD_INDEX)
+        # If using pre-trained embeddings, load them into the layer.
+        words = [dictionary.i2w[i] for i in range(num_words)]  # get words in order
         if args.use_glove:
             dim = args.emb_dim
             assert dim in (50, 100, 200, 300), f'invalid dim: {dim}, choose from (50, 100, 200, 300).'
+            # We log all vectors that are not in the glove file.
             logfile = open(os.path.join(args.logdir, 'glove.error.txt'), 'w')
             if args.glove_torchtext:
+                # Load vectors with torchtext loader.
                 from torchtext.vocab import GloVe
                 print(f'Loading GloVe vectors `glove.42B.{args.emb_dim}d` (torchtext loader)...')
                 glove = GloVe(name='42B', dim=args.emb_dim)
                 embeddings = get_vectors(words, glove, args.emb_dim, logfile)
             else:
+                # Load vectors with with own custom loader.
                 print(f'Loading GloVe vectors `glove.6B.{args.emb_dim}d` (custom loader)...')
                 embeddings = load_glove(words, args.emb_dim, args.glove_dir, logfile)
             set_embedding(word_embedding, embeddings)
@@ -229,8 +234,22 @@ def make_model(args, dictionary):
             set_embedding(word_embedding, embeddings)
             logfile.close()
 
+        if args.freeze_embeddings:
+            print('Not training word-embeddings.')
+            word_embedding.weight.requires_grad = False
+        else:
+            if args.fine_tune_embeddings:
+                assert not args.freeze_embeddings, 'cannot have both.'
+                assert (args.use_fasttext or args.use_glove), 'fine-tuning random embeddings.'
+                print('Fine-tuning pretrained word-embeddings.')
+                word_embedding = FineTuneEmbedding(word_embedding)
+            else:
+                print('Training word-embeddings.')
+                word_embedding.weight.requires_grad = True
+
+    # The rest of the embeddings.
     nonterminal_embedding = nn.Embedding(num_nonterminals, args.emb_dim, padding_idx=PAD_INDEX)
-    action_embedding = nn.Embedding(num_actions, args.emb_dim, padding_idx=PAD_INDEX)
+    action_embedding = nn.Embedding(NUM_ACTIONS, args.emb_dim, padding_idx=PAD_INDEX)
 
     # Encoders
     buffer_encoder = BufferLSTM(
@@ -265,7 +284,7 @@ def make_model(args, dictionary):
     action_mlp = MLP(
         mlp_input,
         args.mlp_dim,
-        num_actions,
+        NUM_ACTIONS,
         dropout=args.dropout,
         activation=args.mlp_nonlinearity
     )

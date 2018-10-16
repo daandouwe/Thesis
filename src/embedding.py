@@ -4,9 +4,14 @@ from torch.autograd import Variable
 
 
 class ConvolutionalCharEmbedding(nn.Module):
-    """Convolutional character embedding following https://arxiv.org/pdf/1508.06615.pdf."""
+    """Convolutional character embedding.
+
+     Follows `Character-Aware Neural Language Models`,
+     source: https://arxiv.org/pdf/1508.06615.pdf.
+     """
     def __init__(self, nchars, emb_dim, padding_idx,
-                 max_kernel_width=6, char_emb_dim=15, filter_factor=25, activation='Tanh',
+                 max_kernel_width=6, char_emb_dim=15,
+                 filter_factor=25, activation='Tanh',
                  dropout=0, device=None):
         super(ConvolutionalCharEmbedding, self).__init__()
         self.padding_idx = padding_idx
@@ -54,3 +59,57 @@ class ConvolutionalCharEmbedding(nn.Module):
         f = self.act_fn(self.linear(f))  # (sent, emb_dim)
 
         return f.contiguous().view(sent_len, f.size(-1))  # (sent, emb_dim)
+
+
+class FineTuneEmbedding(nn.Module):
+    """Fine-tunes a pretrained Embedding layer.
+
+    Follows the method described in Yoav Goldberg's `Neural
+    Network Methods for Natural LanguageProcessing` (p. 117).
+    In particular we let the fine-tuned embeddings W' be
+    computed as
+
+        W' = W + Δ
+
+    were W are the pre-trained embeddings and Δ the fine-tuning
+    weights. W is fixed, and the weights in Δ are initialized
+    to zero and trained with an L2 penalty.
+
+    Also: see this https://twitter.com/adveisner/status/896428540538834944
+    and this https://explosion.ai/blog/pseudo-rehearsal-catastrophic-forgetting.
+
+    Note: the average norm of the pretrained GloVe embeddings is ~0.03,
+    and if, say, we'd like our fine-tuning to be at most a tenth of that,
+    e.g. of the order 0.001, then 100 * 0.001 = 0.1 is the additional
+    loss we incur. This seems sensible to me.
+    """
+    def __init__(self, embedding, weight_decay=100):
+        super(FineTuneEmbedding, self).__init__()
+        assert isinstance(embedding, nn.Embedding)
+        num_embeddings, embedding_dim = embedding.weight.shape
+        self.embedding = embedding
+        self.delta = nn.Embedding(num_embeddings, embedding_dim)
+        self.num_embeddings = num_embeddings
+        self.embedding_dim = embedding_dim
+        self.weight_decay = weight_decay
+
+        # Freeze the pre-trained weights.
+        self.embedding.weight.requires_grad = False
+        # Initilize the fine-tuning additions with zeros.
+        self.delta.weight.data.zero_()
+
+    def forward(self, input):
+        """Return W'[input] where W' = W + Δ."""
+        return self.embedding(input) + self.delta(input)
+
+    def delta_norm(self):
+        """Return the (average) L2 norm of Δ."""
+        # We average over vocabulary, otherwise we are
+        # not consistent accross varying vocab-sizes.
+        avg_norm = torch.norm(
+            self.delta.weight, p=2) / self.num_embeddings
+        return avg_norm.squeeze()
+
+    def delta_penalty(self):
+        """Return the (average) L2 norm of Δ scaled by the weight-decay term."""
+        return self.weight_decay * self.delta_norm()

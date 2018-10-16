@@ -144,7 +144,8 @@ class Decoder:
         print(f'Loading model from `{path}`...')
         assert os.path.exists(path), path
         with open(path, 'rb') as f:
-            state = torch.load(f)
+            device = 'cpu' if not torch.cuda.is_available() else None
+            state = torch.load(f, map_location=device)
         epoch, fscore = state['epochs'], state['test-fscore']
         print(f'Loaded model trained for {epoch} epochs with test-fscore {fscore}.')
         self.model = state['model']

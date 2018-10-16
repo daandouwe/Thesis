@@ -127,11 +127,10 @@ class Stack(TransitionBase):
         else:
             raise ValueError(f'invalid {item} pushed onto stack')
         # Add child node to rightmost open nonterminal.
-        if not self.training:
-            for head in self._items[::-1]:
-                if head.is_open_nt:
-                    head.add_child(node)
-                    break
+        for head in self._items[::-1]:
+            if head.is_open_nt:
+                head.add_child(node)
+                break
         self._items.append(node)
 
     def reduce(self):

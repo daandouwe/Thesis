@@ -69,6 +69,10 @@ def main():
                         help='to be constructed in main')
     parser.add_argument('--glove-torchtext', action='store_true',
                         help='loading glove with torchtext instead of custom loader')
+    parser.add_argument('--fine-tune-embeddings', action='store_true',
+                        help='train minimal additive refinement of pretrained embeddings')
+    parser.add_argument('--freeze-embeddings', action='store_true',
+                        help='do not train or fine-tune embeddings')
 
     # Training arguments
     parser.add_argument('--seed', type=int, default=42,
