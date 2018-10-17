@@ -140,6 +140,7 @@ class Stack(TransitionBase):
             children.append(self.pop())
         children.reverse()
         sequence_len = len(children) + 1
+        # Get head.
         head = self.pop()
         # Compute new representation.
         child_embeddings = [child.item.embedding.unsqueeze(0) for child in children]
