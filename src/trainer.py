@@ -200,9 +200,8 @@ class Trainer:
                 self.tensorboard_writer.add_scalar(
                     'Train/Learning-rate', self.get_lr(), self.num_updates)
                 if self.fine_tune_embeddings:
-                    self.tensorboard_writer.add_scalar(
-                        'Train/Embedding-L2', self.model.stack.word_embedding.delta_norm().item(),
-                        self.num_updates)
+                    norm = self.model.stack.word_embedding.delta_norm().item()
+                    self.tensorboard_writer.add_scalar('Train/Embedding-L2', norm, self.num_updates)
 
                 if self.elbo_objective:
                     message = (
@@ -250,10 +249,10 @@ class Trainer:
 
         def average_gradients(sent):
             """Gradient averaging."""
+            # TODO: Fix this ugly hack!
             # for i, param in enumerate(self.model.parameters()):
             for i, (name, param) in enumerate(self.model.named_parameters()):
                 if param.requires_grad:  # some layers of model are not used and have no grad
-                    # TODO: this ugly hack!
                     if param.grad is None:
                         print('Warning gradient None ||', param.shape, '||', name, '||', ' '.join([str(word) for word in sent]))
                         self._grad_none += 1
@@ -282,6 +281,7 @@ class Trainer:
             num_sentences = len(batches)
             num_batches = num_sentences
             processed = 0
+            tensorboard = []
             for step, batch in enumerate(batches, 1):
                 if self.timer.elapsed() > self.max_time:
                     break
@@ -315,16 +315,12 @@ class Trainer:
                     sents_per_sec = processed / epoch_timer.elapsed()
                     eta = (num_sentences - processed) / sents_per_sec
 
-                    # NOTE: this causes a freeze after 50 updates! Why??
-                    # # Log to tensorboard.
-                    # self.tensorboard_writer.add_scalar(
-                    #     'Train/Loss', avg_loss, self.num_updates)
-                    # self.tensorboard_writer.add_scalar(
-                    #     'Train/Learning-rate', self.get_lr(), self.num_updates)
-                    # if self.fine_tune_embeddings:
-                    #     self.tensorboard_writer.add_scalar(
-                    #         'Train/Embedding-L2', self.model.stack.word_embedding.delta_norm().item(),
-                    #         self.num_updates)
+                    # Tensorboard workaround.
+                    tensorboard.append(('Train/Loss', avg_loss, self.num_updates))
+                    tensorboard.append(('Train/Learning-rate', self.get_lr(), self.num_updates))
+                    if self.fine_tune_embeddings:
+                        norm = self.model.stack.word_embedding.delta_norm().item()
+                        tensorboard.append(('Train/Embedding-L2', norm, self.num_updates))
 
                     if self.elbo_objective:
                         message = (
@@ -349,9 +345,13 @@ class Trainer:
                             f'| eta {epoch_timer.format(eta)} '
                         )
                     print(''.join(message))
+
             # Save model when finished.
             if rank == 0:
                 return_dict['model'] = self.model
+                return_dict['num_updates'] = self.num_updates
+                return_dict['losses'] = self.losses
+                return_dict['tensorboard'] = tensorboard
 
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -365,11 +365,17 @@ class Trainer:
             processes.append(p)
         for p in processes:
             p.join()
-        # Catch trained model.
+        # Update model.
         self.model = return_dict['model']
+        # Update info.
+        self.num_updates = return_dict['num_updates']
+        self.losses = return_dict['losses']
+        # Log to tensorboard.
+        for name, value, update in return_dict['tensorboard']:
+            self.tensorboard_writer.add_scalar(name, value, update)
         # Let's see how often grad is None.
         print('=*==*==*==*==*==*==*==*==*==*==*==*==*==*=')
-        print(f'=*= Gradient None: {self._grad_none} times =*=')
+        print(f'Gradient None: {self._grad_none} times')
         print('=*==*==*==*==*==*==*==*==*==*==*==*==*==*=')
 
     def get_lr(self):

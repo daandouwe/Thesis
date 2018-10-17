@@ -38,7 +38,7 @@ ls -l $TMP
 # Experiment.
 OPTIM=sgd
 LR=0.1
-NUM_PROCS=32
+NUM_PROCS=16
 # Name of experiment.
 NAME=${OPTIM}_lr${LR}_num_procs${NUM_PROCS}_use_glove_finetune
 # Make output directory.
