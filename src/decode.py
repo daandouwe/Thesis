@@ -237,8 +237,7 @@ class DiscriminativeDecoder(Decoder):
     def load_model(self, path):
         """Load the discriminative model."""
         super(DiscriminativeDecoder, self).load_model(path)
-        message  = f'must be a discriminative model, got `{type(self.model)}`.'
-        assert isinstance(self.model, DiscRNNG), message
+        assert isinstance(self.model, DiscRNNG), f'must be a discriminative model, got `{type(self.model)}`.'
 
 
 class GenerativeDecoder(Decoder):
@@ -257,8 +256,7 @@ class GenerativeDecoder(Decoder):
     def load_model(self, path):
         """Load the (generative) model."""
         super(GenerativeDecoder, self).load_model(path)
-        message = f'must be a generative model, got `{type(self.model)}`.'
-        assert isinstance(self.model, GenRNNG), message
+        assert isinstance(self.model, GenRNNG), f'must be a generative model, got `{type(self.model)}`.'
 
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%% #
