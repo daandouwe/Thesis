@@ -6,14 +6,14 @@ from math import inf
 import train
 import predict
 import inspect_model
-
+import latent_model
 
 def main():
 
     parser = argparse.ArgumentParser(description='RNNG parser',
                                      fromfile_prefix_chars='@') # Enable loading args from textfile
     # Choose mode
-    parser.add_argument('mode', choices=['train', 'predict', 'inspect'],
+    parser.add_argument('mode', choices=['train', 'predict', 'inspect', 'latent'],
                         help='what would you like to do?')
     parser.add_argument('model', choices=['disc', 'gen'],
                         help='use discriminative or generative model')
@@ -145,6 +145,8 @@ def main():
         predict.main(args)
     elif args.mode == 'inspect':
         inspect_model.main(args)
+    elif args.mode == 'latent':
+        latent_model.main(args)
 
 
 if __name__ == '__main__':

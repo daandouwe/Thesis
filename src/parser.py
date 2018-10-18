@@ -163,7 +163,6 @@ class Stack(TransitionBase):
         self.encoder._reset_hidden(sequence_len)
 
     def get_tree(self, with_tag=True):
-        assert not self.training, f'set model.eval() to build tree'
         # Build tree from first node, and hence skip the dummy empty node.
         return self._items[1].linearize(with_tag)
 
@@ -362,7 +361,7 @@ class DiscParser(nn.Module):
         cond1 = not self.last_action.is_nt
         cond2 = self.stack.num_open_nonterminals >= 2
         cond3 = self.buffer.empty
-        return (cond1 and cond2) or cond3
+        return cond1 and (cond2 or cond3)
 
     def _shift(self):
         assert self._can_shift(), f'cannot shift: {self}'

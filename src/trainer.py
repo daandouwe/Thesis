@@ -196,12 +196,12 @@ class Trainer:
 
                 # Log to tensorboard.
                 self.tensorboard_writer.add_scalar(
-                    'Train/Loss', avg_loss, self.num_updates)
+                    'train/loss', avg_loss, self.num_updates)
                 self.tensorboard_writer.add_scalar(
-                    'Train/Learning-rate', self.get_lr(), self.num_updates)
+                    'train/learning-rate', self.get_lr(), self.num_updates)
                 if self.fine_tune_embeddings:
                     norm = self.model.stack.word_embedding.delta_norm().item()
-                    self.tensorboard_writer.add_scalar('Train/Embedding-L2', norm, self.num_updates)
+                    self.tensorboard_writer.add_scalar('train/embedding-l2', norm, self.num_updates)
 
                 if self.elbo_objective:
                     message = (
@@ -254,13 +254,13 @@ class Trainer:
             for i, (name, param) in enumerate(self.model.named_parameters()):
                 if param.requires_grad:  # some layers of model are not used and have no grad
                     if param.grad is None:
-                        print('Warning gradient None ||', param.shape, '||', name, '||', ' '.join([str(word) for word in sent]))
-                        self._grad_none += 1
                         # There is something very fishy about this solution.
                         # The problem occurs with in the AttentionComposition.V parameter,
                         # which has grad None on the tree `(NP (NN SUGAR) (: :))`.
                         # Why? This only occurs if the parameter is not called during computation.
                         # But there is at least one REDUCE action for the tree, wo why not called!?
+                        print('Warning gradient None ||', param.shape, '||', name, '||', ' '.join([str(word) for word in sent]))
+                        self._grad_none += 1
                         param.grad = torch.zeros_like(param)
                     dist.all_reduce(param.grad.data, op=dist.reduce_op.SUM)
                     param.grad.data /= self.num_procs
@@ -316,11 +316,11 @@ class Trainer:
                     eta = (num_sentences - processed) / sents_per_sec
 
                     # Tensorboard workaround.
-                    tensorboard.append(('Train/Loss', avg_loss, self.num_updates))
-                    tensorboard.append(('Train/Learning-rate', self.get_lr(), self.num_updates))
+                    tensorboard.append(('train/loss', avg_loss, self.num_updates))
+                    tensorboard.append(('train/learning-rate', self.get_lr(), self.num_updates))
                     if self.fine_tune_embeddings:
                         norm = self.model.stack.word_embedding.delta_norm().item()
-                        tensorboard.append(('Train/Embedding-L2', norm, self.num_updates))
+                        tensorboard.append(('train/embedding-l2', norm, self.num_updates))
 
                     if self.elbo_objective:
                         message = (
@@ -394,8 +394,8 @@ class Trainer:
     def anneal_lr(self):
         """Anneal learning rate depending on current development F1."""
         if self.current_dev_fscore < self.best_dev_fscore:  # if current F1 is worse
-            print('Annealed the learning rate.')
             lr = self.get_lr() / self.learning_rate_decay
+            print(f'Annealing the learning rate from {self.get_lr():.1e} to {lr:.1e}.')
             self.set_lr(lr)
 
     def save_checkpoint(self):
