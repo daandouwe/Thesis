@@ -3,7 +3,7 @@ from typing import NamedTuple
 import dynet as dy
 from dynet import Expression
 
-from actions import SHIFT, REDUCE
+from actions import SHIFT, REDUCE, is_nt, is_gen, get_nt, get_word
 from tree import Node, InternalNode, LeafNode
 
 
@@ -16,13 +16,12 @@ class StackElement(NamedTuple):
 
 class Stack:
 
-    def __init__(self, model, dictionary, word_embedding, nt_embedding, encoder, composer, device):
+    def __init__(self, model, dictionary, word_embedding, nt_embedding, encoder, composer):
         word_embedding_dim = word_embedding.shape()[1]
         nt_embedding_dim = nt_embedding.shape()[1]
         assert (word_embedding_dim == nt_embedding_dim)
 
         self.dictionary = dictionary
-        self.device = device
         self.embedding_dim = word_embedding_dim
         self.word_embedding = word_embedding
         self.nt_embedding = nt_embedding
@@ -33,7 +32,7 @@ class Stack:
         self._num_open_nts = 0
 
     def state(self):
-        return f'Stack: {self.get_tree()}'
+        return f'Stack ({self._num_open_nts} open nt): {self.get_tree()}'
 
     def initialize(self):
         self._stack = []
@@ -108,12 +107,11 @@ class Stack:
 
 class Buffer:
 
-    def __init__(self, model, dictionary, embedding, encoder, device):
+    def __init__(self, model, dictionary, embedding, encoder):
         self.dictionary = dictionary
         self.embedding_dim = embedding.shape()[1]
         self.embedding = embedding
         self.encoder = encoder
-        self.device = device
         self.empty_emb = model.add_parameters(self.embedding_dim, init='glorot')
         self._buffer = []
 
@@ -127,8 +125,11 @@ class Buffer:
         self.encoder.initialize()
         self.encoder.push(self.empty_emb)
         for word_id in reversed(sentence):
-            self._buffer.append(word_id)
-            self.encoder.push(self.embedding[word_id])
+            self.push(word_id)
+
+    def push(self, word_id):
+        self._buffer.append(word_id)
+        self.encoder.push(self.embedding[word_id])
 
     def pop(self):
         self.encoder.pop()
@@ -138,14 +139,41 @@ class Buffer:
         return len(self._buffer) == 0
 
 
-class History:
-
-    def __init__(self, model, dictionary, embedding, encoder, device):
+class Terminal:
+    def __init__(self, model, dictionary, embedding, encoder):
+        super(Terminal, self).__init__()
         self.dictionary = dictionary
         self.embedding_dim = embedding.shape()[1]
         self.embedding = embedding
         self.encoder = encoder
-        self.device = device
+        self.empty_emb = model.add_parameters(self.embedding_dim, init='glorot')
+        self._terminal = []
+
+    def state(self):
+        words = [self.dictionary.i2w[word_id] for word_id in self._terminal]
+        return f'Terminal: {words}'
+
+    def initialize(self):
+        self._terminal = []
+        self.encoder.initialize()
+        self.encoder.push(self.empty_emb)
+
+    def push(self, word_id):
+        self._terminal.append(word_id)
+        self.encoder.push(self.embedding[word_id])
+
+    @property
+    def empty(self):
+        return len(self._terminal) == 0
+
+
+class History:
+
+    def __init__(self, model, dictionary, embedding, encoder):
+        self.dictionary = dictionary
+        self.embedding_dim = embedding.shape()[1]
+        self.embedding = embedding
+        self.encoder = encoder
         self.empty_emb = model.add_parameters(self.embedding_dim, init='glorot')
         self._history = []
 
@@ -172,13 +200,15 @@ class History:
 
 
 class DiscParser:
+    SHIFT_ID = 0
+    REDUCE_ID = 1
 
     def __init__(self):
         pass
 
     def state(self):
         return '\n'.join(
-            (f'Parser', self.stack.state(), self.buffer.state(), self.history.state()))
+            (f'Discriminative parser', self.stack.state(), self.buffer.state(), self.history.state()))
 
     def initialize(self, sentence: list):
         """Initialize all the components of the parser."""
@@ -203,15 +233,15 @@ class DiscParser:
         return cond1 and (cond2 or cond3)
 
     def _shift(self):
-        assert self._can_shift(), f'cannot shift: {self.state()}'
+        assert self._can_shift(), f'cannot shift:\n{self.state()}'
         self.stack.push(self.buffer.pop())
 
     def _open(self, nt_index: int):
-        assert self._can_open(), f'cannot open: {self.state()}'
+        assert self._can_open(), f'cannot open:\n{self.state()}'
         self.stack.open(nt_index)
 
     def _reduce(self):
-        assert self._can_reduce(), f'cannot reduce: {self.state()}'
+        assert self._can_reduce(), f'cannot reduce:\n{self.state()}'
         self.stack.reduce()
 
     def parser_representation(self):
@@ -228,7 +258,7 @@ class DiscParser:
         elif action == REDUCE:
             self._reduce()
         else:
-            self._open(self._get_nt(action_id))
+            self._open(self._get_nt_id(action_id))
         self.history.push(action_id)
 
     def is_valid_action(self, action: str):
@@ -240,17 +270,12 @@ class DiscParser:
         else:
             return self._can_open()
 
-    def _is_nt(self, action_id: int):
+    def _is_nt_id(self, action_id: int):
         return action_id >= 2
 
-    def _get_nt(self, action_id: int):
-        assert self._is_nt(action_id)
+    def _get_nt_id(self, action_id: int):
+        assert self._is_nt_id(action_id)
         return action_id - 2
-
-    @property
-    def actions(self):
-        """Return the current history of actions."""
-        return self.history.actions
 
     @property
     def last_action(self):
@@ -262,4 +287,107 @@ class DiscParser:
         if len(self.history._history) == 0:
             return False
         else:
-            return self._is_nt(self.history.actions[-1])
+            return self._is_nt_id(self.last_action)
+
+
+class GenParser:
+    REDUCE_ID = 0
+    NT_ID = 1
+    GEN_ID = 2
+
+    def __init__(self):
+        pass
+
+    def state(self):
+        return '\n'.join(
+            (f'Generative parser', self.stack.state(), self.terminal.state(), self.history.state()))
+
+    def initialize(self):
+        """Initialize all the components of the parser."""
+        self.terminal.initialize()
+        self.stack.initialize()
+        self.history.initialize()
+
+    def _can_gen(self):
+        return self.stack.num_open_nts >= 1
+
+    def _can_open(self):
+        return self.stack.num_open_nts < 100
+
+    def _can_reduce(self):
+        cond1 = not self.last_action_is_nt()
+        cond2 = self.stack.num_open_nts >= 1
+        return cond1 and cond2
+
+    def _gen(self, word_id):
+        assert self._can_gen(), f'cannot gen:\n{self.state()}'
+        self.terminal.push(word_id)
+        self.stack.push(word_id)
+
+    def _open(self, nt_index: int):
+        assert self._can_open(), f'cannot open:\n{self.state()}'
+        self.stack.open(nt_index)
+
+    def _reduce(self):
+        assert self._can_reduce(), f'cannot reduce:\n{self.state()}'
+        self.stack.reduce()
+
+    def parser_representation(self):
+        """Return the representations of the stack, buffer and history."""
+        s = self.stack.encoder.top
+        t = self.terminal.encoder.top
+        h = self.history.encoder.top
+        return dy.concatenate([s, t, h], d=0)
+
+    def parse_step(self, action: str, action_id: int):
+        """Updates parser one step give the action."""
+        if action == REDUCE:
+            self._reduce()
+        elif is_nt(action):
+            self._open(self._get_nt_id(action_id))
+        elif is_gen(action):
+            self._gen(self._get_word_id(action_id))
+        self.history.push(action_id)
+
+    def is_valid_action(self, action: str):
+        """Check whether the action is valid under the parser's configuration."""
+        if action == REDUCE:
+            return self._can_reduce()
+        elif is_nt(action):
+            return self._can_open()
+        elif is_gen(action):
+            return self._can_gen()
+
+    def _is_nt_id(self, action_id: int):
+        return 0 < action_id <= self.num_nt + 1
+
+    def _is_gen_id(self, action_id: int):
+        return action_id > self.num_nt
+
+    def _get_nt_id(self, action_id: int):
+        assert self._is_nt_id(action_id)
+        return action_id - 1
+
+    def _get_word_id(self, action_id: int):
+        assert self._is_gen_id(action_id)
+        return action_id - (1 + self.num_nt)
+
+    def _get_action_id(self, action_id):
+        if self._is_nt_id(action_id):
+            return self.NT_ID
+        elif self._is_gen_id(action_id):
+            return self.GEN_ID
+        else:
+            return self.REDUCE_ID
+
+    @property
+    def last_action(self):
+        """Return the last action taken."""
+        assert len(self.history.actions) > 0, 'no actions yet'
+        return self.history.actions[-1]
+
+    def last_action_is_nt(self):
+        if len(self.history.actions) == 0:
+            return False
+        else:
+            return self._is_nt_id(self.last_action)

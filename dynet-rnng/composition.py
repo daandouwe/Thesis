@@ -3,12 +3,6 @@ import dynet as dy
 from nn import Affine
 
 
-COMPOSITIONS = ('basic', 'attention', 'latent-factors', 'latent-attention')
-
-
-LATENT_COMPOSITIONS = ('latent-factors', 'latent-attention')
-
-
 class BiRecurrentComposition:
     """Bidirectional RNN composition function."""
     def __init__(self, model, input_size, num_layers, dropout):
