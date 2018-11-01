@@ -1,35 +1,34 @@
 from typing import NamedTuple
 
-import torch
-import torch.nn as nn
-from torch import Tensor
+import dynet as dy
+from dynet import Expression
 
-import matchbox
-import matchbox.functional as F
-
+from actions import SHIFT, REDUCE
 from tree import Node, InternalNode, LeafNode
 
 
 class StackElement(NamedTuple):
-    id: Tensor  # [1]
-    emb: Tensor  # [1, emb_dim]
+    id: int
+    emb: Expression
     subtree: Node
     is_open_nt: bool
 
 
-class Stack(nn.Module):
-    def __init__(self, dictionary, word_embedding, nt_embedding, encoder, composer, device):
-        super(Stack, self).__init__()
-        assert (word_embedding.embedding_dim == nt_embedding.embedding_dim)
+class Stack:
+
+    def __init__(self, model, dictionary, word_embedding, nt_embedding, encoder, composer, device):
+        word_embedding_dim = word_embedding.shape()[1]
+        nt_embedding_dim = nt_embedding.shape()[1]
+        assert (word_embedding_dim == nt_embedding_dim)
 
         self.dictionary = dictionary
         self.device = device
-        self.embedding_dim = word_embedding.embedding_dim
+        self.embedding_dim = word_embedding_dim
         self.word_embedding = word_embedding
         self.nt_embedding = nt_embedding
         self.encoder = encoder
         self.composer = composer
-        self.empty_emb = nn.Parameter(torch.zeros(1, self.embedding_dim, device=device))
+        self.empty_emb = model.add_parameters(self.embedding_dim, init='glorot')
         self._stack = []
         self._num_open_nts = 0
 
@@ -42,26 +41,26 @@ class Stack(nn.Module):
         self.encoder.initialize()
         self.encoder.push(self.empty_emb)
 
-    def open(self, nt_id: Tensor):  # [1]
-        emb = self.nt_embedding(nt_id)  # [1, emb_dim]
+    def open(self, nt_id: int):
+        emb = self.nt_embedding[nt_id]
         self.encoder.push(emb)
-        subtree = InternalNode(self.dictionary.i2n[nt_id.item()])
+        subtree = InternalNode(self.dictionary.i2n[nt_id])
         self.attach_subtree(subtree)
         self._stack.append(StackElement(nt_id, emb, subtree, True))
         self._num_open_nts += 1
 
-    def push(self, word_id: Tensor):  # [1]
-        emb = self.word_embedding(word_id)  # [1, emb_dim]
+    def push(self, word_id: int):
+        emb = self.word_embedding[word_id]
         self.encoder.push(emb)
-        subtree = LeafNode(self.dictionary.i2w[word_id.item()])
+        subtree = LeafNode(self.dictionary.i2w[word_id])
         self.attach_subtree(subtree)
         self._stack.append(StackElement(word_id, emb, subtree, False))
 
     def pop(self):
         return self._stack.pop()
 
-    def attach_subtree(self, subtree):
-        """Add subtree as rightmost child to rightmost open nonterminal."""
+    def attach_subtree(self, subtree: Node):
+        """Add subtree to rightmost open nonterminal as rightmost child."""
         for node in self._stack[::-1]:
             if node.is_open_nt:
                 node.subtree.add_child(subtree)
@@ -77,11 +76,8 @@ class Stack(nn.Module):
         head = self.pop()
         # Gather child embeddings.
         sequence_len = len(children) + 1
-        child_embeddings = [child.emb.unsqueeze(0) for child in children]
-        child_embeddings = torch.cat(child_embeddings, dim=1)  # tensor (1, seq_len, emb_dim)
-        head_embedding = head.emb  # tensor (1, emb_dim)
         # Compute new representation.
-        reduced_emb = self.composer(head_embedding, child_embeddings)
+        reduced_emb = self.composer(head.emb, [child.emb for child in children])
         # Pop hidden states from StackLSTM.
         for _ in range(sequence_len):
             self.encoder.pop()
@@ -100,36 +96,39 @@ class Stack(nn.Module):
         return len(self._stack) == 0
 
     def is_finished(self):
-        return self._stack[0].is_open_nt # (S needs to be closed)
+        if self.is_empty():
+            return False
+        else:
+            return not self._stack[0].is_open_nt # (S needs to be closed)
 
     @property
     def num_open_nts(self):
         return self._num_open_nts
 
 
-class Buffer(nn.Module):
-    def __init__(self, dictionary, embedding, encoder, device):
-        super(Buffer, self).__init__()
+class Buffer:
+
+    def __init__(self, model, dictionary, embedding, encoder, device):
         self.dictionary = dictionary
-        self.embedding_dim = embedding.embedding_dim
+        self.embedding_dim = embedding.shape()[1]
         self.embedding = embedding
         self.encoder = encoder
         self.device = device
-        self.empty_emb = nn.Parameter(torch.zeros(1, self.embedding_dim, device=self.device))
+        self.empty_emb = model.add_parameters(self.embedding_dim, init='glorot')
         self._buffer = []
 
     def state(self):
-        words = [self.dictionary.i2w[word_id.item()] for word_id in self._buffer]
+        words = [self.dictionary.i2w[word_id] for word_id in self._buffer]
         return f'Buffer: {words}'
 
-    def initialize(self, sentence: Tensor):
+    def initialize(self, sentence: list):
         """Embed and encode the sentence."""
         self._buffer = []
         self.encoder.initialize()
         self.encoder.push(self.empty_emb)
-        for word_id in reversed(sentence.unbind(1)):  # [1]
+        for word_id in reversed(sentence):
             self._buffer.append(word_id)
-            self.encoder.push(self.embedding(word_id))
+            self.encoder.push(self.embedding[word_id])
 
     def pop(self):
         self.encoder.pop()
@@ -139,20 +138,19 @@ class Buffer(nn.Module):
         return len(self._buffer) == 0
 
 
-class History(nn.Module):
+class History:
 
-    def __init__(self, dictionary, embedding, encoder, device):
-        super(History, self).__init__()
+    def __init__(self, model, dictionary, embedding, encoder, device):
         self.dictionary = dictionary
-        self.embedding_dim = embedding.embedding_dim
+        self.embedding_dim = embedding.shape()[1]
         self.embedding = embedding
         self.encoder = encoder
         self.device = device
-        self.empty_emb = nn.Parameter(torch.zeros(1, self.embedding_dim, device=device))
+        self.empty_emb = model.add_parameters(self.embedding_dim, init='glorot')
         self._history = []
 
     def state(self):
-        actions = [self.dictionary.i2a[action_id.item()] for action_id in self._history]
+        actions = [self.dictionary.i2a[action_id] for action_id in self._history]
         return f'History: {actions}'
 
     def initialize(self):
@@ -160,9 +158,9 @@ class History(nn.Module):
         self.encoder.initialize()
         self.encoder.push(self.empty_emb)
 
-    def push(self, action_id: Tensor):  # [1]
+    def push(self, action_id):
         self._history.append(action_id)
-        self.encoder.push(self.embedding(action_id))
+        self.encoder.push(self.embedding[action_id])
 
     @property
     def actions(self):
@@ -173,16 +171,16 @@ class History(nn.Module):
         return len(self._history) == 0
 
 
-class DiscParser(nn.Module):
+class DiscParser:
 
     def __init__(self):
-        super(DiscParser, self).__init__()
+        pass
 
     def state(self):
         return '\n'.join(
-            (f'Parser', self.stack.state(), self.buffer.state(), self.history.state(), ''))
+            (f'Parser', self.stack.state(), self.buffer.state(), self.history.state()))
 
-    def initialize(self, sentence):
+    def initialize(self, sentence: list):
         """Initialize all the components of the parser."""
         self.buffer.initialize(sentence)
         self.stack.initialize()
@@ -199,35 +197,35 @@ class DiscParser(nn.Module):
         return cond1 and cond2
 
     def _can_reduce(self):
-        cond1 = not self._is_nt(self.last_action)  # TODO
+        cond1 = not self.last_action_is_nt()
         cond2 = self.stack.num_open_nts >= 2
         cond3 = self.buffer.is_empty()
         return cond1 and (cond2 or cond3)
 
     def _shift(self):
-        assert self._can_shift(), f'cannot shift: {self}'
+        assert self._can_shift(), f'cannot shift: {self.state()}'
         self.stack.push(self.buffer.pop())
 
-    def _open(self, nt_index: Tensor):
-        assert self._can_open(), f'cannot open: {self}'
+    def _open(self, nt_index: int):
+        assert self._can_open(), f'cannot open: {self.state()}'
         self.stack.open(nt_index)
 
     def _reduce(self):
-        assert self._can_reduce(), f'cannot reduce: {self}'
+        assert self._can_reduce(), f'cannot reduce: {self.state()}'
         self.stack.reduce()
 
     def parser_representation(self):
         """Return the representations of the stack, buffer and history."""
-        s = self.stack.encoder.top    # (1, stack_lstm_hidden)
-        b = self.buffer.encoder.top   # (1, buffer_lstm_hidden)
-        h = self.history.encoder.top  # (1, action_lstm_hidden)
-        return torch.cat((s, b, h), dim=-1)
+        s = self.stack.encoder.top
+        b = self.buffer.encoder.top
+        h = self.history.encoder.top
+        return dy.concatenate([s, b, h], d=0)
 
-    def parse_step(self, action: str, action_id: Tensor):
+    def parse_step(self, action: str, action_id: int):
         """Updates parser one step give the action."""
-        if action == 'SHIFT':
+        if action == SHIFT:
             self._shift()
-        elif action == 'REDUCE':
+        elif action == REDUCE:
             self._reduce()
         else:
             self._open(self._get_nt(action_id))
@@ -235,17 +233,17 @@ class DiscParser(nn.Module):
 
     def is_valid_action(self, action: str):
         """Check whether the action is valid under the parser's configuration."""
-        if action == 'SHIFT':
+        if action == SHIFT:
             return self._can_shift()
-        elif action == 'REDUCE':
+        elif action == REDUCE:
             return self._can_reduce()
         else:
             return self._can_open()
 
-    def _is_nt(self, action_id):
+    def _is_nt(self, action_id: int):
         return action_id >= 2
 
-    def _get_nt(self, action_id):
+    def _get_nt(self, action_id: int):
         assert self._is_nt(action_id)
         return action_id - 2
 
@@ -257,4 +255,11 @@ class DiscParser(nn.Module):
     @property
     def last_action(self):
         """Return the last action taken."""
+        assert len(self.history.actions) > 0, 'no actions yet'
         return self.history.actions[-1]
+
+    def last_action_is_nt(self):
+        if len(self.history._history) == 0:
+            return False
+        else:
+            return self._is_nt(self.history.actions[-1])

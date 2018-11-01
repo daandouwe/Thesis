@@ -1,52 +1,25 @@
-import torch
-import torch.nn as nn
+import dynet as dy
 
 
-def orthogonal_init(lstm):
-    for name, param in lstm.named_parameters():
-        if name.startswith('weight'):
-            nn.init.orthogonal_(param)
+class Affine:
+    """Computes affine transformation Wx + b."""
+    def __init__(self, model, input_size, output_size):
+        self.W = model.add_parameters((output_size, input_size), init='glorot')
+        self.b = model.add_parameters(output_size, init='glorot')
+
+    def __call__(self, x):
+        return self.W * x + self.b
 
 
-def bias_init(lstm):
-    """Positive forget gate bias (Jozefowicz et al., 2015)."""
-    for name, param in lstm.named_parameters():
-        if name.startswith('bias'):
-            nn.init.constant_(param, 0.)
-            dim = param.size(0)
-            param[dim//4:dim//2].data.fill_(1.)
-
-
-def init_lstm(lstm, orthogonal=True):
-    """Initialize the weights and forget bias of an LSTM."""
-    bias_init(lstm)
-    if orthogonal:
-        orthogonal_init(lstm)
-
-
-class MLP(nn.Module):
+class MLP:
     """A simple multilayer perceptron with one hidden layer and dropout."""
-    def __init__(self, input_size, hidden_size, output_size, dropout=0., activation='Tanh'):
-        super(MLP, self).__init__()
-        self.fc1 = nn.Linear(input_size, hidden_size)
-        self.fc2 = nn.Linear(hidden_size, output_size)
-        self.act_fn = getattr(nn, activation)()
-        self.dropout = nn.Dropout(p=dropout)
-        self.initialize()
+    def __init__(self, model, input_size, hidden_size, output_size, dropout=0.):
+        self.fc1 = Affine(model, input_size, hidden_size)
+        self.fc2 = Affine(model, hidden_size, output_size)
+        self.dropout = dropout
 
-    def initialize(self):
-        """Initialize parameters with Glorot."""
-        for param in self.parameters():
-            if param.dim() > 1 and param.requires_grad:
-                nn.init.xavier_uniform_(param)
-
-    def forward(self, x):
+    def __call__(self, x):
         h = self.fc1(x)
-        h = self.act_fn(h)
-        h = self.dropout(h)
-        out = self.fc2(h)
-        return out
-
-
-if __name__ == '__main__':
-    mlp = MLP(2, 3, 3)
+        h = dy.rectify(h)
+        h = dy.dropout(h, self.dropout)
+        return self.fc2(h)

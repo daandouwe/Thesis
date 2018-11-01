@@ -1,17 +1,5 @@
-"""
-1. DiscRNNG inherits from DiscParser, GenRNNG inherits from GenParser.
-2. We keep model.forward(self, sentence, actions) but now
-   both sentence and actions are isntances of `torch.LongTensor`.
-   This will allow use to use Matchbox's `@matchbox.batch`
-"""
-
-import torch
-from torch import Tensor
-import torch.nn as nn
-import torch.nn.functional as F
-
-import matchbox
-# import matchbox.functional as F
+import dynet as dy
+import numpy as np
 
 from parser import DiscParser, Stack, Buffer, History
 from encoder import StackLSTM
@@ -26,15 +14,13 @@ class DiscRNNG(DiscParser):
 
     def __init__(
         self,
+        model,
         dictionary,
         num_words,
         num_nt,
         word_emb_dim,
         nt_emb_dim,
         action_emb_dim,
-        stack_emb_dim,
-        buffer_emb_dim,
-        history_emb_dim,
         stack_hidden_size,
         buffer_hidden_size,
         history_hidden_size,
@@ -58,51 +44,70 @@ class DiscRNNG(DiscParser):
         self.device = device
 
         # Embeddings
-        self.word_embedding = nn.Embedding(num_words, word_emb_dim)
-        self.nt_embedding = nn.Embedding(num_nt, nt_emb_dim)
-        self.action_embedding = nn.Embedding(self.num_actions, action_emb_dim)
+        self.word_embedding = model.add_lookup_parameters((num_words, word_emb_dim))
+        self.nt_embedding = model.add_lookup_parameters((num_nt, nt_emb_dim))
+        self.action_embedding = model.add_lookup_parameters((self.num_actions, action_emb_dim))
 
         # Encoders
         self.stack_encoder = StackLSTM(
-            stack_emb_dim, stack_hidden_size, stack_num_layers, dropout, device)
+            model, word_emb_dim, stack_hidden_size, stack_num_layers, dropout)
         self.buffer_encoder = StackLSTM(
-            buffer_emb_dim, buffer_hidden_size, buffer_num_layers, dropout, device)
+            model, word_emb_dim, buffer_hidden_size, buffer_num_layers, dropout)
         self.history_encoder = StackLSTM(
-            history_emb_dim, history_hidden_size, history_num_layers, dropout, device)
+            model, action_emb_dim, history_hidden_size, history_num_layers, dropout)
 
         # Composition function
-        self.composer = BiRecurrentComposition(stack_emb_dim, stack_num_layers, dropout, device)
-        # self.composer = AttentionComposition(stack_emb_dim, stack_num_layers, dropout, device)
+        # self.composer = BiRecurrentComposition(model, word_emb_dim, stack_num_layers, dropout)
+        self.composer = AttentionComposition(model, word_emb_dim, stack_num_layers, dropout)
 
         # Transition system
         self.stack = Stack(
-            dictionary, self.word_embedding, self.nt_embedding, self.stack_encoder, self.composer, device)
+            model, dictionary, self.word_embedding, self.nt_embedding, self.stack_encoder, self.composer, device)
         self.buffer = Buffer(
-            dictionary, self.word_embedding, self.buffer_encoder, device)
+            model, dictionary, self.word_embedding, self.buffer_encoder, device)
         self.history = History(
-            dictionary, self.action_embedding, self.history_encoder, device)
+            model, dictionary, self.action_embedding, self.history_encoder, device)
 
         # Scorers
         parse_repr_dim = stack_hidden_size + buffer_hidden_size + history_hidden_size
-        self.action_mlp = MLP(parse_repr_dim, mlp_hidden, self.num_actions)
+        self.action_mlp = MLP(model, parse_repr_dim, mlp_hidden, self.num_actions)
 
-        self.criterion = nn.CrossEntropyLoss()
-
-    def forward(self, words: Tensor, actions: Tensor):
-        """Forward pass only used for training."""
-        # words: [1, seq_len]
-        # actions: [1, seq_len]
+    def __call__(self, words, actions):
+        """Forward pass for training."""
         self.initialize(words)
-        llh = 0.
-        for i, action_id in enumerate(actions.unbind(1)):
-            print(self.state())
-            # This get's you the string, e.g. `NT(S)` or `REDUCE`.
-            action = self.dictionary.i2a[action_id.item()]
+        nll = 0.0
+        for action_id in actions:
+            # This gets you the string, e.g. `NT(S)` or `REDUCE`.
+            action = self.dictionary.i2a[action_id]
             # Compute action loss
             u = self.parser_representation()
-            action_logprobs = F.log_softmax(self.action_mlp(u))
-            llh += action_logprobs[:, action_id]
+            action_logits = self.action_mlp(u)
+            nll += dy.pickneglogsoftmax(action_logits, action_id)
             # Move the parser ahead.
             self.parse_step(action, action_id)
-        print(self.state())
-        return llh
+        return nll
+
+    def parse(self, words):
+        """Greedy decoding for prediction."""
+        nll = 0.0
+        self.initialize(words)
+        while not self.stack.is_finished():
+            u = self.parser_representation()
+            action_logits = self.action_mlp(u)
+            mask = self.valid_actions_mask()
+            allowed_logits = action_logits + mask
+            action_id = np.argmax(allowed_logits.value())
+            nll += dy.pickneglogsoftmax(action_logits, action_id)
+            action = self.dictionary.i2a[action_id]
+            self.parse_step(action, action_id)
+        return self.stack.get_tree(), nll
+
+    def valid_actions_mask(self):
+        """Mask invallid actions for decoding."""
+        mask = np.zeros(self.num_actions)
+        for i in range(self.num_actions):
+            if self.is_valid_action(self.dictionary.i2a[i]):
+                mask[i] = 0.
+            else:
+                mask[i] = -np.inf
+        return dy.inputTensor(mask)

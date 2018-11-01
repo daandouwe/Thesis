@@ -1,129 +1,88 @@
 #!/usr/bin/env python
 from typing import NamedTuple
+import time
 
-import torch
-import torch.nn as nn
+import dynet as dy
+import numpy as np
 
-import matchbox
-
+from data import Corpus
 from model import DiscRNNG
+from actions import SHIFT, REDUCE, NT, is_nt, get_nt
 
 
-SENT = dict(
-    tagged_tree='(S (NP (NNP Avco) (NNP Corp.)) (VP (VBD received) (NP (NP (DT an) (ADJP (QP ($ $) (CD 11.8) (CD million))) (NNP Army) (NN contract)) (PP (IN for) (NP (NN helicopter) (NNS engines))))) (. .))',
-    tree='(S (NP Avco Corp.) (VP received (NP (NP an (ADJP (QP $ 11.8 million)) Army contract) (PP for (NP helicopter engines)))) .)',
-    sentence='Avco Corp. received an $ 11.8 million Army contract for helicopter engines .'.split(),
-    actions=[
-        'NT(S)',
-        'NT(NP)',
-        'SHIFT',
-        'SHIFT',
-        'REDUCE',
-        'NT(VP)',
-        'SHIFT',
-        'NT(NP)',
-        'NT(NP)',
-        'SHIFT',
-        'NT(ADJP)',
-        'NT(QP)',
-        'SHIFT',
-        'SHIFT',
-        'SHIFT',
-        'REDUCE',
-        'REDUCE',
-        'SHIFT',
-        'SHIFT',
-        'REDUCE',
-        'NT(PP)',
-        'SHIFT',
-        'NT(NP)',
-        'SHIFT',
-        'SHIFT',
-        'REDUCE',
-        'REDUCE',
-        'REDUCE',
-        'REDUCE',
-        'SHIFT',
-        'REDUCE'
-    ]
-)
+BATCH_SIZE = 32
+PRINT_EVERY = 10
+EVAL_EVERY = 100
 
 
-def NT(nt):
-    return f'NT({nt})'
-
-def is_nt(action):
-    return action.startswith('NT(') and action.endswith(')')
-
-
-def get_nt(action):
-    assert is_nt(action)
-    return action[3:-1]
-
-
-class Dictionary(NamedTuple):
-    i2w: dict
-    i2a: dict
-    i2n: dict
-    w2i: dict
-    a2i: dict
-    n2i: dict
+def clock_time(seconds):
+    minutes, seconds = divmod(seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    days, hours = divmod(hours, 24)
+    hours, minutes, seconds = int(hours), int(minutes), int(seconds)
+    return "{}h{:02}m{:02}s".format(hours, minutes, seconds)
 
 
 def main():
-    word_vocab = list(sorted(set(SENT['sentence'])))
-    nt_vocab = list(sorted(set([get_nt(action) for action in SENT['actions'] if is_nt(action)])))
-    action_vocab = ['SHIFT', 'REDUCE'] + [NT(nt) for nt in nt_vocab]
 
-    i2w = word_vocab
-    i2a = action_vocab
-    i2n = nt_vocab
-    w2i = dict(zip(word_vocab, range(len(word_vocab))))
-    a2i = dict(zip(action_vocab, range(len(action_vocab))))
-    n2i = dict(zip(nt_vocab, range(len(nt_vocab))))
-
-    dictionary = Dictionary(
-        i2w,
-        i2a,
-        i2n,
-        w2i,
-        a2i,
-        n2i
+    corpus = Corpus(
+        train_path='../data/train/ptb.train.oracle',
+        dev_path='../data/dev/ptb.dev.oracle',
+        test_path='../data/test/ptb.test.oracle'
     )
-    print(w2i)
-    print(a2i)
-    print(n2i)
 
-    words = torch.tensor([dictionary.w2i[w] for w in SENT['sentence']]).unsqueeze(0)
-    actions = torch.tensor([dictionary.a2i[a] for a in SENT['actions']]).unsqueeze(0)
+    model = dy.Model()
+    trainer = dy.AdamTrainer(model)
 
-    print(words)
-    print(actions)
-
-    model = DiscRNNG(
-        dictionary=dictionary,
-        num_words=len(w2i),
-        num_nt=len(n2i),
-        word_emb_dim=10,
-        nt_emb_dim=10,
-        action_emb_dim=10,
-        stack_emb_dim=10,
-        buffer_emb_dim=10,
-        history_emb_dim=10,
-        stack_hidden_size=10,
-        buffer_hidden_size=10,
-        history_hidden_size=10,
+    rnng = DiscRNNG(
+        model=model,
+        dictionary=corpus.dictionary,
+        num_words=len(corpus.dictionary.w2i),
+        num_nt=len(corpus.dictionary.n2i),
+        word_emb_dim=100,
+        nt_emb_dim=100,
+        action_emb_dim=20,
+        stack_hidden_size=100,
+        buffer_hidden_size=100,
+        history_hidden_size=20,
         stack_num_layers=2,
         buffer_num_layers=2,
         history_num_layers=2,
-        mlp_hidden=10,
+        mlp_hidden=100,
         dropout=0.3,
         device=None
     )
 
-    llh = model(words, actions)
-    loss = -llh
+    train_batches = corpus.train.batches(BATCH_SIZE)
+    test_sentence = train_batches[0][0][0]
+    num_batches = len(train_batches)
+    t0 = time.time()
+    losses = []
+    for step, minibatch in enumerate(train_batches, 1):
+        dy.renew_cg()
 
+        loss = dy.esum([rnng(words, actions) for words, actions in minibatch])
+        loss /= BATCH_SIZE
+
+        loss.forward()
+        loss.backward()
+        trainer.update()
+
+        losses.append(loss.value())
+        avg_loss = np.mean(losses[-PRINT_EVERY:])
+        elapsed = time.time() - t0
+        updates_per_sec = step / elapsed
+        sents_per_sec = BATCH_SIZE * updates_per_sec
+        eta = (num_batches - step) / updates_per_sec
+
+
+        if step % PRINT_EVERY == 0:
+            print(f'| {step}/{num_batches} ({step/num_batches:.0%}) | Loss {avg_loss:.3f} | Elapsed {clock_time(elapsed)} | Eta {clock_time(eta)} | {sents_per_sec:.1f} sents/sec | {updates_per_sec:.1f} updates/sec |')
+
+        if step % EVAL_EVERY == 0:
+            dy.renew_cg()
+            tree, nll = rnng.parse(test_sentence)
+            print(tree.linearize(with_tag=False), -nll.value())
 
 
 if __name__ == '__main__':
