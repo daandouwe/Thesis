@@ -10,7 +10,7 @@ import train
 def main():
 
     parser = argparse.ArgumentParser(description='RNNG parser',
-                                     fromfile_prefix_chars='@') # Enable loading args from textfile
+                                     fromfile_prefix_chars='@') # enable loading args from textfile
     # Choose mode
     parser.add_argument('mode', choices=['train', 'predict', 'inspect', 'latent'],
                         help='what would you like to do?')
@@ -19,7 +19,6 @@ def main():
 
     # Debugging
     parser.add_argument('-d', '--debug', action='store_true')
-    parser.add_argument('-m', '--memory-debug', action='store_true')
 
     # Data arguments
     parser.add_argument('--data', type=str, default='../data',

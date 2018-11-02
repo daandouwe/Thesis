@@ -7,11 +7,8 @@ import dynet as dy
 import numpy as np
 
 from data import Corpus
-from model import DiscRNNG, GenRNNG
 from trainer import Trainer
 from utils import Timer, write_losses, get_folders, write_args
-
-DEBUG_NUM_LINES = 10
 
 
 def main(args):
@@ -31,9 +28,6 @@ def main(args):
     # Save arguments.
     write_args(args, logdir)
 
-    if args.debug:
-        args.max_lines = DEBUG_NUM_LINES
-
     # Get data
     corpus = Corpus(
         train_path=os.path.join(args.data, 'train/ptb.train.oracle'),
@@ -43,68 +37,23 @@ def main(args):
         model=args.model
     )
 
-    # Create model
-    model = dy.Model()
-    if args.model == 'disc':
-        rnng = DiscRNNG(
-            model=model,
-            dictionary=corpus.dictionary,
-            num_words=len(corpus.dictionary.w2i),
-            num_nt=len(corpus.dictionary.n2i),
-            word_emb_dim=args.word_emb_dim,
-            nt_emb_dim=args.nt_emb_dim,
-            action_emb_dim=args.action_emb_dim,
-            stack_hidden_size=args.stack_lstm_hidden,
-            buffer_hidden_size=args.buffer_lstm_hidden,
-            history_hidden_size=args.history_lstm_hidden,
-            stack_num_layers=args.lstm_num_layers,
-            buffer_num_layers=args.lstm_num_layers,
-            history_num_layers=args.lstm_num_layers,
-            composition=args.composition,
-            mlp_hidden=args.mlp_hidden,
-            dropout=args.dropout
-        )
-    elif args.model == 'gen':
-        rnng = GenRNNG(
-            model=model,
-            dictionary=corpus.dictionary,
-            num_words=len(corpus.dictionary.w2i),
-            num_nt=len(corpus.dictionary.n2i),
-            word_emb_dim=args.word_emb_dim,
-            nt_emb_dim=args.nt_emb_dim,
-            action_emb_dim=args.action_emb_dim,
-            stack_hidden_size=args.stack_lstm_hidden,
-            terminal_hidden_size=args.terminal_lstm_hidden,
-            history_hidden_size=args.history_lstm_hidden,
-            stack_num_layers=args.lstm_num_layers,
-            terminal_num_layers=args.lstm_num_layers,
-            history_num_layers=args.lstm_num_layers,
-            composition=args.composition,
-            mlp_hidden=args.mlp_hidden,
-            dropout=args.dropout
-        )
-
-    # Create optimizer
-    if args.optimizer == 'sgd':
-        optimizer = dy.SimpleSGDTrainer(model, learning_rate=args.lr)
-    elif args.optimizer == 'adam':
-        optimizer = dy.AdamTrainer(model, alpha=args.lr)
-    optimizer.set_clip_threshold(args.clip)
-    model.set_weight_decay(args.weight_decay)
-
     # Create trainer
     trainer = Trainer(
+        args=args,
         rnng_type=args.model,
-        model=rnng,
         dictionary=corpus.dictionary,
-        optimizer=optimizer,
         train_dataset=corpus.train.data,
         dev_dataset=corpus.dev.data,
         test_dataset=corpus.test.data,
         dev_proposal_samples=args.dev_proposal_samples,
         test_proposal_samples=args.test_proposal_samples,
         lr=args.lr,
+        max_grad_norm=args.clip,
+        weight_decay=args.weight_decay,
+        use_glove=args.use_glove,
+        glove_dir=args.glove_dir,
         fine_tune_embeddings=args.fine_tune_embeddings,
+        freeze_embeddings=args.freeze_embeddings,
         print_every=args.print_every,
         eval_every=args.eval_every,
         batch_size=args.batch_size,
@@ -117,7 +66,6 @@ def main(args):
         log_dir=logdir,
         data_dir=args.data,
         evalb_dir=args.evalb_dir,
-        args=args,
     )
 
     # Train the model
@@ -126,6 +74,7 @@ def main(args):
     except KeyboardInterrupt:
         print('-'*99)
         print('Exiting from training early.')
+    trainer.save_checkpoint()
 
     trainer.check_dev()
 

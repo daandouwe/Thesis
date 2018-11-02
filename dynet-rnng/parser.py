@@ -277,17 +277,17 @@ class DiscParser:
         assert self._is_nt_id(action_id)
         return action_id - 2
 
-    @property
-    def last_action(self):
-        """Return the last action taken."""
-        assert len(self.history.actions) > 0, 'no actions yet'
-        return self.history.actions[-1]
-
     def last_action_is_nt(self):
         if len(self.history._history) == 0:
             return False
         else:
             return self._is_nt_id(self.last_action)
+
+    @property
+    def last_action(self):
+        """Return the last action taken."""
+        assert len(self.history.actions) > 0, 'no actions yet'
+        return self.history.actions[-1]
 
 
 class GenParser:
@@ -380,14 +380,14 @@ class GenParser:
         else:
             return self.REDUCE_ID
 
-    @property
-    def last_action(self):
-        """Return the last action taken."""
-        assert len(self.history.actions) > 0, 'no actions yet'
-        return self.history.actions[-1]
-
     def last_action_is_nt(self):
         if len(self.history.actions) == 0:
             return False
         else:
             return self._is_nt_id(self.last_action)
+
+    @property
+    def last_action(self):
+        """Return the last action taken."""
+        assert len(self.history.actions) > 0, 'no actions yet'
+        return self.history.actions[-1]

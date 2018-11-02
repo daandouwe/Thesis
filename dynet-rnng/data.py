@@ -1,32 +1,34 @@
 import os
+import json
 from tqdm import tqdm
 
 from actions import SHIFT, REDUCE, NT, GEN, is_nt, is_gen, get_nt, get_word
 
 
+def get_oracle_dict(oracle):
+    oracle_dict = {
+        'tree'     : oracle[0],
+        'tags'     : oracle[1],
+        'original' : oracle[2],
+        'lower'    : oracle[3],
+        'unked'    : oracle[4],
+        'actions'  : oracle[5:]
+    }
+    return oracle_dict
+
+
 def get_oracles(path):
     """Chunks the oracle file into sentences."""
-    def get_sent_dict(sent):
-        d = {
-                'tree'     : sent[0],
-                'tags'     : sent[1],
-                'original' : sent[2],
-                'lower'    : sent[3],
-                'unked'    : sent[4],
-                'actions'  : sent[5:]
-            }
-        return d
-
     oracles = []
     with open(path) as f:
-        sent = []
+        oracle = []
         for line in f:
             if line == '\n':
-                oracles.append(sent)
-                sent = []
+                oracles.append(oracle)
+                oracle = []
             else:
-                sent.append(line.rstrip())
-        return [get_sent_dict(sent) for sent in oracles if sent]
+                oracle.append(line.rstrip())
+        return [get_oracle_dict(oracle) for oracle in oracles if oracle]
 
 
 def make_generetive(oracles, text):
@@ -82,6 +84,12 @@ class Dictionary:
         actions = [REDUCE] + [NT(nt) for nt in nonterminals] + [GEN(word) for word in words]
         return words, actions, nonterminals
 
+    def save(self, path):
+        path = path + '.json' if not path.endswith('.json') else path
+        state = dict(n2i=self.n2i, a2i=self.a2i, w2i=self.w2i)
+        with open(path, 'w') as f:
+            json.dump(state, f, indent=4)
+
 
 class Data:
 
@@ -101,13 +109,6 @@ class Data:
             self.actions.append(
                 [dictionary.a2i[action] for action in oracle['actions']])
 
-    def batches(self, batch_size):
-        def ceil_div(a, b):
-            return ((a - 1) // b) + 1
-        data = self.data
-        return [data[i*batch_size:(i+1)*batch_size]
-            for i in range(ceil_div(len(data), batch_size))]
-
     @property
     def data(self):
         return list(zip(self.words, self.actions))
@@ -119,4 +120,4 @@ class Corpus:
         self.dictionary = Dictionary(train_path, text=text, model=model)
         self.train = Data(train_path, self.dictionary, text=text, model=model)
         self.dev = Data(dev_path, self.dictionary, text=text, model=model)
-        self.test =  Data(test_path, self.dictionary, text=text, model=model)
+        self.test = Data(test_path, self.dictionary, text=text, model=model)

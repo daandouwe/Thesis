@@ -28,16 +28,23 @@ class AttentionComposition:
     """Bidirectional RNN composition function with attention."""
     def __init__(self, model, input_size, num_layers, dropout):
         assert input_size % 2 == 0, 'hidden size must be even'
+        self.input_size = input_size
+        self.num_layers = num_layers
+        self.dropout = dropout
         self.fwd_rnn_builder = dy.VanillaLSTMBuilder(num_layers, input_size, input_size//2, model)
         self.bwd_rnn_builder = dy.VanillaLSTMBuilder(num_layers, input_size, input_size//2, model)
-        self.fwd_rnn_builder.set_dropouts(dropout, dropout)
-        self.bwd_rnn_builder.set_dropouts(dropout, dropout)
         self.V = model.add_parameters((input_size, input_size), init='glorot')
         self.gating = Affine(model, 2*input_size, input_size)
         self.head = Affine(model, input_size, input_size)
         self.training = True
 
     def __call__(self, head, children):
+        if self.training:
+            self.fwd_rnn_builder.set_dropouts(self.dropout, self.dropout)
+            self.bwd_rnn_builder.set_dropouts(self.dropout, self.dropout)
+        else:
+            self.fwd_rnn_builder.disable_dropout()
+            self.bwd_rnn_builder.disable_dropout()
         fwd_rnn = self.fwd_rnn_builder.initial_state()
         bwd_rnn = self.bwd_rnn_builder.initial_state()
         hf = fwd_rnn.transduce([head] + children)  # ['NP', 'the', 'cat']

@@ -2,6 +2,7 @@ import dynet as dy
 import numpy as np
 
 from parser import DiscParser, GenParser, Stack, Buffer, History, Terminal
+from embedding import Embedding, FineTuneEmbedding, PretrainedEmbedding
 from encoder import StackLSTM
 from composition import AttentionComposition, BiRecurrentComposition
 from nn import MLP
@@ -28,6 +29,10 @@ class DiscRNNG(DiscParser):
         composition,
         mlp_hidden,
         dropout,
+        use_glove=False,
+        glove_dir=None,
+        fine_tune_embeddings=False,
+        freeze_embeddings=False
     ):
         assert composition in ('basic', 'attention'), composition
         self.num_words = num_words
@@ -41,9 +46,21 @@ class DiscRNNG(DiscParser):
         self.dictionary = dictionary
 
         # Embeddings
-        self.word_embedding = model.add_lookup_parameters((num_words, word_emb_dim))
-        self.nt_embedding = model.add_lookup_parameters((num_nt, nt_emb_dim))
-        self.action_embedding = model.add_lookup_parameters((self.num_actions, action_emb_dim))
+        self.nt_embedding = Embedding(model, num_nt, nt_emb_dim)
+        self.action_embedding = Embedding(model, self.num_actions, action_emb_dim)
+        if use_glove:
+            if fine_tune_embeddings:
+                self.word_embedding = FineTuneEmbedding(
+                    model, num_words, word_emb_dim, glove_dir, dictionary.i2w)
+            else:
+                self.word_embedding = PretrainedEmbedding(
+                    model, num_words, word_emb_dim, glove_dir, dictionary.i2w, freeze=freeze_embeddings)
+        else:
+            self.word_embedding = Embedding(model, num_words, word_emb_dim)
+
+        # self.word_embedding = model.add_lookup_parameters((num_words, word_emb_dim))
+        # self.nt_embedding = model.add_lookup_parameters((num_nt, nt_emb_dim))
+        # self.action_embedding = model.add_lookup_parameters((self.num_actions, action_emb_dim))
 
         # Encoders
         self.stack_encoder = StackLSTM(
@@ -175,21 +192,8 @@ class GenRNNG(GenParser):
         # Scorers
         parse_repr_dim = stack_hidden_size + terminal_hidden_size + history_hidden_size
         self.action_mlp = MLP(model, parse_repr_dim, mlp_hidden, 3)  # REDUCE, NT, GEN
-        self.nt_mlp = MLP(model, parse_repr_dim, mlp_hidden, self.num_nt)
-        self.word_mlp = MLP(model, parse_repr_dim, mlp_hidden, self.num_words)
-
-    # def __call__(self, words, actions):
-    #     """Forward pass for training."""
-    #     self.initialize()
-    #     nll = 0.
-    #     for action_id in actions:
-    #         # Compute action loss
-    #         u = self.parser_representation()
-    #         action_logits = self.action_mlp(u)
-    #         nll += dy.pickneglogsoftmax(action_logits, action_id)
-    #         # Move the parser ahead.
-    #         self.parse_step(self.dictionary.i2a[action_id], action_id)
-    #     return nll
+        self.nt_mlp = MLP(model, parse_repr_dim, mlp_hidden, self.num_nt)  # NT(S), NT(NP), ...
+        self.word_mlp = MLP(model, parse_repr_dim, mlp_hidden, self.num_words)  # GEN(the), GEN(cat), ...
 
     def __call__(self, words, actions):
         """Forward pass for training."""
@@ -209,22 +213,6 @@ class GenRNNG(GenParser):
             # Move the parser ahead.
             self.parse_step(self.dictionary.i2a[action_id], action_id)
         return nll
-
-    # def sample(self):
-    #     nll = 0.
-    #     self.initialize()
-    #     while not self.stack.is_finished():
-    #         u = self.parser_representation()
-    #         action_logits = self.action_mlp(u)
-    #         mask = self.valid_actions_mask()
-    #         allowed_logits = action_logits + mask
-    #         allowed_probs = dy.softmax(allowed_logits).value()
-    #         allowed_probs = np.array(allowed_probs)
-    #         allowed_probs /= allowed_probs.sum()
-    #         action_id = np.random.choice(np.arange(len(allowed_probs)), p=allowed_probs)
-    #         nll += dy.pickneglogsoftmax(action_logits, action_id)
-    #         self.parse_step(self.dictionary.i2a[action_id], action_id)
-    #     return self.stack.get_tree(), nll
 
     def valid_actions_mask(self):
         """Mask invallid actions for decoding."""

@@ -1,4 +1,5 @@
 import os
+import json
 import itertools
 import time
 import multiprocessing as mp
@@ -10,6 +11,7 @@ from tensorboardX import SummaryWriter
 
 from data import Corpus
 # from decode import GreedyDecoder, GenerativeImportanceDecoder
+from model import DiscRNNG, GenRNNG
 from eval import evalb
 from utils import Timer, get_folders, write_args, ceil_div
 
@@ -18,12 +20,16 @@ class Trainer:
     """Trainer for RNNG."""
     def __init__(self,
                  rnng_type='disc',
-                 model=None,
                  dictionary=None,
                  optimizer=None,
                  lr=None,
                  learning_rate_decay=2.0,  # lr /= learning_rate_decay
+                 max_grad_norm=5.0,
+                 weight_decay=1e-6,
+                 use_glove=False,
+                 glove_dir=None,
                  fine_tune_embeddings=False,
+                 freeze_embeddings=False,
                  print_every=1,
                  eval_every=-1,  # default is every epoch (-1)
                  train_dataset=[],
@@ -45,7 +51,6 @@ class Trainer:
         assert rnng_type in ('disc', 'gen'), rnng_type
 
         self.rnng_type = rnng_type
-        self.model = model
         self.dictionary = dictionary
         self.args = args
 
@@ -53,8 +58,13 @@ class Trainer:
         self.optimizer = optimizer
         self.lr = lr
         self.learning_rate_decay = learning_rate_decay
+        self.max_grad_norm = max_grad_norm
+        self.weight_decay = weight_decay
         self.elbo_objective = elbo_objective
+        self.use_glove = use_glove
+        self.glove_dir = glove_dir
         self.fine_tune_embeddings = fine_tune_embeddings
+        self.freeze_embeddings = freeze_embeddings
 
         self.print_every = print_every
         self.max_epochs = max_epochs
@@ -87,13 +97,16 @@ class Trainer:
         self.tensorboard_writer = SummaryWriter(log_dir)
 
     def construct_paths(self):
-        self.checkpoint_path = os.path.join(self.checkpoint_dir, 'model.pt')
+        # Output paths
+        self.model_checkpoint_path = os.path.join(self.checkpoint_dir, 'model.dy')
+        self.state_checkpoint_path = os.path.join(self.checkpoint_dir, 'state.json')
+        self.dict_checkpoint_path = os.path.join(self.checkpoint_dir, 'dict.json')
         self.loss_path = os.path.join(self.log_dir, 'loss.csv')
-
+        # Dev paths
         self.dev_gold_path = os.path.join(self.data_dir, 'dev', f'{self.name}.dev.trees')
         self.dev_pred_path = os.path.join(self.output_dir, f'{self.name}.dev.pred.trees')
         self.dev_result_path = os.path.join(self.output_dir, f'{self.name}.dev.result')
-
+        # Test paths
         self.test_gold_path = os.path.join(self.data_dir, 'test', f'{self.name}.test.trees')
         self.test_pred_path = os.path.join(self.output_dir, f'{self.name}.test.pred.trees')
         self.test_result_path = os.path.join(self.output_dir, f'{self.name}.test.result')
@@ -110,7 +123,11 @@ class Trainer:
             assert os.path.exists(self.dev_proposal_samples), self.dev_proposal_samples
             assert os.path.exists(self.test_proposal_samples), self.test_proposal_samples
 
-        # No upper limit of epochs or time when not specified.
+        # Construct model and optimizer
+        self.build_model()
+        self.build_optimizer()
+
+        # No upper limit of epochs or time when not specified
         for epoch in itertools.count(start=1):
             self.current_epoch = epoch
             if epoch > self.max_epochs:
@@ -118,16 +135,16 @@ class Trainer:
             if self.timer.elapsed() > self.max_time:
                 break
 
-            # Shuffle batches each epoch.
+            # Shuffle batches every epoch
             np.random.shuffle(self.train_dataset)
 
             # Train one epoch.
             self.train_epoch()
 
             if self.eval_every == -1:
-                # Check development f-score.
+                # Check development f-score
                 self.check_dev()
-                # Anneal learning rate depending on development set f-score.
+                # Anneal learning rate depending on development set f-score
                 self.anneal_lr()
 
             print('-'*99)
@@ -138,7 +155,7 @@ class Trainer:
     def train_epoch(self):
         """One epoch of sequential training."""
         ##
-        # self.model.train()
+        # self.rnng.train()
         ##
         epoch_timer = Timer()
         num_sentences = len(self.train_dataset)
@@ -149,24 +166,24 @@ class Trainer:
             if self.timer.elapsed() > self.max_time:
                 break
 
-            # Set learning rate.
             self.num_updates += 1
             processed += self.batch_size
 
             dy.renew_cg()
 
-            loss = dy.esum([self.model(words, actions) for words, actions in minibatch])
+            loss = dy.esum([self.rnng(words, actions) for words, actions in minibatch])
             loss /= self.batch_size
 
-            ##
-            # if self.fine_tune_embeddings:
-            #     loss += self.model.stack.word_embedding.delta_penalty()
-            ##
+            if self.fine_tune_embeddings:
+                delta_penalty = self.rnng.word_embedding.delta_penalty()
+                loss += delta_penalty
 
+            # Update parameters
             loss.forward()
             loss.backward()
             self.optimizer.update()
 
+            # Bookkeeping
             self.losses.append(loss.value())
 
             if step % self.print_every == 0:
@@ -182,54 +199,33 @@ class Trainer:
                     'train/loss', avg_loss, self.num_updates)
                 self.tensorboard_writer.add_scalar(
                     'train/learning-rate', self.get_lr(), self.num_updates)
+                if self.fine_tune_embeddings:
+                    self.tensorboard_writer.add_scalar(
+                        'train/embedding-l2', delta_penalty.value(), self.num_updates)
 
-                ## TODO
-                # if self.fine_tune_embeddings:
-                #     norm = self.model.stack.word_embedding.delta_norm().item()
-                #     self.tensorboard_writer.add_scalar('train/embedding-l2', norm, self.num_updates)
-                # ##
-
-                if self.elbo_objective:
-                    message = (
-                        f'| step {step:6d}/{num_batches:5d} ({step/num_batches:.0%}) ',
-                        f'| neg-elbo {avg_loss:7.3f} ',
-                        f'| loss {np.mean(self.model.criterion._train_losses[-self.print_every:]):.3f} ',
-                        f'| kl {np.mean(self.model.criterion._train_kl[-self.print_every:]):.3f} ',
-                        f'| lr {lr:.1e} ',
-                        f'| alpha {self.model.criterion.annealer._alpha:.3f} ',
-                        f'| temp {self.model.stack.encoder.composition.annealer._temp:.3f} '
-                        f'| {sents_per_sec:4.1f} sents/sec ',
-                        f'| {updates_per_sec:4.1f} updates/sec ',
-                        f'| elapsed {epoch_timer.format(epoch_timer.elapsed())} ',
-                        f'| eta {epoch_timer.format(eta)} '
-                    )
-                else:
-                    message = (
-                        f'| step {step:6d}/{num_batches:5d} ({step/num_batches:.0%}) ',
-                        f'| loss {avg_loss:7.3f} ',
-                        f'| lr {lr:.1e} ',
-                        f'| {sents_per_sec:4.1f} sents/sec ',
-                        f'| {updates_per_sec:4.1f} updates/sec ',
-                        f'| elapsed {epoch_timer.format(epoch_timer.elapsed())} ',
-                        f'| eta {epoch_timer.format(eta)} '
-                    )
+                message = (
+                    f'| step {step:6d}/{num_batches:5d} ({step/num_batches:.0%}) ',
+                    f'| loss {avg_loss:7.3f} ',
+                    f'| lr {lr:.1e} ',
+                    f'| {sents_per_sec:4.1f} sents/sec ',
+                    f'| {updates_per_sec:4.1f} updates/sec ',
+                    f'| elapsed {epoch_timer.format(epoch_timer.elapsed())} ',
+                    f'| eta {epoch_timer.format(eta)} '
+                )
                 print(''.join(message))
 
             if self.eval_every != -1 and self.num_updates % self.eval_every == 0:
-                # tree, _ = self.model.sample()
-                # print(tree.linearize(with_tag=False))
                 self.check_dev()
                 print('Current development F1 {:4.2f} (best {:4.2f} epoch {:2d})'.format(
                     self.current_dev_fscore, self.best_dev_fscore, self.best_dev_epoch))
                 self.anneal_lr()
-                # self.model.train()  # back to training mode
+                # self.rnng.train()  # back to training mode
 
-    # TODO: get this value from self.optimizer, but how?
     def get_lr(self):
-        return self.lr
+        return self.optimizer.learning_rate
 
     def set_lr(self, lr):
-        self.trainer
+        self.optimizer.learing_rate = lr
 
     def batchify(self, data):
         batches = [data[i*self.batch_size:(i+1)*self.batch_size]
@@ -242,44 +238,97 @@ class Trainer:
             print(f'Annealing the learning rate from {self.get_lr():.1e} to {lr:.1e}.')
             self.set_lr(lr)
 
-    ## TODO
+    def build_model(self):
+        model = dy.Model()
+        if self.rnng_type == 'disc':
+            rnng = DiscRNNG(
+                model=model,
+                dictionary=self.dictionary,
+                num_words=len(self.dictionary.w2i),
+                num_nt=len(self.dictionary.n2i),
+                word_emb_dim=self.args.word_emb_dim,
+                nt_emb_dim=self.args.nt_emb_dim,
+                action_emb_dim=self.args.action_emb_dim,
+                stack_hidden_size=self.args.stack_lstm_hidden,
+                buffer_hidden_size=self.args.buffer_lstm_hidden,
+                history_hidden_size=self.args.history_lstm_hidden,
+                stack_num_layers=self.args.lstm_num_layers,
+                buffer_num_layers=self.args.lstm_num_layers,
+                history_num_layers=self.args.lstm_num_layers,
+                composition=self.args.composition,
+                mlp_hidden=self.args.mlp_hidden,
+                dropout=self.args.dropout,
+                use_glove=self.use_glove,
+                glove_dir=self.glove_dir,
+                fine_tune_embeddings=self.fine_tune_embeddings,
+                freeze_embeddings=self.freeze_embeddings,
+            )
+        elif self.rnng_type == 'gen':
+            rnng = GenRNNG(
+                model=model,
+                dictionary=self.dictionary,
+                num_words=len(self.dictionary.w2i),
+                num_nt=len(self.dictionary.n2i),
+                word_emb_dim=self.args.word_emb_dim,
+                nt_emb_dim=self.args.nt_emb_dim,
+                action_emb_dim=self.args.action_emb_dim,
+                stack_hidden_size=self.args.stack_lstm_hidden,
+                terminal_hidden_size=self.args.terminal_lstm_hidden,
+                history_hidden_size=self.args.history_lstm_hidden,
+                stack_num_layers=self.args.lstm_num_layers,
+                terminal_num_layers=self.args.lstm_num_layers,
+                history_num_layers=self.args.lstm_num_layers,
+                composition=self.args.composition,
+                mlp_hidden=self.args.mlp_hidden,
+                dropout=self.args.dropout,
+                use_glove=self.use_glove,
+                glove_dir=self.glove_dir,
+                fine_tune_embeddings=self.freeze_embeddings,
+                freeze_embeddings=self.freeze_embeddings,
+            )
+        self.model = model
+        self.rnng = rnng
+
+    def build_optimizer(self):
+        assert self.model is not None, 'build model first'
+        if self.args.optimizer == 'sgd':
+            self.optimizer = dy.SimpleSGDTrainer(self.model, learning_rate=self.lr)
+        elif self.args.optimizer == 'adam':
+            self.optimizer = dy.AdamTrainer(self.model, alpha=self.lr)
+        self.optimizer.set_clip_threshold(self.max_grad_norm)
+        self.model.set_weight_decay(self.weight_decay)
+
     def save_checkpoint(self):
-        exit('Saving not implemented!')
-        with open(self.checkpoint_path, 'wb') as f:
+        assert self.model is not None, 'build model first'
+        self.model.save(self.model_checkpoint_path)
+        self.dictionary.save(self.dict_checkpoint_path)
+        with open(self.state_checkpoint_path, 'w') as f:
             state = {
-                'args': self.args,
-                'model': self.model,
-                'dictionary': self.dictionary,
-                'optimizer': self.optimizer,
                 'epochs': self.current_epoch,
                 'num-updates': self.num_updates,
                 'best-dev-fscore': self.best_dev_fscore,
                 'best-dev-epoch': self.best_dev_epoch,
-                'test-fscore': self.test_fscore
+                'test-fscore': self.test_fscore,
             }
-            torch.save(state, f)
+            json.dump(state, f, indent=4)
 
-
-    ## TODO
     def load_checkpoint(self):
-        exit('loading not implemented!')
-        with open(self.checkpoint_path, 'rb') as f:
-            state = torch.load(f)
-            self.model = state['model']
-        self._flatten_parameters()
+        if self.model is None:
+            self.build_model()
+            self.build_optimizer()
+        self.model.populate(self.model_checkpoint_path)
 
     ## TODO
     def _predict(self, batches, proposal_samples=None):
         if self.rnng_type == 'disc':
             decoder = GreedyDecoder(
-                model=self.model, dictionary=self.dictionary, use_chars=self.dictionary.use_chars)
+                model=self.rnng, dictionary=self.dictionary, use_chars=self.dictionary.use_chars)
         elif self.rnng_type == 'gen':
             assert proposal_samples is not None, 'path to samples required for generative decoding.'
             decoder = GenerativeImportanceDecoder(
-                model=self.model, dictionary=self.dictionary, use_chars=self.dictionary.use_chars)
+                model=self.rnng, dictionary=self.dictionary, use_chars=self.dictionary.use_chars)
             decoder.load_proposal_samples(path=proposal_samples)
             batches = batches[:100]  # Otherwise this will take 50 minutes.
-
         trees = []
         for i, batch in enumerate(batches):
             sentence, actions = batch
@@ -294,7 +343,8 @@ class Trainer:
         trees = []
         for i, batch in enumerate(batches):
             sentence, actions = batch
-            tree, *rest = self.model.parse(sentence)
+            tree, nll = self.rnng.parse(sentence)
+            nll.forward()
             trees.append(tree.linearize())
             if i % 10 == 0:
                 print(f'Predicting sentence {i}/{len(batches)}...', end='\r')
@@ -303,7 +353,7 @@ class Trainer:
     def check_dev(self):
         print('Evaluating F1 on development set...')
         ## TODO:
-        # self.model.eval()
+        # self.rnng.eval()
         ##
         # Predict trees.
         trees = self.predict(self.dev_dataset, proposal_samples=self.dev_proposal_samples)
@@ -316,21 +366,19 @@ class Trainer:
         self.tensorboard_writer.add_scalar('Dev/Fscore', dev_fscore, self.num_updates)
         self.current_dev_fscore = dev_fscore
         if dev_fscore > self.best_dev_fscore:
-            print(f'Saving new best model to `{self.checkpoint_path}`...')
+            print(f'Saving new best model to `{self.model_checkpoint_path}`...')
             self.best_dev_epoch = self.current_epoch
             self.best_dev_fscore = dev_fscore
-            ## TODO
-            # self.save_checkpoint()
-            ##
+            self.save_checkpoint()
         return dev_fscore
 
     def check_test(self):
         print('Evaluating F1 on test set...')
-        print(f'Loading best saved model from `{self.checkpoint_path}` '
+        print(f'Loading best saved model from `{self.model_checkpoint_path}` '
               f'(epoch {self.best_dev_epoch}, fscore {self.best_dev_fscore})...')
+        self.load_checkpoint()
         ## TODO:
-        # self.load_checkpoint()
-        # self.model.eval()
+        # self.rnng.eval()
         ##
         # Predict trees.
         trees = self.predict(self.test_dataset, proposal_samples=self.test_proposal_samples)
