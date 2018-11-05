@@ -3,19 +3,20 @@ import dynet as dy
 
 class Affine:
     """Computes affine transformation Wx + b."""
-    def __init__(self, model, input_size, output_size):
-        self.W = model.add_parameters((output_size, input_size), init='glorot')
-        self.b = model.add_parameters(output_size, init='glorot')
+    def __init__(self, model, input_dim, output_dim):
+        self.model = model.add_subcollection("Affine")
+        self.weight = model.add_parameters((output_dim, input_dim), init='glorot')
+        self.bias = model.add_parameters(output_dim, init='glorot')
 
     def __call__(self, x):
-        return self.W * x + self.b
+        return self.weight * x + self.bias
 
 
 class MLP:
-    """A simple multilayer perceptron with one hidden layer and dropout."""
-    def __init__(self, model, input_size, hidden_size, output_size, dropout=0.):
-        self.fc1 = Affine(model, input_size, hidden_size)
-        self.fc2 = Affine(model, hidden_size, output_size)
+    """A multilayer perceptron with one hidden layer and dropout."""
+    def __init__(self, model, input_dim, hidden_dim, output_dim, dropout=0.):
+        self.fc1 = Affine(model, input_dim, hidden_dim)
+        self.fc2 = Affine(model, hidden_dim, output_dim)
         self.dropout = dropout
 
     def __call__(self, x):

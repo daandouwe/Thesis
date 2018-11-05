@@ -20,13 +20,22 @@ From Pytorch
 - [X] Include GloVe embeddings with fine-tuning and optional freezing
 
 Training
+- [ ] Add patience to learning rate annealing
 - [ ] Implement oracles from scratch
-- [ ] Implement UNKing scheme.
 - [ ] Training from tree-file (oracle extraction in between)
+- [ ] Implement dynamic oracle and training with exploration
+- [ ] Implement UNKing scheme myself.
+- [ ] load_checkpoint not working for batch-size 1 (?!)
 
 Dynet
-- [ ] Figure how to disable dropout
+- [ ] Figure how to disable dropout...
+- [ ] CPU not using all processors, why? (Only one on Lisa!)
+- [ ] Have Dynet installed with GPU support on Lisa
 
 Experiments
 - [ ] Run Dynet on Lisa GPU
-- [ ] Semisupervised training with reinforce
+
+Semisupervised
+- [ ] Semisupervised training with REINFORCE gradient for unsupervised loss (by sampling trees)
+- [ ] Think about baselines
+- [ ]

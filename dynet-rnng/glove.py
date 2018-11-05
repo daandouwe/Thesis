@@ -26,7 +26,7 @@ def load_glove(words, dim, dir, logfile=None):
             for line in f:
                 line = line.strip().split()
                 word, vec = line[0], line[1:]
-                # TODO: Hack! On Lisa: Splitting a word like `nguyễn` ended up as `nguyễn` and `n`
+                # TODO: Hack! On Lisa: Splitting a word like `nguyễn` ended up as `nguy` and `n`
                 # Using encoding='utf-8' threw yet another error.
                 # But this is an ugly fix!
                 i = 2

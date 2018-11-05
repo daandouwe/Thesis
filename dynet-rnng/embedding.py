@@ -30,12 +30,7 @@ class PretrainedEmbedding:
         self.embedding_dim = embedding_dim
         self.freeze = freeze
         self.embedding = model.lookup_parameters_from_numpy(
-            self.get_embedding(vec_dir, ordered_words))
-
-    def get_embedding(self, vec_dir, ordered_words):
-        embeddings = load_glove(ordered_words, self.embedding_dim, vec_dir)
-        print(embeddings)
-        return embeddings
+            load_glove(ordered_words, self.embedding_dim, vec_dir))
 
     def __getitem__(self, index):
         return self(index)

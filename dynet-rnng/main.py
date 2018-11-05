@@ -14,7 +14,7 @@ def main():
     # Choose mode
     parser.add_argument('mode', choices=['train', 'predict', 'inspect', 'latent'],
                         help='what would you like to do?')
-    parser.add_argument('model', choices=['disc', 'gen'],
+    parser.add_argument('rnng_type', choices=['disc', 'gen'],
                         help='use discriminative or generative model')
 
     # Debugging
@@ -23,8 +23,8 @@ def main():
     # Data arguments
     parser.add_argument('--data', type=str, default='../data',
                         help='location of the oracles')
-    parser.add_argument('--text', type=str, choices=['unked', 'lower', 'original'], default='unked',
-                        help='textline to use from the oracle file')
+    parser.add_argument('--text-type', type=str, choices=['unked', 'lower', 'original'], default='unked',
+                        help='processing type to use for text (given in the oracle file)')
     parser.add_argument('--name', type=str, default='ptb',
                         help='name of dataset for ptb.train.oracle, ptb.test.trees, etc.')
     parser.add_argument('--root', type=str, default='.',
@@ -49,19 +49,19 @@ def main():
                         help='dim of nonterminal embeddings')
     parser.add_argument('--action-emb-dim', type=int, default=20,
                         help='dim of nonterminal embeddings')
-    parser.add_argument('--stack-lstm-hidden', type=int, default=128,
-                        help='size of lstm hidden states for stack ecoder')
-    parser.add_argument('--buffer-lstm-hidden', type=int, default=128,
+    parser.add_argument('--stack-lstm-dim', type=int, default=128,
+                        help='size of lstm dim states for stack ecoder')
+    parser.add_argument('--buffer-lstm-dim', type=int, default=128,
                         help='size of lstm hidden states for buffer encoder')
-    parser.add_argument('--terminal-lstm-hidden', type=int, default=128,
+    parser.add_argument('--terminal-lstm-dim', type=int, default=128,
                         help='size of lstm hidden states for terminal encoder')
-    parser.add_argument('--history-lstm-hidden', type=int, default=32,
+    parser.add_argument('--history-lstm-dim', type=int, default=32,
                         help='size of lstm hidden states for history encoder')
-    parser.add_argument('--lstm-num-layers', type=int, default=2,
+    parser.add_argument('--lstm-layers', type=int, default=2,
                         help='number of layers in lstm')
     parser.add_argument('--composition', default='attention', choices=['basic', 'attention', 'latent-factors'],
                         help='composition function used by StackLSTM')
-    parser.add_argument('--mlp-hidden', type=int, default=128,
+    parser.add_argument('--mlp-dim', type=int, default=128,
                         help='size of mlp hidden state')
     parser.add_argument('--use-glove', action='store_true',
                         help='using pretrained glove embeddings')

@@ -14,39 +14,21 @@ from utils import Timer, write_losses, get_folders, write_args
 def main(args):
     # Set random seeds.
     np.random.seed(args.seed)
-
-    # Make output folder structure.
-    subdir, logdir, checkdir, outdir = get_folders(args)
-    print(f'Output subdirectory: `{subdir}`.')
-    print(f'Saving logs to `{logdir}`.')
-    print(f'Saving predictions to `{outdir}`.')
-    print(f'Saving models to `{checkdir}`.')
-    os.makedirs(logdir, exist_ok=True)
-    os.makedirs(checkdir, exist_ok=True)
-    os.makedirs(outdir, exist_ok=True)
-
-    # Save arguments.
-    write_args(args, logdir)
-
-    # Get data
-    corpus = Corpus(
-        train_path=os.path.join(args.data, 'train/ptb.train.oracle'),
-        dev_path=os.path.join(args.data, 'dev/ptb.dev.oracle'),
-        test_path=os.path.join(args.data, 'test/ptb.test.oracle'),
-        text=args.text,
-        model=args.model
-    )
+    # TODO: set dynet seed.
 
     # Create trainer
     trainer = Trainer(
         args=args,
-        rnng_type=args.model,
-        dictionary=corpus.dictionary,
-        train_dataset=corpus.train.data,
-        dev_dataset=corpus.dev.data,
-        test_dataset=corpus.test.data,
+        rnng_type=args.rnng_type,
+        name=args.name,
+        data_dir=args.data,
+        evalb_dir=args.evalb_dir,
+        train_path=os.path.join(args.data, 'train/ptb.train.oracle'),
+        dev_path=os.path.join(args.data, 'dev/ptb.dev.oracle'),
+        test_path=os.path.join(args.data, 'test/ptb.test.oracle'),
         dev_proposal_samples=args.dev_proposal_samples,
         test_proposal_samples=args.test_proposal_samples,
+        text_type=args.text_type,
         lr=args.lr,
         max_grad_norm=args.clip,
         weight_decay=args.weight_decay,
@@ -60,12 +42,6 @@ def main(args):
         elbo_objective=False,
         max_epochs=args.max_epochs,
         max_time=args.max_time,
-        name=args.name,
-        checkpoint_dir=checkdir,
-        output_dir=outdir,
-        log_dir=logdir,
-        data_dir=args.data,
-        evalb_dir=args.evalb_dir,
     )
 
     # Train the model

@@ -15,9 +15,9 @@ class BiRecurrentComposition:
     def __call__(self, head, children):
         fwd_rnn = self.fwd_rnn_builder.initial_state()
         bwd_rnn = self.bwd_rnn_builder.initial_state()
-        for x in [head] + children:  # ['NP', 'the', 'cat']
+        for x in [head] + children:  # ['NP', 'the', 'hungry', 'cat']
             fwd_rnn = fwd_rnn.add_input(x)
-        for x in [head] + children[::-1]:  # ['NP', 'cat', 'the']
+        for x in [head] + children[::-1]:  # ['NP', 'cat', 'hungry', 'the']
             bwd_rnn = bwd_rnn.add_input(x)
         hf = fwd_rnn.output()
         hb = bwd_rnn.output()

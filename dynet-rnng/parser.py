@@ -2,8 +2,9 @@ from typing import NamedTuple
 
 import dynet as dy
 from dynet import Expression
+import numpy as np
 
-from actions import SHIFT, REDUCE, is_nt, is_gen, get_nt, get_word
+from actions import SHIFT, REDUCE, NT, GEN, is_nt, is_gen, get_nt, get_word
 from tree import Node, InternalNode, LeafNode
 
 
@@ -261,7 +262,7 @@ class DiscParser:
             self._open(self._get_nt_id(action_id))
         self.history.push(action_id)
 
-    def is_valid_action(self, action: str):
+    def _is_valid_action(self, action: str):
         """Check whether the action is valid under the parser's configuration."""
         if action == SHIFT:
             return self._can_shift()
@@ -269,6 +270,17 @@ class DiscParser:
             return self._can_reduce()
         else:
             return self._can_open()
+
+    def _add_actions_mask(self):
+        """Return additive mask for invalid actions."""
+        return np.array(
+            [-np.inf if not self._is_valid_action(self.dictionary.i2a[i]) else 0
+                for i in range(self.num_actions)])
+
+    def _mult_actions_mask(self):
+        """Return additive mask for invalid actions."""
+        return np.array(
+            [self._is_valid_action(self.dictionary.i2a[i]) for i in range(self.num_actions)])
 
     def _is_nt_id(self, action_id: int):
         return action_id >= 2
@@ -282,6 +294,9 @@ class DiscParser:
             return False
         else:
             return self._is_nt_id(self.last_action)
+
+    def get_tree(self):
+        return self.stack.get_tree()
 
     @property
     def last_action(self):
@@ -349,7 +364,7 @@ class GenParser:
             self._gen(self._get_word_id(action_id))
         self.history.push(action_id)
 
-    def is_valid_action(self, action: str):
+    def _is_valid_action(self, action: str):
         """Check whether the action is valid under the parser's configuration."""
         if action == REDUCE:
             return self._can_reduce()
@@ -357,9 +372,22 @@ class GenParser:
             return self._can_open()
         elif is_gen(action):
             return self._can_gen()
+        else:
+            raise ValueError("received invallid action '{action}'")
+
+    def _add_actions_mask(self):
+        """Return additive mask for invalid actions."""
+        return np.array(
+            [-np.inf if not self._is_valid_action(self.dictionary.i2a[i]) else 0
+                for i in range(self.num_actions)])
+
+    def _mult_actions_mask(self):
+        """Return additive mask for invalid actions."""
+        return np.array(
+            [self._is_valid_action(action) for action in (REDUCE, NT('x'), GEN('x'))])  # dummy actions
 
     def _is_nt_id(self, action_id: int):
-        return 0 < action_id <= self.num_nt + 1
+        return 0 < action_id <= self.num_nt
 
     def _is_gen_id(self, action_id: int):
         return action_id > self.num_nt
@@ -380,11 +408,22 @@ class GenParser:
         else:
             return self.REDUCE_ID
 
+    def _make_action_id_from_nt_id(self, nt_id):
+        assert nt_id in range(self.num_nt)
+        return nt_id + 1
+
+    def _make_action_id_from_word_id(self, word_id):
+        assert word_id in range(self.num_words)
+        return word_id + self.num_nt + 1
+
     def last_action_is_nt(self):
         if len(self.history.actions) == 0:
             return False
         else:
             return self._is_nt_id(self.last_action)
+
+    def get_tree(self):
+        return self.stack.get_tree()
 
     @property
     def last_action(self):
