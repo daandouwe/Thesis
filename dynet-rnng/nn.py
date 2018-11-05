@@ -18,9 +18,17 @@ class MLP:
         self.fc1 = Affine(model, input_dim, hidden_dim)
         self.fc2 = Affine(model, hidden_dim, output_dim)
         self.dropout = dropout
+        self.training = True
+
+    def train(self):
+        self.training = True
+
+    def eval(self):
+        self.training = False
 
     def __call__(self, x):
         h = self.fc1(x)
         h = dy.rectify(h)
-        h = dy.dropout(h, self.dropout)
+        if self.training:
+            h = dy.dropout(h, self.dropout)
         return self.fc2(h)

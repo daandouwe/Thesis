@@ -9,8 +9,15 @@ class BiRecurrentComposition:
         assert input_size % 2 == 0, 'input size size must be even'
         self.fwd_rnn_builder = dy.VanillaLSTMBuilder(num_layers, input_size, input_size//2, model)
         self.bwd_rnn_builder = dy.VanillaLSTMBuilder(num_layers, input_size, input_size//2, model)
+        self.dropout = dropout
+
+    def train(self):
         self.fwd_rnn_builder.set_dropouts(dropout, dropout)
         self.bwd_rnn_builder.set_dropouts(dropout, dropout)
+
+    def eval(self):
+        self.fwd_rnn_builder.disable_dropout()
+        self.bwd_rnn_builder.disable_dropout()
 
     def __call__(self, head, children):
         fwd_rnn = self.fwd_rnn_builder.initial_state()
@@ -36,7 +43,14 @@ class AttentionComposition:
         self.V = model.add_parameters((input_size, input_size), init='glorot')
         self.gating = Affine(model, 2*input_size, input_size)
         self.head = Affine(model, input_size, input_size)
-        self.training = True
+
+    def train(self):
+        self.fwd_rnn_builder.set_dropouts(self.dropout, self.dropout)
+        self.bwd_rnn_builder.set_dropouts(self.dropout, self.dropout)
+
+    def eval(self):
+        self.fwd_rnn_builder.disable_dropout()
+        self.bwd_rnn_builder.disable_dropout()
 
     def __call__(self, head, children):
         if self.training:

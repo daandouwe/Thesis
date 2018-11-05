@@ -11,7 +11,12 @@ class StackLSTM:
         self.num_layers = num_layers
         self.dropout = dropout
         self.rnn_builder = dy.VanillaLSTMBuilder(num_layers, input_size, hidden_size, model)
+
+    def train(self):
         self.rnn_builder.set_dropouts(self.dropout, self.dropout)
+
+    def eval(self):
+        self.rnn_builder.disable_dropout()
 
     def initialize(self):
         self.rnn = self.rnn_builder.initial_state()

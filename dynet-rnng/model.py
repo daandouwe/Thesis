@@ -86,13 +86,25 @@ class DiscRNNG(DiscParser):
         parse_repr_dim = stack_lstm_dim + buffer_lstm_dim + history_lstm_dim
         self.action_mlp = MLP(model, parse_repr_dim, mlp_dim, self.num_actions)
 
-    def eval(self):
-        """Disable dropout."""
-        pass
+    @property
+    def components(self):
+        return (
+            self.stack_encoder,
+            self.buffer_encoder,
+            self.history_encoder,
+            self.composer,
+            self.action_mlp
+        )
 
     def train(self):
         """Enable dropout."""
-        pass
+        for component in self.components:
+            component.train()
+
+    def eval(self):
+        """Disable dropout."""
+        for component in self.components:
+            component.eval()
 
     def __call__(self, words, actions):
         """Forward pass for training."""
@@ -222,13 +234,27 @@ class GenRNNG(GenParser):
         self.nt_mlp = MLP(model, parse_repr_dim, mlp_dim, self.num_nt)  # S, NP, ...
         self.word_mlp = MLP(model, parse_repr_dim, mlp_dim, self.num_words)  # the, cat, ...
 
-    def eval(self):
-        """Disable dropout."""
-        pass
+    @property
+    def components(self):
+        return (
+            self.stack_encoder,
+            self.terminal_encoder,
+            self.history_encoder,
+            self.composer,
+            self.action_mlp,
+            self.nt_mlp,
+            self.word_mlp
+        )
 
     def train(self):
         """Enable dropout."""
-        pass
+        for component in self.components:
+            component.train()
+
+    def eval(self):
+        """Disable dropout."""
+        for component in self.components:
+            component.eval()
 
     def __call__(self, words, actions):
         """Forward pass for training."""

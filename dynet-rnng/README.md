@@ -28,7 +28,7 @@ Training
 - [ ] load_checkpoint not working for batch-size 1 (?!)
 
 Dynet
-- [ ] Figure how to disable dropout...
+- [X] Figure how to disable dropout...
 - [ ] CPU not using all processors, why? (Only one on Lisa!)
 - [ ] Have Dynet installed with GPU support on Lisa
 
