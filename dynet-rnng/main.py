@@ -4,8 +4,7 @@ import argparse
 from math import inf
 
 import train
-# TODO:
-# import predict
+import predict
 
 def main():
 

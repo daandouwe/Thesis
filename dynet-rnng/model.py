@@ -68,9 +68,11 @@ class DiscRNNG(DiscParser):
 
         # Composition function
         if composition == 'basic':
-            self.composer = BiRecurrentComposition(model, word_emb_dim, stack_lstm_layers, dropout)
+            self.composer = BiRecurrentComposition(
+                model, word_emb_dim, stack_lstm_layers, dropout)
         elif composition == 'attention':
-            self.composer = AttentionComposition(model, word_emb_dim, stack_lstm_layers, dropout)
+            self.composer = AttentionComposition(
+                model, word_emb_dim, stack_lstm_layers, dropout)
 
         # Transition system
         self.stack = Stack(
@@ -178,9 +180,17 @@ class GenRNNG(GenParser):
         self.dictionary = dictionary
 
         # Embeddings
-        self.word_embedding = model.add_lookup_parameters((num_words, word_emb_dim))
-        self.nt_embedding = model.add_lookup_parameters((num_nt, nt_emb_dim))
-        self.action_embedding = model.add_lookup_parameters((self.num_actions, action_emb_dim))
+        self.nt_embedding = Embedding(model, num_nt, nt_emb_dim)
+        self.action_embedding = Embedding(model, self.num_actions, action_emb_dim)
+        if use_glove:
+            if fine_tune_embeddings:
+                self.word_embedding = FineTuneEmbedding(
+                    model, num_words, word_emb_dim, glove_dir, dictionary.i2w)
+            else:
+                self.word_embedding = PretrainedEmbedding(
+                    model, num_words, word_emb_dim, glove_dir, dictionary.i2w, freeze=freeze_embeddings)
+        else:
+            self.word_embedding = Embedding(model, num_words, word_emb_dim)
 
         # Encoders
         self.stack_encoder = StackLSTM(
@@ -192,9 +202,11 @@ class GenRNNG(GenParser):
 
         # Composition function
         if composition == 'basic':
-            self.composer = BiRecurrentComposition(model, word_emb_dim, stack_lstm_layers, dropout)
+            self.composer = BiRecurrentComposition(
+                model, word_emb_dim, stack_lstm_layers, dropout)
         elif composition == 'attention':
-            self.composer = AttentionComposition(model, word_emb_dim, stack_lstm_layers, dropout)
+            self.composer = AttentionComposition(
+                model, word_emb_dim, stack_lstm_layers, dropout)
 
         # Transition system
         self.stack = Stack(

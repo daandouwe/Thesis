@@ -94,22 +94,6 @@ class Decoder:
         probs /= probs.sum(dim=-1)  # Renormalize.
         return probs
 
-    def load_model(self, path):
-        assert os.path.exists(path), path
-
-        print(f'Loading model from `{path}`...')
-        ##
-        epoch, fscore = state['epochs'], state['test-fscore']
-        self.epoch = epoch
-        self.fscore = fscore
-        self.model = state['model']
-        self.dictionary = state['dictionary']
-        ##
-        self.model.eval()  # Disable dropout.
-
-    def get_tree(self):
-        return self.model.get_tree()
-
     def from_tree(self, gold):
         """Predicts from a gold tree input and computes fscore with prediction.
 
@@ -143,7 +127,18 @@ class DiscriminativeDecoder(Decoder):
 
     def load_model(self, path):
         """Load the discriminative model."""
-        super(DiscriminativeDecoder, self).load_model(path)
+        assert os.path.exists(path), path
+
+        print(f'Loading model from `{path}`...')
+
+        ## TODO
+        epoch, fscore = state['epochs'], state['test-fscore']
+        self.epoch = epoch
+        self.fscore = fscore
+        self.model = state['model']
+        self.dictionary = state['dictionary']
+        ##
+        self.model.eval()  # Disable dropout.
         assert isinstance(self.model, DiscRNNG), f'must be discriminative model, got `{type(self.model)}`.'
         print(f'Loaded discriminative model trained for {epoch} epochs with test-fscore {fscore}.')
 
@@ -153,7 +148,13 @@ class GenerativeDecoder(Decoder):
 
     def load_model(self, path):
         """Load the (generative) model."""
-        super(GenerativeDecoder, self).load_model(path)
+        assert os.path.exists(path), path
+
+        print(f'Loading model from `{path}`...')
+        ##
+        # TODO
+        ##
+        self.model.eval()  # Disable dropout.
         assert isinstance(self.model, GenRNNG), f'must be generative model, got `{type(self.model)}`.'
         print(f'Loaded generative model trained for {epoch} epochs with test-fscore {fscore}.')
 
@@ -437,8 +438,8 @@ if __name__ == '__main__':
     greedy = GreedyDecoder()
     greedy.load_model(path=checkpoint)
 
-    beamer = BeamSearchDecoder()
-    beamer.load_model(path=checkpoint)
+    # beamer = BeamSearchDecoder()
+    # beamer.load_model(path=checkpoint)
 
     sampler = SamplingDecoder()
     sampler.load_model(path=checkpoint)
@@ -448,11 +449,11 @@ if __name__ == '__main__':
     print('{} {:.2f} {:.4f} {}'.format(tree.linearize(with_tag=False), logprob, np.exp(logprob), num_actions))
     print()
 
-    print('Beam-search decoder:')
-    results = beamer(sentence, k=2)
-    for tree, logprob in results:
-        print('{} {:.2f} {:.4f}'.format(tree.linearize(with_tag=False), logprob, np.exp(logprob)))
-    print()
+    # print('Beam-search decoder:')
+    # results = beamer(sentence, k=2)
+    # for tree, logprob in results:
+        # print('{} {:.2f} {:.4f}'.format(tree.linearize(with_tag=False), logprob, np.exp(logprob)))
+    # print()
 
     print('Sampling decoder:')
     for _ in range(3):

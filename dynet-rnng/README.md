@@ -15,12 +15,12 @@ where we can use dynet's autobatching!
 
 ## TODO
 From Pytorch
-- [ ] Convert Decoder classes
+- [X] Convert Decoder classes
 - [X] Convert Embedding class
 - [X] Include GloVe embeddings with fine-tuning and optional freezing
 
 Training
-- [ ] Add patience to learning rate annealing
+- [X] Add patience to learning rate annealing
 - [ ] Implement oracles from scratch
 - [ ] Training from tree-file (oracle extraction in between)
 - [ ] Implement dynamic oracle and training with exploration
@@ -38,4 +38,3 @@ Experiments
 Semisupervised
 - [ ] Semisupervised training with REINFORCE gradient for unsupervised loss (by sampling trees)
 - [ ] Think about baselines
-- [ ]

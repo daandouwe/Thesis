@@ -35,7 +35,7 @@ class Trainer:
             max_time=inf,
             lr=None,
             learning_rate_decay=2.0,  # lr /= learning_rate_decay
-            patience=0,  # will wait this many epochs of deteriorating F1 before lr decay
+            patience=1,  # will wait this many epochs of deteriorating F1 before lr decay
             batch_size=1,
             max_grad_norm=5.0,
             weight_decay=1e-6,
