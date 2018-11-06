@@ -89,6 +89,18 @@ class Dictionary:
         with open(path, 'w') as f:
             json.dump(state, f, indent=4)
 
+    def load(self, path):
+        assert path.endswith('.json'), f'expected json file got `{path}`'
+
+        with open(path, 'w') as f:
+            state = json.load(f)
+        self.n2i = state['n2i']
+        self.a2i = state['a2i']
+        self.w2i = state['w2i']
+        self.i2n = list(self.n2i.keys())
+        self.i2a = list(self.a2i.keys())
+        self.i2w = list(self.w2i.keys())
+
     @property
     def num_words(self):
         return len(self.i2w)

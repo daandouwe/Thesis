@@ -47,18 +47,14 @@ class AttentionComposition:
     def train(self):
         self.fwd_rnn_builder.set_dropouts(self.dropout, self.dropout)
         self.bwd_rnn_builder.set_dropouts(self.dropout, self.dropout)
+        self.training = True
 
     def eval(self):
         self.fwd_rnn_builder.disable_dropout()
         self.bwd_rnn_builder.disable_dropout()
+        self.training = False
 
     def __call__(self, head, children):
-        if self.training:
-            self.fwd_rnn_builder.set_dropouts(self.dropout, self.dropout)
-            self.bwd_rnn_builder.set_dropouts(self.dropout, self.dropout)
-        else:
-            self.fwd_rnn_builder.disable_dropout()
-            self.bwd_rnn_builder.disable_dropout()
         fwd_rnn = self.fwd_rnn_builder.initial_state()
         bwd_rnn = self.bwd_rnn_builder.initial_state()
         hf = fwd_rnn.transduce([head] + children)  # ['NP', 'the', 'cat']
@@ -77,8 +73,8 @@ class AttentionComposition:
         t = self.head(head)  # (input_size,)
         c = dy.cmult(g, t) + dy.cmult((1 - g), m)  # (input_size,)
 
+        # Store internally for inspection during prediction.
         if not self.training:
-            # Store internally for inspection during prediction.
             self._attn = a.value()
             self._gate = g.value()
         return c

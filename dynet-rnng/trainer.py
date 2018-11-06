@@ -2,7 +2,7 @@ import os
 import json
 import itertools
 import time
-import multiprocessing as mp
+import pickle
 from math import inf
 
 import numpy as np
@@ -35,7 +35,7 @@ class Trainer:
             max_time=inf,
             lr=None,
             learning_rate_decay=2.0,  # lr /= learning_rate_decay
-            patience=1,  # will wait this many epochs of deteriorating F1 before lr decay
+            patience=2,  # will wait this many epochs of deteriorating F1 before lr decay
             batch_size=1,
             max_grad_norm=5.0,
             weight_decay=1e-6,
@@ -104,6 +104,7 @@ class Trainer:
         write_args(self.args, logdir)
         # Output paths
         self.model_checkpoint_path = os.path.join(checkdir, 'model.dy')
+        # self.rnng_checkpoint_path = os.path.join(checkdir, 'rnng.pkl')
         self.state_checkpoint_path = os.path.join(checkdir, 'state.json')
         self.dict_checkpoint_path = os.path.join(checkdir, 'dict.json')
         self.loss_path = os.path.join(logdir, 'loss.csv')
@@ -222,6 +223,7 @@ class Trainer:
 
     def build_model(self):
         assert self.dictionary is not None, 'build corpus first'
+
         model = dy.Model()
         if self.rnng_type == 'disc':
             rnng = DiscRNNG(
@@ -274,6 +276,7 @@ class Trainer:
 
     def build_optimizer(self):
         assert self.model is not None, 'build model first'
+
         if self.args.optimizer == 'sgd':
             self.optimizer = dy.SimpleSGDTrainer(self.model, learning_rate=self.lr)
         elif self.args.optimizer == 'adam':
@@ -301,8 +304,11 @@ class Trainer:
 
     def save_checkpoint(self):
         assert self.model is not None, 'build model first'
+
         self.model.save(self.model_checkpoint_path)
         self.dictionary.save(self.dict_checkpoint_path)
+        # with open(self.rnng_checkpoint_path, 'wb') as f:
+        #     pickle.dump(self.rnng, f)
         with open(self.state_checkpoint_path, 'w') as f:
             state = {
                 'epochs': self.current_epoch,
@@ -317,7 +323,9 @@ class Trainer:
         if self.model is None:
             self.build_model()
             self.build_optimizer()
+            # self.dictionary.load(self.dict_checkpoint_path)
         self.model.populate(self.model_checkpoint_path)
+        # TODO: adam
 
     def predict(self, examples, proposal_samples=None):
         if self.rnng_type == 'disc':
@@ -350,7 +358,7 @@ class Trainer:
         dev_fscore = evalb(
             self.evalb_dir, self.dev_pred_path, self.dev_gold_path, self.dev_result_path)
         # Log score to tensorboard.
-        self.tensorboard_writer.add_scalar('Dev/Fscore', dev_fscore, self.num_updates)
+        self.tensorboard_writer.add_scalar('dev/f-score', dev_fscore, self.num_updates)
         self.current_dev_fscore = dev_fscore
         if dev_fscore > self.best_dev_fscore:
             print(f'Saving new best model to `{self.model_checkpoint_path}`...')
@@ -372,6 +380,7 @@ class Trainer:
         # Compute f-score.
         test_fscore = evalb(
             self.evalb_dir, self.test_pred_path, self.test_gold_path, self.test_result_path)
+        self.tensorboard_writer.add_scalar('test/f-score', test_fscore)
         return test_fscore
 
     def write_losses(self):

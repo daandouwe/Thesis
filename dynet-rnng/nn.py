@@ -4,7 +4,7 @@ import dynet as dy
 class Affine:
     """Computes affine transformation Wx + b."""
     def __init__(self, model, input_dim, output_dim):
-        self.model = model.add_subcollection("Affine")
+        # self.model = model.add_subcollection("Affine")
         self.weight = model.add_parameters((output_dim, input_dim), init='glorot')
         self.bias = model.add_parameters(output_dim, init='glorot')
 

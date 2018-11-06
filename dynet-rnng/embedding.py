@@ -8,7 +8,8 @@ class Embedding:
     def __init__(self, model, size, embedding_dim, init='glorot'):
         self.size = size
         self.embedding_dim = embedding_dim
-        self.embedding = model.add_lookup_parameters((size, embedding_dim), init=init)
+        self.embedding = model.add_lookup_parameters(
+            (size, embedding_dim), init=init)
 
     def __getitem__(self, index):
         return self(index)
