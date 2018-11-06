@@ -349,12 +349,16 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
         if remove_duplicates:
             samples = filter(samples)
         # Score the samples.
-        ## Try to make use of autobatch (not working yet)
-        dy.renew_cg()
-        scores = [self.score(words, tree) for tree, _ in samples]
-        dy.esum(scores).value()
-        scores = [score.value() for score in scores]
         ##
+        # Try to make use of autobatch (not working yet)
+        # dy.renew_cg()
+        # scores = [self.score(words, tree) for tree, _ in samples]
+        # This evokes autobatching
+        # dy.esum(scores).value()
+        # scores = [score.value() for score in scores]
+        ##
+        dy.renew_cg()
+        scores = [self.score(words, tree).value() for tree, _ in samples]
         if self.use_samples:
             # Proposal trees loaded from file have no tags.
             scored = [(add_dummy_tags(tree), proposal_logprob, logprob)

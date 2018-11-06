@@ -61,8 +61,8 @@ def main():
                         help='number of layers in lstm')
     parser.add_argument('--composition', default='attention', choices=['basic', 'attention', 'latent-factors'],
                         help='composition function used by StackLSTM')
-    parser.add_argument('--mlp-dim', type=int, default=128,
-                        help='size of mlp hidden state')
+    parser.add_argument('--f-hidden-dim', type=int, default=128,
+                        help='hidden dimension of scoring feedforward')
     parser.add_argument('--use-glove', action='store_true',
                         help='using pretrained glove embeddings')
     parser.add_argument('--glove-dir', type=str, default='~/embeddings/glove',
@@ -85,10 +85,14 @@ def main():
                         help='dropout rate for embeddings, lstm, and mlp')
     parser.add_argument('--weight-decay', type=float, default=1e-6,
                         help='weight decay (also when using dropout!)')
-    parser.add_argument('--optimizer', choices=['adam', 'sgd', 'rmsprop'], default='adam',
+    parser.add_argument('--optimizer', choices=['adam', 'sgd', 'rmsprop'], default='sgd',
                         help='optimizer used')
-    parser.add_argument('--lr', type=float, default=0.001,
+    parser.add_argument('--lr', type=float, default=0.1,
                         help='initial learning rate')
+    parser.add_argument('--lr-decay', type=float, default=2.,
+                        help='anneal lr by lr /= lr-decay')
+    parser.add_argument('--lr-decay-patience', type=int, default=2,
+                        help='waiting epochs of deteriorating fscore before applying lr-decay')
     parser.add_argument('--momentum', type=float, default=0,
                         help='momentum for sgd')
     parser.add_argument('--disable-kl-anneal', action='store_false',

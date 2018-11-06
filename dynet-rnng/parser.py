@@ -141,7 +141,7 @@ class Buffer:
 
 
 class Terminal:
-    def __init__(self, dictionary, embedding, encoder):
+    def __init__(self, dictionary, embedding, encoder, empty_emb):
         super(Terminal, self).__init__()
         self.dictionary = dictionary
         self.embedding_dim = embedding.shape()[1]
@@ -163,8 +163,7 @@ class Terminal:
         self._terminal.append(word_id)
         self.encoder.push(self.embedding[word_id])
 
-    @property
-    def empty(self):
+    def is_empty(self):
         return len(self._terminal) == 0
 
 
@@ -195,7 +194,6 @@ class History:
     def actions(self):
         return self._history
 
-    @property
     def is_empty(self):
         return len(self._history) == 0
 

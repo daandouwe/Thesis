@@ -31,14 +31,25 @@ class Trainer:
             evalb_dir=None,
             dev_proposal_samples=None,
             test_proposal_samples=None,
+            word_emb_dim=None,
+            nt_emb_dim=None,
+            action_emb_dim=None,
+            stack_lstm_dim=None,
+            buffer_lstm_dim=None,
+            terminal_lstm_dim=None,
+            history_lstm_dim=None,
+            lstm_layers=None,
+            composition=None,
+            f_hidden_dim=None,
             max_epochs=inf,
             max_time=inf,
             lr=None,
-            learning_rate_decay=2.0,  # lr /= learning_rate_decay
-            patience=2,  # will wait this many epochs of deteriorating F1 before lr decay
             batch_size=1,
-            max_grad_norm=5.0,
-            weight_decay=1e-6,
+            dropout=0.,
+            weight_decay=None,
+            lr_decay=None,
+            lr_decay_patience=None,
+            max_grad_norm=None,
             use_glove=False,
             glove_dir=None,
             fine_tune_embeddings=False,
@@ -48,14 +59,38 @@ class Trainer:
             elbo_objective=False
     ):
         assert rnng_type in ('disc', 'gen'), rnng_type
-
-        self.rnng_type = rnng_type
         self.args = args
 
+        # Data arguments
+        self.name = name
+        self.data_dir = data_dir
+        self.evalb_dir = evalb_dir
+        self.train_path = train_path
+        self.dev_path = dev_path
+        self.test_path = test_path
+        self.text_type = text_type
+        self.dev_proposal_samples = dev_proposal_samples
+        self.test_proposal_samples = test_proposal_samples
+
+        # Model arguments
+        self.rnng_type = rnng_type
+        self.word_emb_dim = word_emb_dim
+        self.nt_emb_dim = nt_emb_dim
+        self.action_emb_dim = action_emb_dim
+        self.stack_lstm_dim = stack_lstm_dim
+        self.buffer_lstm_dim = buffer_lstm_dim
+        self.terminal_lstm_dim = terminal_lstm_dim
+        self.history_lstm_dim = history_lstm_dim
+        self.lstm_layers = lstm_layers
+        self.composition = composition
+        self.f_hidden_dim = f_hidden_dim
+        self.dropout = dropout
+
+        # Training arguments
         self.batch_size = batch_size
         self.lr = lr
-        self.learning_rate_decay = learning_rate_decay
-        self.patience = patience
+        self.lr_decay = lr_decay
+        self.lr_decay_patience = lr_decay_patience
         self.max_grad_norm = max_grad_norm
         self.weight_decay = weight_decay
         self.elbo_objective = elbo_objective
@@ -63,25 +98,12 @@ class Trainer:
         self.glove_dir = glove_dir
         self.fine_tune_embeddings = fine_tune_embeddings
         self.freeze_embeddings = freeze_embeddings
-
         self.max_epochs = max_epochs
         self.max_time = max_time
         self.eval_every = eval_every
         self.print_every = print_every
 
-        self.train_path = train_path
-        self.dev_path = dev_path
-        self.test_path = test_path
-        self.text_type = text_type
-
-        self.dev_proposal_samples = dev_proposal_samples
-        self.test_proposal_samples = test_proposal_samples
-
-        self.name = name
-        self.data_dir = data_dir
-        self.evalb_dir = evalb_dir
-        self.construct_paths()
-
+        # Training bookkeeping
         self.losses = []
         self.num_updates = 0
         self.current_dev_fscore = -inf
@@ -90,7 +112,7 @@ class Trainer:
         self.test_fscore = -inf
         self.timer = Timer()
 
-    def construct_paths(self):
+    def build_paths(self):
         # Make output folder structure
         subdir, logdir, checkdir, outdir = get_folders(self.args)  # TODO: make more transparent
         print(f'Output subdirectory: `{subdir}`.')
@@ -117,6 +139,77 @@ class Trainer:
         self.test_pred_path = os.path.join(outdir, f'{self.name}.test.pred.trees')
         self.test_result_path = os.path.join(outdir, f'{self.name}.test.result')
 
+    def build_corpus(self):
+        # Get data
+        corpus = Corpus(
+            train_path=self.train_path,
+            dev_path=self.dev_path,
+            test_path=self.test_path,
+            text_type=self.text_type,
+            rnng_type=self.rnng_type
+        )
+        self.dictionary = corpus.dictionary
+        self.train_dataset = corpus.train.data
+        self.dev_dataset = corpus.dev.data
+        self.test_dataset = corpus.test.data
+
+    def build_model(self):
+        assert self.dictionary is not None, 'build corpus first'
+
+        self.model = dy.ParameterCollection()
+        if self.rnng_type == 'disc':
+            self.rnng = DiscRNNG(
+                model=self.model,
+                dictionary=self.dictionary,
+                num_words=self.dictionary.num_words,
+                num_nt=self.dictionary.num_nt,
+                word_emb_dim=self.word_emb_dim,
+                nt_emb_dim=self.nt_emb_dim,
+                action_emb_dim=self.action_emb_dim,
+                stack_lstm_dim=self.stack_lstm_dim,
+                buffer_lstm_dim=self.buffer_lstm_dim,
+                history_lstm_dim=self.history_lstm_dim,
+                lstm_layers=self.lstm_layers,
+                composition=self.composition,
+                f_hidden_dim=self.f_hidden_dim,
+                dropout=self.dropout,
+                use_glove=self.use_glove,
+                glove_dir=self.glove_dir,
+                fine_tune_embeddings=self.fine_tune_embeddings,
+                freeze_embeddings=self.freeze_embeddings,
+            )
+        elif self.rnng_type == 'gen':
+            self.rnng = GenRNNG(
+                model=self.model,
+                dictionary=self.dictionary,
+                num_words=self.dictionary.num_words,
+                num_nt=self.dictionary.num_nt,
+                word_emb_dim=self.word_emb_dim,
+                nt_emb_dim=self.nt_emb_dim,
+                action_emb_dim=self.action_emb_dim,
+                stack_lstm_dim=self.stack_lstm_dim,
+                terminal_lstm_dim=self.terminal_lstm_dim,
+                history_lstm_dim=self.history_lstm_dim,
+                lstm_layers=self.lstm_layers,
+                composition=self.composition,
+                f_hidden_dim=self.f_hidden_dim,
+                dropout=self.dropout,
+                use_glove=self.use_glove,
+                glove_dir=self.glove_dir,
+                fine_tune_embeddings=self.freeze_embeddings,
+                freeze_embeddings=self.freeze_embeddings,
+            )
+
+    def build_optimizer(self):
+        assert self.model is not None, 'build model first'
+
+        if self.args.optimizer == 'sgd':
+            self.optimizer = dy.SimpleSGDTrainer(self.model, learning_rate=self.lr)
+        elif self.args.optimizer == 'adam':
+            self.optimizer = dy.AdamTrainer(self.model, alpha=self.lr)
+        self.optimizer.set_clip_threshold(self.max_grad_norm)
+        self.model.set_weight_decay(self.weight_decay)
+
     def train(self):
         """
         Train the model. At any point you can
@@ -129,6 +222,7 @@ class Trainer:
             assert os.path.exists(self.dev_proposal_samples), self.dev_proposal_samples
             assert os.path.exists(self.test_proposal_samples), self.test_proposal_samples
         # Construct model and optimizer
+        self.build_paths()
         self.build_corpus()
         self.build_model()
         self.build_optimizer()
@@ -206,81 +300,6 @@ class Trainer:
                 )
                 print(''.join(message))
 
-    def build_corpus(self):
-        # Get data
-        corpus = Corpus(
-            train_path=self.train_path,
-            dev_path=self.dev_path,
-            test_path=self.test_path,
-            text_type=self.text_type,
-            rnng_type=self.rnng_type
-        )
-        self.dictionary = corpus.dictionary
-        self.train_dataset = corpus.train.data
-        self.dev_dataset = corpus.dev.data
-        self.test_dataset = corpus.test.data
-
-    def build_model(self):
-        assert self.dictionary is not None, 'build corpus first'
-
-        self.model = dy.ParameterCollection()
-        if self.rnng_type == 'disc':
-            self.rnng = DiscRNNG(
-                model=self.model,
-                dictionary=self.dictionary,
-                num_words=self.dictionary.num_words,
-                num_nt=self.dictionary.num_nt,
-                word_emb_dim=self.args.word_emb_dim,
-                nt_emb_dim=self.args.nt_emb_dim,
-                action_emb_dim=self.args.action_emb_dim,
-                stack_lstm_dim=self.args.stack_lstm_dim,
-                buffer_lstm_dim=self.args.buffer_lstm_dim,
-                history_lstm_dim=self.args.history_lstm_dim,
-                stack_lstm_layers=self.args.lstm_layers,
-                buffer_lstm_layers=self.args.lstm_layers,
-                history_lstm_layers=self.args.lstm_layers,
-                composition=self.args.composition,
-                mlp_dim=self.args.mlp_dim,
-                dropout=self.args.dropout,
-                use_glove=self.use_glove,
-                glove_dir=self.glove_dir,
-                fine_tune_embeddings=self.fine_tune_embeddings,
-                freeze_embeddings=self.freeze_embeddings,
-            )
-        elif self.rnng_type == 'gen':
-            self.rnng = GenRNNG(
-                model=self.model,
-                dictionary=self.dictionary,
-                num_words=self.dictionary.num_words,
-                num_nt=self.dictionary.num_nt,
-                word_emb_dim=self.args.word_emb_dim,
-                nt_emb_dim=self.args.nt_emb_dim,
-                action_emb_dim=self.args.action_emb_dim,
-                stack_lstm_dim=self.args.stack_lstm_dim,
-                terminal_lstm_dim=self.args.terminal_lstm_dim,
-                history_lstm_dim=self.args.history_lstm_dim,
-                stack_lstm_layers=self.args.lstm_layers,
-                terminal_lstm_layers=self.args.lstm_layers,
-                history_lstm_layers=self.args.lstm_layers,
-                composition=self.args.composition,
-                mlp_dim=self.args.mlp_dim,
-                dropout=self.args.dropout,
-                use_glove=self.use_glove,
-                glove_dir=self.glove_dir,
-                fine_tune_embeddings=self.freeze_embeddings,
-                freeze_embeddings=self.freeze_embeddings,
-            )
-
-    def build_optimizer(self):
-        assert self.model is not None, 'build model first'
-
-        if self.args.optimizer == 'sgd':
-            self.optimizer = dy.SimpleSGDTrainer(self.model, learning_rate=self.lr)
-        elif self.args.optimizer == 'adam':
-            self.optimizer = dy.AdamTrainer(self.model, alpha=self.lr)
-        self.optimizer.set_clip_threshold(self.max_grad_norm)
-        self.model.set_weight_decay(self.weight_decay)
-
     def get_lr(self):
         return self.optimizer.learning_rate
 
@@ -294,8 +313,8 @@ class Trainer:
 
     def anneal_lr(self):
         if self.current_dev_fscore < self.best_dev_fscore:  # if F1 has gotten worse
-            if self.current_epoch > (self.best_dev_epoch + self.patience):  # if we've waited long enough
-                lr = self.get_lr() / self.learning_rate_decay
+            if self.current_epoch > (self.best_dev_epoch + self.lr_decay_patience):  # if we've waited long enough
+                lr = self.get_lr() / self.lr_decay
                 print(f'Annealing the learning rate from {self.get_lr():.1e} to {lr:.1e}.')
                 self.set_lr(lr)
 
@@ -331,7 +350,6 @@ class Trainer:
             decoder = GenerativeImportanceDecoder(
                 model=self.rnng, dictionary=self.dictionary)
             decoder.load_proposal_samples(path=proposal_samples)
-            examples = examples[:100]  # Otherwise this will take 50 minutes.
         trees = []
         for i, (sentence, actions) in enumerate(examples):
             dy.renew_cg()
@@ -346,7 +364,8 @@ class Trainer:
         print('Evaluating F1 on development set...')
         self.rnng.eval()
         # Predict trees.
-        trees = self.predict(self.dev_dataset, proposal_samples=self.dev_proposal_samples)
+        dev_dataset = self.dev_dataset[:30] if self.rnng_type == 'gen' else self.dev_dataset
+        trees = self.predict(dev_dataset, proposal_samples=self.dev_proposal_samples)
         with open(self.dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
         # Compute f-score.
