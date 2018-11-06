@@ -17,7 +17,7 @@ class StackElement(NamedTuple):
 
 class Stack:
 
-    def __init__(self, model, dictionary, word_embedding, nt_embedding, encoder, composer):
+    def __init__(self, dictionary, word_embedding, nt_embedding, encoder, composer, empty_emb):
         word_embedding_dim = word_embedding.shape()[1]
         nt_embedding_dim = nt_embedding.shape()[1]
         assert (word_embedding_dim == nt_embedding_dim)
@@ -28,7 +28,7 @@ class Stack:
         self.nt_embedding = nt_embedding
         self.encoder = encoder
         self.composer = composer
-        self.empty_emb = model.add_parameters(self.embedding_dim, init='glorot')
+        self.empty_emb = empty_emb
         self._stack = []
         self._num_open_nts = 0
 
@@ -108,12 +108,12 @@ class Stack:
 
 class Buffer:
 
-    def __init__(self, model, dictionary, embedding, encoder):
+    def __init__(self, dictionary, embedding, encoder, empty_emb):
         self.dictionary = dictionary
         self.embedding_dim = embedding.shape()[1]
         self.embedding = embedding
         self.encoder = encoder
-        self.empty_emb = model.add_parameters(self.embedding_dim, init='glorot')
+        self.empty_emb = empty_emb
         self._buffer = []
 
     def state(self):
@@ -141,13 +141,13 @@ class Buffer:
 
 
 class Terminal:
-    def __init__(self, model, dictionary, embedding, encoder):
+    def __init__(self, dictionary, embedding, encoder):
         super(Terminal, self).__init__()
         self.dictionary = dictionary
         self.embedding_dim = embedding.shape()[1]
         self.embedding = embedding
         self.encoder = encoder
-        self.empty_emb = model.add_parameters(self.embedding_dim, init='glorot')
+        self.empty_emb = empty_emb
         self._terminal = []
 
     def state(self):
@@ -170,12 +170,12 @@ class Terminal:
 
 class History:
 
-    def __init__(self, model, dictionary, embedding, encoder):
+    def __init__(self, dictionary, embedding, encoder, empty_emb):
         self.dictionary = dictionary
         self.embedding_dim = embedding.shape()[1]
         self.embedding = embedding
         self.encoder = encoder
-        self.empty_emb = model.add_parameters(self.embedding_dim, init='glorot')
+        self.empty_emb = empty_emb
         self._history = []
 
     def state(self):

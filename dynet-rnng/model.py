@@ -74,13 +74,18 @@ class DiscRNNG(DiscParser):
             self.composer = AttentionComposition(
                 model, word_emb_dim, stack_lstm_layers, dropout)
 
+        # Embeddings for empty transition system
+        stack_empty_emb = model.add_parameters(word_emb_dim, init='glorot')
+        buffer_empty_emb = model.add_parameters(word_emb_dim, init='glorot')
+        history_empty_emb = model.add_parameters(action_emb_dim, init='glorot')
+
         # Transition system
         self.stack = Stack(
-            model, dictionary, self.word_embedding, self.nt_embedding, self.stack_encoder, self.composer)
+            dictionary, self.word_embedding, self.nt_embedding, self.stack_encoder, self.composer, stack_empty_emb)
         self.buffer = Buffer(
-            model, dictionary, self.word_embedding, self.buffer_encoder)
+            dictionary, self.word_embedding, self.buffer_encoder, buffer_empty_emb)
         self.history = History(
-            model, dictionary, self.action_embedding, self.history_encoder)
+            dictionary, self.action_embedding, self.history_encoder, history_empty_emb)
 
         # Scorers
         parse_repr_dim = stack_lstm_dim + buffer_lstm_dim + history_lstm_dim
@@ -220,13 +225,18 @@ class GenRNNG(GenParser):
             self.composer = AttentionComposition(
                 model, word_emb_dim, stack_lstm_layers, dropout)
 
+        # Embeddings for empty transition system
+        stack_empty_emb = model.add_parameters(word_emb_dim, init='glorot')
+        terminal_empty_emb = model.add_parameters(word_emb_dim, init='glorot')
+        history_empty_emb = model.add_parameters(action_emb_dim, init='glorot')
+
         # Transition system
         self.stack = Stack(
-            model, dictionary, self.word_embedding, self.nt_embedding, self.stack_encoder, self.composer)
+            dictionary, self.word_embedding, self.nt_embedding, self.stack_encoder, self.composer, stack_empty_emb)
         self.terminal = Terminal(
-            model, dictionary, self.word_embedding, self.terminal_encoder)
+            dictionary, self.word_embedding, self.terminal_encoder, terminal_empty_emb)
         self.history = History(
-            model, dictionary, self.action_embedding, self.history_encoder)
+            dictionary, self.action_embedding, self.history_encoder, history_empty_emb)
 
         # Scorers
         parse_repr_dim = stack_lstm_dim + terminal_lstm_dim + history_lstm_dim
