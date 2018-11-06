@@ -122,7 +122,109 @@ class Timer:
         return self.format(self.elapsed())
 
 
-# TODO: move these to a sensible place.
+# TODO: move these functions to a more sensible place.
+
+def unkify(tokens, words_dict):
+    final = []
+    for token in tokens:
+        # only process the train singletons and unknown words
+        if len(token.rstrip()) == 0:
+            final.append('UNK')
+        elif not(token.rstrip() in words_dict):
+            numCaps = 0
+            hasDigit = False
+            hasDash = False
+            hasLower = False
+            for char in token.rstrip():
+                if char.isdigit():
+                    hasDigit = True
+                elif char == '-':
+                    hasDash = True
+                elif char.isalpha():
+                    if char.islower():
+                        hasLower = True
+                    elif char.isupper():
+                        numCaps += 1
+            result = 'UNK'
+            lower = token.rstrip().lower()
+            ch0 = token.rstrip()[0]
+            if ch0.isupper():
+                if numCaps == 1:
+                    result = result + '-INITC'
+                    if lower in words_dict:
+                        result = result + '-KNOWNLC'
+                else:
+                    result = result + '-CAPS'
+            elif not(ch0.isalpha()) and numCaps > 0:
+                result = result + '-CAPS'
+            elif hasLower:
+                result = result + '-LC'
+            if hasDigit:
+                result = result + '-NUM'
+            if hasDash:
+                result = result + '-DASH'
+            if lower[-1] == 's' and len(lower) >= 3:
+                ch2 = lower[-2]
+                if not(ch2 == 's') and not(ch2 == 'i') and not(ch2 == 'u'):
+                    result = result + '-s'
+            elif len(lower) >= 5 and not(hasDash) and not(hasDigit and numCaps > 0):
+                if lower[-2:] == 'ed':
+                    result = result + '-ed'
+                elif lower[-3:] == 'ing':
+                    result = result + '-ing'
+                elif lower[-3:] == 'ion':
+                    result = result + '-ion'
+                elif lower[-2:] == 'er':
+                    result = result + '-er'
+                elif lower[-3:] == 'est':
+                    result = result + '-est'
+                elif lower[-2:] == 'ly':
+                    result = result + '-ly'
+                elif lower[-3:] == 'ity':
+                    result = result + '-ity'
+                elif lower[-1] == 'y':
+                    result = result + '-y'
+                elif lower[-2:] == 'al':
+                    result = result + '-al'
+            final.append(result)
+        else:
+            final.append(token.rstrip())
+    return final
+
+
+def get_actions_no_tags(line):
+    """Get actions for a tree without tags.
+
+    Author: Daan van Stigt
+    """
+    output_actions = []
+    line_strip = line.rstrip()
+    i = 0
+    max_idx = (len(line_strip) - 1)
+    while i <= max_idx:
+        if line_strip[i] == '(':
+            NT = ''
+            i += 1
+            while line_strip[i] != ' ':
+                NT += line_strip[i]
+                i += 1
+            output_actions.append('NT(' + NT + ')')
+        elif line_strip[i] == ')':
+             output_actions.append('REDUCE')
+             if i == max_idx:
+                 break
+             i += 1
+        else: # it's a terminal symbol
+            output_actions.append('SHIFT')
+            while line_strip[i] not in (' ', ')'):
+                i += 1
+        while line_strip[i] == ' ':
+            if i == max_idx:
+                break
+            i += 1
+    assert i == max_idx
+    return output_actions
+
 
 def add_dummy_tags(tree, tag='*'):
     """Turns (NP The tagless tree) into (NP (* The) (* tagless) (* tree))."""

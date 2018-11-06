@@ -1,6 +1,5 @@
 import os
 import json
-import tempfile
 from copy import deepcopy
 from typing import NamedTuple
 
@@ -14,13 +13,8 @@ from parser import DiscParser
 from model import DiscRNNG, GenRNNG
 from tree import Node
 from eval import evalb
-from data_scripts.get_oracle import unkify, get_actions, get_actions_no_tags
-from utils import add_dummy_tags, substitute_leaves, ceil_div
+from utils import ceil_div, add_dummy_tags, substitute_leaves, unkify, get_actions_no_tags
 
-
-# %%%%%%%%%%%%%%%%%%%%% #
-#      Base classes     #
-# %%%%%%%%%%%%%%%%%%%%% #
 
 class Decoder:
     """Decoder base class for prediction with RNNG."""
@@ -29,12 +23,10 @@ class Decoder:
             model=None,
             dictionary=None,
             use_tokenizer=False,
-            verbose=False
     ):
         self.model = model
         self.dictionary = dictionary
         self.use_tokenizer = use_tokenizer
-        self.verbose = verbose
         if self.use_tokenizer:
             self._init_tokenizer()
 
@@ -47,8 +39,8 @@ class Decoder:
 
         Arguments
         ---------
-        sentence: sentence to decode, can be of the following types:
-            str, List[str], List[int].
+        sentence : ``str`` or ``List[str]`` or ``List[int]``
+            The sentence to decode which can be of various types.
         """
         raise NotImplementedError
 
@@ -60,6 +52,8 @@ class Decoder:
         return [token for token in self.tokenizer(sentence)]
 
     def _process_unks(self, sentence):
+        assert isinstance(list, sentence)
+
         processed = []
         for word in sentence:
             try:
@@ -71,12 +65,15 @@ class Decoder:
         return processed
 
     def _from_string(self, sentence):
+        assert isinstance(sentence, str), sentence
+
         sentence = self._tokenize(sentence) if self.use_tokenizer else sentence.split()
         processed = self._process_unks(sentence)
         return [self.dictionary.w2i[word] for word in processed]
 
     def _process_sentence(self, words):
         assert len(words) > 0, f'decoder received empty words'
+
         if isinstance(words, str):
             return self._from_string(words)
         elif isinstance(words, list) and all(isinstance(word, str) for word in words):
@@ -85,16 +82,6 @@ class Decoder:
             return words
         else:
             raise ValueError(f'sentence format not recognized: {sentence}')
-
-    def _compute_probs(self, logits, mask=None, alpha=1.0):
-        probs = self.softmax(logits)  # Compute probs.
-        if alpha != 1.0:
-            probs = probs.pow(alpha)  # Apply temperature scaling.
-        if mask is not None:
-            assert (mask.shape == probs.shape), mask.shape
-            probs = mask * probs
-        probs /= probs.sum(dim=-1)  # Renormalize.
-        return probs
 
     def load_model(self, dir):
         assert os.path.isdir(dir), dir
@@ -111,33 +98,6 @@ class Decoder:
         self.dictionary.load(dict_checkpoint_path)
         [self.model] = dy.load(model_checkpoint_path, dy.ParameterCollection())
         self.model.eval()
-
-    def from_tree(self, gold):
-        """Predicts from a gold tree input and computes fscore with prediction.
-
-        Input should be a unicode string in the :
-            u'(S (NP (DT The) (NN equity) (NN market)) (VP (VBD was) (ADJP (JJ illiquid))) (. .))'
-        """
-        evalb_dir = os.path.expanduser('~/EVALB')  # TODO: this should be part of args.
-        # Make a temporay directory for the EVALB files.
-        temp_dir = tempfile.TemporaryDirectory(prefix='evalb-')
-        gold_path = os.path.join(temp_dir.name, 'gold.txt')
-        pred_path = os.path.join(temp_dir.name, 'predicted.txt')
-        result_path = os.path.join(temp_dir.name, 'output.txt')
-        # Extract sentence from the gold tree.
-        sent = Tree.fromstring(gold).leaves()
-        # Predict a tree for the sentence.
-        pred, *rest = self(sent)
-        pred = pred.linearize()
-        # Dump these in the temp-file.
-        with open(gold_path, 'w') as f:
-            print(gold, file=f)
-        with open(pred_path, 'w') as f:
-            print(pred, file=f)
-        fscore = evalb(evalb_dir, pred_path, gold_path, result_path)
-        # Cleanup the temporary directory.
-        temp_dir.cleanup()
-        return pred, fscore
 
 
 class DiscriminativeDecoder(Decoder):
@@ -158,16 +118,13 @@ class GenerativeDecoder(Decoder):
         assert isinstance(self.model, GenRNNG), f'must be generative model, got `{type(self.model)}`.'
 
 
-# %%%%%%%%%%%%%%%%%%%%%%%%%%% #
-#   Discriminative decoders   #
-# %%%%%%%%%%%%%%%%%%%%%%%%%%% #
-
 class GreedyDecoder(DiscriminativeDecoder):
     """Greedy decoder for discriminative RNNG."""
     def __call__(self, words):
         words = self._process_sentence(words)
         tree, nll = self.model.parse(words)
         return tree, -nll.value()
+
 
 class SamplingDecoder(DiscriminativeDecoder):
     """Ancestral sampling decoder for discriminative RNNG."""
@@ -263,10 +220,6 @@ class SamplingDecoder(DiscriminativeDecoder):
 #         self.open_beams = [beam for beam in new_beams if not beam.parser.stack.is_empty()]
 
 
-# %%%%%%%%%%%%%%%%%%%%%%% #
-#   Generative decoders   #
-# %%%%%%%%%%%%%%%%%%%%%%% #
-
 class GenerativeSamplingDecoder(GenerativeDecoder):
     """Ancestral sampling decoder for generative RNNG."""
     def __call__(self, alpha=1.0):
@@ -284,13 +237,11 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
             num_samples=100,
             alpha=0.8,
             use_tokenizer=False,
-            verbose=False
     ):
         super(GenerativeDecoder, self).__init__(
             model,
             dictionary,
             use_tokenizer,
-            verbose
         )
         self.num_samples = num_samples
         self.alpha = alpha

@@ -7,7 +7,7 @@ module load eb
 module load Python/3.6.3-foss-2017b
 
 # Home folders
-SRCDIR=$HOME/thesis/src
+SRCDIR=$HOME/thesis/dynet-rnng
 DATADIR=$HOME/thesis/data
 GLOVEDIR=$HOME/embeddings/glove
 EXP_DIR=$SRCDIR/experiments/lisa
@@ -23,7 +23,6 @@ MAX_EPOCHS=100
 MAX_LINES=-1
 PRINT_EVERY=10
 EVAL_EVERY=-1
-DROPOUT=0
 
 # Copy training data to scratch
 mkdir -p $TMP/data
@@ -36,6 +35,7 @@ mkdir -p $OUTDIR
 # Just checking if all folders are constructed correctly
 ls -l $TMP
 
+export MKL_NUM_THREADS=16
 
 # %%%%%%%%%%%%%% #
 # Adam optimizer #
@@ -43,9 +43,9 @@ ls -l $TMP
 
 OPTIM=adam
 LR=0.001
-BATCH_SIZE=32
+BATCH_SIZE=16
 # Name of experiment.
-NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_dropout${DROPOUT}
+NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}
 # Make output directory.
 mkdir -p $OUTDIR/$NAME
 # Run.
@@ -62,7 +62,6 @@ python $SRCDIR/main.py train disc \
     --eval-every $EVAL_EVERY \
     --optimizer $OPTIM \
     --lr $LR \
-    --dropout $DROPOUT \
     --batch-size $BATCH_SIZE \
     --dynet-autobatch 1 \
     --dynet-mem 3000 \
@@ -70,9 +69,9 @@ python $SRCDIR/main.py train disc \
 
 OPTIM=adam
 LR=0.001
-BATCH_SIZE=32
+BATCH_SIZE=16
 # Name of experiment.
-NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_dropout${DROPOUT}_use_glove
+NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_use_glove
 # Make output directory.
 mkdir -p $OUTDIR/$NAME
 # Run.
@@ -89,7 +88,6 @@ python $SRCDIR/main.py train disc \
     --eval-every $EVAL_EVERY \
     --optimizer $OPTIM \
     --lr $LR \
-    --dropout $DROPOUT \
     --batch-size $BATCH_SIZE \
     --use-glove \
     --glove-dir $TMP/glove \
@@ -99,9 +97,9 @@ python $SRCDIR/main.py train disc \
 
 OPTIM=adam
 LR=0.001
-BATCH_SIZE=32
+BATCH_SIZE=16
 # Name of experiment.
-NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_dropout${DROPOUT}_use_glove_freeze
+NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_use_glove_freeze
 # Make output directory.
 mkdir -p $OUTDIR/$NAME
 # Run.
@@ -118,11 +116,9 @@ python $SRCDIR/main.py train disc \
     --eval-every $EVAL_EVERY \
     --optimizer $OPTIM \
     --lr $LR \
-    --dropout $DROPOUT \
     --batch-size $BATCH_SIZE \
     --use-glove \
     --glove-dir $TMP/glove \
-    --freeze-embeddings \
     --dynet-autobatch 1 \
     --dynet-mem 3000 \
     > $OUTDIR/$NAME/terminal.txt &
@@ -134,9 +130,9 @@ python $SRCDIR/main.py train disc \
 
 OPTIM=sgd
 LR=0.1
-BATCH_SIZE=32
+BATCH_SIZE=16
 # Name of experiment.
-NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_dropout${DROPOUT}
+NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}
 # Make output directory.
 mkdir -p $OUTDIR/$NAME
 # Run.
@@ -153,7 +149,6 @@ python $SRCDIR/main.py train disc \
     --eval-every $EVAL_EVERY \
     --optimizer $OPTIM \
     --lr $LR \
-    --dropout $DROPOUT \
     --batch-size $BATCH_SIZE \
     --dynet-autobatch 1 \
     --dynet-mem 3000 \
@@ -161,9 +156,9 @@ python $SRCDIR/main.py train disc \
 
 OPTIM=sgd
 LR=0.1
-BATCH_SIZE=32
+BATCH_SIZE=16
 # Name of experiment.
-NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_dropout${DROPOUT}_use_glove
+NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_use_glove
 # Make output directory.
 mkdir -p $OUTDIR/$NAME
 # Run.
@@ -180,7 +175,6 @@ python $SRCDIR/main.py train disc \
     --eval-every $EVAL_EVERY \
     --optimizer $OPTIM \
     --lr $LR \
-    --dropout $DROPOUT \
     --batch-size $BATCH_SIZE \
     --use-glove \
     --glove-dir $TMP/glove \
@@ -190,9 +184,9 @@ python $SRCDIR/main.py train disc \
 
 OPTIM=sgd
 LR=0.1
-BATCH_SIZE=32
+BATCH_SIZE=16
 # Name of experiment.
-NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_dropout${DROPOUT}_use_glove_freeze
+NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_use_glove_freeze
 # Make output directory.
 mkdir -p $OUTDIR/$NAME
 # Run.
@@ -209,7 +203,6 @@ python $SRCDIR/main.py train disc \
     --eval-every $EVAL_EVERY \
     --optimizer $OPTIM \
     --lr $LR \
-    --dropout $DROPOUT \
     --batch-size $BATCH_SIZE \
     --use-glove \
     --glove-dir $TMP/glove \
@@ -227,7 +220,7 @@ OPTIM=adam
 LR=0.001
 BATCH_SIZE=1
 # Name of experiment.
-NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_dropout${DROPOUT}
+NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}
 # Make output directory.
 mkdir -p $OUTDIR/$NAME
 # Run.
@@ -244,15 +237,16 @@ python $SRCDIR/main.py train disc \
     --eval-every $EVAL_EVERY \
     --optimizer $OPTIM \
     --lr $LR \
-    --dropout $DROPOUT \
     --batch-size $BATCH_SIZE \
+    --dynet-autobatch 1 \
+    --dynet-mem 3000 \
     > $OUTDIR/$NAME/terminal.txt &
 
 OPTIM=adam
 LR=0.001
 BATCH_SIZE=1
 # Name of experiment.
-NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_dropout${DROPOUT}_use_glove
+NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_use_glove
 # Make output directory.
 mkdir -p $OUTDIR/$NAME
 # Run.
@@ -269,8 +263,9 @@ python $SRCDIR/main.py train disc \
     --eval-every $EVAL_EVERY \
     --optimizer $OPTIM \
     --lr $LR \
-    --dropout $DROPOUT \
     --batch-size $BATCH_SIZE \
+    --dynet-autobatch 1 \
+    --dynet-mem 3000 \
     --use-glove \
     --glove-dir $TMP/glove \
     > $OUTDIR/$NAME/terminal.txt &
@@ -279,7 +274,7 @@ OPTIM=adam
 LR=0.001
 BATCH_SIZE=1
 # Name of experiment.
-NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_dropout${DROPOUT}_use_glove_freeze
+NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_use_glove_freeze
 # Make output directory.
 mkdir -p $OUTDIR/$NAME
 # Run.
@@ -296,8 +291,9 @@ python $SRCDIR/main.py train disc \
     --eval-every $EVAL_EVERY \
     --optimizer $OPTIM \
     --lr $LR \
-    --dropout $DROPOUT \
     --batch-size $BATCH_SIZE \
+    --dynet-autobatch 1 \
+    --dynet-mem 3000 \
     --use-glove \
     --glove-dir $TMP/glove \
     --freeze-embeddings \
@@ -312,7 +308,7 @@ OPTIM=sgd
 LR=0.1
 BATCH_SIZE=1
 # Name of experiment.
-NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_dropout${DROPOUT}
+NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}
 # Make output directory.
 mkdir -p $OUTDIR/$NAME
 # Run.
@@ -329,15 +325,16 @@ python $SRCDIR/main.py train disc \
     --eval-every $EVAL_EVERY \
     --optimizer $OPTIM \
     --lr $LR \
-    --dropout $DROPOUT \
     --batch-size $BATCH_SIZE \
+    --dynet-autobatch 1 \
+    --dynet-mem 3000 \
     > $OUTDIR/$NAME/terminal.txt &
 
 OPTIM=sgd
 LR=0.1
 BATCH_SIZE=1
 # Name of experiment.
-NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_dropout${DROPOUT}_use_glove
+NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_use_glove
 # Make output directory.
 mkdir -p $OUTDIR/$NAME
 # Run.
@@ -354,8 +351,9 @@ python $SRCDIR/main.py train disc \
     --eval-every $EVAL_EVERY \
     --optimizer $OPTIM \
     --lr $LR \
-    --dropout $DROPOUT \
     --batch-size $BATCH_SIZE \
+    --dynet-autobatch 1 \
+    --dynet-mem 3000 \
     --use-glove \
     --glove-dir $TMP/glove \
     > $OUTDIR/$NAME/terminal.txt &
@@ -364,7 +362,7 @@ OPTIM=sgd
 LR=0.1
 BATCH_SIZE=1
 # Name of experiment.
-NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_dropout${DROPOUT}_use_glove_freeze
+NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_use_glove_freeze
 # Make output directory.
 mkdir -p $OUTDIR/$NAME
 # Run.
@@ -381,8 +379,9 @@ python $SRCDIR/main.py train disc \
     --eval-every $EVAL_EVERY \
     --optimizer $OPTIM \
     --lr $LR \
-    --dropout $DROPOUT \
     --batch-size $BATCH_SIZE \
+    --dynet-autobatch 1 \
+    --dynet-mem 3000 \
     --use-glove \
     --glove-dir $TMP/glove \
     --freeze-embeddings \

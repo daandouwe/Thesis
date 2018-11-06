@@ -90,6 +90,33 @@ def predict_file(args):
     print(f'Finished. F-score {fscore:.2f}. Results saved in `{args.outdir}`.')
 
 
+def predict_from_tree(gold_tree):
+    """Predicts from a gold tree input and computes fscore with prediction.
+
+    Input should be a unicode string in the :
+        u'(S (NP (DT The) (NN equity) (NN market)) (VP (VBD was) (ADJP (JJ illiquid))) (. .))'
+    """
+    evalb_dir = os.path.expanduser('~/EVALB')  # TODO: this should be part of args.
+    # Make a temporay directory for the EVALB files.
+    temp_dir = tempfile.TemporaryDirectory(prefix='evalb-')
+    gold_path = os.path.join(temp_dir.name, 'gold.txt')
+    pred_path = os.path.join(temp_dir.name, 'predicted.txt')
+    result_path = os.path.join(temp_dir.name, 'output.txt')
+    # Extract sentence from the gold tree.
+    sent = Tree.fromstring(gold_tree).leaves()
+    # Predict a tree for the sentence.
+    pred_tree, *rest = self(sent)
+    pred_tree = pred_tree.linearize()
+    # Dump these in the temp-file.
+    with open(gold_path, 'w') as f:
+        print(gold_tree, file=f)
+    with open(pred_path, 'w') as f:
+        print(pred_tree, file=f)
+    fscore = evalb(evalb_dir, pred_path, gold_path, result_path)
+    # Cleanup the temporary directory.
+    temp_dir.cleanup()
+    return pred_tree, fscore
+
 def predict_input_disc(args):
     print('Predicting with discriminative model.')
     greedy = GreedyDecoder(use_tokenizer=args.use_tokenizer)

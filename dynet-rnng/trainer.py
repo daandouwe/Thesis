@@ -59,6 +59,7 @@ class Trainer:
             elbo_objective=False
     ):
         assert rnng_type in ('disc', 'gen'), rnng_type
+
         self.args = args
 
         # Data arguments
@@ -115,13 +116,13 @@ class Trainer:
     def build_paths(self):
         # Make output folder structure
         subdir, logdir, checkdir, outdir = get_folders(self.args)  # TODO: make more transparent
+        os.makedirs(logdir, exist_ok=True)
+        os.makedirs(checkdir, exist_ok=True)
+        os.makedirs(outdir, exist_ok=True)
         print(f'Output subdirectory: `{subdir}`.')
         print(f'Saving logs to `{logdir}`.')
         print(f'Saving predictions to `{outdir}`.')
         print(f'Saving models to `{checkdir}`.')
-        os.makedirs(logdir, exist_ok=True)
-        os.makedirs(checkdir, exist_ok=True)
-        os.makedirs(outdir, exist_ok=True)
         # Save arguments
         write_args(self.args, logdir)
         # Output paths

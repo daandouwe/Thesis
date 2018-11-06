@@ -31,7 +31,6 @@ class DiscRNNG(DiscParser):
             fine_tune_embeddings=False,
             freeze_embeddings=False
     ):
-        assert composition in ('basic', 'attention'), composition
         self.spec = locals()
         self.spec.pop("self")
         self.spec.pop("model")
@@ -191,7 +190,6 @@ class GenRNNG(GenParser):
             fine_tune_embeddings=False,
             freeze_embeddings=False
     ):
-        assert composition in ('basic', 'attention'), composition
         self.spec = locals()
         self.spec.pop("self")
         self.spec.pop("model")

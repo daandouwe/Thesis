@@ -5,6 +5,7 @@ class StackLSTM:
     """An LSTM with a pop operation."""
     def __init__(self, model, input_size, hidden_size, num_layers, dropout):
         assert (hidden_size % 2 == 0), f'hidden size must be even: {hidden_size}'
+
         self.model = model.add_subcollection('StackLSTM')
 
         self.input_size = input_size

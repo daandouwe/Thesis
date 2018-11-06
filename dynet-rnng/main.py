@@ -115,6 +115,8 @@ def main():
                         help='proposal samples for test set')
 
     # Dynet arguments
+    parser.add_argument('--dynet-seed', type=int, default=42,
+                        help='passed to dynet')
     parser.add_argument('--dynet-autobatch', type=int, default=0,
                         help='passed to dynet')
     parser.add_argument('--dynet-mem', type=int, default=3000,
