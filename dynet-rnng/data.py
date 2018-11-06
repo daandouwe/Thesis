@@ -31,6 +31,7 @@ def get_oracles(path):
 
 
 def make_generetive(oracles, text_type):
+    """Transform a discriminative oracle into a generative oracle."""
     for oracle in oracles:
         words = iter(oracle[text_type].split())
         actions = []
@@ -45,19 +46,20 @@ def make_generetive(oracles, text_type):
 
 class Dictionary:
 
-    def __init__(self, path, text_type='unked', rnng_type='disc'):
+    def __init__(self, path=None, text_type='unked', rnng_type='disc'):
         assert text_type in ('original', 'lower', 'unked'), text_type
         assert rnng_type in ('disc', 'gen'), rnng_type
 
         self.text_type = text_type
         self.rnng_type = rnng_type
-        words, actions, nonterminals = self.get_vocab(path)
-        self.i2w = words
-        self.i2a = actions
-        self.i2n = nonterminals
-        self.w2i = dict(zip(words, range(len(words))))
-        self.a2i = dict(zip(actions, range(len(actions))))
-        self.n2i = dict(zip(nonterminals, range(len(nonterminals))))
+        if path is not None:
+            words, actions, nonterminals = self.get_vocab(path)
+            self.i2w = words
+            self.i2a = actions
+            self.i2n = nonterminals
+            self.w2i = dict(zip(words, range(len(words))))
+            self.a2i = dict(zip(actions, range(len(actions))))
+            self.n2i = dict(zip(nonterminals, range(len(nonterminals))))
 
     def get_vocab(self, path):
         if self.rnng_type == 'disc':
@@ -92,14 +94,14 @@ class Dictionary:
     def load(self, path):
         assert path.endswith('.json'), f'expected json file got `{path}`'
 
-        with open(path, 'w') as f:
+        with open(path) as f:
             state = json.load(f)
-        self.n2i = state['n2i']
-        self.a2i = state['a2i']
         self.w2i = state['w2i']
-        self.i2n = list(self.n2i.keys())
-        self.i2a = list(self.a2i.keys())
+        self.a2i = state['a2i']
+        self.n2i = state['n2i']
         self.i2w = list(self.w2i.keys())
+        self.i2a = list(self.a2i.keys())
+        self.i2n = list(self.n2i.keys())
 
     @property
     def num_words(self):

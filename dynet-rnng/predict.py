@@ -156,7 +156,7 @@ def sample_generative(args):
 
     print('Samples:')
     for i in range(5):
-        tree, logprob, _ = decoder()
+        tree, logprob = decoder()
         print('>', tree.linearize(with_tag=False))
         print()
 
@@ -179,9 +179,9 @@ def sample_proposals(args):
         samples = []
         for i, line in enumerate(tqdm(lines)):
             for _ in range(args.num_samples):
-                tree, logprob, _ = decoder(line, alpha=args.alpha)  # sample a tree
+                tree, logprob = decoder(line, alpha=args.alpha)  # sample a tree
                 samples.append(
-                    ' ||| '.join((str(i), str(logprob.item()), tree.linearize(with_tag=False))))
+                    ' ||| '.join((str(i), str(logprob), tree.linearize(with_tag=False))))
     else:
         print(f'Sampling proposals with {num_procs} processors...')
         samples = []

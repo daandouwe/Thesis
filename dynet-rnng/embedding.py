@@ -6,9 +6,12 @@ from glove import load_glove
 class Embedding:
     """Trainable word embeddings."""
     def __init__(self, model, size, embedding_dim, init='glorot'):
+
+        self.model = model.add_subcollection('Embedding')
+
         self.size = size
         self.embedding_dim = embedding_dim
-        self.embedding = model.add_lookup_parameters(
+        self.embedding = self.model.add_lookup_parameters(
             (size, embedding_dim), init=init)
 
     def __getitem__(self, index):
@@ -27,10 +30,12 @@ class PretrainedEmbedding:
     def __init__(self, model, size, embedding_dim, vec_dir, ordered_words, type='glove', freeze=True):
         assert type in ('glove',), 'only GloVe supported'
 
+        self.model = model.add_subcollection('PretrainedEmbedding')
+
         self.size = size
         self.embedding_dim = embedding_dim
         self.freeze = freeze
-        self.embedding = model.lookup_parameters_from_numpy(
+        self.embedding = self.model.lookup_parameters_from_numpy(
             load_glove(ordered_words, self.embedding_dim, vec_dir))
 
     def __getitem__(self, index):
@@ -70,12 +75,15 @@ class FineTuneEmbedding:
     loss we incur. This seems sensible to me. Experiments seem to agree.
     """
     def __init__(self, model, size, embedding_dim, vec_dir, ordered_words, weight_decay=100):
+
+        self.model = model.add_subcollection('FineTuneEmbedding')
+
         self.size = size
         self.embedding_dim = embedding_dim
         self.weight_decay = weight_decay
         self.embedding = PretrainedEmbedding(
-            model, size, embedding_dim, vec_dir, ordered_words, freeze=True)
-        self.delta = Embedding(model, size, embedding_dim, init=0)
+            self.model, size, embedding_dim, vec_dir, ordered_words, freeze=True)
+        self.delta = Embedding(self.model, size, embedding_dim, init=0)
 
     def __getitem__(self, index):
         return self(index)

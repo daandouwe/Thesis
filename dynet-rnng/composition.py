@@ -7,8 +7,11 @@ class BiRecurrentComposition:
     """Bidirectional RNN composition function."""
     def __init__(self, model, input_size, num_layers, dropout):
         assert input_size % 2 == 0, 'input size size must be even'
-        self.fwd_rnn_builder = dy.VanillaLSTMBuilder(num_layers, input_size, input_size//2, model)
-        self.bwd_rnn_builder = dy.VanillaLSTMBuilder(num_layers, input_size, input_size//2, model)
+
+        self.model = model.add_subcollection('BiRecurrentComposition')
+
+        self.fwd_rnn_builder = dy.VanillaLSTMBuilder(num_layers, input_size, input_size//2, self.model)
+        self.bwd_rnn_builder = dy.VanillaLSTMBuilder(num_layers, input_size, input_size//2, self.model)
         self.dropout = dropout
 
     def train(self):
@@ -32,17 +35,20 @@ class BiRecurrentComposition:
 
 
 class AttentionComposition:
-    """Bidirectional RNN composition function with attention."""
+    """Bidirectional RNN composition function with gated attention."""
     def __init__(self, model, input_size, num_layers, dropout):
         assert input_size % 2 == 0, 'hidden size must be even'
+
+        self.model = model.add_subcollection('AttentionComposition')
+
         self.input_size = input_size
         self.num_layers = num_layers
         self.dropout = dropout
-        self.fwd_rnn_builder = dy.VanillaLSTMBuilder(num_layers, input_size, input_size//2, model)
-        self.bwd_rnn_builder = dy.VanillaLSTMBuilder(num_layers, input_size, input_size//2, model)
-        self.V = model.add_parameters((input_size, input_size), init='glorot')
-        self.gating = Affine(model, 2*input_size, input_size)
-        self.head = Affine(model, input_size, input_size)
+        self.fwd_rnn_builder = dy.VanillaLSTMBuilder(num_layers, input_size, input_size//2, self.model)
+        self.bwd_rnn_builder = dy.VanillaLSTMBuilder(num_layers, input_size, input_size//2, self.model)
+        self.V = self.model.add_parameters((input_size, input_size), init='glorot')
+        self.gating = Affine(self.model, 2*input_size, input_size)
+        self.head = Affine(self.model, input_size, input_size)
 
     def train(self):
         self.fwd_rnn_builder.set_dropouts(self.dropout, self.dropout)

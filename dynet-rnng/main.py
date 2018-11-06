@@ -6,6 +6,7 @@ from math import inf
 import train
 import predict
 
+
 def main():
 
     parser = argparse.ArgumentParser(description='RNNG parser',

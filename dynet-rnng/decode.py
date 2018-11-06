@@ -1,4 +1,5 @@
 import os
+import json
 import tempfile
 from copy import deepcopy
 from typing import NamedTuple
@@ -8,6 +9,7 @@ import numpy as np
 from tqdm import tqdm
 
 from actions import SHIFT, REDUCE, NT, GEN
+from data import Dictionary
 from parser import DiscParser
 from model import DiscRNNG, GenRNNG
 from tree import Node
@@ -94,6 +96,22 @@ class Decoder:
         probs /= probs.sum(dim=-1)  # Renormalize.
         return probs
 
+    def load_model(self, dir):
+        assert os.path.isdir(dir), dir
+
+        print(f'Loading model from `{dir}`...')
+        model_checkpoint_path = os.path.join(dir, 'model')
+        state_checkpoint_path = os.path.join(dir, 'state.json')
+        dict_checkpoint_path = os.path.join(dir, 'dict.json')
+
+        with open(state_checkpoint_path, 'r') as f:
+            state = json.load(f)
+        print(f"Loaded model trained for {state['epochs']} epochs with test-fscore {state['test-fscore']}.")
+        self.dictionary = Dictionary()
+        self.dictionary.load(dict_checkpoint_path)
+        [self.model] = dy.load(model_checkpoint_path, dy.ParameterCollection())
+        self.model.eval()
+
     def from_tree(self, gold):
         """Predicts from a gold tree input and computes fscore with prediction.
 
@@ -127,20 +145,8 @@ class DiscriminativeDecoder(Decoder):
 
     def load_model(self, path):
         """Load the discriminative model."""
-        assert os.path.exists(path), path
-
-        print(f'Loading model from `{path}`...')
-
-        ## TODO
-        epoch, fscore = state['epochs'], state['test-fscore']
-        self.epoch = epoch
-        self.fscore = fscore
-        self.model = state['model']
-        self.dictionary = state['dictionary']
-        ##
-        self.model.eval()  # Disable dropout.
+        super(DiscriminativeDecoder, self).load_model(path)
         assert isinstance(self.model, DiscRNNG), f'must be discriminative model, got `{type(self.model)}`.'
-        print(f'Loaded discriminative model trained for {epoch} epochs with test-fscore {fscore}.')
 
 
 class GenerativeDecoder(Decoder):
@@ -148,15 +154,8 @@ class GenerativeDecoder(Decoder):
 
     def load_model(self, path):
         """Load the (generative) model."""
-        assert os.path.exists(path), path
-
-        print(f'Loading model from `{path}`...')
-        ##
-        # TODO
-        ##
-        self.model.eval()  # Disable dropout.
+        super(DiscriminativeDecoder, self).load_model(path)
         assert isinstance(self.model, GenRNNG), f'must be generative model, got `{type(self.model)}`.'
-        print(f'Loaded generative model trained for {epoch} epochs with test-fscore {fscore}.')
 
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%% #
@@ -166,20 +165,23 @@ class GenerativeDecoder(Decoder):
 class GreedyDecoder(DiscriminativeDecoder):
     """Greedy decoder for discriminative RNNG."""
     def __call__(self, words):
-        return self.model.parse(words)
-
+        words = self._process_sentence(words)
+        tree, nll = self.model.parse(words)
+        return tree, -nll.value()
 
 class SamplingDecoder(DiscriminativeDecoder):
     """Ancestral sampling decoder for discriminative RNNG."""
     def __call__(self, words, alpha=1.0):
-        return self.model.sample(words, alpha=alpha)
+        words = self._process_sentence(words)
+        tree, nll = self.model.sample(words, alpha=alpha)
+        return tree, -nll.value()
 
 
-class Beam(NamedTuple):
-    parser: DiscParser
-    logprob: float
-
-
+# class Beam(NamedTuple):
+#     parser: DiscParser
+#     logprob: float
+#
+#
 # class BeamSearchDecoder(DiscriminativeDecoder):
 #     """Beam search decoder for discriminative RNNG."""
 #     def __call__(self, sentence, k=10):
@@ -269,7 +271,8 @@ class GenerativeSamplingDecoder(GenerativeDecoder):
     """Ancestral sampling decoder for generative RNNG."""
     def __call__(self, alpha=1.0):
         """Returns a sample (x,y) from the model."""
-        self.model.sample(alpha=alpha)
+        tree, nll = self.model.sample(alpha=alpha)
+        return tree, -nll.value()
 
 
 class GenerativeImportanceDecoder(GenerativeDecoder):
@@ -299,6 +302,7 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
 
     def map_tree(self, sentence):
         """Estimate the MAP tree."""
+        sentence = self._process_sentence(sentence)
         scored = self.scored_samples(sentence, remove_duplicates=True)  # do not need duplicates for MAP tree
         ranked = sorted(scored, reverse=True, key=lambda t: t[-1])
         best_tree, proposal_logprob, logprob = ranked[0]
@@ -306,6 +310,7 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
 
     def logprob(self, sentence):
         """Estimate the probability of the sentence."""
+        sentence = self._process_sentence(sentence)
         scored = self.scored_samples(sentence, remove_duplicates=False)  # do need duplicates for perplexity
         logprobs = np.zeros(self.num_samples)
         for i, (tree, marginal_logprob, joint_logprob) in enumerate(scored):
@@ -315,13 +320,10 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
         return logprob
 
     def perplexity(self, sentence):
+        sentence = self._process_sentence(sentence)
         return np.exp(-self.logprob(sentence) / len(sentence))
 
-    def scored_samples(self, sentence, remove_duplicates=False):
-        sentence = self._process_sentence(sentence)
-        return self._scored_samples(sentence, remove_duplicates)
-
-    def _scored_samples(self, words, remove_duplicates):
+    def scored_samples(self, words, remove_duplicates):
         """Return a list of proposal samples that will be scored by the joint model."""
         def filter(samples):
             """Filter out duplicate trees from the samples."""
@@ -342,7 +344,7 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
             self.i += 1
         else:
             # Sample with the proposal model that we've loaded.
-            samples = [self._sample_proposal(words) for _ in range(self.num_samples)]
+            samples = [self._sample_one_proposal(words) for _ in range(self.num_samples)]
         # Remove duplicates if we are only interested in reranking.
         if remove_duplicates:
             samples = filter(samples)
@@ -353,12 +355,13 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
         dy.esum(scores).value()
         scores = [score.value() for score in scores]
         ##
-        # Add dummy tags if trees were loaded from file.
         if self.use_samples:
+            # Proposal trees loaded from file have no tags.
             scored = [(add_dummy_tags(tree), proposal_logprob, logprob)
                 for (tree, proposal_logprob), logprob in zip(samples, scores)]
         else:
-            scored = [(tree, proposal_logprob, logprob)
+            # Proposal trees sampled can printed with a dummy tag.
+            scored = [(tree.linearize(with_tag=True), proposal_logprob, logprob)
                 for (tree, proposal_logprob), logprob in zip(samples, scores)]
         return scored
 
@@ -372,7 +375,7 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
         actions = [self.dictionary.a2i[action] for action in oracle]
         return -self.model(None, actions)
 
-    def _sample_proposal(self, words):
+    def _sample_one_proposal(self, words):
         dy.renew_cg()
         tree, nll = self.proposal(words, alpha=self.alpha)
         return tree, -nll.value()
@@ -386,6 +389,23 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
         return [GEN(next(words)) if action == SHIFT else action
             for action in get_actions_no_tags(tree)]
 
+    def _read_proposals(self, path):
+        with open(path) as f:
+            lines = [line.strip() for line in f.readlines()]
+        id = 0
+        samples = []
+        proposals = dict()
+        for line in lines:
+            line_id, logprob, tree = line.split('|||')
+            line_id, logprob, tree = int(line_id), float(logprob), tree.strip()
+            if line_id > id:
+                proposals[id] = samples
+                id = line_id
+                samples = []
+            samples.append((tree, logprob))
+        proposals[line_id] = samples
+        return proposals
+
     def load_proposal_model(self, path):
         """Load the proposal (discriminative) model to sample from."""
         assert os.path.exists(path), path
@@ -398,66 +418,7 @@ class GenerativeImportanceDecoder(GenerativeDecoder):
         assert os.path.exists(path), path
 
         print(f'Loading discriminative (proposal) samples from `{path}`...')
-        samples = self._read_samples(path)
+        samples = self._read_proposals(path)
         assert all(len(samples[i]) == self.num_samples for i in samples.keys()), 'not enough samples'
         self.samples = samples
         self.use_samples = True
-
-    def _read_samples(self, path):
-        with open(path) as f:
-            lines = [line.strip() for line in f.readlines()]
-        idx = 0
-        samples = []
-        idx2samples = dict()
-        for line in lines:
-            line_idx, logprob, tree = line.split('|||')
-            line_idx, logprob, tree = int(line_idx), float(logprob), tree.strip()
-            if line_idx > idx:
-                idx2samples[idx] = samples
-                idx = line_idx
-                samples = []
-            samples.append((tree, logprob))
-        idx2samples[line_idx] = samples
-        return idx2samples
-
-
-if __name__ == '__main__':
-    import sys
-
-    if len(sys.argv) < 2:
-        exit('Specify model checkpoint to load.')
-    else:
-        checkpoint = sys.argv[1]
-
-    # A demonstration.
-    sentence = u'This is a short sentence but it will do for now .'
-    tree = u'(S (NP (DT The) (ADJP (RBS most) (JJ troublesome)) (NN report)) (VP (MD may) ' + \
-            '(VP (VB be) (NP (NP (DT the) (NNP August) (NN merchandise) (NN trade) (NN deficit)) ' + \
-            '(ADJP (JJ due) (ADVP (IN out)) (NP (NN tomorrow)))))) (. .))'
-
-    greedy = GreedyDecoder()
-    greedy.load_model(path=checkpoint)
-
-    # beamer = BeamSearchDecoder()
-    # beamer.load_model(path=checkpoint)
-
-    sampler = SamplingDecoder()
-    sampler.load_model(path=checkpoint)
-
-    print('Greedy decoder:')
-    tree, logprob, num_actions = greedy(sentence)
-    print('{} {:.2f} {:.4f} {}'.format(tree.linearize(with_tag=False), logprob, np.exp(logprob), num_actions))
-    print()
-
-    # print('Beam-search decoder:')
-    # results = beamer(sentence, k=2)
-    # for tree, logprob in results:
-        # print('{} {:.2f} {:.4f}'.format(tree.linearize(with_tag=False), logprob, np.exp(logprob)))
-    # print()
-
-    print('Sampling decoder:')
-    for _ in range(3):
-        tree, logprob, num_actions = sampler(sentence)
-        print('{} {:.2f} {:.4f} {}'.format(tree.linearize(with_tag=False), logprob, np.exp(logprob), num_actions))
-    print('-'*79)
-    print()

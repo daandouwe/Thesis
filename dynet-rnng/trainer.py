@@ -103,8 +103,7 @@ class Trainer:
         # Save arguments
         write_args(self.args, logdir)
         # Output paths
-        self.model_checkpoint_path = os.path.join(checkdir, 'model.dy')
-        # self.rnng_checkpoint_path = os.path.join(checkdir, 'rnng.pkl')
+        self.model_checkpoint_path = os.path.join(checkdir, 'model')
         self.state_checkpoint_path = os.path.join(checkdir, 'state.json')
         self.dict_checkpoint_path = os.path.join(checkdir, 'dict.json')
         self.loss_path = os.path.join(logdir, 'loss.csv')
@@ -224,10 +223,10 @@ class Trainer:
     def build_model(self):
         assert self.dictionary is not None, 'build corpus first'
 
-        model = dy.Model()
+        self.model = dy.ParameterCollection()
         if self.rnng_type == 'disc':
-            rnng = DiscRNNG(
-                model=model,
+            self.rnng = DiscRNNG(
+                model=self.model,
                 dictionary=self.dictionary,
                 num_words=self.dictionary.num_words,
                 num_nt=self.dictionary.num_nt,
@@ -249,8 +248,8 @@ class Trainer:
                 freeze_embeddings=self.freeze_embeddings,
             )
         elif self.rnng_type == 'gen':
-            rnng = GenRNNG(
-                model=model,
+            self.rnng = GenRNNG(
+                model=self.model,
                 dictionary=self.dictionary,
                 num_words=self.dictionary.num_words,
                 num_nt=self.dictionary.num_nt,
@@ -271,8 +270,6 @@ class Trainer:
                 fine_tune_embeddings=self.freeze_embeddings,
                 freeze_embeddings=self.freeze_embeddings,
             )
-        self.model = model  # the dynet ParameterCollection
-        self.rnng = rnng  # the RNNG class that wraps it
 
     def build_optimizer(self):
         assert self.model is not None, 'build model first'
@@ -303,14 +300,14 @@ class Trainer:
                 self.set_lr(lr)
 
     def save_checkpoint(self):
-        assert self.model is not None, 'build model first'
+        assert self.model is not None, 'no model built'
 
-        self.model.save(self.model_checkpoint_path)
+        dy.save(self.model_checkpoint_path, [self.rnng])
         self.dictionary.save(self.dict_checkpoint_path)
-        # with open(self.rnng_checkpoint_path, 'wb') as f:
-        #     pickle.dump(self.rnng, f)
         with open(self.state_checkpoint_path, 'w') as f:
             state = {
+                'rnng-type': self.rnng_type,
+                'text-type': self.text_type,
                 'epochs': self.current_epoch,
                 'num-updates': self.num_updates,
                 'best-dev-fscore': self.best_dev_fscore,
@@ -320,12 +317,10 @@ class Trainer:
             json.dump(state, f, indent=4)
 
     def load_checkpoint(self):
-        if self.model is None:
-            self.build_model()
-            self.build_optimizer()
-            # self.dictionary.load(self.dict_checkpoint_path)
-        self.model.populate(self.model_checkpoint_path)
-        # TODO: adam
+        self.model = dy.ParameterCollection()
+        [self.rnng] = dy.load(self.model_checkpoint_path, self.model)
+        with open(self.state_checkpoint_path) as f:
+            state = json.load(f)
 
     def predict(self, examples, proposal_samples=None):
         if self.rnng_type == 'disc':
