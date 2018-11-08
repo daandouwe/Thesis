@@ -122,15 +122,67 @@ class Timer:
         return self.format(self.elapsed())
 
 
-# TODO: move these functions to a more sensible place.
+def replace_quotes(words):
+    """Replace quotes following PTB convention"""
+    assert isinstance(words, list), words
+    assert all(isinstance(word, str) for word in words), words
+
+    replaced = []
+    found_left_double, found_left_single = False, False
+    for word in words:
+        if word == '"':
+            if found_left_double:
+                found_left_double = False
+                replaced.append("''")
+            else:
+                found_left_double = True
+                replaced.append("``")
+        elif word == "'":
+            if found_left_double:
+                found_left_double = False
+                replaced.append("'")
+            else:
+                found_left_double = True
+                replaced.append("`")
+        else:
+            replaced.append(word)
+    return replaced
+
+
+def replace_brackets(words):
+    """Replace brackets following PTB convention"""
+    assert isinstance(words, list), words
+    assert all(isinstance(word, str) for word in words), words
+
+    replaced = []
+    for word in words:
+        if word == '(':
+            replaced.append('LRB')
+        elif word == '{':
+            replaced.append('LCB')
+        elif word == '[':
+            replaced.append('LSB')
+        elif word == ')':
+            replaced.append('RRB')
+        elif word == '}':
+            replaced.append('RCB')
+        elif word == ']':
+            replaced.append('RSB')
+        else:
+            replaced.append(word)
+    return replaced
+
+
+# TODO: move the following functions to a more sensible place.
 
 def unkify(tokens, words_dict):
+    """Taken from get_oracle.py"""
     final = []
     for token in tokens:
         # only process the train singletons and unknown words
         if len(token.rstrip()) == 0:
             final.append('UNK')
-        elif not(token.rstrip() in words_dict):
+        if not(token.rstrip() in words_dict):
             numCaps = 0
             hasDigit = False
             hasDash = False
@@ -186,17 +238,16 @@ def unkify(tokens, words_dict):
                     result = result + '-y'
                 elif lower[-2:] == 'al':
                     result = result + '-al'
+            result = 'UNK' if result not in words_dict else result  # Added this line -Daan
             final.append(result)
         else:
             final.append(token.rstrip())
+
     return final
 
 
 def get_actions_no_tags(line):
-    """Get actions for a tree without tags.
-
-    Author: Daan van Stigt
-    """
+    """Get actions for a tree without tags."""
     output_actions = []
     line_strip = line.rstrip()
     i = 0

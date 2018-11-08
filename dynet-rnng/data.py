@@ -2,6 +2,9 @@ import os
 import json
 
 from actions import SHIFT, REDUCE, NT, GEN, is_nt, is_gen, get_nt, get_word
+from utils import unkify, replace_quotes, replace_brackets
+
+UNK = 'UNK'
 
 
 def get_oracle_dict(oracle):
@@ -70,7 +73,7 @@ class Dictionary:
     def get_disc_vocab(self, path):
         sentences = get_oracles(path)
         words = list(sorted(set(
-            [word for sentence in sentences for word in sentence[self.text_type].split()])))
+            [UNK] + [word for sentence in sentences for word in sentence[self.text_type].split()])))
         nonterminals = list(sorted(set(
             [get_nt(action) for sentence in sentences for action in sentence['actions'] if is_nt(action)])))
         actions = [SHIFT, REDUCE] + [NT(nt) for nt in nonterminals]
@@ -79,7 +82,7 @@ class Dictionary:
     def get_gen_vocab(self, path):
         sentences = get_oracles(path)
         words = list(sorted(set(
-            [word for sentence in sentences for word in sentence[self.text_type].split()])))
+            [UNK] + [word for sentence in sentences for word in sentence[self.text_type].split()])))
         nonterminals = list(sorted(set(
             [get_nt(action) for sentence in sentences for action in sentence['actions'] if is_nt(action)])))
         actions = [REDUCE] + [NT(nt) for nt in nonterminals] + [GEN(word) for word in words]
@@ -116,7 +119,7 @@ class Dictionary:
         return len(self.i2a)
 
 
-class Data:
+class ParseDataset:
 
     def __init__(self, path, dictionary, text_type='unked', rnng_type='disc'):
         self.text_type = text_type
@@ -139,10 +142,51 @@ class Data:
         return list(zip(self.words, self.actions))
 
 
-class Corpus:
+class LanguageModelDataset:
+
+    def __init__(self, dictionary, path):
+        self.words = []
+        self.read(dictionary, path)
+
+    def read(self, dictionary, path):
+        with open(path) as f:
+            for i, line in enumerate(f):
+                # print(line.strip())
+                words = replace_brackets(replace_quotes(line.strip().split()))
+                # print(' '.join(unkify(words, dictionary)))
+                # print()
+                self.words.append([dictionary[word] for word in unkify(words, dictionary)])
+
+    @property
+    def data(self):
+        return self.words
+
+
+class ParseCorpus:
 
     def __init__(self, train_path, dev_path, test_path, text_type='unked', rnng_type='disc'):
         self.dictionary = Dictionary(train_path, text_type, rnng_type)
-        self.train = Data(train_path, self.dictionary, text_type, rnng_type)
-        self.dev = Data(dev_path, self.dictionary, text_type, rnng_type)
-        self.test = Data(test_path, self.dictionary, text_type, rnng_type)
+        self.train = ParseDataset(train_path, self.dictionary, text_type, rnng_type)
+        self.dev = ParseDataset(dev_path, self.dictionary, text_type, rnng_type)
+        self.test = ParseDataset(test_path, self.dictionary, text_type, rnng_type)
+
+
+class SemiSupervisedCorpus:
+
+    def __init__(self, train_path, dev_path, test_path, lm_path, text_type='unked'):
+        self.gen_dictionary = Dictionary(train_path, text_type, rnng_type='gen')
+        self.disc_dictionary = Dictionary(train_path, text_type, rnng_type='disc')
+        self.lm = LanguageModelDataset(self.gen_dictionary.w2i, lm_path)
+        self.train = ParseDataset(train_path, self.gen_dictionary, text_type, rnng_type='gen')
+        self.dev = ParseDataset(dev_path, self.gen_dictionary, text_type, rnng_type='gen')
+        self.test = ParseDataset(test_path, self.gen_dictionary, text_type, rnng_type='gen')
+
+
+if __name__ == '__main__':
+
+    SemiSupervisedCorpus(
+        '../data/train/ptb.train.oracle',
+        '../data/dev/ptb.dev.oracle',
+        '../data/test/ptb.test.oracle',
+        '/Users/daan/data/one-billion-words/heldout-monolingual.tokenized.shuffled/news.en-00000-of-00100'
+    )

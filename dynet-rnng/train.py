@@ -6,7 +6,6 @@ import time
 import dynet as dy
 import numpy as np
 
-from data import Corpus
 from trainer import Trainer
 from utils import Timer, write_losses, get_folders, write_args
 

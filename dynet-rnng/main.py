@@ -5,6 +5,7 @@ from math import inf
 
 import train
 import predict
+import semisup
 
 
 def main():
@@ -12,7 +13,7 @@ def main():
     parser = argparse.ArgumentParser(description='RNNG parser',
                                      fromfile_prefix_chars='@') # enable loading args from textfile
     # Choose mode
-    parser.add_argument('mode', choices=['train', 'predict', 'inspect', 'latent'],
+    parser.add_argument('mode', choices=['train', 'predict', 'inspect', 'latent', 'semisup'],
                         help='what would you like to do?')
     parser.add_argument('rnng_type', choices=['disc', 'gen'],
                         help='use discriminative or generative model')
@@ -131,12 +132,16 @@ def main():
                         help='load proposal samples')
     parser.add_argument('--from-input', action='store_true',
                         help='predict for user input')
-    parser.add_argument('--from-file', action='store_true',
-                        help='predict for user input')
+    parser.add_argument('--from-tree-file', action='store_true',
+                        help='predict trees for a file of gold trees and evaluate it against those')
+    parser.add_argument('--from-text-file', action='store_true',
+                        help='predict trees for a file of tokenized sentences')
     parser.add_argument('--sample-gen', action='store_true',
                         help='sample from generative model')
     parser.add_argument('--sample-proposals', action='store_true',
                         help='sample proposals from discriminative model')
+    parser.add_argument('--syneval', action='store_true',
+                        help='evaluate on syneval test')
     parser.add_argument('--num-samples', type=int, default=100,
                         help='number of proposal samples')
     parser.add_argument('--alpha', type=float, default=1.0,
@@ -166,6 +171,8 @@ def main():
         train.main(args)
     elif args.mode == 'predict':
         predict.main(args)
+    elif args.mode == 'semisup':
+        semisup.main(args)
 
 
 if __name__ == '__main__':

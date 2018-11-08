@@ -4,6 +4,7 @@ import glob
 import tempfile
 import multiprocessing as mp
 
+import dynet as dy
 from tqdm import tqdm
 from nltk import Tree
 
@@ -42,14 +43,11 @@ def is_tree(line):
         return False
 
 
-def predict_file(args):
+def predict_tree_file(args):
     assert os.path.exists(args.data), 'specifiy file to parse with --data.'
     print(f'Predicting trees for lines in `{args.data}`.')
     with open(args.data, 'r') as f:
-        lines = [line.strip() for line in f.readlines()]
-    if is_tree(lines[0]):
-        lines = [Tree.fromstring(line).leaves() for line in lines]
-
+        lines = [Tree.fromstring(line).leaves() for line in f.readlines()]
     checkfile = get_checkfile(args.checkpoint)
     if args.rnng_type == 'disc':
         print('Predicting with discriminative model.')
@@ -63,31 +61,42 @@ def predict_file(args):
             decoder.load_proposal_model(path=args.proposal_model)
         if args.proposal_samples:
             decoder.load_proposal_samples(path=args.proposal_samples)
-
-    print(f'Predicting trees for `{args.data}`...')
-    if args.num_procs == 1:
-        trees = []
-        for line in tqdm(lines):
-            tree, *rest = decoder(line)
-            trees.append(tree)
-    else:
-        tuples = decoder.decode_parallel(lines, num_procs=args.num_procs, with_tag=True)  # (tree, logprob) tuples
-        trees, _ = zip(*tuples)
-
-    # Make a temporay directory for the EVALB files.
-    pred_path = os.path.join(args.outdir, 'predicted.txt')
-    gold_path = os.path.join(args.outdir, 'gold.txt')
-    result_path = os.path.join(args.outdir, 'output.txt')
+    pred_path = os.path.join(args.out)
+    result_path = os.path.join(args.out, '.results')
     # Save the predicted trees.
     with open(pred_path, 'w') as f:
         print('\n'.join(trees), file=f)
-    # Also save the gold trees in the temp dir for easy inspection.
-    with open(args.data, 'r') as fin:
-        with open(gold_path, 'w') as fout:
-            print(fin.read(), file=fout, end='')
     # Score the trees.
-    fscore = evalb(args.evalb_dir, pred_path, gold_path, result_path)
-    print(f'Finished. F-score {fscore:.2f}. Results saved in `{args.outdir}`.')
+    fscore = evalb(args.evalb_dir, pred_path, args.data, result_path)
+    print(f'Finished. F-score {fscore:.2f}. Results saved in `{result_path}`.')
+
+
+def predict_text_file(args):
+    assert os.path.exists(args.data), 'specifiy file to parse with --data.'
+    print(f'Predicting trees for lines in `{args.data}`.')
+    with open(args.data, 'r') as f:
+        lines = [line.strip() for line in f.readlines()]
+    checkfile = get_checkfile(args.checkpoint)
+    if args.rnng_type == 'disc':
+        print('Predicting with discriminative model.')
+        decoder = GreedyDecoder(use_tokenizer=False)
+        decoder.load_model(path=checkfile)
+    elif args.rnng_type == 'gen':
+        print('Predicting with generative model.')
+        decoder = GenerativeImportanceDecoder(use_tokenizer=False)
+        decoder.load_model(path=checkfile)
+        if args.proposal_model:
+            decoder.load_proposal_model(path=args.proposal_model)
+        if args.proposal_samples:
+            decoder.load_proposal_samples(path=args.proposal_samples)
+    print(f'Predicting trees for `{args.data}`...')
+    trees = []
+    for line in tqdm(lines):
+        tree, *rest = decoder(line)
+        trees.append(tree.linearize(with_tag=False))
+    print(f'Saved predicted trees in `{args.out}`.')
+    with open(args.out, 'w') as f:
+        print('\n'.join(trees), file=f)
 
 
 def predict_from_tree(gold_tree):
@@ -160,7 +169,7 @@ def predict_input_gen(args):
         print('  {} {:.2f} {:.2f}'.format(tree.linearize(with_tag=False), logprob, proposal_logprob))
         print()
 
-        scored = decoder.scored_samples(sentence)
+        scored = decoder.scored_samples(decoder._process_sentence(sentence))
         scored = remove_duplicates(scored)  # For printing purposes.
         print(f'Unique samples: {len(scored)}/{num_samples}.')
         print('Highest q(y|x):')
@@ -206,6 +215,7 @@ def sample_proposals(args):
         samples = []
         for i, line in enumerate(tqdm(lines)):
             for _ in range(args.num_samples):
+                dy.renew_cg()
                 tree, logprob = decoder(line, alpha=args.alpha)  # sample a tree
                 samples.append(
                     ' ||| '.join((str(i), str(logprob), tree.linearize(with_tag=False))))
@@ -213,13 +223,35 @@ def sample_proposals(args):
         print(f'Sampling proposals with {num_procs} processors...')
         samples = []
         for i, line in enumerate(tqdm(lines)):
-            tuples = decoder.sample_parallel(line, args.num_samples, with_tag=False)
+            tuples = decoder.parallel(line, args.num_procs, args.num_samples)
             for tree, logprob in tuples:
                 samples.append(
-                    ' ||| '.join((str(i), str(logprob), tree)))
+                    ' ||| '.join((str(i), str(logprob), tree.linearize(with_tag=False))))
     # Write samples.
     with open(args.out, 'w') as f:
         print('\n'.join(samples), file=f, end='')
+
+
+def predict_syneval(args):
+    assert os.path.exists(args.proposal_model), 'specify valid proposal model.'
+
+    decoder = GenerativeImportanceDecoder(use_tokenizer=True, num_samples=args.num_samples)
+    decoder.load_model(path=args.checkpoint)
+    decoder.load_proposal_model(path=args.proposal_model)
+    with open(args.data + '.pos') as f:
+        pos_sents = [line.strip() for line in f.readlines()]
+    with open(args.data + '.neg') as f:
+        neg_sents = [line.strip() for line in f.readlines()]
+    correct = 0
+    with open(args.out, 'w') as f:
+        for i, (pos, neg) in enumerate(zip(pos_sents, neg_sents)):
+            pos_pp = decoder.perplexity(pos)
+            neg_pp = decoder.perplexity(neg)
+            correct += (pos_pp < neg_pp)
+            print(i, round(pos_pp, 2), round(neg_pp, 2), pos_pp < neg_pp, correct, neg)
+            print(i, round(pos_pp, 2), round(neg_pp, 2), pos_pp < neg_pp, neg, file=f)
+    print(f'Syneval: {correct}/{len(pos_sents)} correct')
+
 
 
 def main(args):
@@ -231,10 +263,15 @@ def main(args):
     elif args.sample_proposals:
         assert args.rnng_type == 'disc'
         sample_proposals(args)
-    elif args.from_file:
-        predict_file(args)
+    elif args.from_tree_file:
+        predict_tree_file(args)
+    elif args.from_text_file:
+        predict_text_file(args)
     elif args.sample_gen:
         assert args.rnng_type == 'gen'
         sample_generative(args)
+    elif args.syneval:
+        assert args.rnng_type == 'gen'
+        predict_syneval(args)
     else:
         exit('Specify type of prediction. Use --from-input, --from-file or --sample-gen.')

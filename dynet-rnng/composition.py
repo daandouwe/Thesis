@@ -49,7 +49,8 @@ class AttentionComposition:
         self.V = self.model.add_parameters((input_size, input_size), init='glorot')
         self.gating = Affine(self.model, 2*input_size, input_size)
         self.head = Affine(self.model, input_size, input_size)
-
+        self.training = True
+        
     def train(self):
         self.fwd_rnn_builder.set_dropouts(self.dropout, self.dropout)
         self.bwd_rnn_builder.set_dropouts(self.dropout, self.dropout)
