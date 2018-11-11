@@ -8,8 +8,8 @@ import dynet as dy
 from tqdm import tqdm
 from nltk import Tree
 
-from decode import (GreedyDecoder, SamplingDecoder,
-    GenerativeImportanceDecoder, GenerativeSamplingDecoder)
+# from decode import (GreedyDecoder, SamplingDecoder,
+    # GenerativeImportanceDecoder, GenerativeSamplingDecoder)
 from eval import evalb
 from utils import ceil_div
 
@@ -191,7 +191,7 @@ def sample_generative(args):
     decoder.load_model(path=args.checkpoint)
 
     print('Samples:')
-    for i in range(5):
+    for i in range(args.num_samples):
         tree, logprob = decoder()
         print('>', tree.linearize(with_tag=False))
         print()
@@ -251,7 +251,6 @@ def predict_syneval(args):
             print(i, round(pos_pp, 2), round(neg_pp, 2), pos_pp < neg_pp, correct, neg)
             print(i, round(pos_pp, 2), round(neg_pp, 2), pos_pp < neg_pp, neg, file=f)
     print(f'Syneval: {correct}/{len(pos_sents)} correct')
-
 
 
 def main(args):

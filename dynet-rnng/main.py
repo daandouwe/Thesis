@@ -10,6 +10,16 @@ import semisup
 
 def main():
 
+    dynet_args = [
+        '--dynet-mem',
+        '--dynet-weight-decay',
+        '--dynet-autobatch',
+        '--dynet-gpus',
+        '--dynet-gpu',
+        '--dynet-devices',
+        '--dynet-seed',
+    ]
+
     parser = argparse.ArgumentParser(description='RNNG parser',
                                      fromfile_prefix_chars='@') # enable loading args from textfile
     # Choose mode
@@ -18,10 +28,19 @@ def main():
     parser.add_argument('rnng_type', choices=['disc', 'gen'],
                         help='use discriminative or generative model')
 
+    for arg in dynet_args:
+        parser.add_argument(arg)
+
     # Debugging
     parser.add_argument('-d', '--debug', action='store_true')
 
     # Data arguments
+    parser.add_argument('--train-path', type=str, default='../data/train/ptb.train.trees',
+                        help='training trees')
+    parser.add_argument('--dev-path', type=str, default='../data/dev/ptb.dev.trees',
+                        help='development trees')
+    parser.add_argument('--test-path', type=str, default='../data/test/ptb.test.trees',
+                        help='test trees')
     parser.add_argument('--data', type=str, default='../data',
                         help='location of the oracles')
     parser.add_argument('--text-type', type=str, choices=['unked', 'lower', 'original'], default='unked',
@@ -114,14 +133,6 @@ def main():
                         help='proposal samples for development set')
     parser.add_argument('--test-proposal-samples', type=str, default='../data/proposal-samples/test.props',
                         help='proposal samples for test set')
-
-    # Dynet arguments
-    parser.add_argument('--dynet-seed', type=int, default=42,
-                        help='passed to dynet')
-    parser.add_argument('--dynet-autobatch', type=int, default=0,
-                        help='passed to dynet')
-    parser.add_argument('--dynet-mem', type=int, default=3000,
-                        help='passed to dynet')
 
     # Predict arguments
     parser.add_argument('--checkpoint', type=str, default='',

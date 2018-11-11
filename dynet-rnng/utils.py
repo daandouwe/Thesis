@@ -2,8 +2,6 @@ import os
 import time
 from datetime import datetime
 
-from nltk import Tree
-
 
 def ceil_div(a, b):
     return ((a - 1) // b) + 1
@@ -93,11 +91,11 @@ def write_losses(args, losses):
 class Timer:
     """A simple timer to use during training."""
     def __init__(self):
-        self.time0 = time.time()
+        self.start = time.time()
         self.previous = time.time()
 
     def elapsed(self):
-        return time.time() - self.time0
+        return time.time() - self.start
 
     def elapsed_since_previous(self):
         new = time.time()
@@ -173,16 +171,14 @@ def replace_brackets(words):
     return replaced
 
 
-# TODO: move the following functions to a more sensible place.
-
-def unkify(tokens, words_dict):
-    """Taken from get_oracle.py"""
+def parsing_unkify(tokens):
+    """Elaborate UNKing following parsing tradition."""
     final = []
     for token in tokens:
         # only process the train singletons and unknown words
         if len(token.rstrip()) == 0:
             final.append('UNK')
-        if not(token.rstrip() in words_dict):
+        else:
             numCaps = 0
             hasDigit = False
             hasDash = False
@@ -238,110 +234,6 @@ def unkify(tokens, words_dict):
                     result = result + '-y'
                 elif lower[-2:] == 'al':
                     result = result + '-al'
-            result = 'UNK' if result not in words_dict else result  # Added this line -Daan
             final.append(result)
-        else:
-            final.append(token.rstrip())
 
     return final
-
-
-def get_actions_no_tags(line):
-    """Get actions for a tree without tags."""
-    output_actions = []
-    line_strip = line.rstrip()
-    i = 0
-    max_idx = (len(line_strip) - 1)
-    while i <= max_idx:
-        if line_strip[i] == '(':
-            NT = ''
-            i += 1
-            while line_strip[i] != ' ':
-                NT += line_strip[i]
-                i += 1
-            output_actions.append('NT(' + NT + ')')
-        elif line_strip[i] == ')':
-             output_actions.append('REDUCE')
-             if i == max_idx:
-                 break
-             i += 1
-        else: # it's a terminal symbol
-            output_actions.append('SHIFT')
-            while line_strip[i] not in (' ', ')'):
-                i += 1
-        while line_strip[i] == ' ':
-            if i == max_idx:
-                break
-            i += 1
-    assert i == max_idx
-    return output_actions
-
-
-def add_dummy_tags(tree, tag='*'):
-    """Turns (NP The tagless tree) into (NP (* The) (* tagless) (* tree))."""
-    assert isinstance(tree, str), tree
-    i = 0
-    max_idx = (len(tree) - 1)
-    new_tree = ''
-    while i <= max_idx:
-        if tree[i] == '(':
-            new_tree += tree[i]
-            i += 1
-            while tree[i] != ' ':
-                new_tree += tree[i]
-                i += 1
-        elif tree[i] == ')':
-            new_tree += tree[i]
-            if i == max_idx:
-                break
-            i += 1
-        else: # it's a terminal symbol
-            new_tree += f'({tag} '
-            while tree[i] not in (' ', ')'):
-                new_tree += tree[i]
-                i += 1
-            new_tree += ')'
-        while tree[i] == ' ':
-            if i == max_idx:
-                break
-            new_tree += tree[i]
-            i += 1
-    assert i == max_idx, i
-    return new_tree
-
-
-def substitute_leaves(tree, new_leaves):
-    assert isinstance(tree, str), tree
-    assert all(isinstance(leaf, str) for leaf in new_leaves), new_leaves
-    old_leaves = Tree.fromstring(tree).leaves()
-    message = f'inconsistent lengths:\nOld: {list(old_leaves)}\nNew: {list(new_leaves)}'
-    assert len(old_leaves) == len(list(new_leaves)), message
-    new_leaves = iter(new_leaves)
-    i = 0
-    max_idx = (len(tree) - 1)
-    new_tree = ''
-    while i <= max_idx:
-        assert tree[i] != ' '
-        if tree[i] == '(':
-            new_tree += tree[i]
-            i += 1
-            while tree[i] != ' ':
-                new_tree += tree[i]
-                i += 1
-        elif tree[i] == ')':
-            new_tree += tree[i]
-            if i == max_idx:
-                break
-            i += 1
-        else: # it's a terminal symbol
-            while tree[i] not in (' ', ')'):
-                i += 1
-            new_tree += next(new_leaves)
-        # Skip whitespace.
-        while tree[i] == ' ':
-            if i == max_idx:
-                break
-            new_tree += tree[i]
-            i += 1
-    assert i == max_idx, i
-    return new_tree

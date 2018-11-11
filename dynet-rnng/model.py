@@ -1,7 +1,8 @@
-
 import dynet as dy
 import numpy as np
 
+from vocabulary import UNK
+from actions import GEN, is_gen
 from parser import DiscParser, GenParser, Stack, Buffer, History, Terminal
 from embedding import Embedding, FineTuneEmbedding, PretrainedEmbedding
 from encoder import StackLSTM
@@ -14,9 +15,9 @@ class DiscRNNG(DiscParser):
     def __init__(
             self,
             model,
-            dictionary,
-            num_words,
-            num_nt,
+            word_vocab,
+            nt_vocab,
+            action_vocab,
             word_emb_dim,
             nt_emb_dim,
             action_emb_dim,
@@ -37,28 +38,32 @@ class DiscRNNG(DiscParser):
         self.spec.pop("model")
 
         self.model = model.add_subcollection('DiscRNNG')
-        self.num_words = num_words
-        self.num_nt = num_nt
-        self.num_actions = 2 + num_nt
+
+        self.word_vocab = word_vocab
+        self.nt_vocab = nt_vocab
+        self.action_vocab = action_vocab
+
+        self.num_words = word_vocab.size
+        self.num_nt = nt_vocab.size
+        self.num_actions = action_vocab.size
+        assert self.num_actions  == 2 + self.num_nt
 
         self.word_emb_dim = word_emb_dim
         self.nt_emb_dim = nt_emb_dim
         self.action_emb_dim = action_emb_dim
 
-        self.dictionary = dictionary
-
         # Embeddings
-        self.nt_embedding = Embedding(self.model, num_nt, nt_emb_dim)
+        self.nt_embedding = Embedding(self.model, self.num_nt, nt_emb_dim)
         self.action_embedding = Embedding(self.model, self.num_actions, action_emb_dim)
         if use_glove:
             if fine_tune_embeddings:
                 self.word_embedding = FineTuneEmbedding(
-                    self.model, num_words, word_emb_dim, glove_dir, dictionary.i2w)
+                    self.model, self.num_words, word_emb_dim, glove_dir, word_vocab)
             else:
                 self.word_embedding = PretrainedEmbedding(
-                    self.model, num_words, word_emb_dim, glove_dir, dictionary.i2w, freeze=freeze_embeddings)
+                    self.model, self.num_words, word_emb_dim, glove_dir, word_vocab, freeze=freeze_embeddings)
         else:
-            self.word_embedding = Embedding(self.model, num_words, word_emb_dim)
+            self.word_embedding = Embedding(self.model, self.num_words, word_emb_dim)
 
         # Encoders
         self.stack_encoder = StackLSTM(
@@ -83,11 +88,11 @@ class DiscRNNG(DiscParser):
 
         # Transition system
         self.stack = Stack(
-            dictionary, self.word_embedding, self.nt_embedding, self.stack_encoder, self.composer, stack_empty_emb)
+            word_vocab, nt_vocab, self.word_embedding, self.nt_embedding, self.stack_encoder, self.composer, stack_empty_emb)
         self.buffer = Buffer(
-            dictionary, self.word_embedding, self.buffer_encoder, buffer_empty_emb)
+            word_vocab, self.word_embedding, self.buffer_encoder, buffer_empty_emb)
         self.history = History(
-            dictionary, self.action_embedding, self.history_encoder, history_empty_emb)
+            action_vocab, self.action_embedding, self.history_encoder, history_empty_emb)
 
         # Scorers
         parser_dim = stack_lstm_dim + buffer_lstm_dim + history_lstm_dim
@@ -120,34 +125,42 @@ class DiscRNNG(DiscParser):
         for component in self.components:
             component.eval()
 
-    def __call__(self, words, actions):
+    def forward(self, tree, is_train=True):
         """Forward pass for training."""
-        self.initialize(words)
+        if is_train:
+            words = unkify(tree.leaves(), self.word_vocab)
+        else:
+            words = self.word_vocab.process(tree.leaves())
+        actions = tree.disc_oracle()
+
+        self.initialize(self.word_vocab.indices(words))
         nll = 0.
-        for action_id in actions:
-            # Compute action loss
+        for action_id in self.action_vocab.indices(actions):
             u = self.parser_representation()
             action_logits = self.f_action(u)
             nll += dy.pickneglogsoftmax(action_logits, action_id)
-            # Move the parser ahead.
-            self.parse_step(self.dictionary.i2a[action_id], action_id)
+            self.parse_step(action_id)
         return nll
 
     def parse(self, words):
         """Greedy decoding for prediction."""
         self.eval()
         nll = 0.
-        self.initialize(words)
+        words = list(words)
+        self.initialize(self.word_vocab.indices(words))
         while not self.stack.is_finished():
             u = self.parser_representation()
             action_logits = self.f_action(u)
             action_id = np.argmax(action_logits.value() + self._add_actions_mask())
             nll += dy.pickneglogsoftmax(action_logits, action_id)
-            self.parse_step(self.dictionary.i2a[action_id], action_id)
-        return self.get_tree(), nll
+            self.parse_step(action_id)
+        tree = self.get_tree()
+        tree.substitute_leaves(iter(words))  # replaces UNKs with originals
+        return tree, nll
 
     def sample(self, words, alpha=1.):
         """Ancestral sampling."""
+
         def compute_probs(logits):
             probs = np.array(dy.softmax(logits).value()) * self._mult_actions_mask()
             if alpha != 1.:
@@ -157,15 +170,18 @@ class DiscRNNG(DiscParser):
 
         self.eval()
         nll = 0.
-        self.initialize(words)
+        words = list(words)
+        self.initialize(self.word_vocab.indices(words))
         while not self.stack.is_finished():
             u = self.parser_representation()
             action_logits = self.f_action(u)
             action_id = np.random.choice(
                 np.arange(self.num_actions), p=compute_probs(action_logits))
             nll += dy.pickneglogsoftmax(action_logits, action_id)
-            self.parse_step(self.dictionary.i2a[action_id], action_id)
-        return self.get_tree(), nll
+            self.parse_step(action_id)
+        tree = self.get_tree()
+        tree.substitute_leaves(iter(words))  # replaces UNKs with originals
+        return tree, nll
 
 
 class GenRNNG(GenParser):
@@ -173,9 +189,9 @@ class GenRNNG(GenParser):
     def __init__(
             self,
             model,
-            dictionary,
-            num_words,
-            num_nt,
+            word_vocab,
+            nt_vocab,
+            action_vocab,
             word_emb_dim,
             nt_emb_dim,
             action_emb_dim,
@@ -196,28 +212,32 @@ class GenRNNG(GenParser):
         self.spec.pop("model")
 
         self.model = model.add_subcollection('GenRNNG')
-        self.num_words = num_words
-        self.num_nt = num_nt
-        self.num_actions = 1 + num_nt + num_words
+
+        self.word_vocab = word_vocab
+        self.nt_vocab = nt_vocab
+        self.action_vocab = action_vocab
+
+        self.num_words = word_vocab.size
+        self.num_nt = nt_vocab.size
+        self.num_actions = action_vocab.size
+        assert self.num_actions == 1 + self.num_nt + self.num_words
 
         self.word_emb_dim = word_emb_dim
         self.nt_emb_dim = nt_emb_dim
         self.action_emb_dim = action_emb_dim
 
-        self.dictionary = dictionary
-
         # Embeddings
-        self.nt_embedding = Embedding(self.model, num_nt, nt_emb_dim)
+        self.nt_embedding = Embedding(self.model, self.num_nt, nt_emb_dim)
         self.action_embedding = Embedding(self.model, self.num_actions, action_emb_dim)
         if use_glove:
             if fine_tune_embeddings:
                 self.word_embedding = FineTuneEmbedding(
-                    self.model, num_words, word_emb_dim, glove_dir, dictionary.i2w)
+                    self.model, self.num_words, word_emb_dim, glove_dir, word_vocab)
             else:
                 self.word_embedding = PretrainedEmbedding(
-                    self.model, num_words, word_emb_dim, glove_dir, dictionary.i2w, freeze=freeze_embeddings)
+                    self.model, self.num_words, word_emb_dim, glove_dir, word_vocab, freeze=freeze_embeddings)
         else:
-            self.word_embedding = Embedding(self.model, num_words, word_emb_dim)
+            self.word_embedding = Embedding(self.model, self.num_words, word_emb_dim)
 
         # Encoders
         self.stack_encoder = StackLSTM(
@@ -242,11 +262,11 @@ class GenRNNG(GenParser):
 
         # Transition system
         self.stack = Stack(
-            dictionary, self.word_embedding, self.nt_embedding, self.stack_encoder, self.composer, stack_empty_emb)
+            word_vocab, nt_vocab, self.word_embedding, self.nt_embedding, self.stack_encoder, self.composer, stack_empty_emb)
         self.terminal = Terminal(
-            dictionary, self.word_embedding, self.terminal_encoder, terminal_empty_emb)
+            word_vocab, self.word_embedding, self.terminal_encoder, terminal_empty_emb)
         self.history = History(
-            dictionary, self.action_embedding, self.history_encoder, history_empty_emb)
+            action_vocab, self.action_embedding, self.history_encoder, history_empty_emb)
 
         # Scorers
         parser_dim = stack_lstm_dim + terminal_lstm_dim + history_lstm_dim
@@ -283,12 +303,18 @@ class GenRNNG(GenParser):
         for component in self.components:
             component.eval()
 
-    def __call__(self, words, actions):
+    def forward(self, tree, is_train=True):
         """Forward pass for training."""
+        if is_train:
+            words = unkify(tree.leaves(), self.word_vocab)
+        else:
+            words = self.word_vocab.process(tree.leaves())
+        tree.substitute_leaves(iter(words))
+        actions = tree.gen_oracle()
+
         self.initialize()
         nll = 0.
-        for action_id in actions:
-            # Compute action loss
+        for action_id in self.action_vocab.indices(actions):
             u = self.parser_representation()
             action_logits = self.f_action(u)
             nll += dy.pickneglogsoftmax(action_logits, self._get_action_id(action_id))
@@ -298,12 +324,12 @@ class GenRNNG(GenParser):
             elif self._is_gen_id(action_id):
                 word_logits = self.f_word(u)
                 nll += dy.pickneglogsoftmax(word_logits, self._get_word_id(action_id))
-            # Move the parser ahead.
-            self.parse_step(self.dictionary.i2a[action_id], action_id)
+            self.parse_step(action_id)
         return nll
 
     def sample(self, alpha=1.):
         """Ancestral sampling."""
+
         def compute_probs(logits, mult_mask=None):
             probs = np.array(dy.softmax(logits).value())
             if mult_mask is not None:
@@ -317,7 +343,6 @@ class GenRNNG(GenParser):
         self.initialize()
         nll = 0.
         while not self.stack.is_finished():
-            # Compute action loss
             u = self.parser_representation()
             action_logits = self.f_action(u)
             action_id = np.random.choice(
@@ -335,6 +360,16 @@ class GenRNNG(GenParser):
                     np.arange(self.num_words), p=compute_probs(word_logits))
                 nll += dy.pickneglogsoftmax(word_logits, word_id)
                 action_id = self._make_action_id_from_word_id(word_id)
-            # Move the parser ahead.
-            self.parse_step(self.dictionary.i2a[action_id], action_id)
+            self.parse_step(action_id)
         return self.get_tree(), nll
+
+
+def unkify(words, vocab):
+    """Dynamic unking during training."""
+    assert vocab.unk, 'vocab has no unk'
+    words = list(words)
+    for i, word in enumerate(words):
+        count = vocab.count(word)
+        if not count or np.random.rand() < 1 / (1 + count):
+            words[i] = UNK
+    return words

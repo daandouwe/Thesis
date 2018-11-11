@@ -62,7 +62,7 @@ class FineTuneEmbedding:
 
         W' = W + Δ
 
-    were W are the pre-trained embeddings and Δ the fine-tuning
+    where W are the pre-trained embeddings and Δ the fine-tuning
     weights. W is fixed, and the weights in Δ are initialized
     to zero and trained with an L2 penalty.
 

@@ -17,12 +17,13 @@ class StackElement(NamedTuple):
 
 class Stack:
 
-    def __init__(self, dictionary, word_embedding, nt_embedding, encoder, composer, empty_emb):
+    def __init__(self, word_vocab, nt_vocab, word_embedding, nt_embedding, encoder, composer, empty_emb):
         word_embedding_dim = word_embedding.shape()[1]
         nt_embedding_dim = nt_embedding.shape()[1]
         assert (word_embedding_dim == nt_embedding_dim)
 
-        self.dictionary = dictionary
+        self.word_vocab = word_vocab
+        self.nt_vocab = nt_vocab
         self.embedding_dim = word_embedding_dim
         self.word_embedding = word_embedding
         self.nt_embedding = nt_embedding
@@ -41,18 +42,18 @@ class Stack:
         self.encoder.initialize()
         self.encoder.push(self.empty_emb)
 
-    def open(self, nt_id: int):
+    def open(self, nt_id):
         emb = self.nt_embedding[nt_id]
         self.encoder.push(emb)
-        subtree = InternalNode(self.dictionary.i2n[nt_id])
+        subtree = InternalNode(self.nt_vocab.value(nt_id))
         self.attach_subtree(subtree)
         self._stack.append(StackElement(nt_id, emb, subtree, True))
         self._num_open_nts += 1
 
-    def push(self, word_id: int):
+    def push(self, word_id):
         emb = self.word_embedding[word_id]
         self.encoder.push(emb)
-        subtree = LeafNode(self.dictionary.i2w[word_id])
+        subtree = LeafNode(self.word_vocab.value(word_id))
         self.attach_subtree(subtree)
         self._stack.append(StackElement(word_id, emb, subtree, False))
 
@@ -61,9 +62,9 @@ class Stack:
 
     def attach_subtree(self, subtree: Node):
         """Add subtree to rightmost open nonterminal as rightmost child."""
-        for node in self._stack[::-1]:
-            if node.is_open_nt:
-                node.subtree.add_child(subtree)
+        for item in self._stack[::-1]:
+            if item.is_open_nt:
+                item.subtree.add_child(subtree)
                 break
 
     def reduce(self):
@@ -108,8 +109,8 @@ class Stack:
 
 class Buffer:
 
-    def __init__(self, dictionary, embedding, encoder, empty_emb):
-        self.dictionary = dictionary
+    def __init__(self, vocab, embedding, encoder, empty_emb):
+        self.vocab = vocab
         self.embedding_dim = embedding.shape()[1]
         self.embedding = embedding
         self.encoder = encoder
@@ -117,10 +118,10 @@ class Buffer:
         self._buffer = []
 
     def state(self):
-        words = [self.dictionary.i2w[word_id] for word_id in self._buffer]
+        words = [self.vocab.value(word_id) for word_id in self._buffer]
         return f'Buffer: {words}'
 
-    def initialize(self, sentence: list):
+    def initialize(self, sentence):
         """Embed and encode the sentence."""
         self._buffer = []
         self.encoder.initialize()
@@ -141,9 +142,9 @@ class Buffer:
 
 
 class Terminal:
-    def __init__(self, dictionary, embedding, encoder, empty_emb):
+    def __init__(self, vocab, embedding, encoder, empty_emb):
         super(Terminal, self).__init__()
-        self.dictionary = dictionary
+        self.vocab = vocab
         self.embedding_dim = embedding.shape()[1]
         self.embedding = embedding
         self.encoder = encoder
@@ -151,7 +152,7 @@ class Terminal:
         self._terminal = []
 
     def state(self):
-        words = [self.dictionary.i2w[word_id] for word_id in self._terminal]
+        words = [self.vocab.value(word_id) for word_id in self._terminal]
         return f'Terminal: {words}'
 
     def initialize(self):
@@ -169,8 +170,8 @@ class Terminal:
 
 class History:
 
-    def __init__(self, dictionary, embedding, encoder, empty_emb):
-        self.dictionary = dictionary
+    def __init__(self, vocab, embedding, encoder, empty_emb):
+        self.vocab = vocab
         self.embedding_dim = embedding.shape()[1]
         self.embedding = embedding
         self.encoder = encoder
@@ -178,7 +179,7 @@ class History:
         self._history = []
 
     def state(self):
-        actions = [self.dictionary.i2a[action_id] for action_id in self._history]
+        actions = [self.vocab.value(action_id) for action_id in self._history]
         return f'History: {actions}'
 
     def initialize(self):
@@ -250,8 +251,9 @@ class DiscParser:
         h = self.history.encoder.top
         return dy.concatenate([s, b, h], d=0)
 
-    def parse_step(self, action: str, action_id: int):
+    def parse_step(self, action_id):
         """Updates parser one step give the action."""
+        action = self.action_vocab.value(action_id)
         if action == SHIFT:
             self._shift()
         elif action == REDUCE:
@@ -272,13 +274,13 @@ class DiscParser:
     def _add_actions_mask(self):
         """Return additive mask for invalid actions."""
         return np.array(
-            [-np.inf if not self._is_valid_action(self.dictionary.i2a[i]) else 0
+            [-np.inf if not self._is_valid_action(self.action_vocab.value(i)) else 0
                 for i in range(self.num_actions)])
 
     def _mult_actions_mask(self):
-        """Return additive mask for invalid actions."""
+        """Return multiplicative mask for invalid actions."""
         return np.array(
-            [self._is_valid_action(self.dictionary.i2a[i]) for i in range(self.num_actions)])
+            [self._is_valid_action(self.action_vocab.value(i)) for i in range(self.num_actions)])
 
     def _is_nt_id(self, action_id: int):
         return action_id >= 2
@@ -352,8 +354,9 @@ class GenParser:
         h = self.history.encoder.top
         return dy.concatenate([s, t, h], d=0)
 
-    def parse_step(self, action: str, action_id: int):
+    def parse_step(self, action_id):
         """Updates parser one step give the action."""
+        action = self.action_vocab.value(action_id)
         if action == REDUCE:
             self._reduce()
         elif is_nt(action):
@@ -376,13 +379,13 @@ class GenParser:
     def _add_actions_mask(self):
         """Return additive mask for invalid actions."""
         return np.array(
-            [-np.inf if not self._is_valid_action(self.dictionary.i2a[i]) else 0
+            [-np.inf if not self._is_valid_action(self.action_vocab.value(i)) else 0
                 for i in range(self.num_actions)])
 
     def _mult_actions_mask(self):
         """Return additive mask for invalid actions."""
         return np.array(
-            [self._is_valid_action(action) for action in (REDUCE, NT('x'), GEN('x'))])  # dummy actions
+            [self._is_valid_action(action) for action in (REDUCE, NT(''), GEN(''))])  # dummy actions
 
     def _is_nt_id(self, action_id: int):
         return 0 < action_id <= self.num_nt

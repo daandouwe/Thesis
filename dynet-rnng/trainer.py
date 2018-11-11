@@ -9,11 +9,13 @@ import numpy as np
 import dynet as dy
 from tensorboardX import SummaryWriter
 
-from data import ParseCorpus, SemiSupervisedCorpus
-from decode import GreedyDecoder, GenerativeImportanceDecoder
+from vocabulary import Vocabulary, UNK
+from actions import SHIFT, REDUCE, NT, GEN
+from tree import fromstring
+from decode import GenerativeDecoder
 from model import DiscRNNG, GenRNNG
 from eval import evalb
-from utils import Timer, get_folders, write_args, ceil_div, get_actions_no_tags
+from utils import Timer, get_folders, write_args, ceil_div
 
 
 class Trainer:
@@ -27,7 +29,6 @@ class Trainer:
             train_path=None,
             dev_path=None,
             test_path=None,
-            text_type='unked',
             evalb_dir=None,
             dev_proposal_samples=None,
             test_proposal_samples=None,
@@ -69,7 +70,6 @@ class Trainer:
         self.train_path = train_path
         self.dev_path = dev_path
         self.test_path = test_path
-        self.text_type = text_type
         self.dev_proposal_samples = dev_proposal_samples
         self.test_proposal_samples = test_proposal_samples
 
@@ -128,48 +128,75 @@ class Trainer:
         # Output paths
         self.model_checkpoint_path = os.path.join(checkdir, 'model')
         self.state_checkpoint_path = os.path.join(checkdir, 'state.json')
-        self.dict_checkpoint_path = os.path.join(checkdir, 'dict.json')
+        self.word_vocab_path = os.path.join(checkdir, 'word-vocab.json')
+        self.nt_vocab_path = os.path.join(checkdir, 'nt-vocab.json')
+        self.action_vocab_path = os.path.join(checkdir, 'action-vocab.json')
         self.loss_path = os.path.join(logdir, 'loss.csv')
         self.tensorboard_writer = SummaryWriter(logdir)
         # Dev paths
-        self.dev_gold_path = os.path.join(self.data_dir, 'dev', f'{self.name}.dev.trees')
-        self.dev_pred_path = os.path.join(outdir, f'{self.name}.dev.pred.trees')
-        self.dev_result_path = os.path.join(outdir, f'{self.name}.dev.result')
+        self.dev_pred_path = os.path.join(outdir, 'dev.pred.trees')
+        self.dev_result_path = os.path.join(outdir, 'dev.result')
         # Test paths
-        self.test_gold_path = os.path.join(self.data_dir, 'test', f'{self.name}.test.trees')
-        self.test_pred_path = os.path.join(outdir, f'{self.name}.test.pred.trees')
-        self.test_result_path = os.path.join(outdir, f'{self.name}.test.result')
+        self.test_pred_path = os.path.join(outdir, 'test.pred.trees')
+        self.test_result_path = os.path.join(outdir, 'test.result')
 
     def build_corpus(self):
-        # Get data
-        corpus = ParseCorpus(
-            train_path=self.train_path,
-            dev_path=self.dev_path,
-            test_path=self.test_path,
-            text_type=self.text_type,
-            rnng_type=self.rnng_type
-        )
-        self.dictionary = corpus.dictionary
-        self.train_dataset = corpus.train.data
-        self.dev_dataset = corpus.dev.data
-        self.test_dataset = corpus.test.data
+        print(f'Loading training trees from `{self.train_path}`...')
+        with open(self.train_path) as f:
+            train_trees = [fromstring(line.strip()) for line in f]
+
+        print(f'Loading development trees from `{self.dev_path}`...')
+        with open(self.dev_path) as f:
+            dev_trees = [fromstring(line.strip()) for line in f]
+
+        print(f'Loading test trees from `{self.dev_path}`...')
+        with open(self.test_path) as f:
+            test_trees = [fromstring(line.strip()) for line in f]
+
+        print("Constructing vocabularies...")
+        words = [word for tree in train_trees for word in tree.leaves()] + [UNK]
+        tags = [tag for tree in train_trees for tag in tree.tags()]
+        nonterminals = [label for tree in train_trees for label in tree.labels()]
+
+        word_vocab = Vocabulary.fromlist(words, unk=True)
+        tag_vocab = Vocabulary.fromlist(tags)
+        nt_vocab = Vocabulary.fromlist(nonterminals)
+
+        # The order is very important!
+        if self.rnng_type == 'disc':
+            actions = [SHIFT, REDUCE] + [NT(label) for label in nt_vocab]
+        elif self.rnng_type == 'gen':
+            actions = [REDUCE] + [NT(label) for label in nt_vocab] + [GEN(word) for word in word_vocab]
+        action_vocab = Vocabulary()
+        for action in actions:
+            action_vocab.add(action)
+
+        self.word_vocab = word_vocab
+        self.nt_vocab = nt_vocab
+        self.action_vocab = action_vocab
+
+        self.train_trees = train_trees
+        self.dev_trees = dev_trees
+        self.test_trees = test_trees
+
         print('\n'.join((
             'Corpus statistics:',
-            f'Vocab {self.dictionary.num_words:,} words',
-            f'Train {len(self.train_dataset):,} sentences',
-            f'Dev {len(self.dev_dataset):,} sentences',
-            f'Test {len(self.test_dataset):,} sentences')))
+            f'Vocab: {word_vocab.size:,} words ({len(word_vocab.unks)} UNK-types), {nt_vocab.size:,} nonterminals, {action_vocab.size:,} actions',
+            f'Train: {len(train_trees):,} sentences',
+            f'Dev: {len(dev_trees):,} sentences',
+            f'Test: {len(test_trees):,} sentences')))
 
     def build_model(self):
-        assert self.dictionary is not None, 'build corpus first'
+        assert self.word_vocab is not None, 'build corpus first'
 
+        print('Initializing model...')
         self.model = dy.ParameterCollection()
         if self.rnng_type == 'disc':
             self.rnng = DiscRNNG(
                 model=self.model,
-                dictionary=self.dictionary,
-                num_words=self.dictionary.num_words,
-                num_nt=self.dictionary.num_nt,
+                word_vocab=self.word_vocab,
+                nt_vocab=self.nt_vocab,
+                action_vocab=self.action_vocab,
                 word_emb_dim=self.word_emb_dim,
                 nt_emb_dim=self.nt_emb_dim,
                 action_emb_dim=self.action_emb_dim,
@@ -188,9 +215,9 @@ class Trainer:
         elif self.rnng_type == 'gen':
             self.rnng = GenRNNG(
                 model=self.model,
-                dictionary=self.dictionary,
-                num_words=self.dictionary.num_words,
-                num_nt=self.dictionary.num_nt,
+                word_vocab=self.word_vocab,
+                nt_vocab=self.nt_vocab,
+                action_vocab=self.action_vocab,
                 word_emb_dim=self.word_emb_dim,
                 nt_emb_dim=self.nt_emb_dim,
                 action_emb_dim=self.action_emb_dim,
@@ -210,6 +237,7 @@ class Trainer:
     def build_optimizer(self):
         assert self.model is not None, 'build model first'
 
+        print(f'Building {self.args.optimizer} optimizer...')
         if self.args.optimizer == 'sgd':
             self.optimizer = dy.SimpleSGDTrainer(self.model, learning_rate=self.lr)
         elif self.args.optimizer == 'adam':
@@ -222,6 +250,8 @@ class Trainer:
         Train the model. At any point you can
         hit Ctrl + C to break out of training early.
         """
+
+        print('Start training...')
         if self.rnng_type == 'gen':
             # These are needed for evaluation
             assert self.dev_proposal_samples is not None, 'specify proposal samples with --dev-proposal-samples.'
@@ -241,7 +271,7 @@ class Trainer:
                 break
             self.current_epoch = epoch
             # Shuffle batches every epoch
-            np.random.shuffle(self.train_dataset)
+            np.random.shuffle(self.train_trees)
             # Train one epoch
             self.train_epoch()
             # Check development f-score
@@ -257,10 +287,10 @@ class Trainer:
         """One epoch of sequential training."""
         self.rnng.train()
         epoch_timer = Timer()
-        num_sentences = len(self.train_dataset)
+        num_sentences = len(self.train_trees)
         num_batches = num_sentences // self.batch_size
         processed = 0
-        batches = self.batchify(self.train_dataset)
+        batches = self.batchify(self.train_trees)
         for step, minibatch in enumerate(batches, 1):
             if self.timer.elapsed() > self.max_time:
                 break
@@ -269,7 +299,7 @@ class Trainer:
             processed += self.batch_size
             # Compute loss on minibatch
             dy.renew_cg()
-            loss = dy.esum([self.rnng(words, actions) for words, actions in minibatch])
+            loss = dy.esum([self.rnng.forward(tree) for tree in minibatch])
             loss /= self.batch_size
             # Add penalty if fine-tuning embeddings
             if self.fine_tune_embeddings:
@@ -329,11 +359,12 @@ class Trainer:
         assert self.model is not None, 'no model built'
 
         dy.save(self.model_checkpoint_path, [self.rnng])
-        self.dictionary.save(self.dict_checkpoint_path)
+        self.word_vocab.save(self.word_vocab_path)
+        self.nt_vocab.save(self.nt_vocab_path)
+        self.action_vocab.save(self.action_vocab_path)
         with open(self.state_checkpoint_path, 'w') as f:
             state = {
                 'rnng-type': self.rnng_type,
-                'text-type': self.text_type,
                 'epochs': self.current_epoch,
                 'num-updates': self.num_updates,
                 'best-dev-fscore': self.best_dev_fscore,
@@ -348,19 +379,15 @@ class Trainer:
 
     def predict(self, examples, proposal_samples=None):
         if self.rnng_type == 'disc':
-            decoder = GreedyDecoder(
-                model=self.rnng, dictionary=self.dictionary)
+            decoder = self.rnng
         elif self.rnng_type == 'gen':
-            assert proposal_samples is not None, 'path to samples required for generative decoding.'
-            decoder = GenerativeImportanceDecoder(
-                model=self.rnng, dictionary=self.dictionary)
+            decoder = GenerativeDecoder(model=self.rnng)
             decoder.load_proposal_samples(path=proposal_samples)
         trees = []
-        for i, (sentence, actions) in enumerate(examples):
+        for i, gold in enumerate(examples):
             dy.renew_cg()
-            tree, *rest = decoder(sentence)
-            tree = tree if isinstance(tree, str) else tree.linearize()
-            trees.append(tree)
+            tree, *rest = decoder.parse(gold.leaves())
+            trees.append(tree.linearize())
             if i % 10 == 0:
                 print(f'Predicting sentence {i}/{len(examples)}...', end='\r')
         return trees
@@ -369,13 +396,13 @@ class Trainer:
         print('Evaluating F1 on development set...')
         self.rnng.eval()
         # Predict trees.
-        dev_dataset = self.dev_dataset[:30] if self.rnng_type == 'gen' else self.dev_dataset
-        trees = self.predict(dev_dataset, proposal_samples=self.dev_proposal_samples)
+        dev_trees = self.dev_trees[:30] if self.rnng_type == 'gen' else self.dev_trees # Is slooow!
+        trees = self.predict(dev_trees, proposal_samples=self.dev_proposal_samples)
         with open(self.dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
         # Compute f-score.
         dev_fscore = evalb(
-            self.evalb_dir, self.dev_pred_path, self.dev_gold_path, self.dev_result_path)
+            self.evalb_dir, self.dev_pred_path, self.dev_path, self.dev_result_path)
         # Log score to tensorboard.
         self.tensorboard_writer.add_scalar('dev/f-score', dev_fscore, self.num_updates)
         self.current_dev_fscore = dev_fscore
@@ -393,12 +420,12 @@ class Trainer:
         self.load_checkpoint()
         self.rnng.eval()
         # Predict trees.
-        trees = self.predict(self.test_dataset, proposal_samples=self.test_proposal_samples)
+        trees = self.predict(self.test_trees, proposal_samples=self.test_proposal_samples)
         with open(self.test_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
         # Compute f-score.
         test_fscore = evalb(
-            self.evalb_dir, self.test_pred_path, self.test_gold_path, self.test_result_path)
+            self.evalb_dir, self.test_pred_path, self.test_path, self.test_result_path)
         self.tensorboard_writer.add_scalar('test/f-score', test_fscore)
         return test_fscore
 
@@ -484,13 +511,13 @@ class SemiSupervisedTrainer(Trainer):
         self.unsup_losses = []
 
     def word_ids(self, words):
-        return [self.gen_dictionary.w2i[word] for word in words]
+        return [self.gen_vocab.w2i[word] for word in words]
 
     def gen_actions_ids(self, actions):
-        return [self.gen_dictionary.a2i[action] for action in actions]
+        return [self.gen_vocab.a2i[action] for action in actions]
 
     def disc_actions_ids(self, actions):
-        return [self.disc_dictionary.a2i[action] for action in actions]
+        return [self.disc_vocab.a2i[action] for action in actions]
 
     def build_paths(self):
         # Make output folder structure
@@ -527,19 +554,19 @@ class SemiSupervisedTrainer(Trainer):
             self.lm_path,
             self.text_type
         )
-        self.gen_dictionary = corpus.gen_dictionary
-        self.disc_dictionary = corpus.disc_dictionary
+        self.gen_vocab = corpus.gen_vocab
+        self.disc_vocab = corpus.disc_vocab
         self.lm_dataset = corpus.lm.data
-        self.train_dataset = corpus.train.data
-        self.dev_dataset = corpus.dev.data
-        self.test_dataset = corpus.test.data
+        self.train_trees = corpus.train.data
+        self.dev_trees = corpus.dev.data
+        self.test_trees = corpus.test.data
         print('\n'.join((
             'Corpus statistics:',
-            f'Vocab {self.gen_dictionary.num_words:,} words',
+            f'Vocab {self.gen_vocab.num_words:,} words',
             f'LM {len(self.lm_dataset):,} sentences',
-            f'Train {len(self.train_dataset):,} sentences',
-            f'Dev {len(self.dev_dataset):,} sentences',
-            f'Test {len(self.test_dataset):,} sentences')))
+            f'Train {len(self.train_trees):,} sentences',
+            f'Dev {len(self.dev_trees):,} sentences',
+            f'Test {len(self.test_trees):,} sentences')))
 
     def load_joint_model(self):
         model_path = os.path.join(self.joint_model_path, 'model')
@@ -731,7 +758,7 @@ class SemiSupervisedTrainer(Trainer):
     def check_dev(self):
         print('Evaluating F1 on development set...')
         # Predict trees.
-        trees = self.predict(self.dev_dataset)
+        trees = self.predict(self.dev_trees)
         with open(self.dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
         # Compute f-score.

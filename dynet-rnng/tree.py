@@ -1,3 +1,5 @@
+from types import GeneratorType
+
 from actions import SHIFT, NT, GEN, REDUCE
 
 
@@ -11,7 +13,6 @@ class InternalNode(Node):
 
         self.label = label
         self.children = []
-        self.is_open_nt = True
 
     def add_child(self, child):
         assert isinstance(child, Node), child
@@ -37,8 +38,12 @@ class InternalNode(Node):
         for child in self.children:
             yield from child.leaves()
 
-    def close(self):
-        self.is_open_nt = False
+    def tags(self):
+        for child in self.children:
+            yield from child.tags()
+
+    def labels(self):
+        return [self.label] + [label for child in self.children for label in child.labels()]
 
     def gen_oracle(self):
         """Top-down generative oracle."""
@@ -52,44 +57,56 @@ class InternalNode(Node):
                [action for child in self.children for action in child.disc_oracle()] + \
                [REDUCE]
 
+    def substitute_leaves(self, words):
+        for child in self.children:
+            child.substitute_leaves(words)
+
     @staticmethod
     def fromstring(tree):
         return fromstring(tree)
 
 
 class LeafNode(Node):
-    def __init__(self, label, tag='*'):
-        assert isinstance(label, str), label
+    def __init__(self, word, tag='*'):
+        assert isinstance(word, str), word
         assert isinstance(tag, str), tag
 
-        self.label = label
+        self.word = word
         self.tag = tag
-        self.is_open_nt = False
 
     def __str__(self):
         return self.linearize()
 
     def __repr__(self):
-        return 'LeafNode({!r}, {:})'.format(self.label, self.tag)
+        return 'LeafNode({!r}, {:})'.format(self.word, self.tag)
 
     def linearize(self, with_tag=True):
         if with_tag:
-            return "({} {})".format(self.tag, self.label)
+            return "({} {})".format(self.tag, self.word)
         else:
-            return "{}".format(self.label)
+            return "{}".format(self.word)
 
     def leaves(self):
-        yield str(self.label)
+        yield self.word
+
+    def tags(self):
+        yield self.tag
+
+    def labels(self):
+        return []
 
     def gen_oracle(self):
-        return [GEN(self.label)]
+        return [GEN(self.word)]
 
     def disc_oracle(self):
         return [SHIFT]
 
+    def substitute_leaves(self, words):
+        self.word = next(words)
+
 
 def fromstring(tree):
-    """Return an InternalNode tree from a string tree."""
+    """Return a tree from a string."""
     assert isinstance(tree, str), tree
 
     tokens = tree.replace("(", " ( ").replace(")", " ) ").split()
@@ -117,7 +134,7 @@ def fromstring(tree):
             else:
                 word = tokens[index]
                 index += 1
-                trees.append(LeafNode(label, word))
+                trees.append(LeafNode(word, label))
 
             while paren_count > 0:
                 assert tokens[index] == ")"
@@ -130,6 +147,39 @@ def fromstring(tree):
     assert index == len(tokens)
 
     return trees.pop()
+
+
+def add_dummy_tags(tree, tag='*'):
+    """Turns (NP The tagless tree) into (NP (* The) (* tagless) (* tree))."""
+    assert isinstance(tree, str), tree
+    i = 0
+    max_idx = (len(tree) - 1)
+    new_tree = ''
+    while i <= max_idx:
+        if tree[i] == '(':
+            new_tree += tree[i]
+            i += 1
+            while tree[i] != ' ':
+                new_tree += tree[i]
+                i += 1
+        elif tree[i] == ')':
+            new_tree += tree[i]
+            if i == max_idx:
+                break
+            i += 1
+        else: # it's a terminal symbol
+            new_tree += f'({tag} '
+            while tree[i] not in (' ', ')'):
+                new_tree += tree[i]
+                i += 1
+            new_tree += ')'
+        while tree[i] == ' ':
+            if i == max_idx:
+                break
+            new_tree += tree[i]
+            i += 1
+    assert i == max_idx, i
+    return new_tree
 
 
 if __name__ == '__main__':
@@ -145,10 +195,22 @@ if __name__ == '__main__':
     VP.add_child(eats)
     S.add_children([NP, VP, period])
 
-    tree = S
+    # tree = S
+    # print(tree.linearize(with_tag=False))
+    # actions = tree.gen_oracle()
+    # print(actions)
+    # print(tree.labels())
+    tree = fromstring("(S (NP (NP (DT The) (NN economy) (POS 's)) (NN temperature)) (VP (MD will) (VP (VB be) (VP (VBN taken) (PP (IN from) (NP (JJ several) (NN vantage) (NNS points))) (NP (DT this) (NN week)) (, ,) (PP (IN with) (NP (NP (NNS readings)) (PP (IN on) (NP (NP (NN trade)) (, ,) (NP (NN output)) (, ,) (NP (NN housing)) (CC and) (NP (NN inflation))))))))) (. .))")
+    # print(tree)
+    # print(tree.labels())
+    # print(list(tree.tags()))
+    # print(list(tree.leaves()))
+    # print()
     print(tree.linearize(with_tag=False))
-    actions = tree.gen_oracle()
-    print(actions)
-
-    trees = fromstring(tree.linearize(with_tag=True))
-    print(trees)
+    words = list(tree.leaves())
+    words[1] = 'UNK'
+    words[5] = 'UNK'
+    words[10] = 'UNK'
+    tree.substitute_leaves(iter(words))
+    print(tree.linearize(with_tag=False))
+    print(words)
