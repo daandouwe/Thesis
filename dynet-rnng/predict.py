@@ -2,35 +2,22 @@
 import os
 import glob
 import tempfile
-import multiprocessing as mp
 
 import dynet as dy
 from tqdm import tqdm
 from nltk import Tree
+import numpy as np
 
-# from decode import (GreedyDecoder, SamplingDecoder,
-    # GenerativeImportanceDecoder, GenerativeSamplingDecoder)
+from decode import GenerativeDecoder
+from tree import fromstring, InternalNode
 from eval import evalb
 from utils import ceil_div
 
 
-def remove_duplicates(samples):
-    """Filter out duplicate trees from the samples."""
-    output = []
-    seen = set()
-    for tree, proposal_logprob, logprob in samples:
-        if tree.linearize() not in seen:
-            output.append((tree, proposal_logprob, logprob))
-            seen.add(tree.linearize())
-    return output
-
-
-def get_checkfile(checkpoint):
-    if not checkpoint:
-        latest_dir = max(glob.glob(os.path.join('checkpoints', '*/')))
-        return os.path.join(latest_dir, 'model.pt')
-    else:
-        return checkpoint
+def load_model(dir):
+    model = dy.ParameterCollection()
+    [rnng] = dy.load(os.path.join(dir, 'model'), model)
+    return rnng
 
 
 def is_tree(line):
@@ -44,58 +31,66 @@ def is_tree(line):
 
 
 def predict_tree_file(args):
-    assert os.path.exists(args.data), 'specifiy file to parse with --data.'
-    print(f'Predicting trees for lines in `{args.data}`.')
-    with open(args.data, 'r') as f:
+    assert os.path.exists(args.infile), 'specifiy file to parse with --data.'
+
+    print(f'Predicting trees for lines in `{args.infile}`.')
+
+    with open(args.infile, 'r') as f:
         lines = [Tree.fromstring(line).leaves() for line in f.readlines()]
     checkfile = get_checkfile(args.checkpoint)
+
     if args.rnng_type == 'disc':
         print('Predicting with discriminative model.')
         decoder = GreedyDecoder(use_tokenizer=False)
         decoder.load_model(path=checkfile)
+
     elif args.rnng_type == 'gen':
         print('Predicting with generative model.')
-        decoder = GenerativeImportanceDecoder(use_tokenizer=False)
+        decoder = GenerativeDecoder(use_tokenizer=False)
         decoder.load_model(path=checkfile)
         if args.proposal_model:
             decoder.load_proposal_model(path=args.proposal_model)
         if args.proposal_samples:
             decoder.load_proposal_samples(path=args.proposal_samples)
-    pred_path = os.path.join(args.out)
-    result_path = os.path.join(args.out, '.results')
+
+    pred_path = os.path.join(args.outfile)
+    result_path = os.path.join(args.outfile, '.results')
     # Save the predicted trees.
     with open(pred_path, 'w') as f:
         print('\n'.join(trees), file=f)
     # Score the trees.
-    fscore = evalb(args.evalb_dir, pred_path, args.data, result_path)
+    fscore = evalb(args.evalb_dir, pred_path, args.infile, result_path)
     print(f'Finished. F-score {fscore:.2f}. Results saved in `{result_path}`.')
 
 
 def predict_text_file(args):
-    assert os.path.exists(args.data), 'specifiy file to parse with --data.'
-    print(f'Predicting trees for lines in `{args.data}`.')
-    with open(args.data, 'r') as f:
+    assert os.path.exists(args.infile), 'specifiy file to parse with --data.'
+    print(f'Predicting trees for lines in `{args.infile}`.')
+    with open(args.infile, 'r') as f:
         lines = [line.strip() for line in f.readlines()]
     checkfile = get_checkfile(args.checkpoint)
+
     if args.rnng_type == 'disc':
         print('Predicting with discriminative model.')
         decoder = GreedyDecoder(use_tokenizer=False)
         decoder.load_model(path=checkfile)
+
     elif args.rnng_type == 'gen':
         print('Predicting with generative model.')
-        decoder = GenerativeImportanceDecoder(use_tokenizer=False)
+        decoder = GenerativeDecoder(use_tokenizer=False)
         decoder.load_model(path=checkfile)
         if args.proposal_model:
             decoder.load_proposal_model(path=args.proposal_model)
         if args.proposal_samples:
             decoder.load_proposal_samples(path=args.proposal_samples)
-    print(f'Predicting trees for `{args.data}`...')
+
+    print(f'Predicting trees for `{args.infile}`...')
     trees = []
     for line in tqdm(lines):
         tree, *rest = decoder(line)
         trees.append(tree.linearize(with_tag=False))
-    print(f'Saved predicted trees in `{args.out}`.')
-    with open(args.out, 'w') as f:
+    print(f'Saved predicted trees in `{args.outfile}`.')
+    with open(args.outfile, 'w') as f:
         print('\n'.join(trees), file=f)
 
 
@@ -126,26 +121,27 @@ def predict_from_tree(gold_tree):
     temp_dir.cleanup()
     return pred_tree, fscore
 
+
 def predict_input_disc(args):
     print('Predicting with discriminative model.')
-    greedy = GreedyDecoder(use_tokenizer=args.use_tokenizer)
-    checkfile = get_checkfile(args.checkpoint)
-    greedy.load_model(path=checkfile)
 
-    sampler = SamplingDecoder(use_tokenizer=args.use_tokenizer)
-    sampler.load_model(path=checkfile)
+    rnng = load_model(args.checkpoint)
 
     while True:
         sentence = input('Input a sentence: ')
+        words = sentence.split()
+
         print('Greedy decoder:')
-        tree, logprob, *rest = greedy(sentence)
-        print('  {} {:.2f}'.format(tree.linearize(with_tag=False), logprob))
+        tree, logprob = rnng.parse(words)
+        print('  {} {:.2f}'.format(
+            tree.linearize(with_tag=False), logprob.value()))
         print()
 
         print('Sampling decoder:')
-        for _ in range(10):
-            tree, logprob, *rest = sampler(sentence)
-            print('  {} {:.2f}'.format(tree.linearize(with_tag=False), logprob))
+        for _ in range(5):
+            tree, logprob, *rest = rnng.sample(words)
+            print('  {} {:.2f}'.format(
+                tree.linearize(with_tag=False), logprob.value()))
         print('-'*79)
         print()
 
@@ -154,32 +150,38 @@ def predict_input_gen(args):
     print('Predicting with generative model.')
     assert os.path.exists(args.proposal_model), 'specify valid proposal model.'
 
-    num_samples = 100
-    decoder = GenerativeImportanceDecoder(use_tokenizer=True, num_samples=num_samples)
-    decoder.load_model(path=args.checkpoint)
-    decoder.load_proposal_model(path=args.proposal_model)
+    model = load_model(args.checkpoint)
+    proposal = load_model(args.proposal_model)
+    decoder = GenerativeDecoder(
+        model=model, proposal=proposal, num_samples=args.num_samples)
 
     while True:
         sentence = input('Input a sentence: ')
+        words = sentence.split()
 
-        print('Perplexity: {:.2f}'.format(decoder.perplexity(sentence)))
+        print('Perplexity: {:.2f}'.format(decoder.perplexity(words)))
 
         print('MAP tree:')
-        tree, proposal_logprob, logprob = decoder.map_tree(sentence)
-        print('  {} {:.2f} {:.2f}'.format(tree.linearize(with_tag=False), logprob, proposal_logprob))
+        tree, proposal_logprob, joint_logprob = decoder.map_tree(words)
+        print('  {} {:.2f} {:.2f}'.format(
+            tree.linearize(with_tag=False), joint_logprob, proposal_logprob))
         print()
 
-        scored = decoder.scored_samples(decoder._process_sentence(sentence))
-        scored = remove_duplicates(scored)  # For printing purposes.
-        print(f'Unique samples: {len(scored)}/{num_samples}.')
+        scored = decoder.scored_samples(words, remove_duplicates=True)
+
+        print(f'Unique samples: {len(scored)}/{args.num_samples}.')
+
         print('Highest q(y|x):')
         scored = sorted(scored, reverse=True, key=lambda t: t[1])
-        for tree, proposal_logprob, logprob in scored[:4]:
-            print('  {} {:.2f} {:.2f}'.format(tree.linearize(with_tag=False), logprob, proposal_logprob))
+        for tree, proposal_logprob, joint_logprob in scored[:4]:
+            print('  {} {:.2f} {:.2f}'.format(
+                tree.linearize(with_tag=False), joint_logprob, proposal_logprob))
+
         print('Highest p(x,y):')
         scored = sorted(scored, reverse=True, key=lambda t: t[-1])
-        for tree, proposal_logprob, logprob in scored[:4]:
-            print('  {} {:.2f} {:.2f}'.format(tree.linearize(with_tag=False), logprob, proposal_logprob))
+        for tree, proposal_logprob, joint_logprob in scored[:4]:
+            print('  {} {:.2f} {:.2f}'.format(
+                tree.linearize(with_tag=False), joint_logprob, proposal_logprob))
         print('-'*79)
         print()
 
@@ -187,63 +189,53 @@ def predict_input_gen(args):
 def sample_generative(args):
     print('Sampling from the generative model.')
 
-    decoder = GenerativeSamplingDecoder()
-    decoder.load_model(path=args.checkpoint)
+    model = load_model(args.checkpoint)
 
     print('Samples:')
     for i in range(args.num_samples):
-        tree, logprob = decoder()
+        tree, logprob = model.sample()
         print('>', tree.linearize(with_tag=False))
         print()
 
 
 def sample_proposals(args):
-    assert os.path.exists(args.data), 'specifiy file to parse with --data.'
+    assert os.path.exists(args.infile), 'specifiy file to parse with --data.'
 
-    print(f'Sampling proposal trees for lines in `{args.data}`.')
-    with open(args.data, 'r') as f:
+    print(f'Sampling proposal trees for sentences in `{args.infile}`.')
+    with open(args.infile, 'r') as f:
         lines = [line.strip() for line in f.readlines()]
+
     if is_tree(lines[0]):
-        lines = [Tree.fromstring(line).leaves() for line in lines]
-
-    checkfile = get_checkfile(args.checkpoint)
-    decoder = SamplingDecoder(use_tokenizer=False)
-    decoder.load_model(path=checkfile)
-
-    num_procs = mp.cpu_count() if args.num_procs == -1 else args.num_procs
-    if num_procs == 1:
-        samples = []
-        for i, line in enumerate(tqdm(lines)):
-            for _ in range(args.num_samples):
-                dy.renew_cg()
-                tree, logprob = decoder(line, alpha=args.alpha)  # sample a tree
-                samples.append(
-                    ' ||| '.join((str(i), str(logprob), tree.linearize(with_tag=False))))
+        sentences = [list(fromstring(line).leaves()) for line in lines]
     else:
-        print(f'Sampling proposals with {num_procs} processors...')
-        samples = []
-        for i, line in enumerate(tqdm(lines)):
-            tuples = decoder.parallel(line, args.num_procs, args.num_samples)
-            for tree, logprob in tuples:
-                samples.append(
-                    ' ||| '.join((str(i), str(logprob), tree.linearize(with_tag=False))))
-    # Write samples.
-    with open(args.out, 'w') as f:
+        sentences = [line.split() for line in lines]
+
+    parser = load_model(args.checkpoint)
+
+    samples = []
+    for i, words in enumerate(tqdm(sentences)):
+        dy.renew_cg()
+        for _ in range(args.num_samples):
+            tree, nll = parser.sample(words, alpha=args.alpha)
+            samples.append(
+                ' ||| '.join((str(i), str(-nll.value()), tree.linearize(with_tag=False))))
+
+    with open(args.outfile, 'w') as f:
         print('\n'.join(samples), file=f, end='')
 
 
 def predict_syneval(args):
     assert os.path.exists(args.proposal_model), 'specify valid proposal model.'
 
-    decoder = GenerativeImportanceDecoder(use_tokenizer=True, num_samples=args.num_samples)
+    decoder = GenerativeDecoder(use_tokenizer=True, num_samples=args.num_samples)
     decoder.load_model(path=args.checkpoint)
     decoder.load_proposal_model(path=args.proposal_model)
-    with open(args.data + '.pos') as f:
+    with open(args.infile + '.pos') as f:
         pos_sents = [line.strip() for line in f.readlines()]
-    with open(args.data + '.neg') as f:
+    with open(args.infile + '.neg') as f:
         neg_sents = [line.strip() for line in f.readlines()]
     correct = 0
-    with open(args.out, 'w') as f:
+    with open(args.outfile, 'w') as f:
         for i, (pos, neg) in enumerate(zip(pos_sents, neg_sents)):
             pos_pp = decoder.perplexity(pos)
             neg_pp = decoder.perplexity(neg)
@@ -253,22 +245,71 @@ def predict_syneval(args):
     print(f'Syneval: {correct}/{len(pos_sents)} correct')
 
 
+def inspect_model(args):
+    print(f'Inspecting attention for sentences in `{args.infile}`.')
+
+    model = load_model(args.checkpoint)
+
+    with open(args.infile, 'r') as f:
+        lines = [line.strip() for line in f.readlines()]
+    lines = lines[:args.max_lines]
+    if is_tree(lines[0]):
+        sentences = [list(fromstring(line).leaves()) for line in lines]
+    else:
+        sentences = [line.split() for line in lines]
+
+    def inspect_after_reduce(model):
+        subtree = model.stack._stack[-1].subtree
+        head = subtree.label
+        children = [head] + [child.label if isinstance(child, InternalNode) else child.word for child in subtree.children]
+        attention = model.composer._attn
+        gate = np.mean(model.composer._gate)
+        attentive = [f'{child} ({attn:.2f})'
+            for child, attn in zip(children, attention)]
+        print('  ', head, '|', ' '.join(attentive), f'[{gate:.2f}]')
+
+    def parse_with_inspection(model, words):
+        words = list(words)
+        assert words, 'empty input'
+
+        model.eval()
+        nll = 0.
+        model.initialize(model.word_vocab.indices(words))
+        while not model.stack.is_finished():
+            u = model.parser_representation()
+            action_logits = model.f_action(u)
+            action_id = np.argmax(action_logits.value() + model._add_actions_mask())
+            nll += dy.pickneglogsoftmax(action_logits, action_id)
+            model.parse_step(action_id)
+            if action_id == model.REDUCE_ID:
+                inspect_after_reduce(model)
+        tree = model.get_tree()
+        tree.substitute_leaves(iter(words))  # replaces UNKs with originals
+        return tree, nll
+
+    for sentence in sentences:
+        parse_with_inspection(model, sentence)
+        print()
+
+
 def main(args):
     if args.from_input:
         if args.rnng_type == 'disc':
             predict_input_disc(args)
         elif args.rnng_type == 'gen':
             predict_input_gen(args)
-    elif args.sample_proposals:
-        assert args.rnng_type == 'disc'
-        sample_proposals(args)
     elif args.from_tree_file:
         predict_tree_file(args)
     elif args.from_text_file:
         predict_text_file(args)
+    elif args.sample_proposals:
+        assert args.rnng_type == 'disc'
+        sample_proposals(args)
     elif args.sample_gen:
         assert args.rnng_type == 'gen'
         sample_generative(args)
+    elif args.inspect_model:
+        inspect_model(args)
     elif args.syneval:
         assert args.rnng_type == 'gen'
         predict_syneval(args)

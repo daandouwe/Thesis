@@ -30,6 +30,7 @@ class GenerativeDecoder:
         self.proposal = proposal
         self.num_samples = num_samples
         self.alpha = alpha
+        self.use_samples = False
 
     def parse(self, words):
         """Return the estimated MAP tree for the words."""
@@ -39,50 +40,54 @@ class GenerativeDecoder:
         """Estimate the MAP tree."""
         scored = self.scored_samples(words, remove_duplicates=True)  # do not need duplicates for MAP tree
         ranked = sorted(scored, reverse=True, key=lambda t: t[-1])
-        best_tree, proposal_logprob, logprob = ranked[0]
-        return best_tree, proposal_logprob, logprob
+        best_tree, proposal_logprob, joint_logprob = ranked[0]
+        return best_tree, proposal_logprob, joint_logprob
 
     def logprob(self, words):
         """Estimate the probability of the words."""
         scored = self.scored_samples(words, remove_duplicates=False)  # do need duplicates for perplexity
         logprobs = np.zeros(self.num_samples)
-        for i, (tree, marginal_logprob, joint_logprob) in enumerate(scored):
-            logprobs[i] = joint_logprob - marginal_logprob
+        for i, (tree, proposal_logprob, joint_logprob) in enumerate(scored):
+            logprobs[i] = joint_logprob - proposal_logprob
         a = logprobs.max()
-        logprob = a + np.log(np.mean(np.exp(logprobs - a)))
+        logprob = a + np.log(np.mean(np.exp(logprobs - a)))  # log-mean-exp
         return logprob
 
     def perplexity(self, words):
-        return np.exp(-self.logprob(words) / len(words))
+        return np.exp(-self.logprob(words) / len(list(words)))
+
+    def remove_duplicates(self, samples):
+        """Filter out duplicate trees from the samples."""
+        output = []
+        seen = set()
+        for tree, logprob in samples:
+            if tree.linearize() not in seen:
+                output.append((tree, logprob))
+                seen.add(tree.linearize())
+        return output
 
     def scored_samples(self, words, remove_duplicates=False):
         """Return a list of proposal samples that will be scored by the joint model."""
-        def filter(samples):
-            """Filter out duplicate trees from the samples."""
-            output = []
-            seen = set()
-            for tree, logprob in samples:
-                if tree.linearize() not in seen:
-                    output.append((tree, logprob))
-                    seen.add(tree.linearize())
-            return output
-
         if self.use_samples:
             samples = next(self.samples)
         else:
             dy.renew_cg()
-            samples = [self.proposal.sample(words, alpha=self.alpha) for _ in range(self.num_samples)]
+            words = list(words)
+            samples = []
+            for _ in range(self.num_samples):
+                tree, nll = self.proposal.sample(words, alpha=self.alpha)
+                samples.append((tree, -nll.value()))
 
         if remove_duplicates:
-            samples = filter(samples)
+            samples = self.remove_duplicates(samples)
             print(f'{len(samples)}/{self.num_samples} unique')
 
         # Score the samples.
-        scores = [self.model.forward(tree, is_train=False).value() for tree, _ in samples]
+        join_logprobs = [-self.model.forward(tree, is_train=False).value() for tree, _ in samples]
 
         # Merge the two lists.
-        scored = [(tree, proposal_logprob, logprob)
-            for (tree, proposal_logprob), logprob in zip(samples, scores)]
+        scored = [(tree, proposal_logprob, joint_logprob)
+            for (tree, proposal_logprob), joint_logprob in zip(samples, join_logprobs)]
 
         return scored
 
@@ -115,12 +120,14 @@ class GenerativeDecoder:
         state_checkpoint_path = os.path.join(dir, 'state.json')
         [self.model] = dy.load(model_checkpoint_path, dy.ParameterCollection())
         assert isinstance(proposal, DiscRNNG), f'expected discriminative model got {type(self.model)}'
-        self.model.eval()
+
         with open(state_checkpoint_path, 'r') as f:
             state = json.load(f)
         epochs = state['epochs']
         fscore = state['test-fscore']
         print(f'Loaded model trained for {epochs} epochs with test-fscore {fscore}.')
+
+        self.model.eval()
         self.use_samples = False
 
     def load_proposal_samples(self, path):

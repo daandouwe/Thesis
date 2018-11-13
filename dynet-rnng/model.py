@@ -1,8 +1,8 @@
 import dynet as dy
 import numpy as np
 
-from vocabulary import UNK
 from actions import GEN, is_gen
+from tree import Node
 from parser import DiscParser, GenParser, Stack, Buffer, History, Terminal
 from embedding import Embedding, FineTuneEmbedding, PretrainedEmbedding
 from encoder import StackLSTM
@@ -11,7 +11,6 @@ from feedforward import Feedforward
 
 
 class DiscRNNG(DiscParser):
-    """Discriminative Recurrent Neural Network Grammar."""
     def __init__(
             self,
             model,
@@ -64,6 +63,10 @@ class DiscRNNG(DiscParser):
                     self.model, self.num_words, word_emb_dim, glove_dir, word_vocab, freeze=freeze_embeddings)
         else:
             self.word_embedding = Embedding(self.model, self.num_words, word_emb_dim)
+
+        ## TODO:
+        # self.word_embedding = Projector(word_embedding, stack_lstm_dim)
+        ##
 
         # Encoders
         self.stack_encoder = StackLSTM(
@@ -127,12 +130,11 @@ class DiscRNNG(DiscParser):
 
     def forward(self, tree, is_train=True):
         """Forward pass for training."""
-        if is_train:
-            words = unkify(tree.leaves(), self.word_vocab)
-        else:
-            words = self.word_vocab.process(tree.leaves())
-        actions = tree.disc_oracle()
+        assert isinstance(tree, Node), tree
 
+        words = self.word_vocab.process(tree.leaves(), is_train)
+        print(words)
+        actions = tree.disc_oracle()
         self.initialize(self.word_vocab.indices(words))
         nll = 0.
         for action_id in self.action_vocab.indices(actions):
@@ -146,7 +148,7 @@ class DiscRNNG(DiscParser):
         """Greedy decoding for prediction."""
         self.eval()
         nll = 0.
-        words = list(words)
+        words = self.word_vocab.process(tree.leaves())
         self.initialize(self.word_vocab.indices(words))
         while not self.stack.is_finished():
             u = self.parser_representation()
@@ -162,7 +164,8 @@ class DiscRNNG(DiscParser):
         """Ancestral sampling."""
 
         def compute_probs(logits):
-            probs = np.array(dy.softmax(logits).value()) * self._mult_actions_mask()
+            probs = np.array(
+                dy.softmax(logits).value()) * self._mult_actions_mask()
             if alpha != 1.:
                 probs = probs**alpha
             probs /= probs.sum()
@@ -170,7 +173,7 @@ class DiscRNNG(DiscParser):
 
         self.eval()
         nll = 0.
-        words = list(words)
+        words = self.word_vocab.process(tree.leaves())
         self.initialize(self.word_vocab.indices(words))
         while not self.stack.is_finished():
             u = self.parser_representation()
@@ -185,7 +188,6 @@ class DiscRNNG(DiscParser):
 
 
 class GenRNNG(GenParser):
-    """Discriminative Recurrent Neural Network Grammar."""
     def __init__(
             self,
             model,
@@ -305,10 +307,9 @@ class GenRNNG(GenParser):
 
     def forward(self, tree, is_train=True):
         """Forward pass for training."""
-        if is_train:
-            words = unkify(tree.leaves(), self.word_vocab)
-        else:
-            words = self.word_vocab.process(tree.leaves())
+        assert isinstance(tree, Node), tree
+
+        words = self.word_vocab.process(tree.leaves(), is_train)
         tree.substitute_leaves(iter(words))
         actions = tree.gen_oracle()
 
@@ -362,14 +363,3 @@ class GenRNNG(GenParser):
                 action_id = self._make_action_id_from_word_id(word_id)
             self.parse_step(action_id)
         return self.get_tree(), nll
-
-
-def unkify(words, vocab):
-    """Dynamic unking during training."""
-    assert vocab.unk, 'vocab has no unk'
-    words = list(words)
-    for i, word in enumerate(words):
-        count = vocab.count(word)
-        if not count or np.random.rand() < 1 / (1 + count):
-            words[i] = UNK
-    return words

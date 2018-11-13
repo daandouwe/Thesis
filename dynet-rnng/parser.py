@@ -60,7 +60,7 @@ class Stack:
     def pop(self):
         return self._stack.pop()
 
-    def attach_subtree(self, subtree: Node):
+    def attach_subtree(self, subtree):
         """Add subtree to rightmost open nonterminal as rightmost child."""
         for item in self._stack[::-1]:
             if item.is_open_nt:
@@ -82,7 +82,7 @@ class Stack:
         # Pop hidden states from StackLSTM.
         for _ in range(sequence_len):
             self.encoder.pop()
-        # Reencode with reduce embedding.
+        # Reencode with reduced embedding.
         self.encoder.push(reduced_emb)
         self._stack.append(StackElement(head.id, reduced_emb, head.subtree, False))
         self._num_open_nts -= 1
@@ -100,7 +100,7 @@ class Stack:
         if self.is_empty():
             return False
         else:
-            return not self._stack[0].is_open_nt # (S needs to be closed)
+            return not self._stack[0].is_open_nt  # Root node needs to be closed
 
     @property
     def num_open_nts(self):
@@ -142,6 +142,7 @@ class Buffer:
 
 
 class Terminal:
+
     def __init__(self, vocab, embedding, encoder, empty_emb):
         super(Terminal, self).__init__()
         self.vocab = vocab
@@ -210,8 +211,10 @@ class DiscParser:
         return '\n'.join(
             (f'Discriminative parser', self.stack.state(), self.buffer.state(), self.history.state()))
 
-    def initialize(self, sentence: list):
+    def initialize(self, sentence):
         """Initialize all the components of the parser."""
+        sentence = list(sentence)
+        assert sentence, 'empty sentence'
         self.buffer.initialize(sentence)
         self.stack.initialize()
         self.history.initialize()
@@ -236,7 +239,7 @@ class DiscParser:
         assert self._can_shift(), f'cannot shift:\n{self.state()}'
         self.stack.push(self.buffer.pop())
 
-    def _open(self, nt_index: int):
+    def _open(self, nt_index):
         assert self._can_open(), f'cannot open:\n{self.state()}'
         self.stack.open(nt_index)
 
@@ -262,14 +265,16 @@ class DiscParser:
             self._open(self._get_nt_id(action_id))
         self.history.push(action_id)
 
-    def _is_valid_action(self, action: str):
+    def _is_valid_action(self, action):
         """Check whether the action is valid under the parser's configuration."""
         if action == SHIFT:
             return self._can_shift()
         elif action == REDUCE:
             return self._can_reduce()
-        else:
+        elif is_nt(action):
             return self._can_open()
+        else:
+            raise ValueError(f'invallid action `{action}`')
 
     def _add_actions_mask(self):
         """Return additive mask for invalid actions."""
@@ -282,10 +287,10 @@ class DiscParser:
         return np.array(
             [self._is_valid_action(self.action_vocab.value(i)) for i in range(self.num_actions)])
 
-    def _is_nt_id(self, action_id: int):
+    def _is_nt_id(self, action_id):
         return action_id >= 2
 
-    def _get_nt_id(self, action_id: int):
+    def _get_nt_id(self, action_id):
         assert self._is_nt_id(action_id)
         return action_id - 2
 
@@ -339,7 +344,7 @@ class GenParser:
         self.terminal.push(word_id)
         self.stack.push(word_id)
 
-    def _open(self, nt_index: int):
+    def _open(self, nt_index):
         assert self._can_open(), f'cannot open:\n{self.state()}'
         self.stack.open(nt_index)
 
@@ -348,7 +353,7 @@ class GenParser:
         self.stack.reduce()
 
     def parser_representation(self):
-        """Return the representations of the stack, buffer and history."""
+        """Return the representations of the stack, terminal and history."""
         s = self.stack.encoder.top
         t = self.terminal.encoder.top
         h = self.history.encoder.top
@@ -365,7 +370,7 @@ class GenParser:
             self._gen(self._get_word_id(action_id))
         self.history.push(action_id)
 
-    def _is_valid_action(self, action: str):
+    def _is_valid_action(self, action):
         """Check whether the action is valid under the parser's configuration."""
         if action == REDUCE:
             return self._can_reduce()
@@ -374,7 +379,7 @@ class GenParser:
         elif is_gen(action):
             return self._can_gen()
         else:
-            raise ValueError("received invallid action '{action}'")
+            raise ValueError(f'invallid action `{action}`')
 
     def _add_actions_mask(self):
         """Return additive mask for invalid actions."""
@@ -387,17 +392,17 @@ class GenParser:
         return np.array(
             [self._is_valid_action(action) for action in (REDUCE, NT(''), GEN(''))])  # dummy actions
 
-    def _is_nt_id(self, action_id: int):
+    def _is_nt_id(self, action_id):
         return 0 < action_id <= self.num_nt
 
-    def _is_gen_id(self, action_id: int):
+    def _is_gen_id(self, action_id):
         return action_id > self.num_nt
 
-    def _get_nt_id(self, action_id: int):
+    def _get_nt_id(self, action_id):
         assert self._is_nt_id(action_id)
         return action_id - 1
 
-    def _get_word_id(self, action_id: int):
+    def _get_word_id(self, action_id):
         assert self._is_gen_id(action_id)
         return action_id - (1 + self.num_nt)
 

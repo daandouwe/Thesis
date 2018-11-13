@@ -1,5 +1,3 @@
-from types import GeneratorType
-
 from actions import SHIFT, NT, GEN, REDUCE
 
 
@@ -67,22 +65,22 @@ class InternalNode(Node):
 
 
 class LeafNode(Node):
-    def __init__(self, word, tag='*'):
+    def __init__(self, word, label='*'):
         assert isinstance(word, str), word
-        assert isinstance(tag, str), tag
+        assert isinstance(label, str), label
 
         self.word = word
-        self.tag = tag
+        self.label = label
 
     def __str__(self):
         return self.linearize()
 
     def __repr__(self):
-        return 'LeafNode({!r}, {:})'.format(self.word, self.tag)
+        return 'LeafNode({!r}, {:})'.format(self.word, self.label)
 
     def linearize(self, with_tag=True):
         if with_tag:
-            return "({} {})".format(self.tag, self.word)
+            return "({} {})".format(self.label, self.word)
         else:
             return "{}".format(self.word)
 
@@ -90,7 +88,7 @@ class LeafNode(Node):
         yield self.word
 
     def tags(self):
-        yield self.tag
+        yield self.label
 
     def labels(self):
         return []

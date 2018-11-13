@@ -2,9 +2,11 @@ import os
 import json
 from collections import Counter, defaultdict
 
+import numpy as np
+
 from actions import SHIFT, REDUCE, NT, GEN, is_gen
 from tree import fromstring
-from utils import replace_quotes, replace_brackets
+from utils import unkify
 
 
 UNK = '<UNK>'
@@ -43,7 +45,7 @@ class Vocabulary:
             return self._counts[value]
         else:
             assert self.unk
-            return self._counts[UNK]
+            return 0
 
     def values(self, indices):
         return [self.value(index) for index in indices]
@@ -51,9 +53,21 @@ class Vocabulary:
     def indices(self, values):
         return [self.index(value) for value in values]
 
-    def process(self, words):
-        """Replace unknown words with UNK."""
-        return self.values(self.indices(words))
+    def process(self, words, is_train=False):
+        if is_train:
+            # Dynamic unking for during training
+            assert self.unk, 'vocab has no unk'
+            unked = []
+            for i, word in enumerate(words):
+                count = self.count(word)
+                if not count or np.random.rand() < 1 / (1 + count):
+                    unked.append(UNK)
+                else:
+                    unked.append(word)
+        else:
+            # Replace unkown words with unk
+            unked = self.values(self.indices(words))
+        return unked
 
     def save(self, path):
         path = path + '.json' if not path.endswith('.json') else path
@@ -80,30 +94,3 @@ class Vocabulary:
     @property
     def unks(self):
         return [value for value in self._values if value.startswith(UNK)]
-
-
-class LanguageModelDataset:
-
-    def __init__(self, vocab, path):
-        self.words = []
-        self.read(vocab, path)
-
-    def read(self, vocab, path):
-        with open(path) as f:
-            for i, line in enumerate(f):
-                words = replace_brackets(replace_quotes(line.strip().split()))
-                self.words.append(vocab.indices(words))
-
-    @property
-    def data(self):
-        return self.words
-
-
-if __name__ == '__main__':
-
-    SemiSupervisedCorpus(
-        '../data/train/ptb.train.oracle',
-        '../data/dev/ptb.dev.oracle',
-        '../data/test/ptb.test.oracle',
-        '/Users/daan/data/one-billion-words/heldout-monolingual.tokenized.shuffled/news.en-00000-of-00100'
-    )

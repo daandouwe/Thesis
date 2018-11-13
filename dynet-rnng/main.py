@@ -41,12 +41,6 @@ def main():
                         help='development trees')
     parser.add_argument('--test-path', type=str, default='../data/test/ptb.test.trees',
                         help='test trees')
-    parser.add_argument('--data', type=str, default='../data',
-                        help='location of the oracles')
-    parser.add_argument('--text-type', type=str, choices=['unked', 'lower', 'original'], default='unked',
-                        help='processing type to use for text (given in the oracle file)')
-    parser.add_argument('--name', type=str, default='ptb',
-                        help='name of dataset for ptb.train.oracle, ptb.test.trees, etc.')
     parser.add_argument('--root', type=str, default='.',
                         help='root dir to make output log and checkpoint folders')
     parser.add_argument('--disable-subdir', action='store_true',
@@ -153,6 +147,8 @@ def main():
                         help='sample proposals from discriminative model')
     parser.add_argument('--syneval', action='store_true',
                         help='evaluate on syneval test')
+    parser.add_argument('--inspect-model', action='store_true',
+                        help='inspect the attention in the model')
     parser.add_argument('--num-samples', type=int, default=100,
                         help='number of proposal samples')
     parser.add_argument('--alpha', type=float, default=1.0,
@@ -161,8 +157,10 @@ def main():
                         help='tokenize user input')
     parser.add_argument('--evalb-dir', default='~/EVALB',
                         help='where the evalb excecutable is located')
-    parser.add_argument('--out', default='.',
-                        help='output to write samples/trees/predictions to')
+    parser.add_argument('--infile', default='.',
+                        help='input file to decode')
+    parser.add_argument('--outfile', default='.',
+                        help='output file to write to')
 
     # Latent model arguments:
     parser.add_argument('--observation-model', choices=['bow', 'rnn', 'heads-rnn', 'crf'], default='bow',

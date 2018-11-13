@@ -44,31 +44,28 @@ class AttentionComposition:
         self.input_size = input_size
         self.num_layers = num_layers
         self.dropout = dropout
-        self.fwd_rnn_builder = dy.VanillaLSTMBuilder(num_layers, input_size, input_size//2, self.model)
-        self.bwd_rnn_builder = dy.VanillaLSTMBuilder(num_layers, input_size, input_size//2, self.model)
+        self.rnn = dy.BiRNNBuilder(
+            num_layers,
+            input_size,
+            input_size,
+            self.model,
+            dy.VanillaLSTMBuilder)
         self.V = self.model.add_parameters((input_size, input_size), init='glorot')
         self.gating = Affine(self.model, 2*input_size, input_size)
         self.head = Affine(self.model, input_size, input_size)
         self.training = True
-        
+
     def train(self):
-        self.fwd_rnn_builder.set_dropouts(self.dropout, self.dropout)
-        self.bwd_rnn_builder.set_dropouts(self.dropout, self.dropout)
+        self.rnn.set_dropout(self.dropout)
         self.training = True
 
     def eval(self):
-        self.fwd_rnn_builder.disable_dropout()
-        self.bwd_rnn_builder.disable_dropout()
+        self.rnn.disable_dropout()
         self.training = False
 
     def __call__(self, head, children):
-        fwd_rnn = self.fwd_rnn_builder.initial_state()
-        bwd_rnn = self.bwd_rnn_builder.initial_state()
-        hf = fwd_rnn.transduce([head] + children)  # ['NP', 'the', 'cat']
-        hb = bwd_rnn.transduce([head] + children[::-1])  # ['NP', 'cat', 'the']
-        hf = dy.concatenate(hf, d=1)  # (input_size//2, seq_len)
-        hb = dy.concatenate(hb, d=1)  # (input_size//2, seq_len)
-        h = dy.concatenate([hf, hb], d=0)  # (input_size, seq_len)
+        h = self.rnn.transduce(children)
+        h = dy.concatenate(h, d=1)  # (input_size, seq_len)
 
         a = dy.transpose(h) * self.V * head  # (seq_len,)
         a = dy.softmax(a, d=0)  # (seq_len,)

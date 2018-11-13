@@ -12,14 +12,11 @@ def main(args):
     # Create trainer
     trainer = SemiSupervisedTrainer(
         args=args,
-        name=args.name,
-        data_dir=args.data,
         evalb_dir=args.evalb_dir,
-        train_path=os.path.join(args.data, 'train/ptb.train.oracle'),
-        dev_path=os.path.join(args.data, 'dev/ptb.dev.oracle'),
-        test_path=os.path.join(args.data, 'test/ptb.test.oracle'),
-        lm_path='/Users/daan/data/one-billion-words/heldout-monolingual.tokenized.shuffled/news.en-00000-of-00100',
-        text_type=args.text_type,
+        train_path=args.train_path,
+        dev_path=args.dev_path,
+        test_path=args.test_path,
+        unsup_path='/Users/daan/data/one-billion-words/heldout-monolingual.tokenized.shuffled/news.en-00000-of-00100',
         joint_model_path='checkpoints/joint',
         post_model_path='checkpoints/posterior',
         use_mean_baseline=False,
@@ -47,3 +44,9 @@ def main(args):
     except KeyboardInterrupt:
         print('-'*99)
         print('Exiting from training early.')
+
+        fscore = trainer.check_dev_fscore()
+        pp = trainer.check_dev_perplexity()
+        print(89*'=')
+        print('| Dev F1 {fscore:4.2f} | Dev perplexity {pp:4.2f} ')
+        print(89*'=')

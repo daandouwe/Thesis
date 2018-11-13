@@ -13,14 +13,11 @@ from utils import Timer, write_losses, get_folders, write_args
 def main(args):
     # Set random seeds.
     np.random.seed(args.seed)
-    # TODO: set dynet seed.
 
     # Create trainer
     trainer = Trainer(
         args=args,
         rnng_type=args.rnng_type,
-        name=args.name,
-        data_dir=args.data,
         evalb_dir=args.evalb_dir,
         train_path=args.train_path,
         dev_path=args.dev_path,

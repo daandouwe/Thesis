@@ -1,9 +1,8 @@
 import os
 import json
 import itertools
-import time
-import pickle
 from math import inf
+from collections import Counter
 
 import numpy as np
 import dynet as dy
@@ -15,7 +14,7 @@ from tree import fromstring
 from decode import GenerativeDecoder
 from model import DiscRNNG, GenRNNG
 from eval import evalb
-from utils import Timer, get_folders, write_args, ceil_div
+from utils import Timer, get_folders, write_args, ceil_div, replace_quotes, replace_brackets, unkify
 
 
 class Trainer:
@@ -24,8 +23,6 @@ class Trainer:
             self,
             rnng_type='disc',
             args=None,
-            name=None,
-            data_dir=None,
             train_path=None,
             dev_path=None,
             test_path=None,
@@ -64,8 +61,6 @@ class Trainer:
         self.args = args
 
         # Data arguments
-        self.name = name
-        self.data_dir = data_dir
         self.evalb_dir = evalb_dir
         self.train_path = train_path
         self.dev_path = dev_path
@@ -143,26 +138,38 @@ class Trainer:
     def build_corpus(self):
         print(f'Loading training trees from `{self.train_path}`...')
         with open(self.train_path) as f:
-            train_trees = [fromstring(line.strip()) for line in f]
+            train_treebank = [fromstring(line.strip()) for line in f]
 
         print(f'Loading development trees from `{self.dev_path}`...')
         with open(self.dev_path) as f:
-            dev_trees = [fromstring(line.strip()) for line in f]
+            dev_treebank = [fromstring(line.strip()) for line in f]
 
         print(f'Loading test trees from `{self.dev_path}`...')
         with open(self.test_path) as f:
-            test_trees = [fromstring(line.strip()) for line in f]
+            test_treebank = [fromstring(line.strip()) for line in f]
 
         print("Constructing vocabularies...")
-        words = [word for tree in train_trees for word in tree.leaves()] + [UNK]
-        tags = [tag for tree in train_trees for tag in tree.tags()]
-        nonterminals = [label for tree in train_trees for label in tree.labels()]
+        words = [word for tree in train_treebank for word in tree.leaves()] + [UNK]
+
+        ###########
+        # words = [word for tree in train_treebank for word in tree.leaves()]
+        # counts = Counter(words)
+        # # if self.elaborate_unk:
+        # if True:
+        #     words = [word for word in words if counts[word] > 1] + \
+        #             [unkify(word, counts) for word in words if counts[word] <= 1]
+        # else:
+        #     words = [word for word in words if counts[word] > self.threshold] + [UNK]
+        ###########
+
+        tags = [tag for tree in train_treebank for tag in tree.tags()]
+        nonterminals = [label for tree in train_treebank for label in tree.labels()]
 
         word_vocab = Vocabulary.fromlist(words, unk=True)
         tag_vocab = Vocabulary.fromlist(tags)
         nt_vocab = Vocabulary.fromlist(nonterminals)
 
-        # The order is very important!
+        # Order is very important, see DiscParser class
         if self.rnng_type == 'disc':
             actions = [SHIFT, REDUCE] + [NT(label) for label in nt_vocab]
         elif self.rnng_type == 'gen':
@@ -175,16 +182,16 @@ class Trainer:
         self.nt_vocab = nt_vocab
         self.action_vocab = action_vocab
 
-        self.train_trees = train_trees
-        self.dev_trees = dev_trees
-        self.test_trees = test_trees
+        self.train_treebank = train_treebank
+        self.dev_treebank = dev_treebank
+        self.test_treebank = test_treebank
 
         print('\n'.join((
             'Corpus statistics:',
             f'Vocab: {word_vocab.size:,} words ({len(word_vocab.unks)} UNK-types), {nt_vocab.size:,} nonterminals, {action_vocab.size:,} actions',
-            f'Train: {len(train_trees):,} sentences',
-            f'Dev: {len(dev_trees):,} sentences',
-            f'Test: {len(test_trees):,} sentences')))
+            f'Train: {len(train_treebank):,} sentences',
+            f'Dev: {len(dev_treebank):,} sentences',
+            f'Test: {len(test_treebank):,} sentences')))
 
     def build_model(self):
         assert self.word_vocab is not None, 'build corpus first'
@@ -251,7 +258,6 @@ class Trainer:
         hit Ctrl + C to break out of training early.
         """
 
-        print('Start training...')
         if self.rnng_type == 'gen':
             # These are needed for evaluation
             assert self.dev_proposal_samples is not None, 'specify proposal samples with --dev-proposal-samples.'
@@ -264,6 +270,7 @@ class Trainer:
         self.build_model()
         self.build_optimizer()
         # No upper limit of epochs or time when not specified
+        print('Start training...')
         for epoch in itertools.count(start=1):
             if epoch > self.max_epochs:
                 break
@@ -271,7 +278,7 @@ class Trainer:
                 break
             self.current_epoch = epoch
             # Shuffle batches every epoch
-            np.random.shuffle(self.train_trees)
+            np.random.shuffle(self.train_treebank)
             # Train one epoch
             self.train_epoch()
             # Check development f-score
@@ -287,10 +294,10 @@ class Trainer:
         """One epoch of sequential training."""
         self.rnng.train()
         epoch_timer = Timer()
-        num_sentences = len(self.train_trees)
+        num_sentences = len(self.train_treebank)
         num_batches = num_sentences // self.batch_size
         processed = 0
-        batches = self.batchify(self.train_trees)
+        batches = self.batchify(self.train_treebank)
         for step, minibatch in enumerate(batches, 1):
             if self.timer.elapsed() > self.max_time:
                 break
@@ -396,8 +403,8 @@ class Trainer:
         print('Evaluating F1 on development set...')
         self.rnng.eval()
         # Predict trees.
-        dev_trees = self.dev_trees[:30] if self.rnng_type == 'gen' else self.dev_trees # Is slooow!
-        trees = self.predict(dev_trees, proposal_samples=self.dev_proposal_samples)
+        dev_treebank = self.dev_treebank[:30] if self.rnng_type == 'gen' else self.dev_treebank # Is slooow!
+        trees = self.predict(dev_treebank, proposal_samples=self.dev_proposal_samples)
         with open(self.dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
         # Compute f-score.
@@ -420,7 +427,7 @@ class Trainer:
         self.load_checkpoint()
         self.rnng.eval()
         # Predict trees.
-        trees = self.predict(self.test_trees, proposal_samples=self.test_proposal_samples)
+        trees = self.predict(self.test_treebank, proposal_samples=self.test_proposal_samples)
         with open(self.test_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
         # Compute f-score.
@@ -436,15 +443,13 @@ class Trainer:
                 print(loss, file=f)
 
 
-class SemiSupervisedTrainer(Trainer):
+class SemiSupervisedTrainer:
 
     def __init__(
             self,
             args=None,
-            name=None,
-            data_dir=None,
             evalb_dir=None,
-            lm_path=None,
+            unsup_path=None,
             train_path=None,
             dev_path=None,
             test_path=None,
@@ -472,10 +477,8 @@ class SemiSupervisedTrainer(Trainer):
         self.args = args
 
         # Data
-        self.name = name
-        self.data_dir = data_dir
         self.evalb_dir = evalb_dir
-        self.lm_path = lm_path
+        self.unsup_path = unsup_path
         self.train_path = train_path
         self.dev_path = dev_path
         self.test_path = test_path
@@ -510,15 +513,6 @@ class SemiSupervisedTrainer(Trainer):
         self.num_unsup_updates = 0
         self.unsup_losses = []
 
-    def word_ids(self, words):
-        return [self.gen_vocab.w2i[word] for word in words]
-
-    def gen_actions_ids(self, actions):
-        return [self.gen_vocab.a2i[action] for action in actions]
-
-    def disc_actions_ids(self, actions):
-        return [self.disc_vocab.a2i[action] for action in actions]
-
     def build_paths(self):
         # Make output folder structure
         subdir, logdir, checkdir, outdir = get_folders(self.args)  # TODO: make more transparent
@@ -534,39 +528,110 @@ class SemiSupervisedTrainer(Trainer):
         # Output paths
         self.model_checkpoint_path = os.path.join(checkdir, 'model')
         self.state_checkpoint_path = os.path.join(checkdir, 'state.json')
-        self.dict_checkpoint_path = os.path.join(checkdir, 'dict.json')
+        self.word_vocab_path = os.path.join(checkdir, 'word-vocab.json')
+        self.nt_vocab_path = os.path.join(checkdir, 'nt-vocab.json')
+        self.action_vocab_path = os.path.join(checkdir, 'action-vocab.json')
         self.loss_path = os.path.join(logdir, 'loss.csv')
         self.tensorboard_writer = SummaryWriter(logdir)
         # Dev paths
-        self.dev_gold_path = os.path.join(self.data_dir, 'dev', f'{self.name}.dev.trees')
-        self.dev_pred_path = os.path.join(outdir, f'{self.name}.dev.pred.trees')
-        self.dev_result_path = os.path.join(outdir, f'{self.name}.dev.result')
+        self.dev_pred_path = os.path.join(outdir, 'dev.pred.trees')
+        self.dev_result_path = os.path.join(outdir, 'dev.result')
         # Test paths
-        self.test_gold_path = os.path.join(self.data_dir, 'test', f'{self.name}.test.trees')
-        self.test_pred_path = os.path.join(outdir, f'{self.name}.test.pred.trees')
-        self.test_result_path = os.path.join(outdir, f'{self.name}.test.result')
+        self.test_pred_path = os.path.join(outdir, 'test.pred.trees')
+        self.test_result_path = os.path.join(outdir, 'test.result')
 
     def build_corpus(self):
-        corpus = SemiSupervisedCorpus(
-            self.train_path,
-            self.dev_path,
-            self.test_path,
-            self.lm_path,
-            self.text_type
-        )
-        self.gen_vocab = corpus.gen_vocab
-        self.disc_vocab = corpus.disc_vocab
-        self.lm_dataset = corpus.lm.data
-        self.train_trees = corpus.train.data
-        self.dev_trees = corpus.dev.data
-        self.test_trees = corpus.test.data
+        ###
+        print(f'Loading unsupervised data from `{self.unsup_path}`...')
+        with open(self.unsup_path) as f:
+            unsup_data = [
+                replace_brackets(replace_quotes(line.strip().split()))
+                for line in f
+            ]
+
+        print(f'Loading training trees from `{self.train_path}`...')
+        with open(self.train_path) as f:
+            train_treebank = [fromstring(line.strip()) for line in f]
+
+        unsup_words = [word for line in unsup_data for word in line]
+        ptb_words = [word for tree in train_treebank for word in tree.leaves()]
+
+        unsup_counts = Counter(unsup_words)
+        ptb_counts = Counter(ptb_words)
+
+        unsup_words = set(unsup_words)
+        ptb_words = set(ptb_words)
+
+        unsup_min_count = set([word for word in unsup_words if unsup_counts[word] > 1])
+        ptb_min_count = set([word for word in ptb_words if ptb_counts[word] > 1])
+
+        print(f'unsup vocab: {len(unsup_words):,}')
+        print(f'ptb vocab: {len(ptb_words):,}')
+        print(f'ptb union unsup: {len(ptb_words.union(unsup_words)):,}')
+        print(f'ptb intersect unsup: {len(ptb_words.intersection(unsup_words)):,}')
+
+        print(f'unsup > 1: {len(unsup_min_count):,}')
+        print(f'ptb > 1: {len(ptb_min_count):,}')
+        print(f'ptb union unsup > 1: {len(ptb_min_count.union(unsup_min_count)):,}')
+        print(f'ptb intersect unsup > 1: {len(ptb_min_count.intersection(unsup_min_count)):,}')
+        ###
+
+        print(f'Loading training trees from `{self.train_path}`...')
+        with open(self.train_path) as f:
+            train_treebank = [fromstring(line.strip()) for line in f]
+
+        print(f'Loading development trees from `{self.dev_path}`...')
+        with open(self.dev_path) as f:
+            dev_treebank = [fromstring(line.strip()) for line in f]
+
+        print(f'Loading test trees from `{self.dev_path}`...')
+        with open(self.test_path) as f:
+            test_treebank = [fromstring(line.strip()) for line in f]
+
+        print("Constructing vocabularies...")
+        words = [word for tree in train_treebank for word in tree.leaves()] + [UNK]
+        tags = [tag for tree in train_treebank for tag in tree.tags()]
+        nonterminals = [label for tree in train_treebank for label in tree.labels()]
+
+        word_vocab = Vocabulary.fromlist(words, unk=True)
+        tag_vocab = Vocabulary.fromlist(tags)
+        nt_vocab = Vocabulary.fromlist(nonterminals)
+
+        # Order is very important, see DiscParser class
+        disc_actions = [SHIFT, REDUCE] + [NT(label) for label in nt_vocab]
+        disc_action_vocab = Vocabulary()
+        for action in disc_actions:
+            disc_action_vocab.add(action)
+
+        gen_action_vocab = Vocabulary()
+        gen_actions = [REDUCE] + [NT(label) for label in nt_vocab] + [GEN(word) for word in word_vocab]
+        for action in gen_actions:
+            gen_action_vocab.add(action)
+
+        print(f'Loading unsupervised data from `{self.unsup_path}`...')
+        with open(self.unsup_path) as f:
+            unsup_data = [
+                word_vocab.process(replace_brackets(replace_quotes(line.strip().split())))
+                for line in f
+            ]
+
+        self.word_vocab = word_vocab
+        self.nt_vocab = nt_vocab
+        self.gen_action_vocab = gen_action_vocab
+        self.disc_action_vocab = disc_action_vocab
+
+        self.train_treebank = train_treebank
+        self.dev_treebank = dev_treebank
+        self.test_treebank = test_treebank
+        self.unsup_data = unsup_data
+
         print('\n'.join((
             'Corpus statistics:',
-            f'Vocab {self.gen_vocab.num_words:,} words',
-            f'LM {len(self.lm_dataset):,} sentences',
-            f'Train {len(self.train_trees):,} sentences',
-            f'Dev {len(self.dev_trees):,} sentences',
-            f'Test {len(self.test_trees):,} sentences')))
+            f'Vocab: {word_vocab.size:,} words ({len(word_vocab.unks)} UNK-types), {nt_vocab.size:,} nonterminals, {gen_action_vocab.size:,} actions',
+            f'Train: {len(train_treebank):,} sentences',
+            f'Dev: {len(dev_treebank):,} sentences',
+            f'Test: {len(test_treebank):,} sentences',
+            f'Unsupervised: {len(unsup_data):,} sentences')))
 
     def load_joint_model(self):
         model_path = os.path.join(self.joint_model_path, 'model')
@@ -603,9 +668,9 @@ class SemiSupervisedTrainer(Trainer):
         self.model.set_weight_decay(self.weight_decay)
 
     def build_baseline_parameters(self):
-        self.a_arg = self.post_model.model.add_parameters(1, init=0)
+        self.a_arg = self.post_model.model.add_parameters(1, init=1)
         self.c_arg = self.post_model.model.add_parameters(1, init=0)
-        self.a_lm = self.post_model.model.add_parameters(1, init=0)
+        self.a_lm = self.post_model.model.add_parameters(1, init=1)
         self.c_lm = self.post_model.model.add_parameters(1, init=0)
 
     def train(self):
@@ -619,21 +684,28 @@ class SemiSupervisedTrainer(Trainer):
         self.cum_learning_signal = 0
         self.num_unsup_updates = 0
 
-        batches = self.batchify(self.lm_dataset)
+        batches = self.batchify(self.unsup_data)
         for batch in batches:
             self.unsupervised_step(batch)
             # self.sup_step(batch)
 
-            if self.num_unsup_updates % self.eval_every == 0:
-                fscore = self.check_dev()
-                print('='*89)
-                print(f'| Dev fscore {fscore:.2f} |')
-                print('='*89)
             if self.num_unsup_updates % self.print_every == 0:
                 avg_loss = np.mean(self.unsup_losses[-self.print_every:])
                 self.tensorboard_writer.add_scalar(
-                    'train/loss', avg_loss, self.num_unsup_updates)
+                    'semisup/loss', avg_loss, self.num_unsup_updates)
                 print(f'| Step {self.num_unsup_updates} | loss {avg_loss:.3f} |')
+
+            if self.num_unsup_updates % self.eval_every == 0:
+                fscore = self.check_dev_fscore()
+                pp = self.check_dev_perplexity()
+                print(89*'=')
+                print(f'| Dev F1 {fscore:4.2f} | Dev perplexity {pp:4.2f} ')
+                print(89*'=')
+
+    def batchify(self, data):
+        batches = [data[i*self.batch_size:(i+1)*self.batch_size]
+            for i in range(ceil_div(len(data), self.batch_size))]
+        return batches
 
     def sample(self, words):
         samples = [self.post_model.sample(words, self.alpha) for _ in range(self.num_samples)]
@@ -641,13 +713,11 @@ class SemiSupervisedTrainer(Trainer):
         return trees, nlls
 
     def joint(self, trees):
-        logprobs = [-self.joint_model(
-            self.word_ids(tree.leaves()), self.gen_actions_ids(tree.gen_oracle())) for tree in trees]
+        logprobs = [-self.joint_model.forward(tree) for tree in trees]
         return dy.esum(logprobs) / len(logprobs)
 
     def posterior(self, trees):
-        logprobs = [-self.post_model(
-            self.word_ids(tree.leaves()), self.disc_actions_ids(tree.disc_oracle())) for tree in trees]
+        logprobs = [-self.post_model.forward(tree) for tree in trees]
         return dy.esum(logprobs) / len(logprobs)
 
     def unsupervised_step(self, batch):
@@ -673,22 +743,23 @@ class SemiSupervisedTrainer(Trainer):
             joint_loss = -joint_logprob
             baseline_loss = centered_learning_signal**2
 
-            # loss = post_loss + joint_loss + baseline_loss
-            loss = post_loss + baseline_loss
+            loss = post_loss + joint_loss + baseline_loss
+            # loss = post_loss + baseline_loss
             # loss = post_loss
+
             losses.append(loss)
 
             cum_learning_signal += learning_signal
 
             # Log to tensorboard
             self.tensorboard_writer.add_scalar(
-                'train/learning-signal', learning_signal, self.num_unsup_updates)
+                'semisup/learning-signal', learning_signal, self.num_unsup_updates)
             self.tensorboard_writer.add_scalar(
-                'train/centered-learning-signal', centered_learning_signal.value(), self.num_unsup_updates)
+                'semisup/centered-learning-signal', centered_learning_signal.value(), self.num_unsup_updates)
             self.tensorboard_writer.add_scalar(
-                'train/post-logprob', post_logprob.value(), self.num_unsup_updates)
+                'semisup/post-logprob', post_logprob.value(), self.num_unsup_updates)
             self.tensorboard_writer.add_scalar(
-                'train/joint-logprob', joint_logprob.value(), self.num_unsup_updates)
+                'semisup/joint-logprob', joint_logprob.value(), self.num_unsup_updates)
 
         loss = dy.esum(losses) / self.batch_size
         # Update parameters
@@ -699,10 +770,6 @@ class SemiSupervisedTrainer(Trainer):
         self.unsup_losses.append(loss.value())
         self.num_unsup_updates += 1
         self.cum_learning_signal += (cum_learning_signal / self.batch_size)
-
-        if self.num_unsup_updates % self.print_every == 0:
-            for tree in trees:
-                print(tree.linearize(with_tag=False))
 
     def baselines(self, words):
         b = 0
@@ -721,7 +788,7 @@ class SemiSupervisedTrainer(Trainer):
             baseline = self.cum_learning_signal / self.num_unsup_updates
             # Log to tensorboard
             self.tensorboard_writer.add_scalar(
-                'train/mean-baseline', baseline, self.num_unsup_updates)
+                'semisup/mean-baseline', baseline, self.num_unsup_updates)
             return mean_baseline
 
     def lm_baseline(self, words):
@@ -729,45 +796,62 @@ class SemiSupervisedTrainer(Trainer):
 
     def argmax_baseline(self, words):
         tree, _ = self.post_model.parse(words)
-        actions = self.gen_actions_ids(tree.gen_oracle())
-        joint_logprob = -self.joint_model(words, actions)
+        joint_logprob = -self.joint_model.forward(tree)
         baseline = self.a_arg * blockgrad(joint_logprob) + self.c_arg
         # Log to tensorboard
         self.tensorboard_writer.add_scalar(
-            'train/argmax-baseline', baseline.value(), self.num_unsup_updates)
+            'semisup/argmax-baseline', baseline.value(), self.num_unsup_updates)
         self.tensorboard_writer.add_scalar(
-            'train/argmax-logprob', joint_logprob.value(), self.num_unsup_updates)
+            'semisup/argmax-logprob', joint_logprob.value(), self.num_unsup_updates)
         self.tensorboard_writer.add_scalar(
-            'train/a_arg', self.a_arg.value(), self.num_unsup_updates)
+            'semisup/a_arg', self.a_arg.value(), self.num_unsup_updates)
         self.tensorboard_writer.add_scalar(
-            'train/c_arg', self.c_arg.value(), self.num_unsup_updates)
+            'semisup/c_arg', self.c_arg.value(), self.num_unsup_updates)
         return baseline
 
     def predict(self, examples):
         self.post_model.eval()
         trees = []
-        for i, (sentence, _) in enumerate(examples):
+        for i, tree in enumerate(examples):
             dy.renew_cg()
-            tree, *rest = self.post_model.parse(sentence)
+            tree, *rest = self.post_model.parse(list(tree.leaves()))
             trees.append(tree.linearize())
             if i % 10 == 0:
                 print(f'Predicting sentence {i}/{len(examples)}...', end='\r')
         self.post_model.train()
         return trees
 
-    def check_dev(self):
+    def check_dev_fscore(self):
         print('Evaluating F1 on development set...')
         # Predict trees.
-        trees = self.predict(self.dev_trees)
+        trees = self.predict(self.dev_treebank)
         with open(self.dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
         # Compute f-score.
         dev_fscore = evalb(
-            self.evalb_dir, self.dev_pred_path, self.dev_gold_path, self.dev_result_path)
+            self.evalb_dir, self.dev_pred_path, self.dev_path, self.dev_result_path)
         # Log score to tensorboard.
         self.current_dev_fscore = dev_fscore
-        self.tensorboard_writer.add_scalar('dev/f-score', dev_fscore, self.num_unsup_updates)
+        self.tensorboard_writer.add_scalar('semisup/f-score', dev_fscore, self.num_unsup_updates)
         return dev_fscore
+
+    def check_dev_perplexity(self):
+        print('Evaluating perplexity on development set...')
+
+        decoder = GenerativeDecoder(
+            model=self.joint_model,
+            proposal=self.post_model,
+            num_samples=10,
+            alpha=1.
+        )
+        examples = self.dev_treebank
+        pp = 0.
+        for i, tree in enumerate(examples):
+            pp += decoder.perplexity(list(tree.leaves()))
+            if i % 10 == 0:
+                print(f'Predicting sentence {i}/{len(examples)}...', end='\r')
+        avg_pp = pp / len(examples)
+        return avg_pp
 
 
 def blockgrad(expression):
