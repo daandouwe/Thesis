@@ -118,8 +118,10 @@ class Trainer:
         print(f'Saving logs to `{logdir}`.')
         print(f'Saving predictions to `{outdir}`.')
         print(f'Saving models to `{checkdir}`.')
+
         # Save arguments
         write_args(self.args, logdir)
+
         # Output paths
         self.model_checkpoint_path = os.path.join(checkdir, 'model')
         self.state_checkpoint_path = os.path.join(checkdir, 'state.json')
@@ -128,9 +130,11 @@ class Trainer:
         self.action_vocab_path = os.path.join(checkdir, 'action-vocab.json')
         self.loss_path = os.path.join(logdir, 'loss.csv')
         self.tensorboard_writer = SummaryWriter(logdir)
+
         # Dev paths
         self.dev_pred_path = os.path.join(outdir, 'dev.pred.trees')
         self.dev_result_path = os.path.join(outdir, 'dev.result')
+
         # Test paths
         self.test_pred_path = os.path.join(outdir, 'test.pred.trees')
         self.test_result_path = os.path.join(outdir, 'test.result')
@@ -249,6 +253,7 @@ class Trainer:
             self.optimizer = dy.SimpleSGDTrainer(self.model, learning_rate=self.lr)
         elif self.args.optimizer == 'adam':
             self.optimizer = dy.AdamTrainer(self.model, alpha=self.lr)
+
         self.optimizer.set_clip_threshold(self.max_grad_norm)
         self.model.set_weight_decay(self.weight_decay)
 
@@ -264,11 +269,13 @@ class Trainer:
             assert self.test_proposal_samples is not None, 'specify proposal samples with --test-proposal-samples.'
             assert os.path.exists(self.dev_proposal_samples), self.dev_proposal_samples
             assert os.path.exists(self.test_proposal_samples), self.test_proposal_samples
+
         # Construct model and optimizer
         self.build_paths()
         self.build_corpus()
         self.build_model()
         self.build_optimizer()
+
         # No upper limit of epochs or time when not specified
         print('Start training...')
         for epoch in itertools.count(start=1):
@@ -301,21 +308,26 @@ class Trainer:
         for step, minibatch in enumerate(batches, 1):
             if self.timer.elapsed() > self.max_time:
                 break
+
             # Keep track of updates
             self.num_updates += 1
             processed += self.batch_size
+
             # Compute loss on minibatch
             dy.renew_cg()
             loss = dy.esum([self.rnng.forward(tree) for tree in minibatch])
             loss /= self.batch_size
+
             # Add penalty if fine-tuning embeddings
             if self.fine_tune_embeddings:
                 delta_penalty = self.rnng.word_embedding.delta_penalty()
                 loss += delta_penalty
+
             # Update parameters
             loss.forward()
             loss.backward()
             self.optimizer.update()
+
             # Bookkeeping
             self.losses.append(loss.value())
             if step % self.print_every == 0:
@@ -325,7 +337,12 @@ class Trainer:
                 sents_per_sec = processed / epoch_timer.elapsed()
                 updates_per_sec = self.num_updates / epoch_timer.elapsed()
                 eta = (num_sentences - processed) / sents_per_sec
-                # Log to tensorboard.
+
+                print('| step {:6d}/{:5d} ({:.0%}) | loss {:7.3f} | lr {:.1e} | {:4.1f} sents/sec | {:4.1f} updates/sec | elapsed {} | eta {} '.format(
+                    step, num_batches, step/num_batches, avg_loss, lr, sents_per_sec, updates_per_sec,
+                    epoch_timer.format(epoch_timer.elapsed()), epoch_timer.format(eta)))
+
+                # Info for tensorboard.
                 self.tensorboard_writer.add_scalar(
                     'train/loss', avg_loss, self.num_updates)
                 self.tensorboard_writer.add_scalar(
@@ -333,16 +350,6 @@ class Trainer:
                 if self.fine_tune_embeddings:
                     self.tensorboard_writer.add_scalar(
                         'train/embedding-l2', delta_penalty.value(), self.num_updates)
-                message = (
-                    f'| step {step:6d}/{num_batches:5d} ({step/num_batches:.0%}) ',
-                    f'| loss {avg_loss:7.3f} ',
-                    f'| lr {lr:.1e} ',
-                    f'| {sents_per_sec:4.1f} sents/sec ',
-                    f'| {updates_per_sec:4.1f} updates/sec ',
-                    f'| elapsed {epoch_timer.format(epoch_timer.elapsed())} ',
-                    f'| eta {epoch_timer.format(eta)} '
-                )
-                print(''.join(message))
 
     def get_lr(self):
         return self.optimizer.learning_rate
@@ -456,7 +463,7 @@ class SemiSupervisedTrainer:
             text_type=None,
             joint_model_path=None,
             post_model_path=None,
-            lmbda=0.1,
+            lmbda=1.0,
             use_argmax_baseline=False,
             use_mean_baseline=False,
             use_lm_baseline=False,
@@ -492,7 +499,7 @@ class SemiSupervisedTrainer:
         self.post_model_path = post_model_path
 
         # Baselines
-        self.lmbda = lmbda  # mixing coefficient for objective
+        self.lmbda = lmbda  # scaling coefficient for unsupervised objective
         self.use_argmax_baseline = use_argmax_baseline
         self.use_mean_baseline = use_mean_baseline
         self.use_lm_baseline = use_lm_baseline
@@ -531,8 +538,10 @@ class SemiSupervisedTrainer:
         print(f'Saving logs to `{logdir}`.')
         print(f'Saving predictions to `{outdir}`.')
         print(f'Saving models to `{checkdir}`.')
+
         # Save arguments
         write_args(self.args, logdir)
+
         # Output paths
         self.model_checkpoint_path = os.path.join(checkdir, 'model')
         self.state_checkpoint_path = os.path.join(checkdir, 'state.json')
@@ -541,9 +550,11 @@ class SemiSupervisedTrainer:
         self.action_vocab_path = os.path.join(checkdir, 'action-vocab.json')
         self.loss_path = os.path.join(logdir, 'loss.csv')
         self.tensorboard_writer = SummaryWriter(logdir)
+
         # Dev paths
         self.dev_pred_path = os.path.join(outdir, 'dev.pred.trees')
         self.dev_result_path = os.path.join(outdir, 'dev.result')
+
         # Test paths
         self.test_pred_path = os.path.join(outdir, 'test.pred.trees')
         self.test_result_path = os.path.join(outdir, 'test.result')
@@ -685,6 +696,7 @@ class SemiSupervisedTrainer:
         elif self.args.optimizer == 'adam':
             self.optimizer = dy.AdamTrainer(self.model, alpha=self.lr)
             self.baseline_optimizer = dy.AdamTrainer(self.model, alpha=self.lr)
+
         self.optimizer.set_clip_threshold(self.max_grad_norm)
         self.baseline_optimizer.set_clip_threshold(self.max_grad_norm)
         self.model.set_weight_decay(self.weight_decay)
@@ -692,8 +704,6 @@ class SemiSupervisedTrainer:
     def build_baseline_parameters(self):
         self.a_arg = self.post_model.model.add_parameters(1, init=1)
         self.c_arg = self.post_model.model.add_parameters(1, init=0)
-        self.a_lm = self.post_model.model.add_parameters(1, init=1)
-        self.c_lm = self.post_model.model.add_parameters(1, init=0)
 
     def batchify(self, data):
         batches = [data[i*self.batch_size:(i+1)*self.batch_size]
@@ -738,7 +748,8 @@ class SemiSupervisedTrainer:
             try:
                 batch = next(self.unlabeled_batches)
             except StopIteration:
-                self.unlabeled_batches = iter(self.batchify(self.unlabeled_data))
+                np.random.shuffle(self.unlabeled_data)
+                self.unlabeled_batches = iter(self.batchify(self.unlabeled_data)))
                 batch = next(self.unlabeled_batches)
             return batch
 
@@ -785,6 +796,11 @@ class SemiSupervisedTrainer:
                 self.tensorboard_writer.add_scalar(
                     'semisup/loss/baseline', baseline_loss, self.num_updates)
 
+                self.tensorboard_writer.add_scalar(
+                    'semisup/baseline/argmax-a', self.a_arg.value(), self.num_updates)
+                self.tensorboard_writer.add_scalar(
+                    'semisup/baseline/argmax-c', self.c_arg.value(), self.num_updates)
+
                 print('| epoch {:2d} | step {:4d} | loss {:6.3f} | sup-loss {:5.3f} | unsup-loss {:6.3f} | baseline-loss {:3.3f} '.format(
                     self.current_epoch, self.num_updates, loss, sup_loss, unsup_loss, baseline_loss))
 
@@ -814,11 +830,11 @@ class SemiSupervisedTrainer:
             # Get samples
             trees, _ = self.sample(words)
 
-            # Compute mean mean_y log p(x,y) and mean mean_y log q(y|x)
+            # Compute mean \mean_y [log p(x,y)] and \mean_y [log q(y|x)]
             joint_logprob = self.joint(trees)
             post_logprob = self.posterior(trees)
 
-            # Compute mean_y [log p(x,y) - log q(y|x)]
+            # Compute \mean_y [log p(x,y) - log q(y|x)] and detach
             learning_signal = blockgrad(joint_logprob - post_logprob)
 
             # Compute baseline
@@ -832,18 +848,18 @@ class SemiSupervisedTrainer:
 
             post_loss = -blockgrad(centered_learning_signal) * post_logprob
             joint_loss = -joint_logprob
-            baseline_loss = centered_learning_signal**2
-
             loss = post_loss + joint_loss
             losses.append(loss)
-            baseline_losses.append(baseline_loss)
 
-            batch_learning_signal += centered_learning_signal.value()
+            baseline_loss = centered_learning_signal**2
+            baseline_losses.append(baseline_loss)
 
             histogram['signal'].append(learning_signal)
             histogram['centered'].append(centered_learning_signal.value())
             histogram['post'].append(post_logprob.value())
             histogram['joint'].append(joint_logprob.value())
+
+            batch_learning_signal += centered_learning_signal.value()
 
         self.cum_learning_signal += batch_learning_signal / self.batch_size
 
@@ -893,9 +909,6 @@ class SemiSupervisedTrainer:
             # self.tensorboard_writer.add_scalar(
             #     'semisup/baseline/mean-baseline', baseline, self.num_updates)
             return mean_baseline
-
-    def lm_baseline(self, words):
-        return self.a_lm * blockgrad(self.baseline_lm(words)) + self.c_lm
 
     def argmax_baseline(self, words):
         tree, _ = self.post_model.parse(words)

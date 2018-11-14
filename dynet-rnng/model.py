@@ -131,8 +131,10 @@ class DiscRNNG(DiscParser):
         """Compute the negative log-likelihood of the tree."""
         assert isinstance(tree, Node), tree
 
+        words = tree.leaves()
         if is_train:
-            words = self.word_vocab.unkify(tree.leaves())
+            words = self.word_vocab.unkify(words)
+
         self.initialize(self.word_vocab.indices(words))
         nll = 0.
         actions = tree.disc_oracle()
@@ -145,6 +147,7 @@ class DiscRNNG(DiscParser):
 
     def parse(self, words):
         """Greedy decoding for prediction."""
+        words = list(words)
         nll = 0.
         self.initialize(self.word_vocab.indices(words))
         while not self.stack.is_finished():
@@ -167,6 +170,7 @@ class DiscRNNG(DiscParser):
             probs /= probs.sum()
             return probs
 
+        words = list(words)
         nll = 0.
         self.initialize(self.word_vocab.indices(words))
         while not self.stack.is_finished():
@@ -305,7 +309,9 @@ class GenRNNG(GenParser):
 
         if is_train:
             words = self.word_vocab.unkify(tree.leaves())
-            tree.substitute_leaves(iter(words))
+        else:
+            words = self.word_vocab.process(tree.leaves())
+        tree.substitute_leaves(iter(words))
 
         self.initialize()
         nll = 0.

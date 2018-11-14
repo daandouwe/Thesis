@@ -31,40 +31,48 @@ def is_tree(line):
 
 
 def predict_tree_file(args):
-    assert os.path.exists(args.infile), 'specifiy file to parse with --data.'
+    assert os.path.exists(args.infile), 'specifiy file to parse with --infile.'
 
     print(f'Predicting trees for lines in `{args.infile}`.')
 
     with open(args.infile, 'r') as f:
-        lines = [Tree.fromstring(line).leaves() for line in f.readlines()]
-    checkfile = get_checkfile(args.checkpoint)
+        lines = [fromstring(line.strip()).leaves() for line in f if line.strip()]
 
     if args.rnng_type == 'disc':
-        print('Predicting with discriminative model.')
-        decoder = GreedyDecoder(use_tokenizer=False)
-        decoder.load_model(path=checkfile)
+        print('Loading discriminative model...')
+        decoder = load_model(args.checkpoint)
+        decoder.eval()
+        print('Done.')
 
     elif args.rnng_type == 'gen':
-        print('Predicting with generative model.')
-        decoder = GenerativeDecoder(use_tokenizer=False)
-        decoder.load_model(path=checkfile)
+        exit('Not yet...')
+
+        print('Loading generative model...')
+        decoder = GenerativeDecoder()
+        decoder.load_model(path=args.checkpoint)
         if args.proposal_model:
             decoder.load_proposal_model(path=args.proposal_model)
         if args.proposal_samples:
             decoder.load_proposal_samples(path=args.proposal_samples)
 
+    trees = []
+    for line in tqdm(lines):
+        tree, _ = decoder.parse(line)
+        trees.append(tree.linearize())
+
     pred_path = os.path.join(args.outfile)
-    result_path = os.path.join(args.outfile, '.results')
+    result_path = args.outfile + '.results'
     # Save the predicted trees.
     with open(pred_path, 'w') as f:
         print('\n'.join(trees), file=f)
     # Score the trees.
     fscore = evalb(args.evalb_dir, pred_path, args.infile, result_path)
-    print(f'Finished. F-score {fscore:.2f}. Results saved in `{result_path}`.')
+    print(f'Predictions saved in `{pred_path}`. Results saved in `{result_path}`.')
+    print(f'F-score {fscore:.2f}.')
 
 
 def predict_text_file(args):
-    assert os.path.exists(args.infile), 'specifiy file to parse with --data.'
+    assert os.path.exists(args.infile), 'specifiy file to parse with --infile.'
     print(f'Predicting trees for lines in `{args.infile}`.')
     with open(args.infile, 'r') as f:
         lines = [line.strip() for line in f.readlines()]
@@ -199,7 +207,7 @@ def sample_generative(args):
 
 
 def sample_proposals(args):
-    assert os.path.exists(args.infile), 'specifiy file to parse with --data.'
+    assert os.path.exists(args.infile), 'specifiy file to parse with --infile.'
 
     print(f'Sampling proposal trees for sentences in `{args.infile}`.')
     with open(args.infile, 'r') as f:

@@ -83,11 +83,11 @@ class GenerativeDecoder:
             print(f'{len(samples)}/{self.num_samples} unique')
 
         # Score the samples.
-        join_logprobs = [-self.model.forward(tree, is_train=False).value() for tree, _ in samples]
+        joint_logprobs = [-self.model.forward(tree, is_train=False).value() for tree, _ in samples]
 
         # Merge the two lists.
         scored = [(tree, proposal_logprob, joint_logprob)
-            for (tree, proposal_logprob), joint_logprob in zip(samples, join_logprobs)]
+            for (tree, proposal_logprob), joint_logprob in zip(samples, joint_logprobs)]
 
         return scored
 

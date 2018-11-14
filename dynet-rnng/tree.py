@@ -102,6 +102,7 @@ class LeafNode(Node):
 def fromstring(tree):
     """Return a tree from a string."""
     assert isinstance(tree, str), tree
+    assert len(tree) > 0
 
     tokens = tree.replace("(", " ( ").replace(")", " ) ").split()
 
