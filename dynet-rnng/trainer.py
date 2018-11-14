@@ -902,29 +902,15 @@ class SemiSupervisedTrainer:
 
     def mean_baseline(self):
         if self.num_updates == 0:
-            return 0
+            return baseline = 0
         else:
             baseline = self.cum_learning_signal / self.num_updates
-
-            # self.tensorboard_writer.add_scalar(
-            #     'semisup/baseline/mean-baseline', baseline, self.num_updates)
-            return mean_baseline
+        return baseline
 
     def argmax_baseline(self, words):
         tree, _ = self.post_model.parse(words)
         joint_logprob = -self.joint_model.forward(tree)
-        baseline = self.a_arg * blockgrad(joint_logprob) + self.c_arg
-
-        # self.tensorboard_writer.add_scalar(
-        #     'semisup/baseline/argmax-baseline', baseline.value(), self.num_updates)
-        # self.tensorboard_writer.add_scalar(
-        #     'semisup/baseline/argmax-logprob', joint_logprob.value(), self.num_updates)
-        # self.tensorboard_writer.add_scalar(
-        #     'semisup/baseline/a_arg', self.a_arg.value(), self.num_updates)
-        # self.tensorboard_writer.add_scalar(
-        #     'semisup/baseline/c_arg', self.c_arg.value(), self.num_updates)
-
-        return baseline
+        return self.a_arg * blockgrad(joint_logprob) + self.c_arg
 
     def predict(self, examples):
         self.post_model.eval()
@@ -944,12 +930,15 @@ class SemiSupervisedTrainer:
         trees = self.predict(self.dev_treebank)
         with open(self.dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
+
         # Compute f-score.
         dev_fscore = evalb(
             self.evalb_dir, self.dev_pred_path, self.dev_path, self.dev_result_path)
+
         # Log score to tensorboard.
         self.current_dev_fscore = dev_fscore
         self.tensorboard_writer.add_scalar('semisup/dev/f-score', dev_fscore, self.num_updates)
+
         return dev_fscore
 
     def check_dev_perplexity(self):
@@ -968,7 +957,10 @@ class SemiSupervisedTrainer:
             if i % 10 == 0:
                 print(f'Predicting sentence {i}/{len(examples)}...', end='\r')
         avg_pp = pp / len(examples)
-        self.tensorboard_writer.add_scalar('semisup/dev/perplexity', avg_pp, self.num_updates)
+
+        self.tensorboard_writer.add_scalar(
+            'semisup/dev/perplexity', avg_pp, self.num_updates)
+
         return avg_pp
 
 
