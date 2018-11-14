@@ -53,20 +53,20 @@ class Vocabulary:
     def indices(self, values):
         return [self.index(value) for value in values]
 
-    def process(self, words, is_train=False):
-        if is_train:
-            # Dynamic unking for during training
-            assert self.unk, 'vocab has no unk'
-            unked = []
-            for i, word in enumerate(words):
-                count = self.count(word)
-                if not count or np.random.rand() < 1 / (1 + count):
-                    unked.append(UNK)
-                else:
-                    unked.append(word)
-        else:
-            # Replace unkown words with unk
-            unked = self.values(self.indices(words))
+    def process(self, words):
+        """Replaces unkown words with unk."""
+        return self.values(self.indices(words))
+
+    def unkify(self, words):
+        """Dynamic unking used during training."""
+        assert self.unk, 'vocab has no unk'
+        unked = []
+        for i, word in enumerate(words):
+            count = self.count(word)
+            if not count or np.random.rand() < 1 / (1 + count):
+                unked.append(UNK)
+            else:
+                unked.append(word)
         return unked
 
     def save(self, path):
@@ -78,14 +78,14 @@ class Vocabulary:
         with open(path, 'w') as f:
             self._indices = json.load(f)
 
-    @staticmethod
-    def fromlist(values, unk=False):
-        self = Vocabulary()
-        self._values = list(sorted(set(values)))
-        self._indices = dict((value, i) for i, value in enumerate(self))
-        self._counts = defaultdict(int, Counter(values))
-        self.unk = unk
-        return self
+    @classmethod
+    def fromlist(cls, values, unk=False):
+        vocab = cls()
+        vocab._values = list(sorted(set(values)))
+        vocab._indices = dict((value, i) for i, value in enumerate(vocab))
+        vocab._counts = Counter(values)
+        vocab.unk = unk
+        return vocab
 
     @property
     def size(self):

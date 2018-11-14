@@ -1,7 +1,6 @@
 import dynet as dy
 import numpy as np
 
-from actions import GEN, is_gen
 from tree import Node
 from parser import DiscParser, GenParser, Stack, Buffer, History, Terminal
 from embedding import Embedding, FineTuneEmbedding, PretrainedEmbedding
@@ -129,14 +128,14 @@ class DiscRNNG(DiscParser):
             component.eval()
 
     def forward(self, tree, is_train=True):
-        """Forward pass for training."""
+        """Compute the negative log-likelihood of the tree."""
         assert isinstance(tree, Node), tree
 
-        words = self.word_vocab.process(tree.leaves(), is_train)
-        print(words)
-        actions = tree.disc_oracle()
+        if is_train:
+            words = self.word_vocab.unkify(tree.leaves())
         self.initialize(self.word_vocab.indices(words))
         nll = 0.
+        actions = tree.disc_oracle()
         for action_id in self.action_vocab.indices(actions):
             u = self.parser_representation()
             action_logits = self.f_action(u)
@@ -146,9 +145,7 @@ class DiscRNNG(DiscParser):
 
     def parse(self, words):
         """Greedy decoding for prediction."""
-        self.eval()
         nll = 0.
-        words = self.word_vocab.process(tree.leaves())
         self.initialize(self.word_vocab.indices(words))
         while not self.stack.is_finished():
             u = self.parser_representation()
@@ -157,23 +154,20 @@ class DiscRNNG(DiscParser):
             nll += dy.pickneglogsoftmax(action_logits, action_id)
             self.parse_step(action_id)
         tree = self.get_tree()
-        tree.substitute_leaves(iter(words))  # replaces UNKs with originals
+        tree.substitute_leaves(iter(words))  # replace unks with originals
         return tree, nll
 
     def sample(self, words, alpha=1.):
         """Ancestral sampling."""
 
         def compute_probs(logits):
-            probs = np.array(
-                dy.softmax(logits).value()) * self._mult_actions_mask()
+            probs = np.array(dy.softmax(logits).value()) * self._mult_actions_mask()
             if alpha != 1.:
                 probs = probs**alpha
             probs /= probs.sum()
             return probs
 
-        self.eval()
         nll = 0.
-        words = self.word_vocab.process(tree.leaves())
         self.initialize(self.word_vocab.indices(words))
         while not self.stack.is_finished():
             u = self.parser_representation()
@@ -183,7 +177,7 @@ class DiscRNNG(DiscParser):
             nll += dy.pickneglogsoftmax(action_logits, action_id)
             self.parse_step(action_id)
         tree = self.get_tree()
-        tree.substitute_leaves(iter(words))  # replaces UNKs with originals
+        tree.substitute_leaves(iter(words))  # replace unks with originals
         return tree, nll
 
 
@@ -306,15 +300,16 @@ class GenRNNG(GenParser):
             component.eval()
 
     def forward(self, tree, is_train=True):
-        """Forward pass for training."""
+        """Compute the negative log-likelihood of the tree."""
         assert isinstance(tree, Node), tree
 
-        words = self.word_vocab.process(tree.leaves(), is_train)
-        tree.substitute_leaves(iter(words))
-        actions = tree.gen_oracle()
+        if is_train:
+            words = self.word_vocab.unkify(tree.leaves())
+            tree.substitute_leaves(iter(words))
 
         self.initialize()
         nll = 0.
+        actions = tree.gen_oracle()
         for action_id in self.action_vocab.indices(actions):
             u = self.parser_representation()
             action_logits = self.f_action(u)
@@ -340,7 +335,6 @@ class GenRNNG(GenParser):
             probs /= probs.sum()
             return probs
 
-        self.eval()
         self.initialize()
         nll = 0.
         while not self.stack.is_finished():

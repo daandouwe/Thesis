@@ -16,7 +16,7 @@ def main(args):
         train_path=args.train_path,
         dev_path=args.dev_path,
         test_path=args.test_path,
-        unsup_path='/Users/daan/data/one-billion-words/heldout-monolingual.tokenized.shuffled/news.en-00000-of-00100',
+        unlabeled_path=args.unlabeled_path,
         joint_model_path='checkpoints/joint',
         post_model_path='checkpoints/posterior',
         use_mean_baseline=False,
@@ -48,5 +48,6 @@ def main(args):
         fscore = trainer.check_dev_fscore()
         pp = trainer.check_dev_perplexity()
         print(89*'=')
-        print('| Dev F1 {fscore:4.2f} | Dev perplexity {pp:4.2f} ')
+        print('| Dev F1 {:4.2f} | Dev perplexity {:4.2f}'.format(
+            fscore, pp))
         print(89*'=')

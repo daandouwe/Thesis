@@ -59,10 +59,6 @@ class InternalNode(Node):
         for child in self.children:
             child.substitute_leaves(words)
 
-    @staticmethod
-    def fromstring(tree):
-        return fromstring(tree)
-
 
 class LeafNode(Node):
     def __init__(self, word, label='*'):
@@ -123,9 +119,6 @@ def fromstring(tree):
 
             if tokens[index] == "(":
                 children, index = helper(index)
-                # FIXME: I want to change to __init__(self, label, children=[])
-                # but this change gives a bizar error.
-                # trees.append(InternalNode(label, children))
                 node = InternalNode(label)
                 node.add_children(children)
                 trees.append(node)
@@ -166,7 +159,7 @@ def add_dummy_tags(tree, tag='*'):
                 break
             i += 1
         else: # it's a terminal symbol
-            new_tree += f'({tag} '
+            new_tree += '(' + tag + ' '
             while tree[i] not in (' ', ')'):
                 new_tree += tree[i]
                 i += 1

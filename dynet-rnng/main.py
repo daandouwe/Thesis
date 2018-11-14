@@ -24,7 +24,7 @@ def main():
                                      fromfile_prefix_chars='@') # enable loading args from textfile
     # Choose mode
     parser.add_argument('mode', choices=['train', 'predict', 'inspect', 'latent', 'semisup'],
-                        help='what would you like to do?')
+                        help='what do you want to do?')
     parser.add_argument('rnng_type', choices=['disc', 'gen'],
                         help='use discriminative or generative model')
 
@@ -35,13 +35,15 @@ def main():
     parser.add_argument('-d', '--debug', action='store_true')
 
     # Data arguments
-    parser.add_argument('--train-path', type=str, default='../data/train/ptb.train.trees',
+    parser.add_argument('--train-path', default='../data/train/ptb.train.trees',
                         help='training trees')
-    parser.add_argument('--dev-path', type=str, default='../data/dev/ptb.dev.trees',
+    parser.add_argument('--dev-path', default='../data/dev/ptb.dev.trees',
                         help='development trees')
-    parser.add_argument('--test-path', type=str, default='../data/test/ptb.test.trees',
+    parser.add_argument('--test-path', default='../data/test/ptb.test.trees',
                         help='test trees')
-    parser.add_argument('--root', type=str, default='.',
+    parser.add_argument('--unlabeled-path', default='~/data/one-billion-words/training-monolingual.tokenized.shuffled/news.en-00001-of-00100',
+                        help='unlabeled data for semi-supervised training')
+    parser.add_argument('--root', default='.',
                         help='root dir to make output log and checkpoint folders')
     parser.add_argument('--disable-subdir', action='store_true',
                         help='do not make subdirectory inside `logdir`, `checkdir` and `outdir`')
@@ -79,7 +81,7 @@ def main():
                         help='hidden dimension of scoring feedforward')
     parser.add_argument('--use-glove', action='store_true',
                         help='using pretrained glove embeddings')
-    parser.add_argument('--glove-dir', type=str, default='~/embeddings/glove',
+    parser.add_argument('--glove-dir', default='~/embeddings/glove',
                         help='to be constructed in main')
     parser.add_argument('--fine-tune-embeddings', action='store_true',
                         help='train minimal additive refinement of pretrained embeddings')
@@ -123,17 +125,17 @@ def main():
                         help='disable cuda')
     parser.add_argument('--num-procs', type=int, default=1,
                         help='number of processes to spawn for parallel training')
-    parser.add_argument('--dev-proposal-samples', type=str, default='../data/proposal-samples/dev.props',
+    parser.add_argument('--dev-proposal-samples', default='../data/proposal-samples/dev.props',
                         help='proposal samples for development set')
-    parser.add_argument('--test-proposal-samples', type=str, default='../data/proposal-samples/test.props',
+    parser.add_argument('--test-proposal-samples', default='../data/proposal-samples/test.props',
                         help='proposal samples for test set')
 
     # Predict arguments
-    parser.add_argument('--checkpoint', type=str, default='',
+    parser.add_argument('--checkpoint', default='',
                         help='load model from this checkpoint')
-    parser.add_argument('--proposal-model', type=str, default='',
+    parser.add_argument('--proposal-model', default='',
                         help='load discriminative model (proposal for generative model) from this checkpoint')
-    parser.add_argument('--proposal-samples', type=str, default='../data/proposal-samples',
+    parser.add_argument('--proposal-samples', default='../data/proposal-samples',
                         help='load proposal samples')
     parser.add_argument('--from-input', action='store_true',
                         help='predict for user input')
