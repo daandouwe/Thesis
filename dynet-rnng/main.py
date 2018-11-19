@@ -6,6 +6,7 @@ from math import inf
 import train
 import predict
 import semisup
+import wakesleep
 
 
 def main():
@@ -23,7 +24,7 @@ def main():
     parser = argparse.ArgumentParser(description='RNNG parser',
                                      fromfile_prefix_chars='@') # enable loading args from textfile
     # Choose mode
-    parser.add_argument('mode', choices=['train', 'predict', 'inspect', 'latent', 'semisup'],
+    parser.add_argument('mode', choices=['train', 'predict', 'inspect', 'latent', 'semisup', 'wakesleep'],
                         help='what do you want to do?')
     parser.add_argument('rnng_type', choices=['disc', 'gen'],
                         help='use discriminative or generative model')
@@ -130,6 +131,10 @@ def main():
     parser.add_argument('--test-proposal-samples', default='../data/proposal-samples/test.props',
                         help='proposal samples for test set')
 
+    # Semi-supervised arguments
+    parser.add_argument('--use-argmax-baseline', action='store_true')
+    parser.add_argument('--use-mlp-baseline', action='store_true')
+
     # Predict arguments
     parser.add_argument('--checkpoint', default='',
                         help='load model from this checkpoint')
@@ -184,6 +189,8 @@ def main():
         predict.main(args)
     elif args.mode == 'semisup':
         semisup.main(args)
+    elif args.mode == 'wakesleep':
+        wakesleep.main(args)
 
 
 if __name__ == '__main__':

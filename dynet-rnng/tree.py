@@ -175,6 +175,7 @@ def add_dummy_tags(tree, tag='*'):
 
 
 if __name__ == '__main__':
+    # Testing
     S = InternalNode('S')
     NP = InternalNode('NP')
     VP = InternalNode('VP')
@@ -186,23 +187,22 @@ if __name__ == '__main__':
     NP.add_children([The, cat])
     VP.add_child(eats)
     S.add_children([NP, VP, period])
+    tree = S
 
-    # tree = S
-    # print(tree.linearize(with_tag=False))
-    # actions = tree.gen_oracle()
-    # print(actions)
-    # print(tree.labels())
-    tree = fromstring("(S (NP (NP (DT The) (NN economy) (POS 's)) (NN temperature)) (VP (MD will) (VP (VB be) (VP (VBN taken) (PP (IN from) (NP (JJ several) (NN vantage) (NNS points))) (NP (DT this) (NN week)) (, ,) (PP (IN with) (NP (NP (NNS readings)) (PP (IN on) (NP (NP (NN trade)) (, ,) (NP (NN output)) (, ,) (NP (NN housing)) (CC and) (NP (NN inflation))))))))) (. .))")
-    # print(tree)
-    # print(tree.labels())
-    # print(list(tree.tags()))
-    # print(list(tree.leaves()))
-    # print()
+    actions = tree.gen_oracle()
     print(tree.linearize(with_tag=False))
+    print(actions)
+    print(tree.labels())
+
+    tree = fromstring("(S (NP (NP (DT The) (NN economy) (POS 's)) (NN temperature)) (VP (MD will) (VP (VB be) (VP (VBN taken) (PP (IN from) (NP (JJ several) (NN vantage) (NNS points))) (NP (DT this) (NN week)) (, ,) (PP (IN with) (NP (NP (NNS readings)) (PP (IN on) (NP (NP (NN trade)) (, ,) (NP (NN output)) (, ,) (NP (NN housing)) (CC and) (NP (NN inflation))))))))) (. .))")
+    print(tree)
+    print(tree.labels())
+    print(list(tree.tags()))
+    print(list(tree.leaves()))
+    print()
+
     words = list(tree.leaves())
-    words[1] = 'UNK'
-    words[5] = 'UNK'
-    words[10] = 'UNK'
+    words[1], words[5], words[10] = 'UNK', 'UNK', 'UNK'
     tree.substitute_leaves(iter(words))
     print(tree.linearize(with_tag=False))
-    print(words)
+    print(tree.leaves())

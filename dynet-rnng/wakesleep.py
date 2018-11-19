@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 
-from trainer import SemiSupervisedTrainer
+from trainer import WakeSleepTrainer
 
 
 def main(args):
@@ -10,21 +10,15 @@ def main(args):
     np.random.seed(args.seed)
 
     # Create trainer
-    trainer = SemiSupervisedTrainer(
+    trainer = WakeSleepTrainer(
         args=args,
         evalb_dir=args.evalb_dir,
         train_path=args.train_path,
         dev_path=args.dev_path,
         test_path=args.test_path,
         unlabeled_path=args.unlabeled_path,
-        joint_model_path='checkpoints/20181118_013335',
+        joint_model_path='checkpoints/joint',
         post_model_path='checkpoints/posterior',
-        use_argmax_baseline=args.use_argmax_baseline,
-        use_mlp_baseline=args.use_mlp_baseline,
-        lmbda=1.0,
-        clip_learning_signal=None,
-        num_samples=args.num_samples,
-        alpha=args.alpha,
         lr=args.lr,
         lr_decay=args.lr_decay,
         lr_decay_patience=args.lr_decay_patience,
@@ -37,6 +31,7 @@ def main(args):
         batch_size=args.batch_size,
         max_epochs=args.max_epochs,
         max_time=args.max_time,
+        max_lines=args.max_lines
     )
 
     # Train the model
@@ -48,9 +43,6 @@ def main(args):
 
         fscore = trainer.check_dev_fscore()
         pp = trainer.check_dev_perplexity()
-
-        trainer.save_checkpoint(fscore, pp)
-
         print(89*'=')
         print('| Dev F1 {:4.2f} | Dev perplexity {:4.2f}'.format(
             fscore, pp))

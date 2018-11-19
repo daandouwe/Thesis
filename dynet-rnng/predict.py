@@ -108,14 +108,16 @@ def predict_from_tree(gold_tree):
     Input should be a unicode string in the :
         u'(S (NP (DT The) (NN equity) (NN market)) (VP (VBD was) (ADJP (JJ illiquid))) (. .))'
     """
-    evalb_dir = os.path.expanduser('~/EVALB')  # TODO: this should be part of args.
     # Make a temporay directory for the EVALB files.
+    evalb_dir = os.path.expanduser('~/EVALB')  # TODO: this should be part of args.
     temp_dir = tempfile.TemporaryDirectory(prefix='evalb-')
     gold_path = os.path.join(temp_dir.name, 'gold.txt')
     pred_path = os.path.join(temp_dir.name, 'predicted.txt')
     result_path = os.path.join(temp_dir.name, 'output.txt')
+
     # Extract sentence from the gold tree.
     sent = Tree.fromstring(gold_tree).leaves()
+
     # Predict a tree for the sentence.
     pred_tree, *rest = self(sent)
     pred_tree = pred_tree.linearize()
@@ -125,8 +127,10 @@ def predict_from_tree(gold_tree):
     with open(pred_path, 'w') as f:
         print(pred_tree, file=f)
     fscore = evalb(evalb_dir, pred_path, gold_path, result_path)
+
     # Cleanup the temporary directory.
     temp_dir.cleanup()
+
     return pred_tree, fscore
 
 
@@ -235,13 +239,16 @@ def sample_proposals(args):
 def predict_syneval(args):
     assert os.path.exists(args.proposal_model), 'specify valid proposal model.'
 
-    decoder = GenerativeDecoder(use_tokenizer=True, num_samples=args.num_samples)
-    decoder.load_model(path=args.checkpoint)
-    decoder.load_proposal_model(path=args.proposal_model)
+    model = load_model(args.checkpoint)
+    decoder = GenerativeDecoder(model=model, num_samples=args.num_samples)
+    decoder.load_proposal_model(args.proposal_model)
+
     with open(args.infile + '.pos') as f:
         pos_sents = [line.strip() for line in f.readlines()]
+
     with open(args.infile + '.neg') as f:
         neg_sents = [line.strip() for line in f.readlines()]
+
     correct = 0
     with open(args.outfile, 'w') as f:
         for i, (pos, neg) in enumerate(zip(pos_sents, neg_sents)):
@@ -250,7 +257,8 @@ def predict_syneval(args):
             correct += (pos_pp < neg_pp)
             print(i, round(pos_pp, 2), round(neg_pp, 2), pos_pp < neg_pp, correct, neg)
             print(i, round(pos_pp, 2), round(neg_pp, 2), pos_pp < neg_pp, neg, file=f)
-    print(f'Syneval: {correct}/{len(pos_sents)} correct')
+
+    print(f'Syneval: {correct}/{len(pos_sents)} = {correct / len(pos_sents):%} correct')
 
 
 def inspect_model(args):
@@ -269,17 +277,16 @@ def inspect_model(args):
     def inspect_after_reduce(model):
         subtree = model.stack._stack[-1].subtree
         head = subtree.label
-        children = [head] + [child.label if isinstance(child, InternalNode) else child.word for child in subtree.children]
+        children = [child.label if isinstance(child, InternalNode) else child.word for child in subtree.children]
         attention = model.composer._attn
         gate = np.mean(model.composer._gate)
+        attention = [attention] if not isinstance(attention, list) else attention  # in case .value() returns a float
         attentive = [f'{child} ({attn:.2f})'
             for child, attn in zip(children, attention)]
         print('  ', head, '|', ' '.join(attentive), f'[{gate:.2f}]')
 
     def parse_with_inspection(model, words):
         words = list(words)
-        assert words, 'empty input'
-
         model.eval()
         nll = 0.
         model.initialize(model.word_vocab.indices(words))

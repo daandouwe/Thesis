@@ -103,6 +103,10 @@ class Timer:
         self.previous = new
         return elapsed
 
+    def reset(self):
+        self.start = time.time()
+        self.previous = time.time()
+
     def clock_time(self, seconds):
         minutes, seconds = divmod(seconds, 60)
         hours, minutes = divmod(minutes, 60)

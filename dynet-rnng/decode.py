@@ -23,14 +23,17 @@ class GenerativeDecoder:
     ):
         if model is not None:
             assert isinstance(model, GenRNNG)
+            model.eval()
         if proposal is not None:
             assert isinstance(proposal, DiscRNNG)
+            proposal.eval()
 
         self.model = model
         self.proposal = proposal
         self.num_samples = num_samples
         self.alpha = alpha
-        self.use_samples = False
+        self.use_argmax = (num_samples == 1)
+        self.use_loaded_samples = (self.proposal is None)
 
     def parse(self, words):
         """Return the estimated MAP tree for the words."""
@@ -44,16 +47,21 @@ class GenerativeDecoder:
         return best_tree, proposal_logprob, joint_logprob
 
     def logprob(self, words):
-        """Estimate the probability of the words."""
-        scored = self.scored_samples(words, remove_duplicates=False)  # do need duplicates for perplexity
-        logprobs = np.zeros(self.num_samples)
-        for i, (tree, proposal_logprob, joint_logprob) in enumerate(scored):
-            logprobs[i] = joint_logprob - proposal_logprob
-        a = logprobs.max()
-        logprob = a + np.log(np.mean(np.exp(logprobs - a)))  # log-mean-exp
+        """Estimate the log probability."""
+        if self.use_argmax:
+            tree, proposal_logprob, joint_logprob = self.scored_argmax(words)
+            logprob = joint_logprob - proposal_logprob
+        else:
+            scored = self.scored_samples(words, remove_duplicates=False)  # do need duplicates for perplexity
+            logprobs = np.zeros(self.num_samples)
+            for i, (tree, proposal_logprob, joint_logprob) in enumerate(scored):
+                logprobs[i] = joint_logprob - proposal_logprob
+            a = logprobs.max()
+            logprob = a + np.log(np.mean(np.exp(logprobs - a)))  # log-mean-exp for stability
         return logprob
 
     def perplexity(self, words):
+        """Estimate the perplexity."""
         return np.exp(-self.logprob(words) / len(list(words)))
 
     def remove_duplicates(self, samples):
@@ -66,9 +74,16 @@ class GenerativeDecoder:
                 seen.add(tree.linearize())
         return output
 
+    def scored_argmax(self, words):
+        """Score the proposal's argmax tree."""
+        tree, proposal_nll = self.proposal.parse(words)
+        joint_logprob = -self.model.forward(tree, is_train=False)
+        proposal_logprob = -proposal_nll
+        return tree, proposal_logprob.value(), joint_logprob.value()
+
     def scored_samples(self, words, remove_duplicates=False):
         """Return a list of proposal samples that will be scored by the joint model."""
-        if self.use_samples:
+        if self.use_loaded_samples:
             samples = next(self.samples)
         else:
             dy.renew_cg()
@@ -80,12 +95,12 @@ class GenerativeDecoder:
 
         if remove_duplicates:
             samples = self.remove_duplicates(samples)
-            print(f'{len(samples)}/{self.num_samples} unique')
+            print(f'({len(samples)}/{self.num_samples} unique)', end='\r')
 
-        # Score the samples.
+        # Score the samples
         joint_logprobs = [-self.model.forward(tree, is_train=False).value() for tree, _ in samples]
 
-        # Merge the two lists.
+        # Merge the two lists
         scored = [(tree, proposal_logprob, joint_logprob)
             for (tree, proposal_logprob), joint_logprob in zip(samples, joint_logprobs)]
 
@@ -111,6 +126,13 @@ class GenerativeDecoder:
         proposals.append(samples)
         return proposals
 
+    def load_proposal_samples(self, path):
+        """Load saved samples from the proposal models."""
+        assert os.path.exists(path), path
+
+        self.samples = iter(self._read_proposals(path))
+        self.use_loaded_samples = True
+
     def load_proposal_model(self, dir):
         """Load the proposal model to sample from."""
         assert os.path.isdir(dir), dir
@@ -118,24 +140,20 @@ class GenerativeDecoder:
         print(f'Loading proposal model from `{dir}`...')
         model_checkpoint_path = os.path.join(dir, 'model')
         state_checkpoint_path = os.path.join(dir, 'state.json')
-        [self.model] = dy.load(model_checkpoint_path, dy.ParameterCollection())
-        assert isinstance(proposal, DiscRNNG), f'expected discriminative model got {type(self.model)}'
+        [proposal] = dy.load(model_checkpoint_path, dy.ParameterCollection())
+
+        assert isinstance(proposal, DiscRNNG), f'expected discriminative model got {type(proposal)}'
 
         with open(state_checkpoint_path, 'r') as f:
             state = json.load(f)
-        epochs = state['epochs']
-        fscore = state['test-fscore']
+            epochs = state['epochs']
+            fscore = state['test-fscore']
+
         print(f'Loaded model trained for {epochs} epochs with test-fscore {fscore}.')
 
-        self.model.eval()
-        self.use_samples = False
-
-    def load_proposal_samples(self, path):
-        """Load saved samples from the proposal models."""
-        assert os.path.exists(path), path
-
-        self.samples = iter(self._read_proposals(path))
-        self.use_samples = True
+        self.proposal = proposal
+        self.proposal.eval()
+        self.use_loaded_samples = False
 
 
 
