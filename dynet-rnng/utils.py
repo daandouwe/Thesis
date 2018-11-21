@@ -20,47 +20,15 @@ def get_folders(args):
     return subdir, logdir, checkdir, outdir
 
 
-def get_parameter_string(args):
-    """Returns an identification string based on arguments in args.
-
-    Example:
-        `batch_size_25_lr_1e-4`
-
-    Note:
-        Some of the values in args are paths, e.g. `--data ../data/ptb`.
-        These contain `/` and cannot be used in the directory string.
-        We filter these out.
-    """
-    keys = []
-    args = vars(args)
-    for i, key in enumerate(args):
-        val = args[key]
-        if isinstance(val, str):
-            if not '/' in val:  # filter out paths
-                keys.append(key)
-        else:
-            keys.append(key)
-    params = [f'{key}_{args[key]}' for key in sorted(keys)]
-    return '_'.join(params)
-
-
 def get_subdir_string(args, with_params=True):
     """Returns a concatenation of a date and timestamp and parameters.
 
-    if with_params:
-        20170524_192314_batch_size_25_lr_1e-4/
-    else:
+    Example:
         20170524_192314
     """
     date = time.strftime('%Y%m%d')
     timestamp = time.strftime('%H%M%S')
-    # now = datetime.now()
-    # timestamp = now.strftime('%H%M%S.%f')
-    if with_params:
-        params = get_parameter_string(args)
-        return f'{date}_{timestamp}_{params}'
-    else:
-        return f'{date}_{timestamp}'
+    return f'{date}_{timestamp}'
 
 
 def write_args(args, logdir, positional=('mode',)):
@@ -97,15 +65,13 @@ class Timer:
     def elapsed(self):
         return time.time() - self.start
 
-    def elapsed_since_previous(self):
-        new = time.time()
-        elapsed = new - self.previous
-        self.previous = new
-        return elapsed
+    def elapsed_epoch(self):
+        return time.time() - self.previous
 
-    def reset(self):
-        self.start = time.time()
-        self.previous = time.time()
+    def eta(self, current, total):
+        remaining = total - current
+        speed = current / self.elapsed_epoch()
+        return remaining / speed
 
     def clock_time(self, seconds):
         minutes, seconds = divmod(seconds, 60)
@@ -122,6 +88,15 @@ class Timer:
 
     def format_elapsed(self):
         return self.format(self.elapsed())
+
+    def format_elapsed_epoch(self):
+        return self.format(self.elapsed_epoch())
+
+    def format_eta(self, current, total):
+        return self.format(self.eta(current, total))
+
+    def new_epoch(self):
+        self.previous = time.time()
 
 
 def replace_quotes(words):

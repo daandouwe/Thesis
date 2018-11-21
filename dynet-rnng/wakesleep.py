@@ -28,6 +28,7 @@ def main(args):
         glove_dir=args.glove_dir,
         print_every=args.print_every,
         eval_every=args.eval_every,
+        eval_at_start=args.eval_at_start,
         batch_size=args.batch_size,
         max_epochs=args.max_epochs,
         max_time=args.max_time,

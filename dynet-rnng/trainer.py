@@ -112,7 +112,7 @@ class Trainer:
 
     def build_paths(self):
         # Make output folder structure
-        subdir, logdir, checkdir, outdir = get_folders(self.args)  # TODO: make more transparent
+        subdir, logdir, checkdir, outdir = get_folders(self.args)
         os.makedirs(logdir, exist_ok=True)
         os.makedirs(checkdir, exist_ok=True)
         os.makedirs(outdir, exist_ok=True)
@@ -295,6 +295,8 @@ class Trainer:
 
             # Check development f-score
             self.check_dev()
+            if self.rnng_type == 'gen':
+                self.check_dev_perplexity()
 
             # Anneal learning rate depending on development set f-score
             self.anneal_lr()
@@ -380,9 +382,11 @@ class Trainer:
         assert self.model is not None, 'no model built'
 
         dy.save(self.model_checkpoint_path, [self.rnng])
+
         self.word_vocab.save(self.word_vocab_path)
         self.nt_vocab.save(self.nt_vocab_path)
         self.action_vocab.save(self.action_vocab_path)
+
         with open(self.state_checkpoint_path, 'w') as f:
             state = {
                 'rnng-type': self.rnng_type,
@@ -401,30 +405,23 @@ class Trainer:
     def predict(self, examples, proposal_samples=None):
         if self.rnng_type == 'disc':
             decoder = self.rnng
-            end = '\r'  # for printing
         elif self.rnng_type == 'gen':
             decoder = GenerativeDecoder(model=self.rnng)
             decoder.load_proposal_samples(path=proposal_samples)
-            end = ' '  # for printing
+
         trees = []
-        for i, gold in enumerate(examples):
+        for gold in tqdm(examples):
             dy.renew_cg()
             tree, *rest = decoder.parse(gold.leaves())
             trees.append(tree.linearize())
-            print(f'Predicting sentence {i}/{len(examples)}...', end=end)
         return trees
 
     def check_dev(self):
         print('Evaluating F1 on development set...')
         self.rnng.eval()
 
-        if self.rnng_type == 'gen':
-            dev_treebank = self.dev_treebank[:30]
-        else:
-            self.dev_treebank  # is slooow!
-
         # Predict trees.
-        trees = self.predict(dev_treebank, proposal_samples=self.dev_proposal_samples)
+        trees = self.predict(self.dev_treebank, proposal_samples=self.dev_proposal_samples)
         with open(self.dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
 
@@ -462,6 +459,39 @@ class Trainer:
         self.tensorboard_writer.add_scalar('test/f-score', test_fscore)
 
         return test_fscore
+
+    def check_dev_perplexity(self):
+        print('Evaluating perplexity on development set...')
+
+        decoder = GenerativeDecoder(model=self.rnng)
+        decoder.load_proposal_samples(path=self.dev_proposal_samples)
+
+        pp = 0.
+        for tree in tqdm(self.dev_treebank):
+            dy.renew_cg()
+            pp += decoder.perplexity(list(tree.leaves()))
+        avg_pp = pp / len(self.dev_treebank)
+
+        self.tensorboard_writer.add_scalar('dev/perplexity', avg_pp)
+
+        return avg_pp
+
+    def check_test_perplexity(self):
+        print('Evaluating perplexity on test set...')
+
+        decoder = GenerativeDecoder(model=self.rnng)
+        decoder.load_proposal_samples(path=self.test_proposal_samples)
+
+        pp = 0.
+        for tree in tqdm(self.test_treebank):
+            dy.renew_cg()
+            pp += decoder.perplexity(list(tree.leaves()))
+        avg_pp = pp / len(self.test_treebank)
+
+        self.tensorboard_writer.add_scalar(
+            'test/perplexity', avg_pp, self.num_updates)
+
+        return avg_pp
 
     def write_losses(self):
         with open(self.loss_path, 'w') as f:
@@ -501,6 +531,7 @@ class SemiSupervisedTrainer:
             glove_dir=None,
             print_every=1,
             eval_every=-1,  # default is every epoch (-1)
+            eval_at_start=False
     ):
         self.args = args
 
@@ -538,6 +569,7 @@ class SemiSupervisedTrainer:
         self.glove_dir = glove_dir
         self.print_every = print_every
         self.eval_every = eval_every
+        self.eval_at_start = eval_at_start
 
         self.num_updates = 0
         self.learning_signals = []
@@ -550,7 +582,7 @@ class SemiSupervisedTrainer:
 
     def build_paths(self):
         # Make output folder structure
-        subdir, logdir, checkdir, outdir = get_folders(self.args)  # TODO: make more transparent
+        subdir, logdir, checkdir, outdir = get_folders(self.args)
         os.makedirs(logdir, exist_ok=True)
         os.makedirs(checkdir, exist_ok=True)
         os.makedirs(outdir, exist_ok=True)
@@ -680,8 +712,6 @@ class SemiSupervisedTrainer:
         self.model = dy.ParameterCollection()
         self.load_joint_model()
         self.load_post_model()
-        # for param in self.model.parameters_list():
-            # print(param.name())
 
     def load_joint_model(self):
         assert self.model is not None, 'build model first'
@@ -754,13 +784,17 @@ class SemiSupervisedTrainer:
 
         self.timer = Timer()
 
-        print('Evaluating...')
-        fscore = self.check_dev_fscore()
-        pp = self.check_dev_perplexity()
-        print(89*'=')
-        print('| dev F1 {:4.2f} | dev perplexity {:4.2f}'.format(
-            fscore, pp))
-        print(89*'=')
+        if self.eval_at_start:
+            print('Evaluating at start...')
+
+            fscore = self.check_dev_fscore()
+            pp = self.check_dev_perplexity()
+
+            print(89*'=')
+            print('| Start | dev F1 {:4.2f} | dev perplexity {:4.2f}'.format(
+                fscore, pp))
+            print(89*'=')
+
 
         print('Start training...')
         for epoch in itertools.count(start=1):
@@ -774,9 +808,14 @@ class SemiSupervisedTrainer:
             # Train one epoch
             self.train_epoch()
 
+            print('='*89)
+            print(f'| End of epoch {epoch} | elapsed {self.timer.elapsed()}')
+            print('='*89)
+
     def train_epoch(self):
 
         def get_unlabeled_batch():
+            """Infinite generator over unlabeled batches."""
             try:
                 batch = next(self.unlabeled_batches)
             except StopIteration:
@@ -788,7 +827,7 @@ class SemiSupervisedTrainer:
         labeled_batches = self.batchify(self.train_treebank)
 
         # We loop over the labeled_batches and request an unlabeled batch
-        for i, labeled_batch in enumerate(labeled_batches):
+        for i, labeled_batch in enumerate(labeled_batches, 1):
 
             if self.timer.elapsed() > self.max_time:
                 break
@@ -818,7 +857,7 @@ class SemiSupervisedTrainer:
 
             self.num_updates += 1
 
-            if self.num_updates % self.print_every == 0:
+            if i % self.print_every == 0:
                 loss = np.mean(self.losses[-self.print_every:])
                 sup_loss = np.mean(self.sup_losses[-self.print_every:])
                 unsup_loss = np.mean(self.unsup_losses[-self.print_every:])
@@ -826,11 +865,11 @@ class SemiSupervisedTrainer:
 
                 self.write_tensoboard_losses(loss, sup_loss, unsup_loss, baseline_loss)
 
-                print('| epoch {:3d} | step {:5d}/{:5d} ({:.1%})| loss {:6.3f} | sup-loss {:5.3f} | unsup-loss {:6.3f} | baseline-loss {:3.3f} | elapsed {} | {:.2f} updates/sec | eta {}'.format(
-                    self.current_epoch, i, len(labeled_batches), i/len(labeled_batches),
+                print('| epoch {:3d} | step {:5d}/{:5d} ({:.1%}) | loss {:6.3f} | sup-loss {:5.3f} | unsup-loss {:6.3f} | baseline-loss {:3.3f} | elapsed {} | {:.2f} updates/sec | eta {}'.format(
+                    self.current_epoch, i, len(labeled_batches), i / len(labeled_batches),
                     loss, sup_loss, unsup_loss, baseline_loss,
-                    self.timer.format_elapsed(), self.num_updates/self.timer.elapsed(),
-                    self.timer.format((len(labeled_batches) - i) / self.num_updates * self.timer.elapsed())))
+                    self.timer.format_elapsed_epoch(), i / self.timer.elapsed_epoch(),
+                    self.timer.format_eta(i, len(labeled_batches))))
 
             if self.num_updates % self.eval_every == 0 and self.eval_every != -1:
                 fscore = self.check_dev_fscore()
@@ -839,7 +878,7 @@ class SemiSupervisedTrainer:
                 print('| dev F1 {:4.2f} | dev perplexity {:4.2f}'.format(
                     fscore, pp))
                 print(89*'=')
-                self.timer.reset()
+                self.timer.new_epoch()
                 self.save_checkpoint(fscore, pp)
 
     def supervised_step(self, batch):
@@ -856,7 +895,15 @@ class SemiSupervisedTrainer:
         baseline_losses = []
         # For various types of logging
         histogram = dict(
-            signal=[], baselines=[], centered=[], normalized=[], post=[], joint=[], unique=[])
+            signal=[],
+            baselines=[],
+            centered=[],
+            normalized=[],
+            post=[],
+            joint=[],
+            unique=[],
+            scale=[]
+        )
 
         for words in batch:
             # Get samples with their \mean_y [log q(y|x)] for samples y
@@ -870,7 +917,8 @@ class SemiSupervisedTrainer:
 
             # Substract baseline
             baselines = self.baselines(words)
-            centered_learning_signal = learning_signal - baselines
+            a = self.optimal_baseline_scale()
+            centered_learning_signal = learning_signal - a * baselines
 
             # Normalize
             normalized_learning_signal = self.normalize(centered_learning_signal)
@@ -891,17 +939,18 @@ class SemiSupervisedTrainer:
             # For tesorboard logging
             histogram['signal'].append(learning_signal)
             histogram['baselines'].append(baselines.value())
+            histogram['scale'].append(a)
             histogram['centered'].append(centered_learning_signal.value())
             histogram['normalized'].append(normalized_learning_signal.value())
             histogram['post'].append(post_logprob.value())
             histogram['joint'].append(joint_logprob.value())
             histogram['unique'].append(len(set(tree.linearize() for tree in trees)))
 
+        self.write_tensoboard_histogram(histogram)
+
         self.learning_signals.append(np.mean(histogram['signal']))
         self.baseline_values.append(np.mean(histogram['baselines']))
         self.centered_learning_signals.append(np.mean(histogram['centered']))
-
-        self.write_tensoboard_histogram(histogram)
 
         # Average losses over minibatch
         loss = dy.esum(losses) / self.batch_size
@@ -924,7 +973,7 @@ class SemiSupervisedTrainer:
         return dy.esum(logprobs) / len(logprobs)
 
     def baselines(self, words):
-        b = 0
+        b = dy.scalarInput(0)
         if self.use_mlp_baseline:
             b += self.mlp_baseline(words)
         if self.use_argmax_baseline:
@@ -936,7 +985,7 @@ class SemiSupervisedTrainer:
         tree, post_nll = self.post_model.parse(words)
         post_logprob = -post_nll
         joint_logprob = -self.joint_model.forward(tree)
-        return blockgrad(joint_logprob - post_logprob)
+        return dy.scalarInput(blockgrad(joint_logprob - post_logprob))
 
     def mlp_baseline(self, words):
         """Baseline parametrized by a feedfoward network."""
@@ -967,34 +1016,48 @@ class SemiSupervisedTrainer:
 
         return baseline
 
-    def signal_mean(self):
-        if len(self.centered_learning_signals) == 0:
-            return 0.
-        else:
-            return np.mean(self.centered_learning_signals)
-
-    def signal_variance(self):
-        if len(self.centered_learning_signals) < 3:
+    def optimal_baseline_scale(self, n=500):
+        """Estimate optimal scalar value for baseline."""
+        if self.use_mlp_baseline:
+            # baseline is trainable so scaling messes it up
             return 1.
+        elif self.num_updates < 4:
+            # cannot estimate variance
+            return 1.
+        elif self.use_argmax_baseline:
+            # static baseline: optimal scaling exists
+            baseline_values = np.array(self.baseline_values[-n:])
+            signal_values = np.array(self.learning_signals[-n:])
+            _, cov, _, var = np.cov([signal_values, baseline_values]).ravel()
+            return cov/var
         else:
-            return np.var(self.centered_learning_signals)
+            # no baseline no scaling
+            return 1.
 
     def normalize(self, signal):
-        return (signal - self.signal_mean()) / np.sqrt(self.signal_variance())
+        """Normalize the centered learning-signal."""
+        signal_mean = np.mean(self.centered_learning_signals) if self.num_updates > 0 else 0.
+        signal_var = np.var(self.centered_learning_signals) if self.num_updates > 1 else 1.
+        return (signal - signal_mean) / np.sqrt(signal_var)
 
     def baseline_signal_covariance(self, n=200):
         """Estimate covariance between baseline and learning signal."""
         baseline_values = np.array(self.baseline_values[-n:])
         signal_values = np.array(self.learning_signals[-n:])
 
-        covariance = np.mean(
-            (baseline_values - np.mean(baseline_values)) * (signal_values - np.mean(signal_values)))
+        baseline_mean = np.mean(baseline_values) if self.num_updates > 1 else 0.
+        baseline_var = np.var(baseline_values) if self.num_updates > 2 else 1.
 
-        signal_var = np.var(signal_values)
-        baseline_var = np.var(baseline_values)
-        correlation_coeff = covariance / (np.sqrt(signal_var) * np.sqrt(baseline_var))
+        signal_mean = np.mean(signal_values) if self.num_updates > 1 else 0.
+        signal_var = np.var(signal_values) if self.num_updates > 2 else 1.
 
-        return covariance, correlation_coeff
+        if self.num_updates > 2:
+            cov = np.mean((baseline_values - baseline_mean) * (signal_values - signal_mean))
+        else:
+            cov = 0
+        corr = cov / (np.sqrt(signal_var) * np.sqrt(baseline_var))
+
+        return cov, corr
 
     def write_tensoboard_losses(self, loss, sup_loss, unsup_loss, baseline_loss):
         self.tensorboard_writer.add_scalar(
@@ -1013,6 +1076,8 @@ class SemiSupervisedTrainer:
         self.tensorboard_writer.add_histogram(
             'semisup/histogram/baselines', np.array(histogram['baselines']), self.num_updates)
         self.tensorboard_writer.add_histogram(
+            'semisup/histogram/scale', np.array(histogram['scale']), self.num_updates)
+        self.tensorboard_writer.add_histogram(
             'semisup/histogram/centered-learning-signal', np.array(histogram['centered']), self.num_updates)
         self.tensorboard_writer.add_histogram(
             'semisup/histogram/normalized-learning-signal', np.array(histogram['normalized']), self.num_updates)
@@ -1028,6 +1093,8 @@ class SemiSupervisedTrainer:
             'semisup/unsup/learning-signal', np.mean(histogram['signal']), self.num_updates)
         self.tensorboard_writer.add_scalar(
             'semisup/unsup/baselines', np.mean(histogram['baselines']), self.num_updates)
+        self.tensorboard_writer.add_histogram(
+            'semisup/unsup/scale', np.mean(histogram['scale']), self.num_updates)
         self.tensorboard_writer.add_scalar(
             'semisup/unsup/centered-learning-signal', np.mean(histogram['centered']), self.num_updates)
         self.tensorboard_writer.add_scalar(
@@ -1038,26 +1105,33 @@ class SemiSupervisedTrainer:
             'semisup/unsup/joint-logprob', np.mean(histogram['joint']), self.num_updates)
 
         # Write signal statistics
-        mean, var = self.signal_mean(), self.signal_variance()
-        cov, coeff = self.baseline_signal_covariance()
+        cov, corr = self.baseline_signal_covariance()
         self.tensorboard_writer.add_scalar(
-            'semisup/unsup/signal-mean', mean, self.num_updates)
+            'semisup/unsup/signal-mean', np.mean(self.learning_signals), self.num_updates)
         self.tensorboard_writer.add_scalar(
-            'semisup/unsup/signal-variance', var, self.num_updates)
+            'semisup/unsup/signal-variance', np.var(self.learning_signals), self.num_updates)
+        self.tensorboard_writer.add_scalar(
+            'semisup/unsup/centered-signal-mean', np.mean(self.centered_learning_signals), self.num_updates)
+        self.tensorboard_writer.add_scalar(
+            'semisup/unsup/centered-signal-variance', np.var(self.centered_learning_signals), self.num_updates)
+        self.tensorboard_writer.add_scalar(
+            'semisup/unsup/baseline-mean', np.mean(self.baseline_values), self.num_updates)
+        self.tensorboard_writer.add_scalar(
+            'semisup/unsup/baseline-variance', np.var(self.baseline_values), self.num_updates)
         self.tensorboard_writer.add_scalar(
             'semisup/unsup/signal-baseline-cov', cov, self.num_updates)
         self.tensorboard_writer.add_scalar(
-            'semisup/unsup/signal-baseline-cor-coeff', coeff, self.num_updates)
+            'semisup/unsup/signal-baseline-cor', corr, self.num_updates)
+        self.tensorboard_writer.add_scalar(  # var(f') / var(f) = 1 - corr(f, b)**2
+            'semisup/unsup/signal-baseline-var-frac', 1 - corr**2, self.num_updates)
 
     def predict(self, examples):
         self.post_model.eval()
         trees = []
-        for i, tree in enumerate(examples):
+        for tree in tqdm(examples):
             dy.renew_cg()
             tree, *rest = self.post_model.parse(list(tree.leaves()))
             trees.append(tree.linearize())
-            if i % 10 == 0:
-                print(f'Predicting sentence {i}/{len(examples)}...', end='\r')
         self.post_model.train()
         return trees
 
@@ -1068,9 +1142,13 @@ class SemiSupervisedTrainer:
         with open(self.dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
 
+        print('Computing fscore...')
+
         # Compute f-score.
         dev_fscore = evalb(
             self.evalb_dir, self.dev_pred_path, self.dev_path, self.dev_result_path)
+
+        print('Computed fscore.')
 
         # Log score to tensorboard.
         self.current_dev_fscore = dev_fscore
@@ -1091,6 +1169,7 @@ class SemiSupervisedTrainer:
 
         pp = 0.
         for tree in tqdm(self.dev_treebank):
+            dy.renew_cg()
             pp += decoder.perplexity(list(tree.leaves()))
         avg_pp = pp / len(self.dev_treebank)
 
@@ -1139,8 +1218,8 @@ class WakeSleepTrainer:
             joint_model_path=None,
             post_model_path=None,
             max_unlabeled_sent_len=40,
-            gamma_wake=0.25,
-            gamma_sleep=0.25,
+            gamma_wake=0.5,
+            gamma_sleep=0.5,
             max_epochs=inf,
             max_time=inf,
             max_lines=-1,
@@ -1154,6 +1233,7 @@ class WakeSleepTrainer:
             glove_dir=None,
             print_every=1,
             eval_every=-1,
+            eval_at_start=False
     ):
         self.args = args
 
@@ -1189,6 +1269,7 @@ class WakeSleepTrainer:
         self.glove_dir = glove_dir
         self.print_every = print_every
         self.eval_every = eval_every
+        self.eval_at_start = eval_at_start
 
         self.num_sleep_updates = 0
         self.num_wake_updates = 0
@@ -1197,7 +1278,7 @@ class WakeSleepTrainer:
 
     def build_paths(self):
         # Make output folder structure
-        subdir, logdir, checkdir, outdir = get_folders(self.args)  # TODO: make more transparent
+        subdir, logdir, checkdir, outdir = get_folders(self.args)
         os.makedirs(logdir, exist_ok=True)
         os.makedirs(checkdir, exist_ok=True)
         os.makedirs(outdir, exist_ok=True)
@@ -1350,6 +1431,17 @@ class WakeSleepTrainer:
 
         self.timer = Timer()
 
+        if self.eval_at_start:
+            print('Evaluating at start...')
+
+            fscore = self.check_dev_fscore()
+            pp = self.check_dev_perplexity()
+
+            print(89*'=')
+            print('| Start | dev F1 {:4.2f} | dev perplexity {:4.2f}'.format(
+                fscore, pp))
+            print(89*'=')
+
         print('Start training...')
         for epoch in itertools.count(start=1):
 
@@ -1371,6 +1463,7 @@ class WakeSleepTrainer:
             # Check progress
             fscore = self.check_dev_fscore()
             pp = self.check_dev_perplexity()
+
             print(89*'=')
             print('| End of epoch {:3d}/{} | dev F1 {:4.2f} | dev perplexity {:4.2f} | elapsed {}'.format(
                  epoch, self.max_epochs, fscore, pp, self.timer.format_elapsed()))
@@ -1387,7 +1480,7 @@ class WakeSleepTrainer:
         sleep_timer = Timer()
 
         # We loop over the labeled_batches and request unlabeled data as we go
-        for i, labeled_batch in enumerate(labeled_batches):
+        for i, labeled_batch in enumerate(labeled_batches, 1):
 
             dy.renew_cg()
 
@@ -1425,10 +1518,10 @@ class WakeSleepTrainer:
                 self.tensorboard_writer.add_scalar(
                     'wake-sleep/sleep/loss-sampled', sampled_loss, self.num_sleep_updates)
 
-                print('| epoch {:2d} | sleep phase | update {:4d} | loss {:6.3f} | elapsed {} | {:.2f} updates/sec | eta {}'.format(
-                    self.current_epoch, self.num_sleep_updates, loss,
+                print('| epoch {:2d} | sleep phase | update {:4d}/{:5d} ({:.1%}) | loss {:6.3f} | elapsed {} | {:.2f} updates/sec | eta {}'.format(
+                    self.current_epoch, i, len(labeled_batches), i / len(labeled_batches), loss,
                     self.timer.format_elapsed(), i / sleep_timer.elapsed(),
-                    self.timer.format(i * sleep_timer.elapsed() / len(labeled_batches))))
+                    self.timer.format((len(labeled_batches) - i) / i * sleep_timer.elapsed())))
 
     def wake_epoch(self):
 
@@ -1450,7 +1543,7 @@ class WakeSleepTrainer:
         wake_timer = Timer()
 
         # We loop over the labeled_batches and request unlabeled data as we go
-        for i, labeled_batch in enumerate(labeled_batches):
+        for i, labeled_batch in enumerate(labeled_batches, 1):
 
             dy.renew_cg()
 
@@ -1488,25 +1581,25 @@ class WakeSleepTrainer:
                 self.tensorboard_writer.add_scalar(
                     'wake-sleep/wake/loss-sampled', sampled_loss, self.num_wake_updates)
 
-                print('| epoch {:2d} | wake phase | update {:4d} | loss {:6.3f} | elapsed {} | {:.2f} updates/sec'.format(
-                    self.current_epoch, self.num_wake_updates, loss,
+                print('| epoch {:2d} | wake phase | update {:4d}/{:5d} ({:.1%}) | loss {:6.3f} | elapsed {} | {:.2f} updates/sec | eta {}'.format(
+                    self.current_epoch, i, len(labeled_batches), i / len(labeled_batches), loss,
                     self.timer.format_elapsed(), i / wake_timer.elapsed(),
-                    self.timer.format(i * wake_timer.elapsed() / len(labeled_batches))))
+                    self.timer.format(i * wake_timer.elapsed() / len(labeled_batches)),
+                    self.timer.format((len(labeled_batches) - i) / i * wake_timer.elapsed())))
 
     def predict(self, examples):
         self.post_model.eval()
         trees = []
-        for i, tree in enumerate(examples):
+        for tree in tqdm(examples):
             dy.renew_cg()
             tree, *rest = self.post_model.parse(list(tree.leaves()))
             trees.append(tree.linearize())
-            if i % 10 == 0:
-                print(f'Predicting sentence {i}/{len(examples)}...', end='\r')
         self.post_model.train()
         return trees
 
     def check_dev_fscore(self):
-        print('Evaluating F1 on development set...')
+        print('Evaluating F1 on development set... (posterior model)')
+
         # Predict trees.
         trees = self.predict(self.dev_treebank)
         with open(self.dev_pred_path, 'w') as f:
@@ -1524,20 +1617,20 @@ class WakeSleepTrainer:
         return dev_fscore
 
     def check_dev_perplexity(self):
-        print('Evaluating perplexity on development set...')
+        print('Evaluating perplexity on development set... (posterior and joint model)')
 
         decoder = GenerativeDecoder(
             model=self.joint_model,
             proposal=self.post_model,
-            num_samples=20,
+            num_samples=100,
             alpha=1.
         )
-        examples = np.random.choice(self.dev_treebank, size=100)
+
         pp = 0.
-        for i, tree in enumerate(examples):
+        for tree in tqdm(self.dev_treebank):
+            dy.renew_cg()
             pp += decoder.perplexity(list(tree.leaves()))
-            print(f'Predicting sentence {i}/{len(examples)}...', end='\r')
-        avg_pp = pp / len(examples)
+        avg_pp = pp / len(self.dev_treebank)
 
         self.tensorboard_writer.add_scalar(
             'wake-sleep/dev-perplexity', avg_pp, self.num_wake_updates)

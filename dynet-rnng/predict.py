@@ -210,6 +210,35 @@ def sample_generative(args):
         print()
 
 
+def predict_perplexity(args):
+    assert os.path.exists(args.infile), 'specifiy file to parse with --infile.'
+
+    print(f'Predicting perplexity for lines in `{args.infile}`...')
+    with open(args.infile, 'r') as f:
+        lines = [line.strip() for line in f.readlines()]
+
+    if is_tree(lines[0]):
+        sentences = [list(fromstring(line.strip()).leaves()) for line in lines]
+    else:
+        sentences = [line.strip().split() for line in lines]
+
+    model = load_model(args.checkpoint)
+    decoder = GenerativeDecoder(model=model, num_samples=args.num_samples)
+    decoder.load_proposal_samples(args.proposal_samples)
+
+    pps = []
+    for words in tqdm(sentences):
+        dy.renew_cg()
+        pp = decoder.perplexity(words)
+        pps.append(pp)
+    avg_pp = np.mean(pps)  # TODO: is this correct?
+
+    with open(args.outfile, 'w') as f:
+        print('Average perplexity:', avg_pp)
+        for pp, words in zip(pps, sentences):
+            print(pp, '|||', ' '.join(words), file=f)
+
+
 def sample_proposals(args):
     assert os.path.exists(args.infile), 'specifiy file to parse with --infile.'
 
@@ -317,6 +346,9 @@ def main(args):
         predict_tree_file(args)
     elif args.from_text_file:
         predict_text_file(args)
+    elif args.perplexity:
+        assert args.rnng_type == 'gen'
+        predict_perplexity(args)
     elif args.sample_proposals:
         assert args.rnng_type == 'disc'
         sample_proposals(args)

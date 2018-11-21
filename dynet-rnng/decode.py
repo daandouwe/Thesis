@@ -1,6 +1,7 @@
 import os
 import json
 from copy import deepcopy
+from collections import Counter
 from typing import NamedTuple
 
 import dynet as dy
@@ -41,9 +42,9 @@ class GenerativeDecoder:
 
     def map_tree(self, words):
         """Estimate the MAP tree."""
-        scored = self.scored_samples(words, remove_duplicates=True)  # do not need duplicates for MAP tree
+        scored = self.scored_samples(words)
         ranked = sorted(scored, reverse=True, key=lambda t: t[-1])
-        best_tree, proposal_logprob, joint_logprob = ranked[0]
+        best_tree, proposal_logprob, joint_logprob, count = ranked[0]
         return best_tree, proposal_logprob, joint_logprob
 
     def logprob(self, words):
@@ -52,12 +53,13 @@ class GenerativeDecoder:
             tree, proposal_logprob, joint_logprob = self.scored_argmax(words)
             logprob = joint_logprob - proposal_logprob
         else:
-            scored = self.scored_samples(words, remove_duplicates=False)  # do need duplicates for perplexity
-            logprobs = np.zeros(self.num_samples)
-            for i, (tree, proposal_logprob, joint_logprob) in enumerate(scored):
+            scored = self.scored_samples(words)
+            logprobs, counts = np.zeros(len(scored)), np.zeros(len(scored))
+            for i, (tree, proposal_logprob, joint_logprob, count) in enumerate(scored):
                 logprobs[i] = joint_logprob - proposal_logprob
+                counts[i] = count
             a = logprobs.max()
-            logprob = a + np.log(np.mean(np.exp(logprobs - a)))  # log-mean-exp for stability
+            logprob = a + np.log(np.mean(np.exp(logprobs - a) * counts))  # log-mean-exp for stability
         return logprob
 
     def perplexity(self, words):
@@ -74,6 +76,12 @@ class GenerativeDecoder:
                 seen.add(tree.linearize())
         return output
 
+    def count_samples(self, samples):
+        """Filter out duplicate trees from the samples."""
+        counts = Counter([tree.linearize() for tree, _ in samples])
+        filtered = self.remove_duplicates(samples)
+        return [(tree, logprob, counts[tree.linearize()]) for tree, logprob in filtered]
+
     def scored_argmax(self, words):
         """Score the proposal's argmax tree."""
         tree, proposal_nll = self.proposal.parse(words)
@@ -81,7 +89,7 @@ class GenerativeDecoder:
         proposal_logprob = -proposal_nll
         return tree, proposal_logprob.value(), joint_logprob.value()
 
-    def scored_samples(self, words, remove_duplicates=False):
+    def scored_samples(self, words):
         """Return a list of proposal samples that will be scored by the joint model."""
         if self.use_loaded_samples:
             samples = next(self.samples)
@@ -93,16 +101,15 @@ class GenerativeDecoder:
                 tree, nll = self.proposal.sample(words, alpha=self.alpha)
                 samples.append((tree, -nll.value()))
 
-        if remove_duplicates:
-            samples = self.remove_duplicates(samples)
-            print(f'({len(samples)}/{self.num_samples} unique)', end='\r')
+        # Count and filter
+        samples = self.count_samples(samples)  # [tree, prop_logprob, count]
 
         # Score the samples
-        joint_logprobs = [-self.model.forward(tree, is_train=False).value() for tree, _ in samples]
+        joint_logprobs = [-self.model.forward(tree, is_train=False).value() for tree, _, _ in samples]
 
         # Merge the two lists
-        scored = [(tree, proposal_logprob, joint_logprob)
-            for (tree, proposal_logprob), joint_logprob in zip(samples, joint_logprobs)]
+        scored = [(tree, proposal_logprob, joint_logprob, count)
+            for (tree, proposal_logprob, count), joint_logprob in zip(samples, joint_logprobs)]
 
         return scored
 
@@ -154,7 +161,6 @@ class GenerativeDecoder:
         self.proposal = proposal
         self.proposal.eval()
         self.use_loaded_samples = False
-
 
 
 # class Beam(NamedTuple):

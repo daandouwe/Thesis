@@ -1,6 +1,6 @@
 #PBS -S /bin/bash
 #PBS -lnodes=1
-#PBS -lwalltime=25:00:00
+#PBS -lwalltime=90:00:00
 
 # Loading modules
 module load eb
@@ -9,44 +9,52 @@ module load Python/3.6.3-foss-2017b
 # Home folders
 SRCDIR=$HOME/thesis/dynet-rnng
 DATADIR=$HOME/thesis/data
-GLOVEDIR=$HOME/embeddings/glove
 EXP_DIR=$SRCDIR/experiments/lisa
-EXP_NAME=semisup-job-cpu
+EXP_NAME=semisup
 
 # Scratch folders
 TMP=$TMPDIR/daandir
 OUTDIR=$TMP/results
 
 # General training settings
-MAX_TIME=$((24 * 3600))  # in seconds (related to -lwalltime)
+MAX_TIME=$((80 * 3600))  # in seconds (related to -lwalltime)
 MAX_EPOCHS=100
 MAX_LINES=-1
 PRINT_EVERY=10
-EVAL_EVERY=-1
+EVAL_EVERY=20000
 
 # Copy training data to scratch
 mkdir -p $TMP/data
 cp -r $DATADIR/* $TMP/data
-# Copy glove embeddings to scratch
-mkdir -p $TMP/glove
-cp -r $GLOVEDIR/* $TMP/glove
+# Copy models embeddings to scratch
+mkdir -p $TMP/models/joint
+mkdir -p $TMP/models/posterior
+cp -r $SRCDIR/checkpoints/joint/* $TMP/models/joint
+cp -r $SRCDIR/checkpoints/posterior/* $TMP/models/posterior
 # Create output directories on scratch
 mkdir -p $OUTDIR
 # Just checking if all folders are constructed correctly
 ls -l $TMP
+ls -l $TMP/data
+ls -l $TMP/models
 
 export MKL_NUM_THREADS=1
 
 OPTIM=adam
 LR=0.001
-BATCH_SIZE=16
+BATCH_SIZE=10
 # Name of experiment.
-NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}_use_glove_seed${i}
+NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}
 # Make output directory.
 mkdir -p $OUTDIR/$NAME
 # Run.
-python $SRCDIR/main.py train disc \
-    --data $TMP/data \
+python $SRCDIR/main.py semisup disc \
+    --train-path $TMP/data/train/ptb.train.trees \
+    --dev-path $TMP/data/dev/ptb.dev.trees \
+    --test-path $TMP/data/test/ptb.test.trees \
+    --unlabeled-path $TMP/data/unlabeled/news.en-00001-of-00100 \
+    --joint-model-path $TMP/models/joint \
+    --post-model-path $TMP/models/posterior \
     --disable-subdir \
     --logdir $OUTDIR/$NAME \
     --checkdir $OUTDIR/$NAME \
@@ -56,17 +64,12 @@ python $SRCDIR/main.py train disc \
     --max-epochs $MAX_EPOCHS \
     --print-every $PRINT_EVERY \
     --eval-every $EVAL_EVERY \
+    --eval-at-start \
     --optimizer $OPTIM \
     --lr $LR \
     --batch-size $BATCH_SIZE \
-    --use-glove \
-    --glove-dir $TMP/glove \
-    --dynet-autobatch 1 \
-    --dynet-mem 1024 \
-    --dynet-seed $((i)) \
     > $OUTDIR/$NAME/terminal.txt
 
-python $SRCDIR/main.py semisup disc \--num-samples 1 --optimizer adam --lr 0.001 --use-mlp-baseline --use-argmax-baseline --batch-size 5 --eval-every 1000
 
 echo 'Finished training. Copying files from scratch...'
 # Copy output directory from scratch to home

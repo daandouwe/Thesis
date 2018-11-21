@@ -42,7 +42,7 @@ def main():
                         help='development trees')
     parser.add_argument('--test-path', default='../data/test/ptb.test.trees',
                         help='test trees')
-    parser.add_argument('--unlabeled-path', default='~/data/one-billion-words/training-monolingual.tokenized.shuffled/news.en-00001-of-00100',
+    parser.add_argument('--unlabeled-path', default='../data/unlabeled/news.en-00001-of-00100',
                         help='unlabeled data for semi-supervised training')
     parser.add_argument('--root', default='.',
                         help='root dir to make output log and checkpoint folders')
@@ -121,7 +121,9 @@ def main():
     parser.add_argument('--print-every', type=int, default=10,
                         help='when to print training progress')
     parser.add_argument('--eval-every', type=int, default=-1,
-                        help='evaluate model on development (default: every epoch (-1))')
+                        help='evaluate model on development set (default: every epoch (-1))')
+    parser.add_argument('--eval-at-start', action='store_true',
+                        help='evaluate model on development set at start of training')
     parser.add_argument('--disable-cuda', action='store_true',
                         help='disable cuda')
     parser.add_argument('--num-procs', type=int, default=1,
@@ -132,7 +134,12 @@ def main():
                         help='proposal samples for test set')
 
     # Semi-supervised arguments
+    parser.add_argument('--joint-model-path', default='checkpoints/joint',
+                        help='pretrained joint model (GenRNNG)')
+    parser.add_argument('--post-model-path', default='checkpoints/posterior',
+                        help='pretrained posterior model (DiscRNNG)')
     parser.add_argument('--use-argmax-baseline', action='store_true')
+
     parser.add_argument('--use-mlp-baseline', action='store_true')
 
     # Predict arguments
@@ -140,7 +147,7 @@ def main():
                         help='load model from this checkpoint')
     parser.add_argument('--proposal-model', default='',
                         help='load discriminative model (proposal for generative model) from this checkpoint')
-    parser.add_argument('--proposal-samples', default='../data/proposal-samples',
+    parser.add_argument('--proposal-samples', default='../data/proposal-samples/dev.props',
                         help='load proposal samples')
     parser.add_argument('--from-input', action='store_true',
                         help='predict for user input')
@@ -152,6 +159,8 @@ def main():
                         help='sample from generative model')
     parser.add_argument('--sample-proposals', action='store_true',
                         help='sample proposals from discriminative model')
+    parser.add_argument('--perplexity', action='store_true',
+                        help='evaluate perplexity')
     parser.add_argument('--syneval', action='store_true',
                         help='evaluate on syneval test')
     parser.add_argument('--inspect-model', action='store_true',
