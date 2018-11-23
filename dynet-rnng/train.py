@@ -53,22 +53,4 @@ def main(args):
     )
 
     # Train the model
-    try:
-        trainer.train()
-    except KeyboardInterrupt:
-        print('-'*99)
-        print('Exiting from training early.')
-
-    trainer.check_dev()
-
-    # Save the losses for plotting and diagnostics
-    trainer.write_losses()
-
-    test_fscore = trainer.check_test()
-    print('='*99)
-    print('| End of training | Best dev F1 {:3.2f} (epoch {:2d}) | Test F1 {:3.2f}'.format(
-        trainer.best_dev_fscore, trainer.best_dev_epoch, test_fscore))
-    print('='*99)
-    # Save model again but with test fscore
-    trainer.test_fscore = test_fscore
-    trainer.save_checkpoint()
+    trainer.train()

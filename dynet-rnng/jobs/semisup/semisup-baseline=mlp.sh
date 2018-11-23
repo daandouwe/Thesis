@@ -1,6 +1,6 @@
 #PBS -S /bin/bash
 #PBS -lnodes=1
-#PBS -lwalltime=90:00:00
+#PBS -lwalltime=80:00:00
 
 # Loading modules
 module load eb
@@ -17,7 +17,7 @@ TMP=$TMPDIR/daandir
 OUTDIR=$TMP/results
 
 # General training settings
-MAX_TIME=$((80 * 3600))  # in seconds (related to -lwalltime)
+MAX_TIME=$((70 * 3600))  # in seconds (related to -lwalltime)
 MAX_EPOCHS=100
 MAX_LINES=-1
 PRINT_EVERY=10
@@ -69,6 +69,7 @@ python $SRCDIR/main.py semisup disc \
     --lr $LR \
     --batch-size $BATCH_SIZE \
     --use-mlp-baseline \
+    --dynet-mem  5000 \
     > $OUTDIR/$NAME/terminal.txt
 
 

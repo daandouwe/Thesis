@@ -20,7 +20,7 @@ from utils import Timer, get_folders, write_args, ceil_div, replace_quotes, repl
 
 
 class Trainer:
-    """Trainer for RNNG."""
+    """Supervised trainer for RNNG."""
     def __init__(
             self,
             rnng_type='disc',
@@ -102,13 +102,19 @@ class Trainer:
         self.print_every = print_every
 
         # Training bookkeeping
+        self.timer = Timer()
         self.losses = []
         self.num_updates = 0
+
         self.current_dev_fscore = -inf
         self.best_dev_fscore = -inf
         self.best_dev_epoch = 0
         self.test_fscore = -inf
-        self.timer = Timer()
+
+        self.current_dev_perplexity = -inf
+        self.best_dev_perplexity = -inf
+        self.best_dev_perplexity_epoch = 0
+        self.test_perplexity = -inf
 
     def build_paths(self):
         # Make output folder structure
@@ -204,6 +210,7 @@ class Trainer:
 
         print('Initializing model...')
         self.model = dy.ParameterCollection()
+
         if self.rnng_type == 'disc':
             self.rnng = DiscRNNG(
                 model=self.model,
@@ -262,7 +269,7 @@ class Trainer:
     def train(self):
         """
         Train the model. At any point you can
-        hit Ctrl + C to break out of training early.
+        use Ctrl + C to break out of training early.
         """
 
         if self.rnng_type == 'gen':
@@ -278,33 +285,52 @@ class Trainer:
         self.build_model()
         self.build_optimizer()
 
-        # No upper limit of epochs or time when not specified
-        print('Start training...')
-        for epoch in itertools.count(start=1):
-            if epoch > self.max_epochs:
-                break
-            if self.timer.elapsed() > self.max_time:
-                break
-            self.current_epoch = epoch
+        try:
+            # No upper limit of epochs or time when not specified
+            print('Start training...')
+            for epoch in itertools.count(start=1):
+                if epoch > self.max_epochs:
+                    break
+                if self.timer.elapsed() > self.max_time:
+                    break
+                self.current_epoch = epoch
 
-            # Shuffle batches every epoch
-            np.random.shuffle(self.train_treebank)
+                # Shuffle batches every epoch
+                np.random.shuffle(self.train_treebank)
 
-            # Train one epoch
-            self.train_epoch()
+                # Train one epoch
+                self.train_epoch()
 
-            # Check development f-score
-            self.check_dev()
-            if self.rnng_type == 'gen':
-                self.check_dev_perplexity()
+                # Check development scores
+                self.check_dev()
 
-            # Anneal learning rate depending on development set f-score
-            self.anneal_lr()
+                # Anneal learning rate depending on development set f-score
+                self.anneal_lr()
 
+                print('-'*99)
+                print('| End of epoch {:3d}/{} | Elapsed {} | Current dev F1 {:4.2f} | Best dev F1 {:4.2f} (epoch {:2d})'.format(
+                    epoch, self.max_epochs, self.timer.format_elapsed(), self.current_dev_fscore, self.best_dev_fscore, self.best_dev_epoch))
+                print('-'*99)
+        except KeyboardInterrupt:
             print('-'*99)
-            print('| End of epoch {:3d}/{} | Elapsed {} | Current dev F1 {:4.2f} | Best dev F1 {:4.2f} (epoch {:2d})'.format(
-                epoch, self.max_epochs, self.timer.format_elapsed(), self.current_dev_fscore, self.best_dev_fscore, self.best_dev_epoch))
+            print('Exiting from training early.')
             print('-'*99)
+
+        self.check_dev()
+
+        # Check test scores
+        self.check_test()
+
+        # Save model again but with test fscore
+        self.save_checkpoint()
+
+        # Save the losses for plotting and diagnostics
+        self.write_losses()
+
+        print('='*99)
+        print('| End of training | Best dev F1 {:3.2f} (epoch {:2d}) | Test F1 {:3.2f}'.format(
+            self.best_dev_fscore, self.best_dev_epoch, self.test_fscore))
+        print('='*99)
 
     def train_epoch(self):
         """One epoch of sequential training."""
@@ -347,8 +373,8 @@ class Trainer:
                 updates_per_sec = self.num_updates / epoch_timer.elapsed()
                 eta = (num_sentences - processed) / sents_per_sec
 
-                print('| step {:6d}/{:5d} ({:.0%}) | loss {:7.3f} | lr {:.1e} | {:4.1f} sents/sec | {:4.1f} updates/sec | elapsed {} | eta {} '.format(
-                    step, num_batches, step/num_batches, avg_loss, lr, sents_per_sec, updates_per_sec,
+                print('| epoch {} | step {:6d}/{:5d} ({:.0%}) | loss {:7.3f} | lr {:.1e} | {:4.1f} sents/sec | {:4.1f} updates/sec | elapsed {} | eta {} '.format(
+                    self.current_epoch, step, num_batches, step/num_batches, avg_loss, lr, sents_per_sec, updates_per_sec,
                     epoch_timer.format(epoch_timer.elapsed()), epoch_timer.format(eta)))
 
                 # Info for tensorboard.
@@ -402,35 +428,44 @@ class Trainer:
         self.model = dy.ParameterCollection()
         [self.rnng] = dy.load(self.model_checkpoint_path, self.model)
 
-    def predict(self, examples, proposal_samples=None):
-        if self.rnng_type == 'disc':
-            decoder = self.rnng
-        elif self.rnng_type == 'gen':
-            decoder = GenerativeDecoder(model=self.rnng)
-            decoder.load_proposal_samples(path=proposal_samples)
-
+    def predict(self, examples):
+        self.rnng.eval()
         trees = []
         for gold in tqdm(examples):
             dy.renew_cg()
-            tree, *rest = decoder.parse(gold.leaves())
+            tree, *rest = self.rnng.parse(gold.leaves())
             trees.append(tree.linearize())
+        self.rnng.train()
         return trees
 
     def check_dev(self):
-        print('Evaluating F1 on development set...')
-        self.rnng.eval()
+        if self.rnng_type == 'disc':
+            self.check_dev_disc()
+        if self.rnng_type == 'gen':
+            self.check_dev_gen()
 
-        # Predict trees.
-        trees = self.predict(self.dev_treebank, proposal_samples=self.dev_proposal_samples)
+    def check_test(self):
+        if self.rnng_type == 'disc':
+            self.check_test_disc()
+        if self.rnng_type == 'gen':
+            self.check_test_gen()
+
+    def check_dev_disc(self):
+        print('Evaluating F1 on development set...')
+
+        # Predict trees
+        trees = self.predict(self.dev_treebank)
         with open(self.dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
 
-        # Compute f-score.
+        # Compute f-score
         dev_fscore = evalb(
             self.evalb_dir, self.dev_pred_path, self.dev_path, self.dev_result_path)
 
-        # Log score to tensorboard.
-        self.tensorboard_writer.add_scalar('dev/f-score', dev_fscore, self.num_updates)
+        # Log score to tensorboard
+        self.tensorboard_writer.add_scalar(
+            'dev/f-score', dev_fscore, self.num_updates)
+
         self.current_dev_fscore = dev_fscore
         if dev_fscore > self.best_dev_fscore:
             print(f'Saving new best model to `{self.model_checkpoint_path}`...')
@@ -438,60 +473,83 @@ class Trainer:
             self.best_dev_fscore = dev_fscore
             self.save_checkpoint()
 
-        return dev_fscore
+    def check_dev_gen(self):
+        print('Evaluating F1 and perplexity on development set...')
 
-    def check_test(self):
+        decoder = GenerativeDecoder(model=self.rnng)
+
+        trees, dev_perplexity = decoder.predict_from_proposal_samples(
+            path=self.dev_proposal_samples)
+
+        with open(self.dev_pred_path, 'w') as f:
+            print('\n'.join(trees), file=f)
+
+        dev_fscore = evalb(
+            self.evalb_dir, self.dev_pred_path, self.dev_path, self.dev_result_path)
+
+        # Log score to tensorboard
+        self.tensorboard_writer.add_scalar(
+            'dev/f-score', dev_fscore, self.num_updates)
+        self.tensorboard_writer.add_scalar(
+            'dev/perplexity', dev_perplexity, self.num_updates)
+
+        self.current_dev_fscore = dev_fscore
+        self.dev_perplexity = dev_perplexity
+
+        if dev_fscore > self.best_dev_fscore:
+            print(f'Saving new best model to `{self.model_checkpoint_path}`...')
+            self.best_dev_epoch = self.current_epoch
+            self.best_dev_fscore = dev_fscore
+            self.save_checkpoint()
+
+    def check_test_disc(self):
         print('Evaluating F1 on test set...')
+
         print(f'Loading best saved model from `{self.model_checkpoint_path}` '
               f'(epoch {self.best_dev_epoch}, fscore {self.best_dev_fscore})...')
-
         self.load_checkpoint()
-        self.rnng.eval()
 
         # Predict trees.
-        trees = self.predict(self.test_treebank, proposal_samples=self.test_proposal_samples)
+        trees = self.predict(self.test_treebank)
         with open(self.test_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
 
         # Compute f-score.
         test_fscore = evalb(
             self.evalb_dir, self.test_pred_path, self.test_path, self.test_result_path)
-        self.tensorboard_writer.add_scalar('test/f-score', test_fscore)
-
-        return test_fscore
-
-    def check_dev_perplexity(self):
-        print('Evaluating perplexity on development set...')
-
-        decoder = GenerativeDecoder(model=self.rnng)
-        decoder.load_proposal_samples(path=self.dev_proposal_samples)
-
-        pp = 0.
-        for tree in tqdm(self.dev_treebank):
-            dy.renew_cg()
-            pp += decoder.perplexity(list(tree.leaves()))
-        avg_pp = pp / len(self.dev_treebank)
-
-        self.tensorboard_writer.add_scalar('dev/perplexity', avg_pp)
-
-        return avg_pp
-
-    def check_test_perplexity(self):
-        print('Evaluating perplexity on test set...')
-
-        decoder = GenerativeDecoder(model=self.rnng)
-        decoder.load_proposal_samples(path=self.test_proposal_samples)
-
-        pp = 0.
-        for tree in tqdm(self.test_treebank):
-            dy.renew_cg()
-            pp += decoder.perplexity(list(tree.leaves()))
-        avg_pp = pp / len(self.test_treebank)
 
         self.tensorboard_writer.add_scalar(
-            'test/perplexity', avg_pp, self.num_updates)
+            'test/f-score', test_fscore)
 
-        return avg_pp
+        self.test_fscore = test_fscore
+
+    def check_test_gen(self):
+        print('Evaluating F1 and perplexity on test set...')
+
+        print(f'Loading best saved model from `{self.model_checkpoint_path}` '
+              f'(epoch {self.best_dev_epoch}, fscore {self.best_dev_fscore})...')
+        self.load_checkpoint()
+        self.rnng.eval()
+
+        decoder = GenerativeDecoder(model=self.rnng)
+
+        trees, test_perplexity = decoder.predict_from_proposal_samples(
+            path=self.test_proposal_samples)
+        with open(self.test_pred_path, 'w') as f:
+            print('\n'.join(trees), file=f)
+
+        # Compute f-score.
+        test_fscore = evalb(
+            self.evalb_dir, self.test_pred_path, self.test_path, self.test_result_path)
+
+        # Log score to tensorboard.
+        self.tensorboard_writer.add_scalar(
+            'test/f-score', test_fscore)
+        self.tensorboard_writer.add_scalar(
+            'test/perplexity', test_perplexity)
+
+        self.test_fscore = test_fscore
+        self.test_perplexity = test_perplexity
 
     def write_losses(self):
         with open(self.loss_path, 'w') as f:
@@ -580,6 +638,9 @@ class SemiSupervisedTrainer:
         self.unsup_losses = []
         self.baseline_losses = []
 
+        self.current_dev_perplexity = -inf
+        self.current_dev_fscore = -inf
+
     def build_paths(self):
         # Make output folder structure
         subdir, logdir, checkdir, outdir = get_folders(self.args)
@@ -606,10 +667,12 @@ class SemiSupervisedTrainer:
         self.tensorboard_writer = SummaryWriter(logdir)
 
         # Dev paths
+        self.dev_proposals_path = os.path.join(outdir, 'dev.pred.props')
         self.dev_pred_path = os.path.join(outdir, 'dev.pred.trees')
         self.dev_result_path = os.path.join(outdir, 'dev.result')
 
         # Test paths
+        self.test_proposals_path = os.path.join(outdir, 'test.pred.props')
         self.test_pred_path = os.path.join(outdir, 'test.pred.trees')
         self.test_result_path = os.path.join(outdir, 'test.result')
 
@@ -787,30 +850,44 @@ class SemiSupervisedTrainer:
         if self.eval_at_start:
             print('Evaluating at start...')
 
-            fscore = self.check_dev_fscore()
-            pp = self.check_dev_perplexity()
+            self.check_dev()
 
             print(89*'=')
             print('| Start | dev F1 {:4.2f} | dev perplexity {:4.2f}'.format(
-                fscore, pp))
+                self.current_dev_fscore, self.current_dev_perplexity))
             print(89*'=')
 
+        try:
+            print('Start training...')
+            for epoch in itertools.count(start=1):
+                if epoch > self.max_epochs:
+                    break
+                if self.timer.elapsed() > self.max_time:
+                    break
+                self.current_epoch = epoch
 
-        print('Start training...')
-        for epoch in itertools.count(start=1):
-            if epoch > self.max_epochs:
-                break
-            if self.timer.elapsed() > self.max_time:
-                break
-            self.current_epoch = epoch
-            # Shuffle batches every epoch
-            np.random.shuffle(self.train_treebank)
-            # Train one epoch
-            self.train_epoch()
+                # Shuffle batches every epoch
+                np.random.shuffle(self.train_treebank)
 
-            print('='*89)
-            print(f'| End of epoch {epoch} | elapsed {self.timer.elapsed()}')
-            print('='*89)
+                # Train one epoch
+                self.train_epoch()
+
+                print('='*89)
+                print(f'| End of epoch {epoch} | elapsed {self.timer.elapsed()}')
+                print('='*89)
+        except KeyboardInterrupt:
+            print('-'*99)
+            print('Exiting from training early.')
+            print('-'*99)
+
+        self.check_test()
+
+        self.save_checkpoint()
+
+        print(89*'=')
+        print('| End of training | test F1 {:4.2f} | test perplexity {:4.2f}'.format(
+            self.test_fscore, self.test_perplexity))
+        print(89*'=')
 
     def train_epoch(self):
 
@@ -872,14 +949,13 @@ class SemiSupervisedTrainer:
                     self.timer.format_eta(i, len(labeled_batches))))
 
             if self.num_updates % self.eval_every == 0 and self.eval_every != -1:
-                fscore = self.check_dev_fscore()
-                pp = self.check_dev_perplexity()
+                self.check_dev()
+                self.save_checkpoint()
+                self.timer.new_epoch()
                 print(89*'=')
                 print('| dev F1 {:4.2f} | dev perplexity {:4.2f}'.format(
-                    fscore, pp))
+                    self.dev_fscore, self.dev_perplexity))
                 print(89*'=')
-                self.timer.new_epoch()
-                self.save_checkpoint(fscore, pp)
 
     def supervised_step(self, batch):
         losses = []
@@ -1125,60 +1201,69 @@ class SemiSupervisedTrainer:
         self.tensorboard_writer.add_scalar(  # var(f') / var(f) = 1 - corr(f, b)**2
             'semisup/unsup/signal-baseline-var-frac', 1 - corr**2, self.num_updates)
 
-    def predict(self, examples):
-        self.post_model.eval()
-        trees = []
-        for tree in tqdm(examples):
-            dy.renew_cg()
-            tree, *rest = self.post_model.parse(list(tree.leaves()))
-            trees.append(tree.linearize())
-        self.post_model.train()
-        return trees
+    def check_dev(self):
+        print('Evaluating F1 and perplexity on development set...')
 
-    def check_dev_fscore(self):
-        print('Evaluating F1 on development set...')
-        # Predict trees.
-        trees = self.predict(self.dev_treebank)
+        decoder = GenerativeDecoder(
+            model=self.joint_model, proposal=self.post_model)
+
+        decoder.generate_proposal_samples(
+            examples=self.dev_treebank, path=self.dev_proposals_path)
+
+        trees, dev_perplexity = decoder.predict_from_proposal_samples(
+            path=self.dev_proposals_path)
+
         with open(self.dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
 
-        print('Computing fscore...')
-
-        # Compute f-score.
         dev_fscore = evalb(
             self.evalb_dir, self.dev_pred_path, self.dev_path, self.dev_result_path)
 
-        print('Computed fscore.')
-
-        # Log score to tensorboard.
-        self.current_dev_fscore = dev_fscore
+        # Log score to tensorboard
         self.tensorboard_writer.add_scalar(
-            'semisup/dev/f-score', dev_fscore, self.num_updates)
+            'dev/f-score', dev_fscore, self.num_updates)
+        self.tensorboard_writer.add_scalar(
+            'dev/perplexity', dev_perplexity, self.num_updates)
 
-        return dev_fscore
+        self.current_dev_fscore = dev_fscore
+        self.dev_perplexity = dev_perplexity
 
-    def check_dev_perplexity(self):
-        print('Evaluating perplexity on development set...')
+        if dev_fscore > self.best_dev_fscore:
+            print(f'Saving new best model to `{self.model_checkpoint_path}`...')
+            self.best_dev_epoch = self.current_epoch
+            self.best_dev_fscore = dev_fscore
+            self.save_checkpoint()
+
+    def check_test(self):
+        print('Evaluating F1 and perplexity on test set...')
 
         decoder = GenerativeDecoder(
-            model=self.joint_model,
-            proposal=self.post_model,
-            num_samples=100,
-            alpha=1.
-        )
+            model=self.joint_model, proposal=self.post_model)
 
-        pp = 0.
-        for tree in tqdm(self.dev_treebank):
-            dy.renew_cg()
-            pp += decoder.perplexity(list(tree.leaves()))
-        avg_pp = pp / len(self.dev_treebank)
+        print('Sampling proposals with posterior model...')
+        decoder.generate_proposal_samples(
+            examples=self.test_treebank, path=self.test_proposals_path)
 
+        print('Scoring proposals with joint model...')
+        trees, test_perplexity = decoder.predict_from_proposal_samples(
+            path=self.test_proposals_path)
+
+        with open(self.test_pred_path, 'w') as f:
+            print('\n'.join(trees), file=f)
+
+        test_fscore = evalb(
+            self.evalb_dir, self.test_pred_path, self.test_path, self.test_result_path)
+
+        # Log score to tensorboard
         self.tensorboard_writer.add_scalar(
-            'semisup/dev/perplexity', avg_pp, self.num_updates)
+            'test/f-score', test_fscore)
+        self.tensorboard_writer.add_scalar(
+            'test/perplexity', test_perplexity)
 
-        return avg_pp
+        self.test_fscore = test_fscore
+        self.test_perplexity = test_perplexity
 
-    def save_checkpoint(self, fscore, perplexity):
+    def save_checkpoint(self):
         dy.save(self.post_model_checkpoint_path, [self.post_model])
         dy.save(self.joint_model_checkpoint_path, [self.joint_model])
 
@@ -1189,18 +1274,20 @@ class SemiSupervisedTrainer:
         with open(self.joint_state_checkpoint_path, 'w') as f:
             state = {
                 'rnng-type': 'gen',
+                'semisup-method': 'vi',
                 'epochs': self.current_epoch,
                 'num-updates': self.num_updates,
-                'dev-perplexity': perplexity,
+                'dev-perplexity': self.current_dev_perplexity,
             }
             json.dump(state, f, indent=4)
 
         with open(self.post_state_checkpoint_path, 'w') as f:
             state = {
                 'rnng-type': 'disc',
+                'semisup-method': 'vi',
                 'epochs': self.current_epoch,
                 'num-updates': self.num_updates,
-                'dev-fscore': fscore,
+                'dev-fscore': self.current_dev_fscore,
             }
             json.dump(state, f, indent=4)
 
@@ -1275,6 +1362,8 @@ class WakeSleepTrainer:
         self.num_wake_updates = 0
         self.sleep_losses = dict(total=[], labeled=[], sampled=[])
         self.wake_losses = dict(total=[], labeled=[], sampled=[])
+        self.current_dev_fscore = -inf
+        self.current_dev_perplexity = -inf
 
     def build_paths(self):
         # Make output folder structure
@@ -1291,8 +1380,10 @@ class WakeSleepTrainer:
         write_args(self.args, logdir)
 
         # Output paths
-        self.model_checkpoint_path = os.path.join(checkdir, 'model')
-        self.state_checkpoint_path = os.path.join(checkdir, 'state.json')
+        self.post_model_checkpoint_path = os.path.join(checkdir, 'post-model')
+        self.joint_model_checkpoint_path = os.path.join(checkdir, 'joint-model')
+        self.post_state_checkpoint_path = os.path.join(checkdir, 'post-state.json')
+        self.joint_state_checkpoint_path = os.path.join(checkdir, 'joint-state.json')
         self.word_vocab_path = os.path.join(checkdir, 'word-vocab.json')
         self.nt_vocab_path = os.path.join(checkdir, 'nt-vocab.json')
         self.action_vocab_path = os.path.join(checkdir, 'action-vocab.json')
@@ -1442,32 +1533,44 @@ class WakeSleepTrainer:
                 fscore, pp))
             print(89*'=')
 
-        print('Start training...')
-        for epoch in itertools.count(start=1):
+        try:
+            print('Start training...')
+            for epoch in itertools.count(start=1):
 
-            if epoch > self.max_epochs:
-                break
-            if self.timer.elapsed() > self.max_time:
-                break
+                if epoch > self.max_epochs:
+                    break
+                if self.timer.elapsed() > self.max_time:
+                    break
 
-            self.current_epoch = epoch
+                self.current_epoch = epoch
 
-            # Wake phase over the dataset
-            np.random.shuffle(self.train_treebank)
-            self.sleep_epoch()
+                # Wake phase over the dataset
+                np.random.shuffle(self.train_treebank)
+                self.sleep_epoch()
 
-            # Sleep phase over the dataset
-            np.random.shuffle(self.train_treebank)
-            self.wake_epoch()
+                # Sleep phase over the dataset
+                np.random.shuffle(self.train_treebank)
+                self.wake_epoch()
 
-            # Check progress
-            fscore = self.check_dev_fscore()
-            pp = self.check_dev_perplexity()
+                # Check progress
+                fscore = self.check_dev_fscore()
+                pp = self.check_dev_perplexity()
 
-            print(89*'=')
-            print('| End of epoch {:3d}/{} | dev F1 {:4.2f} | dev perplexity {:4.2f} | elapsed {}'.format(
-                 epoch, self.max_epochs, fscore, pp, self.timer.format_elapsed()))
-            print(89*'=')
+                print(89*'=')
+                print('| End of epoch {:3d}/{} | dev F1 {:4.2f} | dev perplexity {:4.2f} | elapsed {}'.format(
+                     epoch, self.max_epochs, fscore, pp, self.timer.format_elapsed()))
+                print(89*'=')
+        except KeyboardInterrupt:
+            print('-'*99)
+            print('Exiting from training early.')
+            print('-'*99)
+
+        fscore = self.check_dev_fscore()
+        pp = self.check_dev_perplexity()
+        print(89*'=')
+        print('| End of training | dev F1 {:4.2f} | dev perplexity {:4.2f}'.format(
+            fscore, pp))
+        print(89*'=')
 
     def sleep_epoch(self):
 
@@ -1632,10 +1735,39 @@ class WakeSleepTrainer:
             pp += decoder.perplexity(list(tree.leaves()))
         avg_pp = pp / len(self.dev_treebank)
 
+        self.current_dev_perplexity = dev_perplexity
         self.tensorboard_writer.add_scalar(
             'wake-sleep/dev-perplexity', avg_pp, self.num_wake_updates)
 
         return avg_pp
+
+    def save_checkpoint(self):
+        dy.save(self.post_model_checkpoint_path, [self.post_model])
+        dy.save(self.joint_model_checkpoint_path, [self.joint_model])
+
+        self.word_vocab.save(self.word_vocab_path)
+        self.nt_vocab.save(self.nt_vocab_path)
+        self.action_vocab.save(self.action_vocab_path)
+
+        with open(self.joint_state_checkpoint_path, 'w') as f:
+            state = {
+                'rnng-type': 'gen',
+                'semisup-method': 'wake-sleep',
+                'epochs': self.current_epoch,
+                'num-updates': self.num_updates,
+                'dev-perplexity': self.current_dev_perplexity,
+            }
+            json.dump(state, f, indent=4)
+
+        with open(self.post_state_checkpoint_path, 'w') as f:
+            state = {
+                'rnng-type': 'disc',
+                'semisup-method': 'wake-sleep',
+                'epochs': self.current_epoch,
+                'num-updates': self.num_updates,
+                'dev-fscore': self.current_dev_fscore,
+            }
+            json.dump(state, f, indent=4)
 
 
 def blockgrad(expression):

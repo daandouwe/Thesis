@@ -16,13 +16,6 @@ EXP_NAME=semisup
 TMP=$TMPDIR/daandir
 OUTDIR=$TMP/results
 
-# General training settings
-MAX_TIME=$((80 * 3600))  # in seconds (related to -lwalltime)
-MAX_EPOCHS=100
-MAX_LINES=-1
-PRINT_EVERY=10
-EVAL_EVERY=20000
-
 # Copy training data to scratch
 mkdir -p $TMP/data
 cp -r $DATADIR/* $TMP/data
@@ -40,21 +33,38 @@ ls -l $TMP/models
 
 export MKL_NUM_THREADS=1
 
+# General training settings
+MAX_TIME=$((80 * 3600))  # in seconds (related to -lwalltime)
+MAX_EPOCHS=100
+MAX_LINES=-1
+PRINT_EVERY=10
+EVAL_EVERY=20000
+
 OPTIM=adam
 LR=0.001
 BATCH_SIZE=10
-# Name of experiment.
-NAME=${OPTIM}_lr${LR}_batch_size${BATCH_SIZE}
-# Make output directory.
+
+TRAIN=$TMP/data/train/ptb.train.trees
+DEV=$TMP/data/dev/ptb.dev.trees
+TEST=$TMP/data/test/ptb.test.trees
+UNLABELED=$TMP/data/unlabeled/news.en-00001-of-00100
+
+JOINT_MODEL=$TMP/models/joint
+POST_MODEL=$TMP/models/posterior
+
+MEM=5000
+
+
+# 1.
+NAME=semisup-nobaseline
 mkdir -p $OUTDIR/$NAME
-# Run.
 python $SRCDIR/main.py semisup disc \
-    --train-path $TMP/data/train/ptb.train.trees \
-    --dev-path $TMP/data/dev/ptb.dev.trees \
-    --test-path $TMP/data/test/ptb.test.trees \
-    --unlabeled-path $TMP/data/unlabeled/news.en-00001-of-00100 \
-    --joint-model-path $TMP/models/joint \
-    --post-model-path $TMP/models/posterior \
+    --train-path $TRAIN \
+    --dev-path $DEV \
+    --test-path $TEST \
+    --unlabeled-path $UNLABELED \
+    --joint-model-path $JOINT_MODEL \
+    --post-model-path $POST_MODEL \
     --disable-subdir \
     --logdir $OUTDIR/$NAME \
     --checkdir $OUTDIR/$NAME \
@@ -64,17 +74,94 @@ python $SRCDIR/main.py semisup disc \
     --max-epochs $MAX_EPOCHS \
     --print-every $PRINT_EVERY \
     --eval-every $EVAL_EVERY \
-    --eval-at-start \
     --optimizer $OPTIM \
     --lr $LR \
     --batch-size $BATCH_SIZE \
-    > $OUTDIR/$NAME/terminal.txt
+    > $OUTDIR/$NAME/terminal.txt &
 
 
+# 2.
+NAME=semisup-baseline=argmax
+mkdir -p $OUTDIR/$NAME
+python $SRCDIR/main.py semisup disc \
+    --train-path $TRAIN \
+    --dev-path $DEV \
+    --test-path $TEST \
+    --unlabeled-path $UNLABELED \
+    --joint-model-path $JOINT_MODEL \
+    --post-model-path $POST_MODEL \
+    --disable-subdir \
+    --logdir $OUTDIR/$NAME \
+    --checkdir $OUTDIR/$NAME \
+    --outdir $OUTDIR/$NAME \
+    --max-lines $MAX_LINES \
+    --max-time $MAX_TIME \
+    --max-epochs $MAX_EPOCHS \
+    --print-every $PRINT_EVERY \
+    --eval-every $EVAL_EVERY \
+    --optimizer $OPTIM \
+    --lr $LR \
+    --batch-size $BATCH_SIZE \
+    --use-argmax-baseline \
+    > $OUTDIR/$NAME/terminal.txt &
+
+
+# 3.
+NAME=semisup-baseline=mlp
+mkdir -p $OUTDIR/$NAME
+python $SRCDIR/main.py semisup disc \
+    --train-path $TRAIN \
+    --dev-path $DEV \
+    --test-path $TEST \
+    --unlabeled-path $UNLABELED \
+    --joint-model-path $JOINT_MODEL \
+    --post-model-path $POST_MODEL \
+    --disable-subdir \
+    --logdir $OUTDIR/$NAME \
+    --checkdir $OUTDIR/$NAME \
+    --outdir $OUTDIR/$NAME \
+    --max-lines $MAX_LINES \
+    --max-time $MAX_TIME \
+    --max-epochs $MAX_EPOCHS \
+    --print-every $PRINT_EVERY \
+    --eval-every $EVAL_EVERY \
+    --optimizer $OPTIM \
+    --lr $LR \
+    --batch-size $BATCH_SIZE \
+    --use-mlp-baseline \
+    > $OUTDIR/$NAME/terminal.txt &
+
+# 4.
+NAME=semisup-baseline=argmax+mlp
+mkdir -p $OUTDIR/$NAME
+python $SRCDIR/main.py semisup disc \
+    --train-path $TRAIN \
+    --dev-path $DEV \
+    --test-path $TEST \
+    --unlabeled-path $UNLABELED \
+    --joint-model-path $JOINT_MODEL \
+    --post-model-path $POST_MODEL \
+    --disable-subdir \
+    --logdir $OUTDIR/$NAME \
+    --checkdir $OUTDIR/$NAME \
+    --outdir $OUTDIR/$NAME \
+    --max-lines $MAX_LINES \
+    --max-time $MAX_TIME \
+    --max-epochs $MAX_EPOCHS \
+    --print-every $PRINT_EVERY \
+    --eval-every $EVAL_EVERY \
+    --optimizer $OPTIM \
+    --lr $LR \
+    --batch-size $BATCH_SIZE \
+    --use-argmax-baseline \
+    --use-mlp-baseline \
+    > $OUTDIR/$NAME/terminal.txt &
+
+wait
 echo 'Finished training. Copying files from scratch...'
 # Copy output directory from scratch to home
 mkdir -p $EXP_DIR/$EXP_NAME
 cp -r $OUTDIR/* $EXP_DIR/$EXP_NAME
 
-# Cleanup scracth.
+# Cleanup scratch.
 rm -r $TMP/*

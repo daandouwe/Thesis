@@ -142,7 +142,7 @@ def fromstring(tree):
 
 
 def add_dummy_tags(tree, tag='*'):
-    """Turns (NP The tagless tree) into (NP (* The) (* tagless) (* tree))."""
+    """Turns '(NP The tagless tree)' into '(NP (* The) (* tagless) (* tree))'."""
     assert isinstance(tree, str), tree
     i = 0
     max_idx = (len(tree) - 1)
@@ -172,37 +172,3 @@ def add_dummy_tags(tree, tag='*'):
             i += 1
     assert i == max_idx, i
     return new_tree
-
-
-if __name__ == '__main__':
-    # Testing
-    S = InternalNode('S')
-    NP = InternalNode('NP')
-    VP = InternalNode('VP')
-    The = LeafNode('The')
-    cat = LeafNode('cat')
-    eats = LeafNode('eats')
-    period = LeafNode('.')
-
-    NP.add_children([The, cat])
-    VP.add_child(eats)
-    S.add_children([NP, VP, period])
-    tree = S
-
-    actions = tree.gen_oracle()
-    print(tree.linearize(with_tag=False))
-    print(actions)
-    print(tree.labels())
-
-    tree = fromstring("(S (NP (NP (DT The) (NN economy) (POS 's)) (NN temperature)) (VP (MD will) (VP (VB be) (VP (VBN taken) (PP (IN from) (NP (JJ several) (NN vantage) (NNS points))) (NP (DT this) (NN week)) (, ,) (PP (IN with) (NP (NP (NNS readings)) (PP (IN on) (NP (NP (NN trade)) (, ,) (NP (NN output)) (, ,) (NP (NN housing)) (CC and) (NP (NN inflation))))))))) (. .))")
-    print(tree)
-    print(tree.labels())
-    print(list(tree.tags()))
-    print(list(tree.leaves()))
-    print()
-
-    words = list(tree.leaves())
-    words[1], words[5], words[10] = 'UNK', 'UNK', 'UNK'
-    tree.substitute_leaves(iter(words))
-    print(tree.linearize(with_tag=False))
-    print(tree.leaves())

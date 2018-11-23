@@ -36,15 +36,4 @@ def main(args):
     )
 
     # Train the model
-    try:
-        trainer.train()
-    except KeyboardInterrupt:
-        print('-'*99)
-        print('Exiting from training early.')
-
-        fscore = trainer.check_dev_fscore()
-        pp = trainer.check_dev_perplexity()
-        print(89*'=')
-        print('| Dev F1 {:4.2f} | Dev perplexity {:4.2f}'.format(
-            fscore, pp))
-        print(89*'=')
+    trainer.train()

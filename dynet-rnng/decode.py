@@ -3,6 +3,8 @@ import json
 from copy import deepcopy
 from collections import Counter
 from typing import NamedTuple
+from tqdm import tqdm
+from collections import defaultdict
 
 import dynet as dy
 import numpy as np
@@ -43,7 +45,7 @@ class GenerativeDecoder:
     def map_tree(self, words):
         """Estimate the MAP tree."""
         scored = self.scored_samples(words)
-        ranked = sorted(scored, reverse=True, key=lambda t: t[-1])
+        ranked = sorted(scored, reverse=True, key=lambda t: t[2])
         best_tree, proposal_logprob, joint_logprob, count = ranked[0]
         return best_tree, proposal_logprob, joint_logprob
 
@@ -104,16 +106,15 @@ class GenerativeDecoder:
         # Count and filter
         samples = self.count_samples(samples)  # [tree, prop_logprob, count]
 
-        # Score the samples
-        joint_logprobs = [-self.model.forward(tree, is_train=False).value() for tree, _, _ in samples]
-
-        # Merge the two lists
-        scored = [(tree, proposal_logprob, joint_logprob, count)
-            for (tree, proposal_logprob, count), joint_logprob in zip(samples, joint_logprobs)]
+        scored = []
+        for tree, proposal_logprob, count in samples:
+            dy.renew_cg()
+            joint_logprob = -self.model.forward(tree, is_train=False).value()
+            scored.append((tree, proposal_logprob, joint_logprob, count))
 
         return scored
 
-    def _read_proposals(self, path):
+    def read_proposals(self, path):
         print(f'Loading discriminative (proposal) samples from `{path}`...')
         with open(path) as f:
             lines = [line.strip() for line in f.readlines()]
@@ -137,7 +138,7 @@ class GenerativeDecoder:
         """Load saved samples from the proposal models."""
         assert os.path.exists(path), path
 
-        self.samples = iter(self._read_proposals(path))
+        self.samples = iter(self.read_proposals(path))
         self.use_loaded_samples = True
 
     def load_proposal_model(self, dir):
@@ -162,88 +163,67 @@ class GenerativeDecoder:
         self.proposal.eval()
         self.use_loaded_samples = False
 
+    def generate_proposal_samples(self, examples, path):
+        """Use the proposal model to generate proposal samples."""
+        samples = []
+        for i, tree in enumerate(tqdm(examples)):
+            dy.renew_cg()
+            for _ in range(self.num_samples):
+                tree, nll = self.proposal.sample(list(tree.leaves()), alpha=self.alpha)
+                samples.append(
+                    ' ||| '.join((str(i), str(-nll.value()), tree.linearize(with_tag=False))))
 
-# class Beam(NamedTuple):
-#     parser: DiscParser
-#     logprob: float
-#
-#
-# class BeamSearchDecoder(DiscriminativeDecoder):
-#     """Beam search decoder for discriminative RNNG."""
-#     def __call__(self, sentence, k=10):
-#         """"""
-#         with torch.no_grad():
-#             sentence = self._process_sentence(sentence)
-#             # Use a separate parser to manage the different beams
-#             # (each beam is a separate continuation of this parser.)
-#             parser = DiscParser(
-#                 word_embedding=self.model.history.word_embedding,
-#                 nt_embedding=self.model.history.nt_embedding,
-#                 action_embedding=self.model.history.action_embedding,
-#                 stack_encoder=self.model.stack.encoder,
-#                 buffer_encoder=self.model.buffer.encoder,
-#                 history_encoder=self.model.history.encoder,
-#                 device=self.model.device
-#             )
-#             # Copy trained empty embedding.
-#             parser.stack.empty_emb = self.model.stack.empty_emb
-#             parser.buffer.empty_emb = self.model.buffer.empty_emb
-#             parser.history.empty_emb = self.model.history.empty_emb
-#             parser.eval()
-#             parser.initialize(sentence)
-#             self.k = k
-#
-#             self.open_beams = [Beam(parser, 0.0)]
-#             self.finished = []
-#             while self.open_beams:
-#                 self.advance_beam()
-#
-#             finished = [(parser.stack._items[1], logprob) for parser, logprob in self.finished]
-#             return sorted(finished, key=lambda x: x[1], reverse=True)
-#
-#     def _best_k_valid_actions(self, parser, logits):
-#         k = min(self.k, logits.size(0))
-#         mask = torch.Tensor(
-#             [parser.is_valid_action(self._make_action(i)) for i in range(3)])
-#         masked_logits = torch.Tensor(
-#             [logit if allowed else -np.inf for logit, allowed in zip(logits, mask)])
-#         masked_logits, ids = masked_logits.sort(descending=True)
-#         indices = [i.item() for i in ids[:k] if mask[i]]
-#         return indices, [self._make_action(i) for i in indices]
-#
-#     def get_input(self, parser):
-#         stack, buffer, history = parser.get_encoded_input()
-#         return torch.cat((buffer, history, stack), dim=-1)
-#
-#     def advance_beam(self):
-#         """Advance each beam one step and keep best k."""
-#         new_beams = []
-#         for beam in self.open_beams:
-#             parser, log_prob = beam.parser, beam.logprob
-#             x = self.get_input(parser)
-#             action_logits = self.model.action_mlp(x).squeeze(0)
-#             action_logprobs = self.logsoftmax(action_logits)
-#             indices, best_actions = self._best_k_valid_actions(parser, action_logits)
-#             for index, action in zip(indices, best_actions):
-#                 new_parser = deepcopy(parser)
-#                 new_log_prob = log_prob + action_logprobs[index]
-#                 if action.is_nt:
-#                     nt_logits = self.model.nonterminal_mlp(x).squeeze(0)
-#                     nt_logits, ids = nt_logits.sort(descending=True)
-#                     nt_logprobs = self.logsoftmax(nt_logits)
-#                     k = self.k - len(best_actions) + 1  # can open this many Nonterminals.
-#                     k = min(k, nt_logits.size(0))
-#                     for i, nt_index in enumerate(ids[:k]):  # nt_logprobs has the same order as ids!
-#                         new_parser = deepcopy(parser)
-#                         nt = self.dictionary.i2n[nt_index]
-#                         X = Nonterminal(nt, nt_index)
-#                         action = NT(X)
-#                         new_parser.parse_step(action)
-#                         new_beams.append(Beam(new_parser, new_log_prob + nt_logprobs[i]))
-#                 else:
-#                     new_parser.parse_step(action)
-#                     new_beams.append(Beam(new_parser, new_log_prob))
-#             del parser
-#         new_beams = sorted(new_beams, key=lambda x: x[1])[-self.k:]
-#         self.finished += [beam for beam in new_beams if beam.parser.stack.is_empty()]
-#         self.open_beams = [beam for beam in new_beams if not beam.parser.stack.is_empty()]
+        with open(path, 'w') as f:
+            print('\n'.join(samples), file=f, end='')
+
+    def predict_from_proposal_samples(self, path):
+        """
+        Predict MAP trees and perplexity in one run.
+        Useful for evaluation during training.
+        """
+
+        # Load scored proposal samples
+        all_samples = defaultdict(list)
+        with open(path) as f:
+            for line in f:
+                i, proposal_logprob, tree = line.strip().split(' ||| ')
+                i, proposal_logprob, tree = int(i), float(proposal_logprob), fromstring(add_dummy_tags(tree.strip()))
+                all_samples[i].append((tree, proposal_logprob))
+
+        # Score the trees
+        for i, samples in tqdm(all_samples.items()):
+            # Count and remove duplicates
+            samples = self.count_samples(samples)
+            scored_samples = []
+            for (tree, proposal_logprob, count) in samples:
+                dy.renew_cg()
+                joint_logprob = -self.model.forward(tree, is_train=False).value()
+                scored_samples.append(
+                    (tree, proposal_logprob, joint_logprob, count))
+            all_samples[i] = scored_samples
+
+        # Get our predictions
+        predictions = []
+        nlls = []
+        lengths = []
+        for i, scored in all_samples.items():
+            # Estimate the map tree by sorting scored according to the joint logprob
+            ranked = sorted(scored, reverse=True, key=lambda t: t[2])
+            tree, _, _, _ = ranked[0]
+
+            # Estimate the perplexity
+            logprobs, counts = np.zeros(len(scored)), np.zeros(len(scored))
+            for i, (_, proposal_logprob, joint_logprob, count) in enumerate(scored):
+                logprobs[i] = joint_logprob - proposal_logprob
+                counts[i] = count
+            a = logprobs.max()
+            logprob = a + np.log(np.mean(np.exp(logprobs - a) * counts))  # log-mean-exp for stability
+
+            predictions.append(tree.linearize())  # estimate for MAP tree
+            nlls.append(-logprob)  # estimate for -log p(x)
+            lengths.append(len(list(tree.leaves())))  # need for computing total perplexity
+
+        # NOTE: we compute perplexity as average over words!
+        perplexity = np.exp(np.sum(nlls) / np.sum(lengths))
+
+        return predictions, perplexity
