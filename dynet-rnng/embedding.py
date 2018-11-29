@@ -1,5 +1,8 @@
+import string
+
 import dynet as dy
 
+from feedforward import Affine
 from glove import load_glove
 
 
@@ -105,3 +108,47 @@ class FineTuneEmbedding:
     @property
     def shape(self):
         return self.embedding.shape
+
+
+class CharEmbedding:
+    """Character LSTM embeddings."""
+    VOCAB = list(string.printable)
+    UNK = '▁'  # U+2581
+    START = '>>'
+    STOP = '<<'
+
+    def __init__(self, model, char_embedding_dim, char_lstm_dim, char_lstm_layers, word_embedding_dim):
+
+        self.model = model.add_subcollection('CharEmbedding')
+
+        self.embedding_dim = word_embedding_dim
+        self.char_vocab = Vocabulary.fromlist(
+            self.VOCAB + [self.UNK, self.START, self.STOP])
+
+        self.char_embeddings = self.model.add_lookup_parameters(
+            (char_vocab.size, char_embedding_dim))
+        self.char_lstm = dy.BiRNNBuilder(
+            char_lstm_layers,
+            char_embedding_dim,
+            2 * char_lstm_dim,
+            self.model,
+            dy.VanillaLSTMBuilder)
+        self.output = Affine(model, 2 * char_lstm_dim, word_embedding_dim)
+
+    def __getitem__(self, word):
+        return self(word)
+
+    def __call__(self, word):
+        assert isinstance(word, str)
+        chars = [char_vocab.index_or_unk(char, self.UNK)
+            for char in [self.START] + list(word) + [self.STOP]]
+        char_lstm_outputs = self.char_lstm.transduce([
+            self.char_embeddings[index] for index in chars])
+        char_encoding = self.output(dy.concatenate([
+            char_lstm_outputs[-1][:self.char_lstm_dim],
+            char_lstm_outputs[0][self.char_lstm_dim:]]))
+        return char_encoding
+
+    @property
+    def shape(self):
+        return (1, self.embedding_dim)

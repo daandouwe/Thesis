@@ -5,12 +5,15 @@ import numpy as np
 
 def load_glove(words, dim, dir, logfile=None):
     """Loads all the words from the glove vectors of dimension dim in saved in dir."""
+
     if dir.startswith('~'):
         dir = os.path.expanduser(dir)
+
     assert dim in (50, 100, 200, 300), f'invalid dim: {dim}, choose from (50, 100, 200, 300).'
     assert os.path.exists(
             os.path.join(dir, f'glove.6B.{dim}d.txt')
         ), 'glove file not availlable.'
+
     # Load the glove vectors into a dictionary.
     try:  # fastest way, if gensim is installed
         from gensim.models import KeyedVectors
@@ -26,17 +29,21 @@ def load_glove(words, dim, dir, logfile=None):
             for line in f:
                 line = line.strip().split()
                 word, vec = line[0], line[1:]
-                # TODO: Hack! On Lisa: Splitting a word like `nguyễn` ended up as `nguy` and `n`
+                # FIXME: Hack! On Lisa: Splitting a line with the
+                # name `nguyễn` ended up as `nguy` and `n`
                 # Using encoding='utf-8' threw yet another error.
                 # But this is an ugly fix!
                 i = 2
                 while len(vec) > dim:
                     word, vec = ' '.join(line[:i]), line[i:]
                     i += 1
+                # end of hack
                 vec = np.array([float(val) for val in vec])
                 glove[word] = vec
+
     # Get the glove vector for each word in the dictionary and log words not found.
     vectors = get_vectors(words, glove, dim, logfile=None)
+
     return vectors
 
 

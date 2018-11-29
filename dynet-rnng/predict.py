@@ -16,7 +16,8 @@ from utils import ceil_div
 
 def load_model(dir):
     model = dy.ParameterCollection()
-    [rnng] = dy.load(os.path.join(dir, 'model'), model)
+    # [rnng] = dy.load(os.path.join(dir, 'model'), model)
+    [rnng] = dy.load(dir, model)
     return rnng
 
 
@@ -73,7 +74,9 @@ def predict_tree_file(args):
 
 def predict_text_file(args):
     assert os.path.exists(args.infile), 'specifiy file to parse with --infile.'
+
     print(f'Predicting trees for lines in `{args.infile}`.')
+
     with open(args.infile, 'r') as f:
         lines = [line.strip() for line in f.readlines()]
     checkfile = get_checkfile(args.checkpoint)
@@ -160,7 +163,6 @@ def predict_input_disc(args):
 
 def predict_input_gen(args):
     print('Predicting with generative model.')
-    assert os.path.exists(args.proposal_model), 'specify valid proposal model.'
 
     model = load_model(args.checkpoint)
     proposal = load_model(args.proposal_model)
@@ -171,6 +173,8 @@ def predict_input_gen(args):
         sentence = input('Input a sentence: ')
         words = sentence.split()
 
+        print('Processed:', ' '.join(model.word_vocab.process(words)))
+
         print('Perplexity: {:.2f}'.format(decoder.perplexity(words)))
 
         print('MAP tree:')
@@ -179,21 +183,21 @@ def predict_input_gen(args):
             tree.linearize(with_tag=False), joint_logprob, proposal_logprob))
         print()
 
-        scored = decoder.scored_samples(words, remove_duplicates=True)
+        scored = decoder.scored_samples(words)
 
         print(f'Unique samples: {len(scored)}/{args.num_samples}.')
 
         print('Highest q(y|x):')
         scored = sorted(scored, reverse=True, key=lambda t: t[1])
-        for tree, proposal_logprob, joint_logprob in scored[:4]:
-            print('  {} {:.2f} {:.2f}'.format(
-                tree.linearize(with_tag=False), joint_logprob, proposal_logprob))
+        for tree, proposal_logprob, joint_logprob, count in scored[:4]:
+            print('  {} {:.2f} {:.2f} {}'.format(
+                tree.linearize(with_tag=False), joint_logprob, proposal_logprob, count))
 
         print('Highest p(x,y):')
-        scored = sorted(scored, reverse=True, key=lambda t: t[-1])
-        for tree, proposal_logprob, joint_logprob in scored[:4]:
-            print('  {} {:.2f} {:.2f}'.format(
-                tree.linearize(with_tag=False), joint_logprob, proposal_logprob))
+        scored = sorted(scored, reverse=True, key=lambda t: t[2])
+        for tree, proposal_logprob, joint_logprob, count in scored[:4]:
+            print('  {} {:.2f} {:.2f} {}'.format(
+                tree.linearize(with_tag=False), joint_logprob, proposal_logprob, count))
         print('-'*79)
         print()
 
@@ -214,6 +218,7 @@ def predict_perplexity(args):
     assert os.path.exists(args.infile), 'specifiy file to parse with --infile.'
 
     print(f'Predicting perplexity for lines in `{args.infile}`...')
+
     with open(args.infile, 'r') as f:
         lines = [line.strip() for line in f.readlines()]
 
@@ -243,6 +248,7 @@ def sample_proposals(args):
     assert os.path.exists(args.infile), 'specifiy file to parse with --infile.'
 
     print(f'Sampling proposal trees for sentences in `{args.infile}`.')
+
     with open(args.infile, 'r') as f:
         lines = [line.strip() for line in f.readlines()]
 
@@ -266,17 +272,17 @@ def sample_proposals(args):
 
 
 def predict_syneval(args):
-    assert os.path.exists(args.proposal_model), 'specify valid proposal model.'
 
     model = load_model(args.checkpoint)
-    decoder = GenerativeDecoder(model=model, num_samples=args.num_samples)
-    decoder.load_proposal_model(args.proposal_model)
+    proposal = load_model(args.proposal_model)
+    decoder = GenerativeDecoder(
+        model=model, proposal=proposal, num_samples=args.num_samples)
 
     with open(args.infile + '.pos') as f:
-        pos_sents = [line.strip() for line in f.readlines()]
+        pos_sents = [line.strip().split() for line in f.readlines()]
 
     with open(args.infile + '.neg') as f:
-        neg_sents = [line.strip() for line in f.readlines()]
+        neg_sents = [line.strip().split() for line in f.readlines()]
 
     correct = 0
     with open(args.outfile, 'w') as f:
@@ -284,8 +290,15 @@ def predict_syneval(args):
             pos_pp = decoder.perplexity(pos)
             neg_pp = decoder.perplexity(neg)
             correct += (pos_pp < neg_pp)
-            print(i, round(pos_pp, 2), round(neg_pp, 2), pos_pp < neg_pp, correct, neg)
-            print(i, round(pos_pp, 2), round(neg_pp, 2), pos_pp < neg_pp, neg, file=f)
+
+            pos = model.word_vocab.process(pos)
+            neg = model.word_vocab.process(neg)
+
+            result =  '|||'.join(
+                    i, round(pos_pp, 2), round(neg_pp, 2), pos_pp < neg_pp, correct, ' '.join(neg), ' '.join(pos)
+                )
+            print(result)
+            print(result, file=f)
 
     print(f'Syneval: {correct}/{len(pos_sents)} = {correct / len(pos_sents):%} correct')
 

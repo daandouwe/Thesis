@@ -22,6 +22,7 @@ def main(args):
         train_path=args.train_path,
         dev_path=args.dev_path,
         test_path=args.test_path,
+        vocab_path=args.vocab_path,
         dev_proposal_samples=args.dev_proposal_samples,
         test_proposal_samples=args.test_proposal_samples,
         word_emb_dim=args.word_emb_dim,

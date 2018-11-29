@@ -3,8 +3,8 @@ import json
 from copy import deepcopy
 from collections import Counter
 from typing import NamedTuple
-from tqdm import tqdm
 from collections import defaultdict
+from tqdm import tqdm
 
 import dynet as dy
 import numpy as np
@@ -56,12 +56,12 @@ class GenerativeDecoder:
             logprob = joint_logprob - proposal_logprob
         else:
             scored = self.scored_samples(words)
-            logprobs, counts = np.zeros(len(scored)), np.zeros(len(scored))
-            for i, (tree, proposal_logprob, joint_logprob, count) in enumerate(scored):
-                logprobs[i] = joint_logprob - proposal_logprob
+            weights, counts = np.zeros(len(scored)), np.zeros(len(scored))
+            for i, (_, proposal_logprob, joint_logprob, count) in enumerate(scored):
+                weights[i] = joint_logprob - proposal_logprob
                 counts[i] = count
-            a = logprobs.max()
-            logprob = a + np.log(np.mean(np.exp(logprobs - a) * counts))  # log-mean-exp for stability
+            a = weights.max()
+            logprob = a + np.log(np.mean(np.exp(weights - a) * counts))  # log-mean-exp for stability
         return logprob
 
     def perplexity(self, words):
@@ -135,14 +135,14 @@ class GenerativeDecoder:
         return proposals
 
     def load_proposal_samples(self, path):
-        """Load saved samples from the proposal models."""
+        """Load proposal samples that were written to file."""
         assert os.path.exists(path), path
 
         self.samples = iter(self.read_proposals(path))
         self.use_loaded_samples = True
 
     def load_proposal_model(self, dir):
-        """Load the proposal model to sample from."""
+        """Load the proposal model to sample with."""
         assert os.path.isdir(dir), dir
 
         print(f'Loading proposal model from `{dir}`...')
@@ -164,6 +164,7 @@ class GenerativeDecoder:
         self.use_loaded_samples = False
 
     def generate_proposal_samples(self, examples, path):
+        # TODO: make this more general: for sentences, not just trees!
         """Use the proposal model to generate proposal samples."""
         samples = []
         for i, tree in enumerate(tqdm(examples)):
@@ -178,12 +179,13 @@ class GenerativeDecoder:
 
     def predict_from_proposal_samples(self, path):
         """
-        Predict MAP trees and perplexity in one run.
-        Useful for evaluation during training.
+        Predict MAP trees and perplexity in one run
+        using proposal samples in path. Useful for
+        evaluation during training.
         """
 
         # Load scored proposal samples
-        all_samples = defaultdict(list)
+        all_samples = defaultdict(list)  # i -> [samples for sentence i]
         with open(path) as f:
             for line in f:
                 i, proposal_logprob, tree = line.strip().split(' ||| ')
@@ -202,8 +204,8 @@ class GenerativeDecoder:
                     (tree, proposal_logprob, joint_logprob, count))
             all_samples[i] = scored_samples
 
-        # Get our predictions
-        predictions = []
+        # Get the predictions
+        trees = []
         nlls = []
         lengths = []
         for i, scored in all_samples.items():
@@ -212,18 +214,18 @@ class GenerativeDecoder:
             tree, _, _, _ = ranked[0]
 
             # Estimate the perplexity
-            logprobs, counts = np.zeros(len(scored)), np.zeros(len(scored))
+            weights, counts = np.zeros(len(scored)), np.zeros(len(scored))
             for i, (_, proposal_logprob, joint_logprob, count) in enumerate(scored):
-                logprobs[i] = joint_logprob - proposal_logprob
+                weights[i] = joint_logprob - proposal_logprob
                 counts[i] = count
-            a = logprobs.max()
-            logprob = a + np.log(np.mean(np.exp(logprobs - a) * counts))  # log-mean-exp for stability
+            a = weights.max()
+            logprob = a + np.log(np.mean(np.exp(weights - a) * counts))  # log-mean-exp for stability
 
-            predictions.append(tree.linearize())  # estimate for MAP tree
+            trees.append(tree.linearize())  # estimate for MAP tree
             nlls.append(-logprob)  # estimate for -log p(x)
             lengths.append(len(list(tree.leaves())))  # need for computing total perplexity
 
         # NOTE: we compute perplexity as average over words!
         perplexity = np.exp(np.sum(nlls) / np.sum(lengths))
 
-        return predictions, perplexity
+        return trees, perplexity

@@ -47,6 +47,13 @@ class Vocabulary:
             assert self.unk
             return 0
 
+    def index_or_unk(self, value, unk_value):
+        if value in self._indices:
+            return self._indices[value]
+        else:
+            assert unk_value in self._indices, f'unk not in vocab `{unk_value}`'
+            return self._indices[unk_value]
+
     def values(self, indices):
         return [self.value(index) for index in indices]
 
@@ -70,11 +77,13 @@ class Vocabulary:
         return unked
 
     def save(self, path):
+        # TODO: do this for everything
         path = path + '.json' if not path.endswith('.json') else path
         with open(path, 'w') as f:
             json.dump(self._indices, f, indent=4)
 
     def load(self, path):
+        # TODO: do this for everything
         with open(path, 'w') as f:
             self._indices = json.load(f)
 

@@ -6,6 +6,7 @@ from math import inf
 import train
 import predict
 import semisup
+import unsup
 import wakesleep
 
 
@@ -24,7 +25,7 @@ def main():
     parser = argparse.ArgumentParser(description='RNNG parser',
                                      fromfile_prefix_chars='@') # enable loading args from textfile
     # Choose mode
-    parser.add_argument('mode', choices=['train', 'predict', 'inspect', 'latent', 'semisup', 'wakesleep'],
+    parser.add_argument('mode', choices=['train', 'predict', 'inspect', 'latent', 'semisup', 'wakesleep', 'unsup'],
                         help='what do you want to do?')
     parser.add_argument('rnng_type', choices=['disc', 'gen'],
                         help='use discriminative or generative model')
@@ -44,6 +45,8 @@ def main():
                         help='test trees')
     parser.add_argument('--unlabeled-path', default='../data/unlabeled/news.en-00001-of-00100',
                         help='unlabeled data for semi-supervised training')
+    parser.add_argument('--vocab-path', default=None,
+                        help='specify a vocabulary (optional)')
     parser.add_argument('--root', default='.',
                         help='root dir to make output log and checkpoint folders')
     parser.add_argument('--disable-subdir', action='store_true',
@@ -198,6 +201,8 @@ def main():
         predict.main(args)
     elif args.mode == 'semisup':
         semisup.main(args)
+    elif args.mode == 'unsup':
+        unsup.main(args)
     elif args.mode == 'wakesleep':
         wakesleep.main(args)
 
