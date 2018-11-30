@@ -222,7 +222,7 @@ def load_trees(path, strip_top=True):
 
 
 if __name__ == '__main__':
-    # testing
+
     from nltk import Tree
     from nltk.draw.tree import TreeView
 
@@ -230,16 +230,18 @@ if __name__ == '__main__':
         '/Users/daan/data/ptb-benepar/22.auto.clean', strip_top=True)
 
     tree = treebank[0]
+    convert = tree.convert()
+    binary = convert.binarize()
+    unbinary = convert.binarize().unbinarize()
 
-    tree = tree.convert()
-    binary = tree.binarize()
-    unbinary = tree.binarize().unbinarize()
-    assert unbinary.linearize() == tree.linearize()
+    assert binary.unbinarize().convert().linearize() == tree.linearize()
 
     tree = Tree.fromstring(tree.linearize())
+    convert = Tree.fromstring(convert.linearize())
     binary = Tree.fromstring(binary.linearize())
     unbinary = Tree.fromstring(unbinary.linearize())
 
     TreeView(tree)._cframe.print_to_file('tree.ps')
+    TreeView(convert)._cframe.print_to_file('convert.ps')
     TreeView(binary)._cframe.print_to_file('binary.ps')
     TreeView(unbinary)._cframe.print_to_file('unbinary.ps')

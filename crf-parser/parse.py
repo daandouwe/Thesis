@@ -210,6 +210,11 @@ class ChartParser(object):
     def parse(self, words, gold=None):
         is_train = gold is not None
 
+        if is_train:
+            self.lstm.set_dropout(self.dropout)
+        else:
+            self.lstm.disable_dropout()
+
         embeddings = []
         for word in [START] + words + [STOP]:
             # NOTE: we skip unking for now since vocab counts are incomplete
@@ -238,10 +243,10 @@ class ChartParser(object):
 
         @functools.lru_cache(maxsize=None)
         def get_label_scores(left, right):
-            return self.f_label(get_span_encoding(left, right))
             # NOTE: decided to make score for empty label trainable
             # non_empty_label_scores = self.f_label(get_span_encoding(left, right))
             # return dy.concatenate([dy.zeros(1), non_empty_label_scores])
+            return self.f_label(get_span_encoding(left, right))
 
         def topsort(n):
             """All nodes in a complete forest over n words in topoligical order."""
@@ -252,7 +257,7 @@ class ChartParser(object):
                         yield left, right, label
 
         def inside(n, semiring=LogProbSemiring):
-            chart = dict()
+            chart = {}
             for node in topsort(n):
                 left, right, label = node
                 label_index = self.label_vocab.index(label)
@@ -283,45 +288,51 @@ class ChartParser(object):
             return chart
 
         def viterbi(n, tag='*', semiring=ViterbiSemiring):
-            chart = dict()
+            chart = {}
             for node in topsort(n):
                 left, right, label = node
                 label_index = self.label_vocab.index(label)
 
-                label_score = get_label_scores(left, right)[label_index].value()
-                span_score = get_span_score(left, right).value()
+                label_score = get_label_scores(left, right)[label_index]
+                span_score = get_span_score(left, right)
 
                 if right == left + 1:
                     score = semiring.product(label_score, span_score)
                     children = [trees.LeafParseNode(left, tag, words[left])]
                     subtree = trees.InternalParseNode(label, children)
-                    chart[left, right, label] = score, subtree
+                    chart[node] = score, subtree
                 else:
                     subtrees = []
                     for split in range(left+1, right):
 
                         left_score, left_subtree = max(
                             [chart[left, split, lab] for lab in self.label_vocab.values],
-                            key=lambda t: t[0])
+                            key=lambda t: t[0].value())
 
                         right_score, right_subtree = max(
                             [chart[split, right, lab] for lab in self.label_vocab.values],
-                            key=lambda t: t[0])
+                            key=lambda t: t[0].value())
 
-                        score = label_score + span_score + left_score + right_score
+                        score = semiring.products([
+                            label_score,
+                            span_score,
+                            left_score,
+                            right_score
+                        ])
 
                         subtrees.append(
                             (score, left_subtree, right_subtree))
 
-                    best_score, best_left_subtree, best_right_subtree = max(subtrees, key=lambda t: t[0])
+                    best_score, best_left_subtree, best_right_subtree = max(subtrees, key=lambda t: t[0].value())
                     children = [best_left_subtree, best_right_subtree]
                     subtree = trees.InternalParseNode(label, children)
-                    chart[left, right, label] = best_score, subtree
+                    chart[node] = best_score, subtree
 
             return chart
 
+        semiring = LogProbSemiring
+
         if is_train:
-            semiring = LogProbSemiring
             gold_score = semiring.products([
                 semiring.product(
                     get_label_scores(left, right)[self.label_vocab.index(label)],
@@ -329,12 +340,20 @@ class ChartParser(object):
                 for (left, right, label) in gold.spans()
             ])
 
-            I = inside(len(words))
-            lognormalizer = I[0, len(words), ('S',)]
-            gold_logprob = gold_score - lognormalizer
+            inside_chart = inside(len(words))
+            lognormalizer = semiring.sums([
+                inside_chart[0, len(words), lab] for lab in self.label_vocab.values[1:]])
+            gold_logprob = semiring.division(gold_score, lognormalizer)
             loss = -gold_logprob
 
-            pred_score, pred = viterbi(len(words))[0, len(words), ('S',)]
+            viterbi_chart = viterbi(len(words))
+            pred_score, pred = max(
+                [viterbi_chart[0, len(words), lab] for lab in self.label_vocab.values[1:]],
+                key=lambda t: t[0].value())
+
+            # NOTE: alternative max-margin loss
+            # correct = gold.unbinarize().convert().linearize() == pred.unbinarize().convert().linearize()
+            # loss = dy.zeros(1) if correct else pred_score - gold_score
 
             print('>', gold.unbinarize().convert().linearize())
             print('>', pred.unbinarize().convert().linearize())
@@ -347,9 +366,9 @@ class ChartParser(object):
         else:
             I = inside(len(words))
             V = viterbi(len(words))
-            lognormalizer = I[0, len(words), ('S',)].value()
+            lognormalizer = I[0, len(words), ('S',)]
             pred_score, pred = V[0, len(words), ('S',)]
-            pred_logprob = pred_score - lognormalizer
+            pred_logprob = semiring.division(pred_score, lognormalizer)
             return pred_logprob, pred
 
 
