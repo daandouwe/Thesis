@@ -48,11 +48,11 @@ class ProbSemiring(Semiring):
 
     @classmethod
     def zero(cls):
-        raise NotImplementedError  # need to find dynet expression for this
+        return dy.zeros(1)
 
     @classmethod
     def one(cls):
-        return dy.zeros(1)
+        return dy.ones(1)
 
 
 class LogProbSemiring(Semiring):
@@ -254,7 +254,7 @@ class ChartParser(object):
                 left, right, label = node
                 label_index = self.label_vocab.index(label)
 
-                label_score = get_label_scores(left, right)[label_index]
+                label_score = get_label_scores(left, right)[label_index]  # TODO is this diffable?
                 span_score = get_span_score(left, right)
 
                 if right == left + 1:
@@ -292,7 +292,7 @@ class ChartParser(object):
                     score = semiring.product(label_score, span_score)
                     children = [trees.LeafParseNode(left, tag, words[left])]
                     subtree = trees.InternalParseNode(label, children)
-                    chart[left, right, label] = (score, subtree)
+                    chart[left, right, label] = score, subtree
                 else:
                     subtrees = []
                     for split in range(left+1, right):
@@ -318,24 +318,30 @@ class ChartParser(object):
             return chart
 
         if is_train:
-            gold_score = LogProbSemiring.products([
-                LogProbSemiring.product(
+            semiring = LogProbSemiring
+            gold_score = semiring.products([
+                semiring.product(
                     get_label_scores(left, right)[self.label_vocab.index(label)],
                     get_span_score(left, right))
                 for (left, right, label) in gold.spans()
             ])
 
-            lognormalizer = inside(len(words))[0, len(words), ('S',)]
+            I = inside(len(words))
+            lognormalizer = I[0, len(words), ('S',)]
             gold_logprob = gold_score - lognormalizer
+            loss = -gold_logprob
 
             pred_score, pred = viterbi(len(words))[0, len(words), ('S',)]
 
-            print('>', pred.unbinarize().convert().linearize())
             print('>', gold.unbinarize().convert().linearize())
+            print('>', pred.unbinarize().convert().linearize())
+            # for key, value in I.items():
+                # print(key, value.value(), value.gradient())
+            # print('{:.2f} {:.2f} {:.2f}'.format(
+                # gold_logprob.value(), gold_score.value(), lognormalizer.value()))
+            print()
 
-            print((pred_score - lognormalizer).value())
-
-            return -gold_logprob, gold
+            return loss, gold
         else:
             I = inside(len(words))
             V = viterbi(len(words))
@@ -350,7 +356,7 @@ def main():
     treebank = trees.load_trees('/Users/daan/data/ptb-benepar/23.auto.clean', strip_top=True)
 
     tree = treebank[0]
-    tree = tree.convert().binarize()  # collapses unaries and gives spans to nodes
+    tree = tree.convert().binarize()  # collapses unaries and obtain span for each nodes
 
     words = [leaf.word for leaf in tree.leaves()]
     print(words)
@@ -383,6 +389,7 @@ def main():
         label_hidden_dim=10,
         dropout=0.,
     )
+    # optimizer = dy.SimpleSGDTrainer(model, learning_rate=0.1)
     optimizer = dy.AdamTrainer(model, alpha=0.001)
 
     words = [leaf.word for leaf in tree.leaves()]
@@ -400,13 +407,7 @@ def main():
 
         t2 = time.time()
 
-        print(i, round(loss.value(), 2), round(np.exp(loss.value()), 2), 'forward', round(t1-t0, 3), 'backward', round(t2-t1, 3))
-        print()
-
-        # if i % 10 == 0:
-        #     score, pred = parser.parse(words)
-        #     print(round(score, 2), pred.unbinarize().convert().linearize())
-        #     print(round(score, 2), pred.convert().linearize())
+        # print(i, round(loss.value(), 2), round(np.exp(-loss.value()), 2), 'forward', round(t1-t0, 3), 'backward', round(t2-t1, 3))
 
 
 if __name__ == '__main__':

@@ -122,10 +122,6 @@ class InternalParseNode(ParseNode):
             if left < child.left < right
         ]
 
-    def topsort(self):
-        return [node for child in self.children for node in child.topsort()] + \
-            [(self.left, self.right, self.label)]
-
     def linearize(self):
         span = str(self.left) + '-' + str(self.right)
         label = '+'.join(self.label)
@@ -134,19 +130,19 @@ class InternalParseNode(ParseNode):
 
     def binarize(self):
         if len(self.children) == 1:
-            assert isinstance(self.children[0], LeafParseNode)  # unary chains are already collapsed
+            assert isinstance(self.children[0], LeafParseNode)
             return InternalParseNode(self.label, self.children)
         if len(self.children) == 2:
             return InternalParseNode(
-                self.label, tuple([child.binarize() for child in self.children]))
+                self.label, [child.binarize() for child in self.children])
         else:
             left = self.children[0]
             right = InternalParseNode((DUMMY,), self.children[1:])
             return InternalParseNode(
-                self.label, tuple([left.binarize(), right.binarize()]))
+                self.label, [left.binarize(), right.binarize()])
 
     def unbinarize(self):
-        # Absorb empty children until no child is empty
+        # absorb empty children until none are empty
         children = self.children
         while not all(not child.is_dummy for child in children):
             new = ()
@@ -157,7 +153,7 @@ class InternalParseNode(ParseNode):
                 else:
                     new += (child,)
             children = new
-        # repeat the process for the children
+        # recursively unbinarize the children
         children = tuple((child.unbinarize() for child in children))
         return InternalParseNode(self.label, children)
 
@@ -193,9 +189,6 @@ class LeafParseNode(ParseNode):
 
     def binarize(self):
         return self
-
-    def topsort(self):
-        return []
 
     def linearize(self):
         return self.word
@@ -265,7 +258,6 @@ if __name__ == '__main__':
     binary = tree.binarize()
     unbinary = tree.binarize().unbinarize()
     # print(binary.spans())
-    # print(binary.topsort())
 
     tree = Tree.fromstring(tree.linearize())
     binary = Tree.fromstring(binary.linearize())
