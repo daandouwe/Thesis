@@ -336,17 +336,16 @@ class ChartParser(object):
             print('>', gold.unbinarize().convert().linearize())
             print('>', pred.unbinarize().convert().linearize())
             # for key, value in I.items():
-                # print(key, value.value(), value.gradient())
+                # print(key, value.value())
             # print('{:.2f} {:.2f} {:.2f}'.format(
                 # gold_logprob.value(), gold_score.value(), lognormalizer.value()))
-            print()
 
             return loss, gold
         else:
             I = inside(len(words))
             V = viterbi(len(words))
-            pred_score, pred = V[0, len(words), ('S',)]
             lognormalizer = I[0, len(words), ('S',)].value()
+            pred_score, pred = V[0, len(words), ('S',)]
             pred_logprob = pred_score - lognormalizer
             return pred_logprob, pred
 
@@ -407,8 +406,8 @@ def main():
 
         t2 = time.time()
 
-        # print(i, round(loss.value(), 2), round(np.exp(-loss.value()), 2), 'forward', round(t1-t0, 3), 'backward', round(t2-t1, 3))
-
+        print(i, round(loss.value(), 2), round(np.exp(-loss.value()), 2), 'forward', round(t1-t0, 3), 'backward', round(t2-t1, 3))
+        print()
 
 if __name__ == '__main__':
     main()

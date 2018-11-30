@@ -1,5 +1,7 @@
 .remote-sync.json
 
+__pycache__
+
 brain-data
 data
 tmp
