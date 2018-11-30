@@ -194,6 +194,7 @@ class ChartParser(object):
         self.f_span = Feedforward(
             self.model, 2 * lstm_dim, [span_hidden_dim], 1)
         self.f_label = Feedforward(
+            # NOTE: decided to make score for empty label trainable
             # self.model, 2 * lstm_dim, [label_hidden_dim], label_vocab.size - 1)
             self.model, 2 * lstm_dim, [label_hidden_dim], label_vocab.size)
 
@@ -211,6 +212,7 @@ class ChartParser(object):
 
         embeddings = []
         for word in [START] + words + [STOP]:
+            # NOTE: we skip unking for now since vocab counts are incomplete
             # if word not in (START, STOP):
             #     count = self.word_vocab.count(word)
             #     if not count or (is_train and np.random.rand() < 1 / (1 + count)):
@@ -237,6 +239,7 @@ class ChartParser(object):
         @functools.lru_cache(maxsize=None)
         def get_label_scores(left, right):
             return self.f_label(get_span_encoding(left, right))
+            # NOTE: decided to make score for empty label trainable
             # non_empty_label_scores = self.f_label(get_span_encoding(left, right))
             # return dy.concatenate([dy.zeros(1), non_empty_label_scores])
 
@@ -254,7 +257,7 @@ class ChartParser(object):
                 left, right, label = node
                 label_index = self.label_vocab.index(label)
 
-                label_score = get_label_scores(left, right)[label_index]  # TODO is this diffable?
+                label_score = get_label_scores(left, right)[label_index]
                 span_score = get_span_score(left, right)
 
                 if right == left + 1:
@@ -388,8 +391,7 @@ def main():
         label_hidden_dim=10,
         dropout=0.,
     )
-    # optimizer = dy.SimpleSGDTrainer(model, learning_rate=0.1)
-    optimizer = dy.AdamTrainer(model, alpha=0.001)
+    optimizer = dy.AdamTrainer(model)
 
     words = [leaf.word for leaf in tree.leaves()]
 

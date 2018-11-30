@@ -27,7 +27,7 @@ class InternalTreebankNode(TreebankNode):
         tree = self
         sublabels = [self.label]
 
-        # Collapsing unaries
+        # collapse unary chains
         while len(tree.children) == 1 and isinstance(
                 tree.children[0], InternalTreebankNode):
             tree = tree.children[0]
@@ -98,29 +98,6 @@ class InternalParseNode(ParseNode):
         for sublabel in reversed(self.label[:-1]):
             tree = InternalTreebankNode(sublabel, [tree])
         return tree
-
-    def enclosing(self, left, right):
-        assert self.left <= left < right <= self.right
-        for child in self.children:
-            if isinstance(child, LeafParseNode):
-                continue
-            if child.left <= left < right <= child.right:
-                return child.enclosing(left, right)
-        return self
-
-    def oracle_label(self, left, right):
-        # THIS IS THE BINARIZATION
-        enclosing = self.enclosing(left, right)
-        if enclosing.left == left and enclosing.right == right:
-            return enclosing.label
-        return ()
-
-    def oracle_splits(self, left, right):
-        return [
-            child.left
-            for child in self.enclosing(left, right).children
-            if left < child.left < right
-        ]
 
     def linearize(self):
         span = str(self.left) + '-' + str(self.right)
@@ -245,6 +222,7 @@ def load_trees(path, strip_top=True):
 
 
 if __name__ == '__main__':
+    # testing
     from nltk import Tree
     from nltk.draw.tree import TreeView
 
@@ -252,12 +230,11 @@ if __name__ == '__main__':
         '/Users/daan/data/ptb-benepar/22.auto.clean', strip_top=True)
 
     tree = treebank[0]
-    print(tree.linearize())
 
-    tree = tree.convert()  # collapses unaries and gives spans to nodes
+    tree = tree.convert()
     binary = tree.binarize()
     unbinary = tree.binarize().unbinarize()
-    # print(binary.spans())
+    assert unbinary.linearize() == tree.linearize()
 
     tree = Tree.fromstring(tree.linearize())
     binary = Tree.fromstring(binary.linearize())
