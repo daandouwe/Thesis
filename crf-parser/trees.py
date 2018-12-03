@@ -241,7 +241,7 @@ if __name__ == '__main__':
     binary = Tree.fromstring(binary.linearize())
     unbinary = Tree.fromstring(unbinary.linearize())
 
-TreeView(tree)._cframe.print_to_file('images/tree.ps')
+    TreeView(tree)._cframe.print_to_file('images/tree.ps')
     TreeView(convert)._cframe.print_to_file('images/convert.ps')
     TreeView(binary)._cframe.print_to_file('images/binary.ps')
     TreeView(unbinary)._cframe.print_to_file('images/unbinary.ps')
