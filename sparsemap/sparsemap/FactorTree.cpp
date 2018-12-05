@@ -1,20 +1,5 @@
-// Copyright (c) 2012 Andre Martins
+// Copyright (c) 2018 Daan van Stigt
 // All Rights Reserved.
-//
-// This file is part of AD3 2.1.
-//
-// AD3 2.1 is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// AD3 2.1 is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with AD3 2.1.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef FACTOR_TREE_H_
 #define FACTOR_TREE_H_
@@ -42,8 +27,7 @@ double GetEdgeScore(int label,
 }
 
 
-// Decoder for the basic model; it finds a maximum weighted arborescence
-// using Chu-Liu-Edmonds' algorithm.
+// Decoder for for the forest using the Viterbi algorithm.
 int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
                            vector<Node> *nodes,
                            double *value) {
@@ -53,8 +37,9 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
   double edge_score;
   double left_val;
   double right_val;
-  vector<vector<vector<double> > > > chart;
-  vector<vector<vector<int> > > > path;
+  // TODO: find out how to asign size here.
+  vector<vector<vector<double> > > > chart;  // should be [num_labels, length, length]
+  vector<vector<vector<vector<int> > > > > path;  // should be [num_labels, length, length, 3]
 
   // Visit nodes of the complete forest in topological order.
   for (int s = 1; s < length_ + 1; ++s) {
@@ -64,21 +49,28 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
         // Current node is (l, i, j).
         edge_score = GetEdgeScore(l, i, j, variable_log_potentials);
 
-        if (j == (i + 1)) {
+        if (j == i + 1) {
           chart[l][i][j] = edge_score;
-          path[l][i][j] = -1;
+          path[l][i][j][0] = -1;
+          path[l][i][j][1] = -1;
+          path[l][i][j][2] = -1;
         } else {
-          // Get the best split and sublabels (k, B, C).
+          // Get the best incoming edge (k, B, C),
+          // where k is the split-point and B, C
+          // the left and right child label respectively.
           double best_value;
           int best = -1;
           int best_split;
           int best_left_label;
           int best_right_label;
-          // Get the best split.
+
+          // Get the best point.
           for (int k = 0; k < num_labels_; k++) {
+
+            // Get the best label for the left span
+            // given the current split-point.
             double best_left_value;
             double best_left = -1;
-            // Get the best left label.
             for (int b = 0; b < num_labels_; b++) {
               left_val = chart[b][i][k];
               if (best_left < 0 || left_val > best_left_value) {
@@ -86,7 +78,9 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
                 best_left = b;
               }
             }
-            // Get the best right label.
+
+            // Get the best label for the right span
+            // given the current split-point.
             double best_right_value;
             double best_right = -1;
             for (int c = 0; c < num_labels_; c++) {
@@ -96,17 +90,57 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
                 best_right = c;
               }
             }
-            // The score of the best expansion.
+
+            // Get the total score of this edge.
             double val = edge_score + best_left_val + best_right_val;
+            // Store the current incoming node if it is the best.
             if (best < 0 || val > best_value) {
               best_value = val;
               best = k;
+              best_split = k;
+              best_left_label = best_left;
+              best_right_label = best_right;
+            }
           }
+          // Save the best incoming edge.
+          chart[l][i][j] = best_value;
+          path[l][i][j][0] = best_split;
+          path[l][i][j][1] = best_left_label;
+          path[l][i][j][2] = best_right_label;
         }
       }
     }
   }
 
+  // Backtrack to obtain the labeled spans
+  // that make up the Viterbi tree.
+
+  void Backtrack(int label, int left, int right, int index) {
+    // TODO: This looks really sketchy... and is probably broken.
+    (*nodes)[i] = Node(label, left, right);
+    ++index;
+    if (right > left + 1) {
+      split = chart[root][0][length_][0];
+      left_label = chart[root][0][length_][1];
+      right_label = chart[root][0][length_][2];
+      Backtrack(left_label, left, split, index);
+      Backtrack(right_label, split, right, index);
+    }
+  }
+
+  int index = 0;
+  Backtrack(root, 0, length_, index);
+
+  // Path (node sequence) backtracking.
+  // vector<int> *sequence = static_cast<vector<int>*>(configuration);
+  // assert(sequence->size() == length);
+  // (*sequence)[length - 1] = best;
+  // for (int i = length - 1; i > 0; --i) {
+  //   (*sequence)[i - 1] = path[i][(*sequence)[i]];
+  // }
+
+  *value = best_value;
+} // RunViterbi
 
 } // namespace AD3
 

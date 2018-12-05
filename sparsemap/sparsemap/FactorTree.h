@@ -1,20 +1,5 @@
-// Copyright (c) 2012 Andre Martins
+// Copyright (c) 2018 Daan van Stigt
 // All Rights Reserved.
-//
-// This file is part of AD3 2.1.
-//
-// AD3 2.1 is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// AD3 2.1 is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with AD3 2.1.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef FACTOR_TREE
 #define FACTOR_TREE
@@ -37,6 +22,7 @@ namespace AD3 {
 // };
 
 // A node (l, i, j) is a labeled span
+// with label l and span i-j.
 class Node{
  public:
   Node(int l, int i, int j) : l_(l), i_(i), j_(j) {}  // I suppose this is assingment of the private variables?
@@ -52,10 +38,10 @@ private:
 };
 
 // A hyperedge (b:i-k, c:k-j) -> a:i-j connects nodes b and c to a.
-// TODO: assert that b.right() == c.left()
+// TODO: assert that b.right() == c.left() ?
 class Hyperedge {
  public:
-  Hyperedge(Node a, Node b, Node c, ) : a_(a), b_(b), c_(c) {}  // I suppose this is assingment of the private variables?
+  Hyperedge(Node a, Node b, Node c) : a_(a), b_(b), c_(c) {}  // I suppose this is assingment of the private variables?
   ~Hyperedge() {}
 
   int head() { return a_; }
