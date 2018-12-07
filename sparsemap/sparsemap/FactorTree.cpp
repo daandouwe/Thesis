@@ -33,10 +33,13 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
                            vector<Node> *nodes,
                            double *value) {
 
-  int chart_size = num_labels_ * length_ * length_;
-  int path_size = 3 * chart_size;
-  vector<vector<vector<double> > >  chart(chart_size);  // [num_labels, length, length]
-  vector<vector<vector<vector<int> > > > path(path_size);  // [num_labels, length, length, 3]
+  // Vector of shape [num_labels, length, length] initialized with -1.
+  vector<vector<vector<double> > >  chart(
+    num_labels_, vector<vector<double> >(length_, vector<double>(length_, -1))));
+  // Vector of shape [num_labels, length, length, 3] initialized with -1.
+  vector<vector<vector<vector<int> > > > path(
+    num_labels_, vector<vector<vector<int> > >(length_, vector<vector<int> >(length_, vector<int>(3, -1)))));
+  // Source: https://stackoverflow.com/questions/29305621/problems-using-3-dimensional-vector
 
   // Visit nodes of the complete forest in topological order.
   for (int s = 1; s < length_ + 1; ++s) {
@@ -44,8 +47,7 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
       int j = i + s;  // span of length s from i to j
       for (int l = 0; l < num_labels_; l++) {
         // Current node is (l, i, j).
-        // Each edge coming in to this node has
-        // the same score.
+        // Each edge coming in to this node has the same score.
         double edge_score = GetEdgeScore(l, i, j, variable_log_potentials);
 
         if (j == i + 1) {
@@ -115,8 +117,10 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
                  int label,
                  int left,
                  int right) {
-    // TODO: is this really all correct? Pointers and all??
-    nodes->push_back(Node(label, left, right));  // Is this correct?
+    // Add the node to the list of nodes.
+    nodes->push_back(Node(label, left, right));  // TODO: is this really all correct? Pointers and all??
+    // If the node spans more than one word we recursively
+    // add the children.
     if (right > left + 1) {
       split = path[root][0][length_][0];
       left_label = path[root][0][length_][1];
@@ -127,9 +131,12 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
     // TODO: resize nodes to be of the right size
   }
 
+  // Path backrackin puts the recognized nodes in `nodes`.
   Backtrack(path, nodes, root, 0, length_, index);
 
-  // Reference code:
+  // Store the value of the viterbi tree.
+  *value = best_value;
+
   // Path (node sequence) backtracking.
   // vector<int> *sequence = static_cast<vector<int>*>(configuration);
   // assert(sequence->size() == length);
@@ -138,7 +145,6 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
   //   (*sequence)[i - 1] = path[i][(*sequence)[i]];
   // }
 
-  *value = best_value;
 } // RunViterbi
 
 } // namespace AD3

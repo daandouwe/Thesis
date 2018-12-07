@@ -26,7 +26,7 @@ namespace AD3 {
 // with label l and span i-j.
 class Node{
  public:
-  Node(int l, int i, int j) : l_(l), i_(i), j_(j) {}  // I suppose this is assingment of the private variables?
+  Node(int l, int i, int j) : l_(l), i_(i), j_(j) {}
   ~Node() {}
   int label() { return l_; }
   int left() { return i_; }
@@ -41,7 +41,7 @@ class Node{
 // A hyperedge (b:i-k, c:k-j) -> a:i-j connects nodes b and c to a.
 class Hyperedge {
  public:
-  Hyperedge(Node a, Node b, Node c) : a_(a), b_(b), c_(c) {}  // I suppose this is assingment of the private variables?
+  Hyperedge(Node a, Node b, Node c) : a_(a), b_(b), c_(c) {}
   ~Hyperedge() {}
 
   assert (b.right() == c.left())
@@ -277,9 +277,11 @@ class FactorTree : public GenericFactor {
                   const vector<Node*> &nodes) {
     length_ = length;
     num_labels_ = num_labels;
+    num_nodes_ = nodes.size();
 
-    index_nodes_.assign(num_labels, <vector<vector<int> >(length));
-    // TODO: needs to be a 3D array... How to do that?
+    // Source: https://stackoverflow.com/questions/29305621/problems-using-3-dimensional-vector
+    index_nodes_(num_labels_, vector<vector<int> >(length_, vector <int>(length_, -1)));
+    // shape [num_labels, length, length]
 
     for (int k = 0; k < nodes.size(); ++k) {
       int l = nodes[k]->label();
