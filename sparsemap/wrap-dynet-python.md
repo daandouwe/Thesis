@@ -7,7 +7,7 @@ import dynet as dy
 >>> dy.identity
 <built-in function identity>
 ```
-It took me some time to figure out how the python dynet library wraps the core dynet code, which is in c++. This is what I found out.
+This is what I want to know.
 
 
 ## How it is done
