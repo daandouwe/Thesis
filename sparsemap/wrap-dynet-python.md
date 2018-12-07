@@ -1,15 +1,15 @@
-# Wrap custom cpp Dynet Expression in python
+# Wrapping c++ Dynet code in python
+
+## How is it done
 
 Say we implemented a custom Dynet Node like the `identity` function in https://github.com/vene/dynet-custom. How then do we wrap this in python, so that we can say
 ```python
 import dynet as dy
 
 >>> dy.identity
-<built-in function barfmax>
+<built-in function identity>
 ```
-To unravel this, we follow the trail of the python importable function `dynet.sparsemap` and see where this leads us.
-
-This starts in the cython file `_dynet.pyx` where you can see the python sparsemap expression defined as:
+To unravel this, we follow the trail of the python importable function `dynet.sparsemax` and see where this leads us. This starts in the cython file `dynet/python/_dynet.pyx` where you can see the python sparsemap expression defined as:
 ```python
 cpdef Expression sparsemax(Expression x):
     """Sparsemax
@@ -45,7 +45,7 @@ cdef extern from "dynet/expr.h" namespace "dynet":
 
     CExpression c_sparsemax "dynet::sparsemax" (CExpression& x) except + #
 ```
-This looks like magic, until you realise that in the file `dynet/expr.h` (from which de external cdef is made) you can find it defined as
+This looks like magic, until you realise that this line references the file `dynet/expr.h` (from which de external cdef is made) where you can find the function `sparsemax` defined as
 ```cpp
 Expression sparsemax(const Expression& x);
 ```
@@ -53,7 +53,7 @@ and this is fleshed out in `dynet/expr.cc` where you can read
 ```cpp
 Expression sparsemax(const Expression& x) { return Expression(x.pg, x.pg->add_function<Sparsemax>({x.i})); }
 ```
-Again we are delegating all the work to yet some other expression called `Sparsemax` which, upon inspection, is defined in `dynet/nodes.h`. `dynet/nodes.h` simply includes a whole lot of other header files, among which is `dynet/nodes-softmaxes.h`. In `dynet/nodes-softmaxes.h` we finally recognize a the definition of a Dynet Node:
+Again we are delegating all the work to yet some other function called `Sparsemax` which, upon inspection, is defined in `dynet/nodes.h`. The header `dynet/nodes.h` simply includes a whole lot of other header files, among which is `dynet/nodes-softmaxes.h`. In `dynet/nodes-softmaxes.h` we finally recognize a the definition of a Dynet Node:
 ```cpp
 struct Sparsemax : public Node {
   explicit Sparsemax(const std::initializer_list<VariableIndex>& a) : Node(a) {
@@ -141,4 +141,10 @@ void Sparsemax::backward_dev_impl(const MyDevice & dev,
 #endif
 }
 DYNET_NODE_INST_DEV_IMPL(Sparsemax)
+```
+
+## How to extend it
+
+```
+TODO
 ```
