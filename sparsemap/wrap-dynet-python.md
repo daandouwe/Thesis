@@ -1,7 +1,5 @@
 # Wrapping c++ Dynet code in python
 
-## How is it done
-
 Say we implemented a custom Dynet Node like the `identity` function in https://github.com/vene/dynet-custom. How then do we wrap this in python, so that we can say
 ```python
 import dynet as dy
@@ -9,7 +7,12 @@ import dynet as dy
 >>> dy.identity
 <built-in function identity>
 ```
-To unravel this, we follow the trail of the python importable function `dynet.sparsemax` and see where this leads us. This starts in the cython file `dynet/python/_dynet.pyx` where you can see the python sparsemap expression defined as:
+It took me some time to figure out how the python dynet library wraps the core dynet code, which is in c++. This is what I found out.
+
+
+## How it is done
+
+To discover how this is done, we follow the trail of a python importable function. Let's take `dynet.sparsemax` and see where this leads us. This starts in the cython file `dynet/python/_dynet.pyx` where you can see the python sparsemap expression defined as:
 ```python
 cpdef Expression sparsemax(Expression x):
     """Sparsemax
