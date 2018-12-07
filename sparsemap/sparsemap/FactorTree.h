@@ -5,6 +5,7 @@
 #define FACTOR_TREE
 
 #include "ad3/GenericFactor.h"
+#include <assert.h>
 
 namespace AD3 {
 
@@ -31,18 +32,19 @@ class Node{
   int left() { return i_; }
   int right() { return j_; }
 
-private:
- int l_;
- int i_;
- int j_;
+ private:
+  int l_;
+  int i_;
+  int j_;
 };
 
 // A hyperedge (b:i-k, c:k-j) -> a:i-j connects nodes b and c to a.
-// TODO: assert that b.right() == c.left() ?
 class Hyperedge {
  public:
   Hyperedge(Node a, Node b, Node c) : a_(a), b_(b), c_(c) {}  // I suppose this is assingment of the private variables?
   ~Hyperedge() {}
+
+  assert (b.right() == c.left())
 
   int head() { return a_; }
   int lchild() { return b_; }
@@ -57,9 +59,9 @@ class Hyperedge {
   int split() { return b_.right(); }
 
  private:
-  int a_;
-  int b_;
-  int c_;
+  Node a_;
+  Node b_;
+  Node c_;
 };
 
 
@@ -119,12 +121,12 @@ class FactorTree : public GenericFactor {
                 double *value) {
     const vector<Node> *nodes = static_cast<const vector<Node>*>(configuration);
     *value = 0.0;
-    for (int n = 1; n < nodes->size(); ++n) {
-      Node node = (*nodes)[n];
+    for (int k = 1; k < nodes->size(); ++k) {
+      Node node = (*nodes)[k];
       int l = node.label();
       int i = node.left();
       int j = node.right();
-      int index = index_edges_[l][i][j];
+      int index = index_nodes_[l][i][j];
       *value += variable_log_potentials[index];
     }
   }
@@ -155,12 +157,12 @@ class FactorTree : public GenericFactor {
     // const vector<int> *heads = static_cast<const vector<int>*>(configuration);
     const vector<Node> *nodes = static_cast<const vector<Node>*>(configuration);  // What is this??
 
-    for (int n = 1; n < nodes->size(); ++n) {
-      Node node = (*nodes)[n];
+    for (int k = 1; k < nodes->size(); ++k) {
+      Node node = (*nodes)[k];
       int l = node.label();
       int i = node.left();
       int j = node.right();
-      int index = index_edges_[l][i][j];
+      int index = index_nodes_[l][i][j];
       (*variable_posteriors)[index] += weight;
     }
   }
@@ -250,7 +252,10 @@ class FactorTree : public GenericFactor {
     // TODO: this is variable-length...
     // A binary tree has n-1 nodes where n is the
     // sentence-length, but our trees are not (perfectly) binary.
-    vector<Node>* nodes = new vector<Node>(length_ - 1);
+    // Solution 1: Reserve loads of space and then append?
+    // vector<Node>* nodes = new vector<Node>(2*length_);
+    // Solution 2. Dynamically increase memory use?
+    vector<Node>* nodes = new vector<Node>;
     return static_cast<Configuration>(nodes);
   }
 
@@ -266,15 +271,21 @@ class FactorTree : public GenericFactor {
   //  }
 
  public:
-  void Initialize(int length, int num_labels, const vector<Hyperedges*> &edges) {
+  // Initialize the factor graph by passing all the nodes
+  void Initialize(int length,
+                  int num_labels,
+                  const vector<Node*> &nodes) {
     length_ = length;
     num_labels_ = num_labels;
-    index_edges_.assign(num_labels, length, length);  // TODO: this is incorrect (use resize? see FactorSequence.h)
-    for (int k = 0; k < edges.size(); ++k) {
-      int l = edges[k]->label();
-      int i = edges[k]->left();
-      int j = edges[k]->right();
-      index_edges_[l][i][j] = k;
+
+    index_nodes_.assign(num_labels, <vector<vector<int> >(length));
+    // TODO: needs to be a 3D array... How to do that?
+
+    for (int k = 0; k < nodes.size(); ++k) {
+      int l = nodes[k]->label();
+      int i = nodes[k]->left();
+      int j = nodes[k]->right();
+      index_nodes_[l][i][j] = k;
     }
   }
 
@@ -283,9 +294,11 @@ class FactorTree : public GenericFactor {
   int length_;
   // Number of nonterminal labels.
   int num_labels_;
-  // At each position, map from hyperedges to a global index which
+  // Number of nodes in the hyperforest
+  int num_nodes_;
+  // At each position, map from hypernodes to a global index which
   // matches the index of additional_log_potentials_.
-  vector<vector<vector<int> > > > index_edges_;
+  vector<vector<vector<int> > > index_nodes_;
 };
 
 } // namespace AD3

@@ -17,12 +17,13 @@ using namespace std;
 
 namespace AD3 {
 
-// The score for all the edges that are incoming to edge (label, left, right)
+// The score for an edge incoming to node (label, left, right).
+// Note that all edges incoming to a node get the same score.
 double GetEdgeScore(int label,
                     int left,
                     int right,
                     const vector<double> &variable_log_potentials) {
-  int index = index_edges_[label][left][right];
+  int index = index_nodes_[label][left][right];
   return variable_log_potentials[index];
 }
 
@@ -31,29 +32,24 @@ double GetEdgeScore(int label,
 int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
                            vector<Node> *nodes,
                            double *value) {
-  // Decode using the Viterbi algorithm.
 
-  int j;
-  double edge_score;
-  double left_val;
-  double right_val;
-  // TODO: find out how to asign size here.
-  vector<vector<vector<double> > > > chart;  // should be [num_labels, length, length]
-  vector<vector<vector<vector<int> > > > > path;  // should be [num_labels, length, length, 3]
+  int chart_size = num_labels_ * length_ * length_;
+  int path_size = 3 * chart_size;
+  vector<vector<vector<double> > >  chart(chart_size);  // [num_labels, length, length]
+  vector<vector<vector<vector<int> > > > path(path_size);  // [num_labels, length, length, 3]
 
   // Visit nodes of the complete forest in topological order.
   for (int s = 1; s < length_ + 1; ++s) {
     for (int i = 0; i < length_ + 1 - s; i++) {
-      j = i + s;
+      int j = i + s;  // span of length s from i to j
       for (int l = 0; l < num_labels_; l++) {
         // Current node is (l, i, j).
-        edge_score = GetEdgeScore(l, i, j, variable_log_potentials);
+        // Each edge coming in to this node has
+        // the same score.
+        double edge_score = GetEdgeScore(l, i, j, variable_log_potentials);
 
         if (j == i + 1) {
           chart[l][i][j] = edge_score;
-          path[l][i][j][0] = -1;
-          path[l][i][j][1] = -1;
-          path[l][i][j][2] = -1;
         } else {
           // Get the best incoming edge (k, B, C),
           // where k is the split-point and B, C
@@ -64,15 +60,15 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
           int best_left_label;
           int best_right_label;
 
-          // Get the best point.
-          for (int k = 0; k < num_labels_; k++) {
+          // Get the best split point.
+          for (int k = i + 1; k < j; k++) {
 
             // Get the best label for the left span
             // given the current split-point.
             double best_left_value;
             double best_left = -1;
             for (int b = 0; b < num_labels_; b++) {
-              left_val = chart[b][i][k];
+              double left_val = chart[b][i][k];
               if (best_left < 0 || left_val > best_left_value) {
                 best_left_value = left_val;
                 best_left = b;
@@ -84,7 +80,7 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
             double best_right_value;
             double best_right = -1;
             for (int c = 0; c < num_labels_; c++) {
-              right_val = chart[c][k][j];
+              double right_val = chart[c][k][j];
               if (best_right < 0 || right_val > best_right_value) {
                 best_right_value = right_val;
                 best_right = c;
@@ -113,24 +109,27 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
   }
 
   // Backtrack to obtain the labeled spans
-  // that make up the Viterbi tree.
-
-  void Backtrack(int label, int left, int right, int index) {
-    // TODO: This looks really sketchy... and is probably broken.
-    (*nodes)[i] = Node(label, left, right);
-    ++index;
+  // (Nodes) that make up the Viterbi tree.
+  void Backtrack(vector<vector<vector<vector<int> > > > path,  // TODO: make this a pointer?
+                 vector<Node> *nodes,
+                 int label,
+                 int left,
+                 int right) {
+    // TODO: is this really all correct? Pointers and all??
+    nodes->push_back(Node(label, left, right));  // Is this correct?
     if (right > left + 1) {
-      split = chart[root][0][length_][0];
-      left_label = chart[root][0][length_][1];
-      right_label = chart[root][0][length_][2];
-      Backtrack(left_label, left, split, index);
-      Backtrack(right_label, split, right, index);
+      split = path[root][0][length_][0];
+      left_label = path[root][0][length_][1];
+      right_label = path[root][0][length_][2];
+      Backtrack(path, nodes, left_label, left, split);
+      Backtrack(path, nodes, right_label, split, right);
     }
+    // TODO: resize nodes to be of the right size
   }
 
-  int index = 0;
-  Backtrack(root, 0, length_, index);
+  Backtrack(path, nodes, root, 0, length_, index);
 
+  // Reference code:
   // Path (node sequence) backtracking.
   // vector<int> *sequence = static_cast<vector<int>*>(configuration);
   // assert(sequence->size() == length);
