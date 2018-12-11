@@ -348,4 +348,3 @@ vector<int> mst(const Tensor& x, size_t length)
     tree_factor.Maximize(unaries_in, additionals, cfg, &val);
     return out;
 }
-

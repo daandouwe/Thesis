@@ -24,10 +24,10 @@ namespace AD3 {
 
 // A node (l, i, j) is a labeled span
 // with label l and span i-j.
-class Node{
+class ParseNode{
  public:
-  Node(int l, int i, int j) : l_(l), i_(i), j_(j) {}
-  ~Node() {}
+  ParseNode(int l = 0, int i = 0, int j = 0) : l_(l), i_(i), j_(j) {}
+  ~ParseNode() {}
   int label() { return l_; }
   int left() { return i_; }
   int right() { return j_; }
@@ -38,31 +38,31 @@ class Node{
   int j_;
 };
 
-// A hyperedge (b:i-k, c:k-j) -> a:i-j connects nodes b and c to a.
-class Hyperedge {
- public:
-  Hyperedge(Node a, Node b, Node c) : a_(a), b_(b), c_(c) {}
-  ~Hyperedge() {}
-
-  assert (b.right() == c.left())
-
-  int head() { return a_; }
-  int lchild() { return b_; }
-  int rchild() { return c_; }
-
-  int head_label() { return a_.label(); }
-  int lchild_label() { return b_.label(); }
-  int rchild_label() { return c_.label(); }
-
-  int left() { return a_.left(); }
-  int right() { return a_.right(); }
-  int split() { return b_.right(); }
-
- private:
-  Node a_;
-  Node b_;
-  Node c_;
-};
+// // A hyperedge (b:i-k, c:k-j) -> a:i-j connects nodes b and c to a.
+// class Hyperedge {
+//  public:
+//   Hyperedge(ParseNode a, ParseNode b, ParseNode c) : a_(a), b_(b), c_(c) {}
+//   ~Hyperedge() {}
+//
+//   // assert (b.right() == c.left());
+//
+//   int head() { return a_; }
+//   int lchild() { return b_; }
+//   int rchild() { return c_; }
+//
+//   int head_label() { return a_.label(); }
+//   int lchild_label() { return b_.label(); }
+//   int rchild_label() { return c_.label(); }
+//
+//   int left() { return a_.left(); }
+//   int right() { return a_.right(); }
+//   int split() { return b_.right(); }
+//
+//  private:
+//   ParseNode a_;
+//   ParseNode b_;
+//   ParseNode c_;
+// };
 
 
 class FactorTree : public GenericFactor {
@@ -70,11 +70,18 @@ class FactorTree : public GenericFactor {
   FactorTree() {}
   virtual ~FactorTree() { ClearActiveSet(); }
 
+  // The score for an edge incoming to node (label, left, right).
+  // Note that all edges incoming to a node get the same score.
+  double GetEdgeScore(int label,
+                      int left,
+                      int right,
+                      const vector<double> &variable_log_potentials);
+
   // int RunCLE(const vector<double>& scores,
   //            vector<int> *heads,  // To output predicted heads
   //            double *value);  // To output score
    int RunViterbi(const vector<double>& scores,
-                  vector<Node> *node,  // To output predicted nodes. TODO: variable length!
+                  vector<ParseNode> *node,  // To output predicted nodes. TODO: variable length!
                   double *value);  // To output score
 
   // // Compute the score of a given assignment.
@@ -93,7 +100,7 @@ class FactorTree : public GenericFactor {
                 const vector<double> &additional_log_potentials,
                 Configuration &configuration,
                 double *value) {
-    vector<Node>* nodes = static_cast<vector<Node>*>(configuration);
+    vector<ParseNode>* nodes = static_cast<vector<ParseNode>*>(configuration);
     RunViterbi(variable_log_potentials, nodes, value);
   }
 
@@ -119,10 +126,10 @@ class FactorTree : public GenericFactor {
                 const vector<double> &additional_log_potentials,
                 const Configuration configuration,
                 double *value) {
-    const vector<Node> *nodes = static_cast<const vector<Node>*>(configuration);
+    const vector<ParseNode> *nodes = static_cast<const vector<ParseNode>*>(configuration);
     *value = 0.0;
     for (int k = 1; k < nodes->size(); ++k) {
-      Node node = (*nodes)[k];
+      ParseNode node = (*nodes)[k];
       int l = node.label();
       int i = node.left();
       int j = node.right();
@@ -154,11 +161,10 @@ class FactorTree : public GenericFactor {
     double weight,
     vector<double> *variable_posteriors,
     vector<double> *additional_posteriors) {
-    // const vector<int> *heads = static_cast<const vector<int>*>(configuration);
-    const vector<Node> *nodes = static_cast<const vector<Node>*>(configuration);  // What is this??
+    const vector<ParseNode> *nodes = static_cast<const vector<ParseNode>*>(configuration);
 
     for (int k = 1; k < nodes->size(); ++k) {
-      Node node = (*nodes)[k];
+      ParseNode node = (*nodes)[k];
       int l = node.label();
       int i = node.left();
       int j = node.right();
@@ -183,9 +189,9 @@ class FactorTree : public GenericFactor {
   // Count how many common values two configurations have.
   int CountCommonValues(const Configuration &configuration1,
                         const Configuration &configuration2) {
-    const vector<Node> *nodes1 = static_cast<const vector<Node>*>(configuration1);
-    const vector<Node> *nodes2 = static_cast<const vector<Node>*>(configuration2);
-    Node node1, node2;
+    const vector<ParseNode> *nodes1 = static_cast<const vector<ParseNode>*>(configuration1);
+    const vector<ParseNode> *nodes2 = static_cast<const vector<ParseNode>*>(configuration2);
+    ParseNode node1, node2;
     bool label, left, right;
     int count = 0;
     for (int i = 1; i < nodes1->size(); ++i) {
@@ -218,13 +224,20 @@ class FactorTree : public GenericFactor {
   bool SameConfiguration(
     const Configuration &configuration1,
     const Configuration &configuration2) {
-    const vector<Node> *nodes1 = static_cast<const vector<Node>*>(configuration1);
-    const vector<Node> *nodes2 = static_cast<const vector<Node>*>(configuration2);
-    if nodes1->size() != nodes2->size() {
+    std::cout << "FactorTree.h >> SameConfiguration" << std::endl;
+
+    const vector<ParseNode> *nodes1 = static_cast<const vector<ParseNode>*>(configuration1);
+    const vector<ParseNode> *nodes2 = static_cast<const vector<ParseNode>*>(configuration2);
+    if (nodes1->size() != nodes2->size()) {
       return false;
     }
+    ParseNode node1, node2;
     for (int i = 1; i < nodes1->size(); ++i) {
-      if ((*nodes1)[i] != (*nodes2)[i]) return false;
+      node1 = (*nodes1)[i];
+      node2 = (*nodes2)[i];
+      if (node1.label() != node2.label()) return false;
+      if (node1.left() != node2.left()) return false;
+      if (node1.right() != node2.right()) return false;
     }
     return true;
   }
@@ -238,7 +251,8 @@ class FactorTree : public GenericFactor {
   // Delete configuration.
   void DeleteConfiguration(
     Configuration configuration) {
-    vector<Node> *nodes = static_cast<vector<Node>*>(configuration);
+    std::cout << "FactorTree.h >> DeleteConfiguration" << std::endl;
+    vector<ParseNode> *nodes = static_cast<vector<ParseNode>*>(configuration);
     delete nodes;
   }
 
@@ -253,9 +267,11 @@ class FactorTree : public GenericFactor {
     // A binary tree has n-1 nodes where n is the
     // sentence-length, but our trees are not (perfectly) binary.
     // Solution 1: Reserve loads of space and then append?
-    // vector<Node>* nodes = new vector<Node>(2*length_);
+    // vector<ParseNode>* nodes = new vector<ParseNode>(2*length_);
     // Solution 2. Dynamically increase memory use?
-    vector<Node>* nodes = new vector<Node>;
+    std::cout << "FactorTree.h >> CreateConfiguration" << std::endl;
+
+    vector<ParseNode>* nodes = new vector<ParseNode>;
     return static_cast<Configuration>(nodes);
   }
 
@@ -271,16 +287,20 @@ class FactorTree : public GenericFactor {
   //  }
 
  public:
-  // Initialize the factor graph by passing all the nodes
+  // Initialize the factor.
   void Initialize(int length,
                   int num_labels,
-                  const vector<Node*> &nodes) {
+                  const vector<ParseNode*> &nodes) {
+
+    std::cout << "FactorTree.h >> Initialize" << std::endl;
+
     length_ = length;
     num_labels_ = num_labels;
     num_nodes_ = nodes.size();
 
     // Source: https://stackoverflow.com/questions/29305621/problems-using-3-dimensional-vector
-    index_nodes_(num_labels_, vector<vector<int> >(length_, vector <int>(length_, -1)));
+    vector<vector<vector<int> > > index_nodes_(
+        num_labels_, vector<vector<int> >(length_ + 1, vector <int>(length_ + 1, -1)));
     // shape [num_labels, length, length]
 
     for (int k = 0; k < nodes.size(); ++k) {
@@ -288,6 +308,7 @@ class FactorTree : public GenericFactor {
       int i = nodes[k]->left();
       int j = nodes[k]->right();
       index_nodes_[l][i][j] = k;
+      std::cout << "FactorTree.h >> Initialize: " << l << " " << i << " " << j << " " << k << std::endl;
     }
   }
 

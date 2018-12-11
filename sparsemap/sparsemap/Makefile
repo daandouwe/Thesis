@@ -1,8 +1,7 @@
-DYNET_PATH ?= ${HOME}/code/dynet
-EIGEN_PATH ?= ${HOME}/code/eigen
-AD3_PATH ?= ${HOME}/code/ad3
+DYNET_PATH ?= ${HOME}/dynet-base/dynet
+EIGEN_PATH ?= ${HOME}/dynet-base/eigen
+AD3_PATH ?= ${HOME}/AD3
 
-OBJS = $(AD3_PATH)/examples/cpp/parsing/FactorTree.o
 CC = g++
 DEBUG =
 INCLUDES = -I$(DYNET_PATH) -I$(EIGEN_PATH) -I$(AD3_PATH)
@@ -20,14 +19,17 @@ endif
 LIBS_CPU = $(LIBS) -L$(DYNET_PATH)/build/dynet/
 LFLAGS_CPU = $(LIBS_CPU) $(LFLAGS)
 
+FactorTree.o: FactorTree.cc FactorTree.h
+	$(CC) $(CFLAGS) -L${AD3_PATH}/ad3/ FactorTree.cc
+
 sparseparse.o : sparseparse.cc sparseparse.h FactorTree.h
 	$(CC) $(CFLAGS) sparseparse.cc -o sparseparse.o
 
-# test_sparseparse: sparseparse.o test_sparseparse.o
-# 	$(CC) $(OBJS) sparseparse.o test_sparseparse.o $(LFLAGS_CPU) -o test_sparseparse
-#
-# test_sparseparse.o : test_sparseparse.cc sparseparse.h
-# 	$(CC) $(CFLAGS) test_sparseparse.cc
+test_sparseparse: sparseparse.o test_sparseparse.o FactorTree.o
+	$(CC) FactorTree.o sparseparse.o test_sparseparse.o $(LFLAGS_CPU) -o test_sparseparse
+
+test_sparseparse.o : test_sparseparse.cc sparseparse.h
+	$(CC) $(CFLAGS) test_sparseparse.cc
 
 clean:
 	rm -f *.o *~ test_sparseparse

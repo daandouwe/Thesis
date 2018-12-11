@@ -17,29 +17,62 @@ using namespace std;
 
 namespace AD3 {
 
+// Backtrack to obtain the labeled spans
+// (ParseNodes) that make up the Viterbi tree.
+void Backtrack(vector<vector<vector<vector<int> > > > path,  // TODO: make this a pointer?
+               vector<AD3::ParseNode> *nodes,
+               int label,
+               int left,
+               int right,
+               int length) {
+  // Add the node to the list of nodes.
+  nodes->push_back(ParseNode(label, left, right));  // TODO: is this really all correct? Pointers and all??
+  // If the node spans more than one word we recursively
+  // add the children.
+  if (right > left + 1) {
+    int split = path[label][0][length][0];
+    int left_label = path[label][0][length][1];
+    int right_label = path[label][0][length][2];
+    Backtrack(path, nodes, left_label, left, split, length);
+    Backtrack(path, nodes, right_label, split, right, length);
+  }
+}
+
 // The score for an edge incoming to node (label, left, right).
 // Note that all edges incoming to a node get the same score.
-double GetEdgeScore(int label,
+double FactorTree::GetEdgeScore(int label,
                     int left,
                     int right,
                     const vector<double> &variable_log_potentials) {
-  int index = index_nodes_[label][left][right];
+  std::cout << "FactorTree.cc >> GetEdgeScore >>  " << label << " " << left << " " << right << std::endl;
+  std::cout << "FactorTree.cc >> GetEdgeScore >> index_nodes_ size: " << index_nodes_.size();
+
+  int index = index_nodes_[label][left][right];  // FIXME: throws segmentation fault...
+  std::cout << "FactorTree.cc >> GetEdgeScore >> index: " << index << std::endl;
+
   return variable_log_potentials[index];
 }
 
-
 // Decoder for for the forest using the Viterbi algorithm.
 int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
-                           vector<Node> *nodes,
+                           vector<ParseNode> *nodes,
                            double *value) {
+
+  std::cout << "FactorTree.cc >> RunViterbi: " << std::endl;
 
   // Vector of shape [num_labels, length, length] initialized with -1.
   vector<vector<vector<double> > >  chart(
-    num_labels_, vector<vector<double> >(length_, vector<double>(length_, -1))));
+    num_labels_, vector<vector<double> >(length_ + 1, vector<double>(length_ + 1, -1)));
   // Vector of shape [num_labels, length, length, 3] initialized with -1.
   vector<vector<vector<vector<int> > > > path(
-    num_labels_, vector<vector<vector<int> > >(length_, vector<vector<int> >(length_, vector<int>(3, -1)))));
+    num_labels_, vector<vector<vector<int> > >(length_ + 1, vector<vector<int> >(length_ + 1, vector<int>(3, -1))));
   // Source: https://stackoverflow.com/questions/29305621/problems-using-3-dimensional-vector
+
+  std::cout << "FactorTree.cc >> RunViterbi >> chart size: " << chart.size() << chart[0].size() << chart[0][0].size() << std::endl;
+  std::cout << "FactorTree.cc >> RunViterbi >> path size: " << path.size() << path[0].size() << path[0][0].size() << path[0][0][0].size() << std::endl;
+
+  int root = 0;
+  double best_value;
 
   // Visit nodes of the complete forest in topological order.
   for (int s = 1; s < length_ + 1; ++s) {
@@ -56,7 +89,6 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
           // Get the best incoming edge (k, B, C),
           // where k is the split-point and B, C
           // the left and right child label respectively.
-          double best_value;
           int best = -1;
           int best_split;
           int best_left_label;
@@ -90,7 +122,7 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
             }
 
             // Get the total score of this edge.
-            double val = edge_score + best_left_val + best_right_val;
+            double val = edge_score + best_left_value + best_right_value;
             // Store the current incoming node if it is the best.
             if (best < 0 || val > best_value) {
               best_value = val;
@@ -110,32 +142,8 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
     }
   }
 
-  // Backtrack to obtain the labeled spans
-  // (Nodes) that make up the Viterbi tree.
-  void Backtrack(vector<vector<vector<vector<int> > > > path,  // TODO: make this a pointer?
-                 vector<Node> *nodes,
-                 int label,
-                 int left,
-                 int right) {
-    // Add the node to the list of nodes.
-    nodes->push_back(Node(label, left, right));  // TODO: is this really all correct? Pointers and all??
-    // If the node spans more than one word we recursively
-    // add the children.
-    if (right > left + 1) {
-      split = path[root][0][length_][0];
-      left_label = path[root][0][length_][1];
-      right_label = path[root][0][length_][2];
-      Backtrack(path, nodes, left_label, left, split);
-      Backtrack(path, nodes, right_label, split, right);
-    }
-    // TODO: resize nodes to be of the right size
-  }
 
-  // Path backrackin puts the recognized nodes in `nodes`.
-  Backtrack(path, nodes, root, 0, length_, index);
-
-  // Store the value of the viterbi tree.
-  *value = best_value;
+  std::cout << "FactorTree.cc >> RunViterbi >> best_value: " << best_value << std::endl;
 
   // Path (node sequence) backtracking.
   // vector<int> *sequence = static_cast<vector<int>*>(configuration);
@@ -145,7 +153,13 @@ int FactorTree::RunViterbi(const vector<double>& variable_log_potentials,
   //   (*sequence)[i - 1] = path[i][(*sequence)[i]];
   // }
 
-} // RunViterbi
+  // Path backracking puts the recognized nodes in `nodes`.
+  Backtrack(path, nodes, root, 0, length_, length_);
+
+  // Store the value of the viterbi tree.
+  *value = best_value;
+
+  } // RunViterbi
 
 } // namespace AD3
 

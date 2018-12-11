@@ -14,45 +14,64 @@
 using namespace dynet;
 using std::string;
 using std::vector;
-using sparsemap::FactorTree;
+// using sparsemap::FactorTree;
 
 namespace ei = Eigen;
 
-// ******************************************* //
-// TODO: understand and change these.
-size_t SparseMST::aux_storage_size() const
+// size_t SparseMST::aux_storage_size() const
+// {
+//     return (sizeof(int) * ((length_ * max_iter_) + 1) +
+//             sizeof(float) * (max_iter_ + 1) * (max_iter_ + 1));
+// }
+// TODO: is this correct? num_nodes_ instead of length_?
+// That is not the size of one configuration...
+size_t SparseParse::aux_storage_size() const
 {
-    return (sizeof(int) * ((length_ * max_iter_) + 1) +
+    return (sizeof(int) * ((num_nodes_ * max_iter_) + 1) +
             sizeof(float) * (max_iter_ + 1) * (max_iter_ + 1));
 }
 
 /* very evil pointer arithmetic. look away for 3 rows */
-float* SparseMST::get_inv_A_ptr() const {
+// float* SparseMST::get_inv_A_ptr() const {
+//     int* aux = static_cast<int*>(aux_mem);
+//     return static_cast<float*>(
+//         static_cast<void*>(1 + aux + (length_ * max_iter_)));
+// }
+float* SparseParse::get_inv_A_ptr() const {
+    // A_inv is stored at the end of the auxilliary memory?
     int* aux = static_cast<int*>(aux_mem);
     return static_cast<float*>(
-        static_cast<void*>(1 + aux + (length_ * max_iter_)));
+        static_cast<void*>(1 + aux + (num_nodes_ * max_iter_)));
 }
 
 
-int SparseMST::get_n_active() const {
+int SparseParse::get_n_active() const {
+    // Apparently, the first entry of aux_mem contains the size
+    // of the memory (number of active configurations in this case).
     int* aux = static_cast<int*>(aux_mem);
     return aux[0];
 }
 
 
 /* TODO: can we return the vector by reference here and preserve it */
-vector<int> SparseMST::get_config(size_t i) const
+// vector<int> SparseMST::get_config(size_t i) const
+// {
+//     int* active_set_ptr = 1 + static_cast<int*>(aux_mem);
+//     return vector<int>(active_set_ptr + length_ * i,
+//                        active_set_ptr + length_ * (i + 1));
+// }
+vector<int> SparseParse::get_config(size_t i) const
 {
+    // NOTE: aux_mem is a Dynet variable that can be requested always (availlable globally?)
+    // NOTE: the first integer holds the size of the memory.
     int* active_set_ptr = 1 + static_cast<int*>(aux_mem);
-    return vector<int>(active_set_ptr + length_ * i,
-                       active_set_ptr + length_ * (i + 1));
+    return vector<int>(active_set_ptr + num_nodes_ * i,
+                       active_set_ptr + num_nodes_ * (i + 1));
 }
-
-// ******************************************* //
 
 /**
  * \brief Solves the SparseMAP optimization problem for tree factor
- * \param x Node potentials (= edge potentials!) in topological order
+ * \param x ParseNode potentials (= edge potentials!) in topological order
  * \param n_active Location where support size will be stored
  * \param active_set_ptr Location where the active set will be stored
  * \param distribution_ptr Location where the posterior weights will be stored
@@ -72,7 +91,7 @@ void SparseParse::sparsemap_decode(const Tensor* x,
     // factor_graph.SetVerbosity(3);
     vector<AD3::BinaryVariable*> vars;
     // The nodes that will be used in Initialize
-    vector<Node*> nodes;
+    vector<AD3::ParseNode*> nodes;
 
     // Instantiate variable for each arc.
     // for (int m = 1; m < length_; ++m)
@@ -81,15 +100,14 @@ void SparseParse::sparsemap_decode(const Tensor* x,
     //             vars.push_back(factor_graph.CreateBinaryVariable());
 
     // Instantiate a variable for each node in topological order.
-    // Given that the factor for an edge is only
-    // dependent on the head node of the edge we
-    // use log potentials only for nodes.
+    // Given that the factor for an edge is only dependent on the head
+    // node of the edge we require only one log-potential for each node.
     // See FactorTree::RunViterbi for a detailed illustration.
     for (int s = 1; s < length_ + 1; ++s) {
       for (int i = 0; i < length_ + 1 - s; i++) {
         int j = i + s;  // span of length s from i to j
         for (int l = 0; l < num_labels_; l++) {
-          Node *node = new Node(l, i, j);
+          AD3::ParseNode *node = new AD3::ParseNode(l, i, j);
           nodes.push_back(node);
           vars.push_back(factor_graph.CreateBinaryVariable());
           // TODO: figure out, do we need more binary variables?? E.g. one for each edge?
@@ -97,13 +115,24 @@ void SparseParse::sparsemap_decode(const Tensor* x,
       }
     }
 
+    std::cout << "sparseparse.cc >> Size of nodes: " << nodes.size() << std::endl;
+
+    // num_nodes_ = nodes.size()
+
     // input potentials
-    vector<double> unaries_in(xvec.data(), xvec.data() + xvec.size());
+    vector<double> unaries_in(xvec.data(), xvec.data() + xvec.size());  // WHY xvec.data() + xvec.size() ???
+
+    std::cout << "sparseparse.cc >> Size of input potentials: " << unaries_in.size() << std::endl;
+    std::cout << "sparseparse.cc >> Data of input potentials: ";
+    for (auto const& c : unaries_in)
+      std::cout << c << ' ';
+    std::cout << std::endl;
 
     // output variables (additionals will be unused)
     vector<double> unaries_post;
     vector<double> additionals;
-    FactorTree tree_factor;
+    // FactorTree tree_factor;
+    AD3::FactorTree tree_factor;
 
     factor_graph.DeclareFactor(&tree_factor, vars, false);
     tree_factor.SetQPMaxIter(max_iter_);
@@ -125,13 +154,16 @@ void SparseParse::sparsemap_decode(const Tensor* x,
     // for(auto &&v : distribution) std::cout << v << " ";
     // std::cout << std::endl;
 
-    int* active_set_moving_ptr = active_set_ptr;
-    for (auto&& cfg_ptr : active_set)
-    {
-        auto cfg = static_cast<vector<int>*>(cfg_ptr);
-        std::copy(cfg->begin(), cfg->end(), active_set_moving_ptr);
-        active_set_moving_ptr += cfg->size();
-    }
+    // TODO: also fix this because some kind of conversion of the
+    // configuration is taking place here.
+    // NOTE: is this used anywhere???
+    // int* active_set_moving_ptr = active_set_ptr;
+    // for (auto&& cfg_ptr : active_set)  // active set is of type vector<Configuration>
+    // {
+    //     auto cfg = static_cast<vector<int>*>(cfg_ptr);  // convert the cfg_ptr to a pointer to heads
+    //     std::copy(cfg->begin(), cfg->end(), active_set_moving_ptr);
+    //     active_set_moving_ptr += cfg->size();
+    // }
 
     auto inverse_A = tree_factor.GetQPInvA();
     std::copy(inverse_A.begin(), inverse_A.end(), inverse_A_ptr);
@@ -152,7 +184,7 @@ void SparseParse::sparsemap_decode(const Tensor* x,
  * b_bar(x) is the vector of total scores for the configurations in the support
  *
  */
-void SparseMST::backward_restricted(const eivector& dEdf_bar, Tensor& dEdx)
+void SparseParse::backward_restricted(const eivector& dEdf_bar, Tensor& dEdx)
 const
 {
 
@@ -179,7 +211,22 @@ const
     auto second_term = (first_term.sum() * S.rowwise().sum()) / S.sum();
     auto dEdb_bar = first_term - second_term.transpose();
 
-
+    // TODO!
+    // map gradients back to the unaries that contribute to them
+    // (sparse multiplication by M)
+    for (int i = 0; i < n_active ; ++i)
+    {
+        // A configuration is a list of heads. In our case,
+        // a configuration is variable length...
+        for (int mod = 1; mod < length_; ++mod)
+        {
+            size_t mod_address = (i * length_) + mod;
+            int head = active_set_ptr[mod_address];
+            mat(dEdx)(head, mod - 1) += dEdb_bar(i);
+        }
+    }
+}
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% //
 
 string SparseParse::as_string(const vector<string>& arg_names) const
 {
@@ -192,7 +239,7 @@ string SparseParse::as_string(const vector<string>& arg_names) const
 Dim SparseParse::dim_forward(const vector<Dim> &xs) const
 {
     DYNET_ARG_CHECK(xs.size() == 1, "SparseParse takes a single input");
-    DYNET_ARG_CHECK(xs[0] == num_nodes_, "input has wrong first dim");
+    // DYNET_ARG_CHECK(xs[0] == num_nodes_, "input has wrong first dim");
     unsigned int d = max_iter_;  // TODO: figure out why this here.
     return Dim({d});
 }

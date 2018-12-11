@@ -1,5 +1,5 @@
-/* SparseMAP in configuration-space with an MST dependency tree factor.
- * Author: vlad@vene.ro
+/* SparseMAP in configuration-space with an labeled-span tree factor.
+ * Author: Daan van Stigt
  * License: Apache 2.0
  */
 
@@ -23,7 +23,9 @@ typedef Eigen::RowVectorXf eivector;
 struct SparseParse : public Node {
 
     size_t length_;
+    size_t num_labels_;
     size_t max_iter_;
+    size_t num_nodes_;
 
     explicit SparseParse(const std::initializer_list<VariableIndex>& a,
                        size_t length, size_t num_labels, size_t max_iter)
