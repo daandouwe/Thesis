@@ -106,14 +106,20 @@ class InternalParseNode(ParseNode):
             label + ':' + span, " ".join(child.linearize() for child in self.children))
 
     def binarize(self):
+
+        def expand(node):
+            if isinstance(node, LeafParseNode):
+                return InternalParseNode((DUMMY,), [node])
+            return node
+
         if len(self.children) == 1:
             assert isinstance(self.children[0], LeafParseNode)
             return InternalParseNode(self.label, self.children)
         if len(self.children) == 2:
-            return InternalParseNode(
-                self.label, [child.binarize() for child in self.children])
+        	return InternalParseNode(
+                self.label, [expand(child).binarize() for child in self.children])
         else:
-            left = self.children[0]
+            left = expand(self.children[0])
             right = InternalParseNode((DUMMY,), self.children[1:])
             return InternalParseNode(
                 self.label, [left.binarize(), right.binarize()])
