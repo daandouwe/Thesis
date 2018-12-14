@@ -69,6 +69,7 @@ class AttentionComposition:
 
         a = dy.transpose(h) * self.V * head  # (seq_len,)
         a = dy.softmax(a, d=0)  # (seq_len,)
+        # a = dy.sparsemax(a)  # (seq_len,)
 
         m = h * a  # (input_size,)
 

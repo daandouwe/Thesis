@@ -37,7 +37,7 @@ def predict_tree_file(args):
     print(f'Predicting trees for lines in `{args.infile}`.')
 
     with open(args.infile, 'r') as f:
-        lines = [fromstring(line.strip()).leaves() for line in f if line.strip()]
+        lines = [fromstring(line.strip()).words() for line in f if line.strip()]
 
     if args.rnng_type == 'disc':
         print('Loading discriminative model...')
@@ -223,7 +223,7 @@ def predict_perplexity(args):
         lines = [line.strip() for line in f.readlines()]
 
     if is_tree(lines[0]):
-        sentences = [list(fromstring(line.strip()).leaves()) for line in lines]
+        sentences = [fromstring(line.strip()).words() for line in lines]
     else:
         sentences = [line.strip().split() for line in lines]
 
@@ -253,7 +253,7 @@ def sample_proposals(args):
         lines = [line.strip() for line in f.readlines()]
 
     if is_tree(lines[0]):
-        sentences = [list(fromstring(line).leaves()) for line in lines]
+        sentences = [fromstring(line).words() for line in lines]
     else:
         sentences = [line.split() for line in lines]
 
@@ -312,7 +312,7 @@ def inspect_model(args):
         lines = [line.strip() for line in f.readlines()]
     lines = lines[:args.max_lines]
     if is_tree(lines[0]):
-        sentences = [list(fromstring(line).leaves()) for line in lines]
+        sentences = [fromstring(line).words() for line in lines]
     else:
         sentences = [line.split() for line in lines]
 
@@ -328,7 +328,6 @@ def inspect_model(args):
         print('  ', head, '|', ' '.join(attentive), f'[{gate:.2f}]')
 
     def parse_with_inspection(model, words):
-        words = list(words)
         model.eval()
         nll = 0.
         model.initialize(model.word_vocab.indices(words))

@@ -104,7 +104,7 @@ class GenerativeDecoder:
                 samples.append((tree, -nll.value()))
 
         # Count and filter
-        samples = self.count_samples(samples)  # [tree, prop_logprob, count]
+        samples = self.count_samples(samples)  # list of tuples (tree, post_logprob, count)
 
         scored = []
         for tree, proposal_logprob, count in samples:
@@ -209,7 +209,7 @@ class GenerativeDecoder:
         nlls = []
         lengths = []
         for i, scored in all_samples.items():
-            # Estimate the map tree by sorting scored according to the joint logprob
+            # Estimate the map tree by sorting the scored tuples according to the joint logprob
             ranked = sorted(scored, reverse=True, key=lambda t: t[2])
             tree, _, _, _ = ranked[0]
 

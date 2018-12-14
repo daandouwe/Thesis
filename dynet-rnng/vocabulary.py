@@ -13,7 +13,6 @@ UNK = '<UNK>'
 
 
 class Vocabulary:
-
     def __init__(self, unk=False):
         self._values = []
         self._indices = {}

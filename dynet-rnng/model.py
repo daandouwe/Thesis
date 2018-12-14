@@ -7,6 +7,7 @@ from embedding import Embedding, FineTuneEmbedding, PretrainedEmbedding
 from encoder import StackLSTM
 from composition import BiRecurrentComposition, AttentionComposition
 from feedforward import Feedforward
+import softmax
 
 
 class DiscRNNG(DiscParser):
@@ -119,8 +120,6 @@ class DiscRNNG(DiscParser):
 
     @property
     def num_params(self):
-        # for p in self.model.parameters_list():
-            # print('{} ||| {:,}'.format(p.name(), np.prod(p.shape())))
         return sum(np.prod(p.shape()) for p in self.model.parameters_list())
 
     def train(self):
@@ -137,7 +136,7 @@ class DiscRNNG(DiscParser):
         """Compute the negative log-likelihood of the tree."""
         assert isinstance(tree, Node), tree
 
-        words = tree.leaves()
+        words = tree.words()
         if is_train:
             words = self.word_vocab.unkify(words)
 
@@ -153,7 +152,6 @@ class DiscRNNG(DiscParser):
 
     def parse(self, words):
         """Greedy decoding for prediction."""
-        words = list(words)
         self.initialize(self.word_vocab.indices(words))
         nll = 0.
         while not self.stack.is_finished():
@@ -176,7 +174,6 @@ class DiscRNNG(DiscParser):
             probs /= probs.sum()
             return probs
 
-        words = list(words)
         self.initialize(self.word_vocab.indices(words))
         nll = 0.
         while not self.stack.is_finished():
@@ -319,7 +316,7 @@ class GenRNNG(GenParser):
         """Compute the negative log-likelihood of the tree."""
         assert isinstance(tree, Node), tree
 
-        words = list(tree.leaves())
+        words = tree.words()
         if is_train:
             unked = self.word_vocab.unkify(words)
         else:
@@ -338,7 +335,7 @@ class GenRNNG(GenParser):
                 nll += dy.pickneglogsoftmax(nt_logits, self._get_nt_id(action_id))
             elif self._is_gen_id(action_id):
                 word_logits = self.f_word(u)
-                # TODO: nll += softmax.css(word_vocab, word_logits, self._get_word_id(action_id))
+                # nll += softmax.css(word_logits, self._get_word_id(action_id), self.word_vocab)
                 nll += dy.pickneglogsoftmax(word_logits, self._get_word_id(action_id))
             self.parse_step(action_id)
         tree.substitute_leaves(iter(words))  # restore original leaves

@@ -140,6 +140,7 @@ class CharEmbedding:
 
     def __call__(self, word):
         assert isinstance(word, str)
+
         chars = [char_vocab.index_or_unk(char, self.UNK)
             for char in [self.START] + list(word) + [self.STOP]]
         char_lstm_outputs = self.char_lstm.transduce([
@@ -147,6 +148,7 @@ class CharEmbedding:
         char_encoding = self.output(dy.concatenate([
             char_lstm_outputs[-1][:self.char_lstm_dim],
             char_lstm_outputs[0][self.char_lstm_dim:]]))
+
         return char_encoding
 
     @property

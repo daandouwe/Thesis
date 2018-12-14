@@ -45,7 +45,7 @@ class Stack:
     def open(self, nt_id):
         emb = self.nt_embedding[nt_id]
         self.encoder.push(emb)
-        subtree = InternalNode(self.nt_vocab.value(nt_id))
+        subtree = InternalNode(self.nt_vocab.value(nt_id), children=[])
         self.attach_subtree(subtree)
         self._stack.append(StackElement(nt_id, emb, subtree, True))
         self._num_open_nts += 1

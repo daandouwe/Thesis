@@ -1,23 +1,30 @@
+import collections.abc
+
 from actions import SHIFT, NT, GEN, REDUCE
 
 
-class Node:
+TOP = 'TOP'
+DUMMY = '@'
+
+
+class Node(object):
     pass
 
 
 class InternalNode(Node):
-    def __init__(self, label):
-        assert isinstance(label, str), label
+    def __init__(self, label, children):
+        assert isinstance(label, str)
+        assert isinstance(children, list)
 
         self.label = label
-        self.children = []
+        self.children = children
 
     def add_child(self, child):
-        assert isinstance(child, Node), child
+        assert isinstance(child, Node)
         self.children.append(child)
 
     def add_children(self, children):
-        assert isinstance(children, list), children
+        assert isinstance(children, list)
         for child in children:
             self.add_child(child)
 
@@ -26,22 +33,25 @@ class InternalNode(Node):
 
     def __repr__(self):
         children = [child.label for child in self.children]
-        return 'InternalNode(head={}, children=({}))'.format(self.label, ', '.join(children))
+        return 'InternalNode(head={}, children=({}))'.format(
+            self.label, ', '.join(children))
 
     def linearize(self, with_tag=True):
-        return "({} {})".format(
-            self.label, " ".join(child.linearize(with_tag) for child in self.children))
+        return '({} {})'.format(
+            self.label, ' '.join(child.linearize(with_tag) for child in self.children))
 
     def leaves(self):
-        for child in self.children:
-            yield from child.leaves()
+        return [leaf for child in self.children for leaf in child.leaves()]
 
     def tags(self):
-        for child in self.children:
-            yield from child.tags()
+        return [tag for child in self.children for tag in child.tags()]
+
+    def words(self):
+        return [word for child in self.children for word in child.words()]
 
     def labels(self):
-        return [self.label] + [label for child in self.children for label in child.labels()]
+        return [self.label] + \
+            [label for child in self.children for label in child.labels()]
 
     def gen_oracle(self):
         """Top-down generative oracle."""
@@ -59,6 +69,26 @@ class InternalNode(Node):
         for child in self.children:
             child.substitute_leaves(words)
 
+    def convert(self, index=0):
+        tree = self
+        sublabels = [self.label]
+
+        # collapse unary chains
+        while len(tree.children) == 1 and isinstance(
+                tree.children[0], InternalNode):
+            tree = tree.children[0]
+            sublabels.append(tree.label)
+
+        children = []
+        for child in tree.children:
+            children.append(child.convert(index=index))
+            index = children[-1].right
+
+        return InternalSpanNode(tuple(sublabels), children)
+
+    def cnf(self):
+        return self.convert().binarize()
+
 
 class LeafNode(Node):
     def __init__(self, word, label='*'):
@@ -72,19 +102,22 @@ class LeafNode(Node):
         return self.linearize()
 
     def __repr__(self):
-        return 'LeafNode({!r}, {:})'.format(self.word, self.label)
+        return 'LeafNode({}, {})'.format(self.word, self.label)
 
     def linearize(self, with_tag=True):
         if with_tag:
-            return "({} {})".format(self.label, self.word)
+            return '({} {})'.format(self.label, self.word)
         else:
-            return "{}".format(self.word)
+            return '{}'.format(self.word)
 
     def leaves(self):
-        yield self.word
+        return [self]
+
+    def words(self):
+        return [self.word]
 
     def tags(self):
-        yield self.label
+        return [self.label]
 
     def labels(self):
         return []
@@ -98,8 +131,152 @@ class LeafNode(Node):
     def substitute_leaves(self, words):
         self.word = next(words)
 
+    def convert(self, index=0):
+        return LeafSpanNode(index, self.label, self.word)
 
-def fromstring(tree):
+
+class SpanNode(object):
+    pass
+
+
+class InternalSpanNode(SpanNode):
+    def __init__(self, label, children):
+        assert isinstance(label, tuple)
+        assert all(isinstance(sublabel, str) for sublabel in label)
+        assert label
+        self.label = label
+
+        assert isinstance(children, collections.abc.Sequence)
+        assert all(isinstance(child, SpanNode) for child in children)
+        assert children
+        assert len(children) > 1 or isinstance(children[0], LeafSpanNode)
+        assert all(
+            left.right == right.left
+            for left, right in zip(children, children[1:]))
+        self.children = tuple(children)
+
+        self.left = children[0].left
+        self.right = children[-1].right
+
+    @property
+    def is_dummy(self):
+        return self.label == (DUMMY,)
+
+    def spans(self):
+        return [(self.left, self.right, self.label)] + \
+            [span for child in self.children for span in child.spans()]
+
+    def labels(self):
+        return [self.label] + \
+            [label for child in self.children for label in child.labels()]
+
+    def leaves(self):
+        return [leaf for child in self.children for leaf in child.leaves()]
+
+    def tags(self):
+        return [tag for child in self.children for tag in child.tags()]
+
+    def words(self):
+        return [word for child in self.children for word in child.words()]
+
+    def convert(self):
+        children = [child.convert() for child in self.children]
+        tree = InternalNode(self.label[-1], children)
+        for sublabel in reversed(self.label[:-1]):
+            tree = InternalNode(sublabel, [tree])
+        return tree
+
+    def linearize(self, with_tag=True):
+        span = str(self.left) + '-' + str(self.right)
+        label = '+'.join(self.label)
+        return '({} {})'.format(
+            label + ':' + span, ' '.join(child.linearize(with_tag) for child in self.children))
+
+    def binarize(self):
+
+        def expand(node):
+            if isinstance(node, LeafSpanNode):
+                return InternalSpanNode((DUMMY,), [node])
+            return node
+
+        if len(self.children) == 1:
+            assert isinstance(self.children[0], LeafSpanNode)
+            return InternalSpanNode(self.label, self.children)
+        if len(self.children) == 2:
+        	return InternalSpanNode(
+                self.label, [expand(child).binarize() for child in self.children])
+        else:
+            left = expand(self.children[0])
+            right = InternalSpanNode((DUMMY,), self.children[1:])
+            return InternalSpanNode(
+                self.label, [left.binarize(), right.binarize()])
+
+    def unbinarize(self):
+        # absorb empty children until none are empty
+        children = self.children
+        while not all(not child.is_dummy for child in children):
+            new = ()
+            for child in children:
+                if child.is_dummy:
+                    for grandchild in child.children:
+                        new += (grandchild,)
+                else:
+                    new += (child,)
+            children = new
+        # recursively unbinarize the children
+        children = tuple((child.unbinarize() for child in children))
+        return InternalSpanNode(self.label, children)
+
+    def un_cnf(self):
+        return self.unbinarize().convert()
+
+
+class LeafSpanNode(SpanNode):
+    def __init__(self, index, tag, word):
+        assert isinstance(index, int)
+        assert index >= 0
+        self.left = index
+        self.right = index + 1
+
+        assert isinstance(tag, str)
+        self.tag = tag
+
+        assert isinstance(word, str)
+        self.word = word
+
+    def spans(self):
+        return []
+
+    def labels(self):
+        return []
+
+    def leaves(self):
+        yield self
+
+    def words(self):
+        yield self.word
+
+    def convert(self):
+        return LeafNode(self.word, self.tag)
+
+    def linearize(self, with_tag=True):
+        if with_tag:
+            return '({} {})'.format(self.tag, self.word)
+        else:
+            return '{}'.format(self.word)
+
+    def binarize(self):
+        return self
+
+    def unbinarize(self):
+        return self
+
+    @property
+    def is_dummy(self):
+        return False
+
+
+def fromstring(tree, strip_top=False):
     """Return a tree from a string."""
     assert isinstance(tree, str), tree
     assert len(tree) > 0
@@ -120,9 +297,7 @@ def fromstring(tree):
 
             if tokens[index] == "(":
                 children, index = helper(index)
-                node = InternalNode(label)
-                node.add_children(children)
-                trees.append(node)
+                trees.append(InternalNode(label, children))
             else:
                 word = tokens[index]
                 index += 1
@@ -138,7 +313,13 @@ def fromstring(tree):
     trees, index = helper(0)
     assert index == len(tokens)
 
-    return trees.pop()
+    tree = trees.pop()
+    if strip_top:
+        if tree.label == TOP:
+            assert len(tree.children) == 1
+            tree = tree.children[0]
+
+    return tree
 
 
 def add_dummy_tags(tree, tag='*'):
@@ -172,3 +353,29 @@ def add_dummy_tags(tree, tag='*'):
             i += 1
     assert i == max_idx, i
     return new_tree
+
+
+if __name__ == '__main__':
+
+    from nltk import Tree
+    from nltk.draw.tree import TreeView
+
+    with open('/Users/daan/data/ptb-benepar/22.auto.clean') as f:
+        lines = [line.strip() for line in f.readlines()]
+
+    tree = fromstring(lines[10], strip_top=True)
+    convert = tree.convert()
+    binary = convert.binarize()
+    unbinary = convert.binarize().unbinarize()
+
+    assert tree.cnf().un_cnf().linearize() == tree.linearize()
+
+    tree = Tree.fromstring(tree.linearize())
+    convert = Tree.fromstring(convert.linearize())
+    binary = Tree.fromstring(binary.linearize())
+    unbinary = Tree.fromstring(unbinary.linearize())
+
+    TreeView(tree)._cframe.print_to_file('images/tree.ps')
+    TreeView(convert)._cframe.print_to_file('images/convert.ps')
+    TreeView(binary)._cframe.print_to_file('images/binary.ps')
+    TreeView(unbinary)._cframe.print_to_file('images/unbinary.ps')

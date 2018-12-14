@@ -169,7 +169,7 @@ class Trainer:
                 vocab = json.load(f)
             words = [word for word, count in vocab.items() for _ in range(count)] + [UNK]
         else:
-            words = [word for tree in train_treebank for word in tree.leaves()] + [UNK]
+            words = [word for tree in train_treebank for word in tree.words()] + [UNK]
         nonterminals = [label for tree in train_treebank for label in tree.labels()]
 
         word_vocab = Vocabulary.fromlist(words, unk=True)
@@ -428,7 +428,7 @@ class Trainer:
         trees = []
         for gold in tqdm(examples):
             dy.renew_cg()
-            tree, *rest = self.rnng.parse(gold.leaves())
+            tree, *rest = self.rnng.parse(gold.words())
             trees.append(tree.linearize())
         self.rnng.train()
         return trees
@@ -698,7 +698,7 @@ class SemiSupervisedTrainer:
 
         # TODO: Here we should load the vocabulary from the saved model!
         print("Constructing vocabularies...")
-        words = [word for tree in train_treebank for word in tree.leaves()] + [UNK]
+        words = [word for tree in train_treebank for word in tree.words()] + [UNK]
         nonterminals = [label for tree in train_treebank for label in tree.labels()]
 
         word_vocab = Vocabulary.fromlist(words, unk=True)
@@ -1387,7 +1387,7 @@ class WakeSleepTrainer:
             ]
 
         print("Constructing vocabularies...")
-        words = [word for tree in train_treebank for word in tree.leaves()] + [UNK]
+        words = [word for tree in train_treebank for word in tree.words()] + [UNK]
         nonterminals = [label for tree in train_treebank for label in tree.labels()]
 
         word_vocab = Vocabulary.fromlist(words, unk=True)
@@ -1659,7 +1659,7 @@ class WakeSleepTrainer:
         trees = []
         for tree in tqdm(examples):
             dy.renew_cg()
-            tree, *rest = self.post_model.parse(list(tree.leaves()))
+            tree, *rest = self.post_model.parse(tree.words())
             trees.append(tree.linearize())
         self.post_model.train()
         return trees
@@ -1696,7 +1696,7 @@ class WakeSleepTrainer:
         pp = 0.
         for tree in tqdm(self.dev_treebank):
             dy.renew_cg()
-            pp += decoder.perplexity(list(tree.leaves()))
+            pp += decoder.perplexity(tree.words())
         avg_pp = pp / len(self.dev_treebank)
 
         self.current_dev_perplexity = dev_perplexity
@@ -2333,7 +2333,7 @@ class UnsupervisedTrainer:
         trees = []
         for tree in tqdm(treebank):
             dy.renew_cg()
-            tree, _ = self.post_model.parse(list(tree.leaves()))
+            tree, _ = self.post_model.parse(tree.words())
             print(tree.linearize(with_tag=False))
             trees.append(tree.linearize())
         self.post_model.train()
