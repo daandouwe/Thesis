@@ -15,10 +15,10 @@ def main():
         '/Users/daan/data/ptb-benepar/02-21.10way.clean', strip_top=True)
 
     # Convert each tree to CNF
-    treebank = [tree.convert().binarize() for tree in treebank[:1000]]
+    treebank = [tree.cnf() for tree in treebank[:10000]]
 
     # Obtain the word an label vocabularies
-    words = [leaf.word for tree in treebank for leaf in tree.leaves()]
+    words = [word for tree in treebank for word in tree.words()]
     labels = [label for tree in treebank for label in tree.labels()]
 
     word_vocab = vocabulary.Vocabulary()
@@ -40,24 +40,24 @@ def main():
         model,
         word_vocab,
         label_vocab,
-        word_embedding_dim=10,
-        lstm_layers=1,
-        lstm_dim=10,
-        span_hidden_dim=10,
-        label_hidden_dim=10,
-        dropout=0.,
+        word_embedding_dim=100,
+        lstm_layers=2,
+        lstm_dim=256,
+        span_hidden_dim=256,
+        label_hidden_dim=256,
+        dropout=0.5,
     )
     optimizer = dy.AdamTrainer(model)
 
     total_loss = 0
 
+    test_tree = treebank[3]
+
     for i, tree in enumerate(treebank, 1):
         dy.renew_cg()
 
-        words = [leaf.word for leaf in tree.leaves()]
-
         t0 = time.time()
-        loss, _, _ = parser.parse(words, gold=tree)
+        loss = parser.forward(tree)
         t1 = time.time()
 
         loss.forward()
@@ -68,7 +68,17 @@ def main():
 
         total_loss += loss.value()
 
-        print('step', i, 'loss', round(total_loss/i, 2), 'forward-time', round(t1-t0, 3), 'backward-time', round(t2-t1, 3), 'length', len(words))
+        print('step', i, 'loss', round(total_loss/i, 2), 'forward-time', round(t1-t0, 3), 'backward-time', round(t2-t1, 3))
+
+        if i % 50 == 0:
+            pred, _ = parser.parse(test_tree.words())
+            print('='*50)
+            print('>', test_tree.un_cnf().linearize())
+            print('>', pred.un_cnf().linearize())
+            samples = parser.sample(test_tree.words(), num_samples=20)
+            for tree, _ in samples:
+                print('>', tree.un_cnf().linearize())
+            print('='*50)
 
 
 if __name__ == '__main__':

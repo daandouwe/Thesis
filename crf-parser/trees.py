@@ -40,6 +40,9 @@ class InternalTreebankNode(TreebankNode):
 
         return InternalParseNode(tuple(sublabels), children)
 
+    def cnf(self):
+        return self.convert().binarize()
+
 class LeafTreebankNode(TreebankNode):
     def __init__(self, tag, word):
         assert isinstance(tag, str)
@@ -91,6 +94,9 @@ class InternalParseNode(ParseNode):
     def leaves(self):
         for child in self.children:
             yield from child.leaves()
+
+    def words(self):
+        return [word for child in self.children for word in child.words()]
 
     def convert(self):
         children = [child.convert() for child in self.children]
@@ -144,6 +150,8 @@ class InternalParseNode(ParseNode):
     def is_dummy(self):
         return self.label == (DUMMY,)
 
+    def un_cnf(self):
+        return self.unbinarize().convert()
 
 class LeafParseNode(ParseNode):
     def __init__(self, index, tag, word):
@@ -167,6 +175,9 @@ class LeafParseNode(ParseNode):
     def leaves(self):
         yield self
 
+    def words(self):
+        yield self.word
+
     def convert(self):
         return LeafTreebankNode(self.tag, self.word)
 
@@ -182,7 +193,6 @@ class LeafParseNode(ParseNode):
     @property
     def is_dummy(self):
         return False
-
 
 def load_trees(path, strip_top=True):
     with open(path) as infile:
