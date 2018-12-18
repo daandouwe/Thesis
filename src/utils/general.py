@@ -8,7 +8,7 @@ def ceil_div(a, b):
 
 
 def get_folders(args):
-    # Create folders for logging and checkpoints
+    """Create paths for logging and checkpoints."""
     if args.disable_subdir:
         subdir, logdir, checkdir, outdir = (
             None, args.logdir, args.checkdir, args.outdir)
@@ -21,27 +21,14 @@ def get_folders(args):
 
 
 def get_subdir_string(args, with_params=True):
-    """Returns a concatenation of a date and timestamp and parameters.
-
-    Example:
-        20170524_192314
-    """
+    """Returns a concatenation of a date and timestamp."""
     date = time.strftime('%Y%m%d')
     timestamp = time.strftime('%H%M%S')
     return f'{date}_{timestamp}'
 
 
 def write_args(args, logdir, positional=('mode',)):
-    """Writes args to a file to be later used as input in the command line.
-
-    Only works for arguments with double dash, e.g. --verbose, and
-    positional arguments are not printed.
-
-    Arguments:
-        positional (tuple): the positional arguments in args that are skipped
-
-    TODO: There should be a more robust way to do this!
-    """
+    """Writes args to a file to be later used as input in the command line."""
     with open(os.path.join(logdir, 'args.txt'), 'w') as f:
         for k, v in vars(args).items():
             if k not in positional: # skip positional arguments
@@ -54,6 +41,14 @@ def write_losses(args, losses):
         print('loss', file=f)
         for loss in losses:
             print(loss, file=f)
+
+
+def blockgrad(expression):
+    """Detach a dynet expression from the computation graph"""
+    if isinstance(expression, dy.Expression):
+        return expression.value()
+    else:  # already detached
+        return expression
 
 
 class Timer:
@@ -99,124 +94,38 @@ class Timer:
         self.previous = time.time()
 
 
-def replace_quotes(words):
-    """Replace quotes following PTB convention"""
-    assert isinstance(words, list), words
-    assert all(isinstance(word, str) for word in words), words
+class Config(object):
+    """Class that loads hyperparameters from json file into attributes"""
 
-    replaced = []
-    found_left_double, found_left_single = False, False
-    for word in words:
-        if word == '"':
-            if found_left_double:
-                found_left_double = False
-                replaced.append("''")
-            else:
-                found_left_double = True
-                replaced.append("``")
-        elif word == "'":
-            if found_left_double:
-                found_left_double = False
-                replaced.append("'")
-            else:
-                found_left_double = True
-                replaced.append("`")
+    def __init__(self, source):
+        """
+        Args:
+            source: path to json file or dict
+        """
+        self.source = source
+
+        if type(source) is dict:
+            self.__dict__.update(source)
+        elif type(source) is list:
+            for s in source:
+                self.load_json(s)
         else:
-            replaced.append(word)
-    return replaced
+            self.load_json(source)
 
 
-def replace_brackets(words):
-    """Replace brackets following PTB convention"""
-    assert isinstance(words, list), words
-    assert all(isinstance(word, str) for word in words), words
+    def load_json(self, source):
+        with open(source) as f:
+            data = json.load(f)
+            self.__dict__.update(data)
 
-    replaced = []
-    for word in words:
-        if word == '(':
-            replaced.append('LRB')
-        elif word == '{':
-            replaced.append('LCB')
-        elif word == '[':
-            replaced.append('LSB')
-        elif word == ')':
-            replaced.append('RRB')
-        elif word == '}':
-            replaced.append('RCB')
-        elif word == ']':
-            replaced.append('RSB')
+
+    def save(self, dir_name):
+        init_dir(dir_name)
+        if type(self.source) is list:
+            for s in self.source:
+                c = Config(s)
+                c.save(dir_name)
+        elif type(self.source) is dict:
+            json.dumps(self.source, indent=4)
         else:
-            replaced.append(word)
-    return replaced
-
-
-def unkify(token, words_dict):
-    """Elaborate UNKing following parsing tradition."""
-    if len(token.rstrip()) == 0:
-        final = 'UNK'
-    else:
-        numCaps = 0
-        hasDigit = False
-        hasDash = False
-        hasLower = False
-        for char in token.rstrip():
-            if char.isdigit():
-                hasDigit = True
-            elif char == '-':
-                hasDash = True
-            elif char.isalpha():
-                if char.islower():
-                    hasLower = True
-                elif char.isupper():
-                    numCaps += 1
-        result = 'UNK'
-        lower = token.rstrip().lower()
-        ch0 = token.rstrip()[0]
-        if ch0.isupper():
-            if numCaps == 1:
-                result = result + '-INITC'
-                if lower in words_dict:
-                    result = result + '-KNOWNLC'
-            else:
-                result = result + '-CAPS'
-        elif not(ch0.isalpha()) and numCaps > 0:
-            result = result + '-CAPS'
-        elif hasLower:
-            result = result + '-LC'
-        if hasDigit:
-            result = result + '-NUM'
-        if hasDash:
-            result = result + '-DASH'
-        if lower[-1] == 's' and len(lower) >= 3:
-            ch2 = lower[-2]
-            if not(ch2 == 's') and not(ch2 == 'i') and not(ch2 == 'u'):
-                result = result + '-s'
-        elif len(lower) >= 5 and not(hasDash) and not(hasDigit and numCaps > 0):
-            if lower[-2:] == 'ed':
-                result = result + '-ed'
-            elif lower[-3:] == 'ing':
-                result = result + '-ing'
-            elif lower[-3:] == 'ion':
-                result = result + '-ion'
-            elif lower[-2:] == 'er':
-                result = result + '-er'
-            elif lower[-3:] == 'est':
-                result = result + '-est'
-            elif lower[-2:] == 'ly':
-                result = result + '-ly'
-            elif lower[-3:] == 'ity':
-                result = result + '-ity'
-            elif lower[-1] == 'y':
-                result = result + '-y'
-            elif lower[-2:] == 'al':
-                result = result + '-al'
-        final = result
-    return final
-
-
-def blockgrad(expression):
-    """Detach the expression from the computation graph"""
-    if isinstance(expression, dy.Expression):
-        return expression.value()
-    else:  # already detached
-        return expression
+            copyfile(self.source, dir_name + self.export_name)

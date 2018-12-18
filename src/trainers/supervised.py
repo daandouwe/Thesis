@@ -17,8 +17,8 @@ from rnng.model import DiscRNNG, GenRNNG
 from rnng.components.feedforward import Feedforward, Affine
 from crf.model import ChartParser, START, STOP
 from utils.evalb import evalb
-from utils.general import (Timer, get_folders, write_args, ceil_div,
-    replace_quotes, replace_brackets, unkify)
+from utils.text import replace_quotes, replace_brackets
+from utils.general import Timer, get_folders, write_args, ceil_div
 
 
 class SupervisedTrainer:
@@ -41,9 +41,11 @@ class SupervisedTrainer:
             buffer_lstm_dim=None,
             terminal_lstm_dim=None,
             history_lstm_dim=None,
+            lstm_dim=None,
             lstm_layers=None,
             composition=None,
             f_hidden_dim=None,
+            label_hidden_dim=None,
             max_epochs=inf,
             max_time=inf,
             lr=None,
@@ -83,9 +85,11 @@ class SupervisedTrainer:
         self.buffer_lstm_dim = buffer_lstm_dim
         self.terminal_lstm_dim = terminal_lstm_dim
         self.history_lstm_dim = history_lstm_dim
+        self.lstm_dim = lstm_dim
         self.lstm_layers = lstm_layers
         self.composition = composition
         self.f_hidden_dim = f_hidden_dim
+        self.label_hidden_dim = label_hidden_dim
         self.dropout = dropout
 
         # Training arguments
@@ -190,7 +194,7 @@ class SupervisedTrainer:
         nt_vocab = Vocabulary.fromlist(nonterminals)
 
         if self.parser_type.endswith('rnng'):
-            # Order is very important, see DiscParser class
+            # Order is very important! See for example DiscParser class
             if self.parser_type == 'disc-rnng':
                 actions = [SHIFT, REDUCE] + [NT(label) for label in nt_vocab]
             elif self.parser_type == 'gen-rnng':
@@ -272,8 +276,7 @@ class SupervisedTrainer:
                 word_embedding_dim=self.word_emb_dim,
                 lstm_layers=self.lstm_layers,
                 lstm_dim=self.lstm_dim,
-                span_hidden_dim=self.f_hidden_dim,
-                label_hidden_dim=self.f_hidden_dim,
+                label_hidden_dim=self.label_hidden_dim,
                 dropout=self.dropout,
             )
         self.parser = parser
@@ -441,7 +444,7 @@ class SupervisedTrainer:
         with open(self.state_checkpoint_path, 'w') as f:
             state = {
                 'parser-type': self.parser_type,
-                'epochs': self.current_epoch,
+                'num-epochs': self.current_epoch,
                 'num-updates': self.num_updates,
                 'best-dev-fscore': self.best_dev_fscore,
                 'best-dev-epoch': self.best_dev_epoch,

@@ -1,0 +1,5 @@
+--optimizer=adam
+--lr=0.001
+--batch-size=10
+--print-every=1
+--lr-decay-patience=3

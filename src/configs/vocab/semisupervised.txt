@@ -1,0 +1,4 @@
+--train-path=../data/train/ptb.train.trees
+--unlabeled-path=../data/unlabeled/news.en-00001-of-00100
+--vocab-path=../data/vocab/semisup-vocab.json
+--min-word-count=3

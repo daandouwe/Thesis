@@ -1,0 +1,12 @@
+--parser-type=gen-rnng
+--word-emb-dim=100
+--nt-emb-dim=100
+--action-emb-dim=100
+--stack-lstm-dim=256
+--buffer-lstm-dim=256
+--terminal-lstm-dim=256
+--history-lstm-dim=256
+--lstm-layers=2
+--composition=attention
+--f-hidden-dim=256
+--dropout=0.3

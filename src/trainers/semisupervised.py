@@ -16,8 +16,8 @@ from rnng.decoder import GenerativeDecoder
 from rnng.model import DiscRNNG, GenRNNG
 from rnng.components.feedforward import Feedforward, Affine
 from utils.evalb import evalb
-from utils.general import (Timer, get_folders, write_args, ceil_div,
-    replace_quotes, replace_brackets, unkify, blockgrad)
+from utils.text import replace_quotes, replace_brackets
+from utils.general import Timer, get_folders, write_args, ceil_div, blockgrad
 
 
 class SemiSupervisedTrainer:

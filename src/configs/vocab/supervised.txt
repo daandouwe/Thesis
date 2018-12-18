@@ -1,0 +1,3 @@
+--train-path=../data/train/ptb.train.trees
+--vocab-path=../data/vocab/vocab.json
+--min-word-count=1

@@ -168,7 +168,7 @@ class GenerativeDecoder:
         for i, tree in enumerate(tqdm(examples)):
             dy.renew_cg()
             for _ in range(self.num_samples):
-                tree, nll = self.proposal.sample(list(tree.leaves()), alpha=self.alpha)
+                tree, nll = self.proposal.sample(tree.words(), alpha=self.alpha)
                 samples.append(
                     ' ||| '.join((str(i), str(-nll.value()), tree.linearize(with_tag=False))))
 
@@ -177,9 +177,8 @@ class GenerativeDecoder:
 
     def predict_from_proposal_samples(self, path):
         """
-        Predict MAP trees and perplexity in one run
-        using proposal samples in path. Useful for
-        evaluation during training.
+        Predict MAP trees and perplexity from proposal samples in path.
+        Especially useful for evaluation during training.
         """
 
         # Load scored proposal samples
@@ -219,11 +218,12 @@ class GenerativeDecoder:
             a = weights.max()
             logprob = a + np.log(np.mean(np.exp(weights - a) * counts))  # log-mean-exp for stability
 
-            trees.append(tree.linearize())  # estimate for MAP tree
-            nlls.append(-logprob)  # estimate for -log p(x)
-            lengths.append(len(list(tree.leaves())))  # need for computing total perplexity
+            trees.append(tree.linearize())  # the estimated MAP tree
+            nlls.append(-logprob)  # the estimate for -log p(x)
+            lengths.append(len(tree.words()))  # need for computing total perplexity
 
-        # NOTE: we compute perplexity as average over words!
+        # NOTE: we compute perplexity as average over words,
+        # which is correct, and not averaged over sentences.
         perplexity = np.exp(np.sum(nlls) / np.sum(lengths))
 
         return trees, perplexity

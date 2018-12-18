@@ -1,3 +1,7 @@
+"""
+Evaluate tagging accuracy on the sentiment treebank.
+"""
+
 import sys
 
 from tree import fromstring

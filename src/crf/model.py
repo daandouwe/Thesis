@@ -22,7 +22,6 @@ class ChartParser(object):
             word_embedding_dim,
             lstm_layers,
             lstm_dim,
-            span_hidden_dim,
             label_hidden_dim,
             dropout,
     ):
@@ -45,8 +44,6 @@ class ChartParser(object):
             self.model,
             dy.VanillaLSTMBuilder)
 
-        self.f_span = Feedforward(
-            self.model, 2 * lstm_dim, [span_hidden_dim], 1)
         self.f_label = Feedforward(
             self.model, 2 * lstm_dim, [label_hidden_dim], label_vocab.size)
 
@@ -65,13 +62,11 @@ class ChartParser(object):
 
     def train(self):
         """Enable dropout."""
-        self.f_span.train()
         self.f_label.train()
         self.lstm.set_dropout(self.dropout)
 
     def eval(self):
         """Disable dropout."""
-        self.f_span.eval()
         self.f_label.eval()
         self.lstm.disable_dropout()
 
@@ -95,35 +90,30 @@ class ChartParser(object):
             return dy.concatenate([forward, backward])
 
         @functools.lru_cache(maxsize=None)
-        def get_span_score(left, right):
-            return self.f_span(get_span_encoding(left, right))
-
-        @functools.lru_cache(maxsize=None)
         def get_label_scores(left, right):
             return self.f_label(get_span_encoding(left, right))
 
         label_scores = {}
-        span_scores = {}
+
         for length in range(1, len(words) + 1):
             for left in range(0, len(words) + 1 - length):
                 right = left + length
-                span_scores[left, right] = get_span_score(left, right)
                 label_scores[left, right] = get_label_scores(left, right)
 
-        return span_scores, label_scores
+        return label_scores
 
-    def _score_tree(self, tree, span_scores, label_scores, semiring=LogProbSemiring):
+    def score_tree(self, tree, label_scores, semiring=LogProbSemiring):
         tree_score = semiring.products([
-            semiring.product(
-                span_scores[left, right],
-                label_scores[left, right][self.label_vocab.index(label)])
+            label_scores[left, right][self.label_vocab.index(label)]
             for left, right, label in tree.spans()
         ])
         return tree_score
 
-    def _inside(self, words, span_scores, label_scores, semiring=LogProbSemiring):
+    def inside(self, words, label_scores, semiring=LogProbSemiring):
+
         chart = {}
         summed = {}
+
         for length in range(1, len(words) + 1):
             for left in range(0, len(words) + 1 - length):
                 right = left + length
@@ -139,11 +129,9 @@ class ChartParser(object):
                     ])
 
                 for label, label_index in self.label_vocab.indices.items():
-                    chart[left, right, label] = semiring.products([
-                        span_scores[left, right],
+                    chart[left, right, label] = semiring.product(
                         label_scores[left, right][label_index],
-                        split_sum
-                    ])
+                        split_sum)
 
                 # the dummy node cannot be the top node
                 start = 0 if length < len(words) else 1
@@ -156,23 +144,21 @@ class ChartParser(object):
 
         return chart, lognormalizer
 
-    def _viterbi(self, words, span_scores, label_scores, semiring=LogProbSemiring, tag='*'):
+    def viterbi(self, words, label_scores, semiring=LogProbSemiring, tag='*'):
+
         chart = {}
+
         for length in range(1, len(words) + 1):
             for left in range(0, len(words) + 1 - length):
                 right = left + length
 
-                # Obtain scores
-                span_score = span_scores[left, right]
-                label_scores_ = label_scores[left, right]
-
                 # Determine best label
-                label_scores_np = label_scores_.npvalue()
+                label_scores_np = label_scores[left, right].npvalue()
                 label_index = int(
                     label_scores_np.argmax() if length < len(words) else
                     label_scores_np[1:].argmax() + 1)  # cannot choose dummy node as top node
                 label = self.label_vocab.value(label_index)
-                best_label_score = label_scores_[label_index]
+                label_score = label_scores[left, right][label_index]
 
                 # Determine the best split point
                 if right == left + 1:
@@ -185,21 +171,18 @@ class ChartParser(object):
                         key=lambda split:
                             chart[left, split][1].value() +
                             chart[split, right][1].value())
-                    best_split_score = semiring.product(
-                        chart[left, best_split][1],
-                        chart[best_split, right][1]
-                    )
 
-                    best_left_subtree = chart[left, best_split][0]
-                    best_right_subtree = chart[best_split, right][0]
-                    children = [best_left_subtree, best_right_subtree]
+                    left_subtree, left_score = chart[left, best_split]
+                    right_subtree, right_score = chart[best_split, right]
+
+                    children = [left_subtree, right_subtree]
                     subtree = trees.InternalSpanNode(label, children)
 
-                score = semiring.products([
-                    span_score,
-                    best_label_score,
-                    best_split_score
-                ])
+                    best_split_score = semiring.product(
+                        left_score, right_score)
+
+                score = semiring.product(
+                    label_score, best_split_score)
 
                 chart[left, right] = subtree, score
 
@@ -207,7 +190,7 @@ class ChartParser(object):
 
         return tree, score
 
-    def forward(self, tree, is_train=True):
+    def forward(self, tree, is_train=True, max_margin=False):
         assert isinstance(tree, trees.SpanNode)
 
         words = tree.words()
@@ -218,22 +201,32 @@ class ChartParser(object):
             self.lstm.disable_dropout()
             unked_words = self.word_vocab.process(words)
 
-        span_scores, label_scores = self.get_scores(unked_words)
-        score = self._score_tree(tree, span_scores, label_scores)
-        _, lognormalizer = self._inside(unked_words, span_scores, label_scores)
+        if max_margin:
+            label_scores = self.get_scores(unked_words)
+            pred, pred_score = self.viterbi(words, label_scores)
+            gold_score = self.score_tree(tree, label_scores)
+            correct = pred.un_cnf().linearize() == tree.un_cnf().linearize()
+            loss = dy.zeros(1) if correct else pred_score - gold_score
+            # print('pred', pred_score.value(), 'gold', gold_score.value())
+            # print('>', pred.un_cnf().linearize())
+            # print()
+            return loss
+        else:
+            label_scores = self.get_scores(unked_words)
+            score = self.score_tree(tree, label_scores)
+            _, lognormalizer = self.inside(unked_words, label_scores)
 
-        logprob = score - lognormalizer
-        nll = -logprob
-
-        return nll
+            logprob = score - lognormalizer
+            nll = -logprob
+            return nll
 
     def parse(self, words):
         self.lstm.disable_dropout()
         unked_words = self.word_vocab.process(words)
 
-        span_scores, label_scores = self.get_scores(unked_words)
-        tree, score = self._viterbi(words, span_scores, label_scores)
-        _, lognormalizer = self._inside(words, span_scores, label_scores)
+        label_scores = self.get_scores(unked_words)
+        tree, score = self.viterbi(words, label_scores)
+        _, lognormalizer = self.inside(words, label_scores)
 
         logprob = score - lognormalizer
         nll = -logprob
@@ -272,11 +265,13 @@ class ChartParser(object):
 
         unked_words = self.word_vocab.process(words)
 
-        span_scores, label_scores = self.get_scores(unked_words)
-        chart_dy, lognormalizer = self._inside(words, span_scores, label_scores)
-        chart = {node: np.exp(score.value()) for node, score in chart_dy.items()}
+        label_scores = self.get_scores(unked_words)
+        chart_dy, lognormalizer = self.inside(words, label_scores)
+        chart = {node: np.exp(score.value())
+            for node, score in chart_dy.items()}
 
-        top_label_scores = [chart[0, len(words), label] for label in self.label_vocab.values[1:]]
+        top_label_scores = [chart[0, len(words), label]
+            for label in self.label_vocab.values[1:]]
         top_label_probs = np.array(top_label_scores) / np.sum(top_label_scores)
 
         samples = []
@@ -291,7 +286,7 @@ class ChartParser(object):
             tree = recursion(top_label)
 
             # comput the probability of sampled tree
-            score = self._score_tree(tree, span_scores, label_scores)
+            score = self.score_tree(tree, label_scores)
             logprob = score - lognormalizer
             nll = -logprob
 
@@ -302,56 +297,3 @@ class ChartParser(object):
             return tree, nll
         else:
             return samples
-
-
-def main():
-
-    treebank = trees.load_trees(
-        '/Users/daan/data/ptb-benepar/23.auto.clean', strip_top=True)
-
-    tree = treebank[0].cnf()
-
-    # Obtain the word an label vocabularies
-    words = [UNK, START, STOP] + [word for word in tree.words()]
-    labels = [(trees.DUMMY,)] + [label for tree in treebank[:100] for label in tree.cnf().labels()]
-
-    word_vocab = vocabulary.Vocabulary.fromlist(words, unk_value=UNK)
-    label_vocab = vocabulary.Vocabulary.fromlist(labels)
-
-    model = dy.ParameterCollection()
-    parser = ChartParser(
-        model,
-        word_vocab,
-        label_vocab,
-        word_embedding_dim=100,
-        lstm_layers=2,
-        lstm_dim=100,
-        span_hidden_dim=100,
-        label_hidden_dim=100,
-        dropout=0.,
-    )
-    optimizer = dy.AdamTrainer(model)
-
-    for i in range(1000):
-        dy.renew_cg()
-
-        t0 = time.time()
-        loss = parser.forward(tree)
-        pred, _ = parser.parse(tree.words())
-        sample, _ = parser.sample(tree.words())
-        t1 = time.time()
-
-        loss.forward()
-        loss.backward()
-        optimizer.update()
-
-        t2 = time.time()
-
-        print('step', i, 'loss', round(loss.value(), 2), 'forward-time', round(t1-t0, 3), 'backward-time', round(t2-t1, 3), 'length', len(words))
-        print('>', tree.un_cnf().linearize())
-        print('>', pred.un_cnf().linearize())
-        print('>', sample.un_cnf().linearize())
-        print()
-
-if __name__ == '__main__':
-    main()

@@ -55,11 +55,18 @@ class Vocabulary:
         else:
             return self.indices[self.unk_value]
 
+    def count_or_unk(self, value):
+        assert self.unk_value is not None
+        if value in self.counts:
+            return self.counts[value]
+        else:
+            return self.counts[self.unk_value]
+
     def unkify(self, values):
         assert self.unk_value is not None
         unked = []
         for i, word in enumerate(values):
-            count = self.count(word)
+            count = self.count_or_unk(word)
             if not count or np.random.rand() < 1 / (1 + count):
                 unked.append(self.unk_value)
             else:

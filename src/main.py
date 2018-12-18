@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import os
 import argparse
 from math import inf
@@ -44,6 +43,8 @@ def main():
                         help='unlabeled data for semi-supervised training')
     parser.add_argument('--vocab-path', default=None,
                         help='specify a vocabulary (optional)')
+    parser.add_argument('--min-word-count', default=None,
+                        help='minimal word count')
     parser.add_argument('--root', default='.',
                         help='root dir to make output log and checkpoint folders')
     parser.add_argument('--disable-subdir', action='store_true',
@@ -64,7 +65,7 @@ def main():
                         help='dim of word embeddings')
     parser.add_argument('--nt-emb-dim', type=int, default=100,
                         help='dim of nonterminal embeddings')
-    parser.add_argument('--action-emb-dim', type=int, default=20,
+    parser.add_argument('--action-emb-dim', type=int, default=100,
                         help='dim of nonterminal embeddings')
     parser.add_argument('--stack-lstm-dim', type=int, default=128,
                         help='size of lstm dim states for stack ecoder')
@@ -72,16 +73,18 @@ def main():
                         help='size of lstm hidden states for buffer encoder')
     parser.add_argument('--terminal-lstm-dim', type=int, default=128,
                         help='size of lstm hidden states for terminal encoder')
-    parser.add_argument('--history-lstm-dim', type=int, default=32,
+    parser.add_argument('--history-lstm-dim', type=int, default=128,
                         help='size of lstm hidden states for history encoder')
-    parser.add_argument('--lstm-dim', type=int, default=32,
-                        help='size of lstm hidden for crf parser')
+    parser.add_argument('--lstm-dim', type=int, default=250,
+                        help='size of lstm hidden (crf parser)')
     parser.add_argument('--lstm-layers', type=int, default=2,
                         help='number of layers in lstm')
     parser.add_argument('--composition', default='attention', choices=['basic', 'attention', 'latent-factors'],
                         help='composition function used by StackLSTM')
     parser.add_argument('--f-hidden-dim', type=int, default=128,
-                        help='hidden dimension of scoring feedforward')
+                        help='dimension of all scoring feedforwards')
+    parser.add_argument('--label-hidden-dim', type=int, default=250,
+                        help='dimension of label feedforward (crf parser)')
     parser.add_argument('--use-glove', action='store_true',
                         help='using pretrained glove embeddings')
     parser.add_argument('--glove-dir', default='~/embeddings/glove',
@@ -112,12 +115,6 @@ def main():
                         help='anneal lr by lr /= lr-decay')
     parser.add_argument('--lr-decay-patience', type=int, default=2,
                         help='waiting epochs of deteriorating fscore before applying lr-decay')
-    parser.add_argument('--momentum', type=float, default=0,
-                        help='momentum for sgd')
-    parser.add_argument('--disable-kl-anneal', action='store_false',
-                        help='do not anneal the kl in the elbo objective')
-    parser.add_argument('--disable-glorot', action='store_true',
-                        help='do not override custom lstm initialization with glorot')
     parser.add_argument('--clip', type=float, default=5.,
                         help='clipping gradient norm at this value')
     parser.add_argument('--print-every', type=int, default=10,
@@ -126,10 +123,6 @@ def main():
                         help='evaluate model on development set (default: every epoch (-1))')
     parser.add_argument('--eval-at-start', action='store_true',
                         help='evaluate model on development set at start of training')
-    parser.add_argument('--disable-cuda', action='store_true',
-                        help='disable cuda')
-    parser.add_argument('--num-procs', type=int, default=1,
-                        help='number of processes to spawn for parallel training')
     parser.add_argument('--dev-proposal-samples', default='../data/proposal-samples/dev.props',
                         help='proposal samples for development set')
     parser.add_argument('--test-proposal-samples', default='../data/proposal-samples/test.props',
@@ -137,12 +130,13 @@ def main():
 
     # Semi-supervised arguments
     parser.add_argument('--joint-model-path', default='checkpoints/joint',
-                        help='pretrained joint model (GenRNNG)')
+                        help='pretrained joint model (gen-rnng)')
     parser.add_argument('--post-model-path', default='checkpoints/posterior',
-                        help='pretrained posterior model (DiscRNNG)')
+                        help='pretrained posterior model (disc-rnng or crf)')
     parser.add_argument('--use-argmax-baseline', action='store_true')
 
     parser.add_argument('--use-mlp-baseline', action='store_true')
+
 
     # Predict arguments
     parser.add_argument('--checkpoint', default='',
@@ -179,18 +173,6 @@ def main():
                         help='input file to decode')
     parser.add_argument('--outfile', default='.',
                         help='output file to write to')
-
-    # Latent model arguments:
-    parser.add_argument('--observation-model', choices=['bow', 'rnn', 'heads-rnn', 'crf'], default='bow',
-                        help='type of observation model')
-    parser.add_argument('--latent-dim', type=int, default=100,
-                        help='dimension of latent space')
-    parser.add_argument('--word-dropout', type=float, default=0.,
-                        help='word dropout for rnn observation model')
-    parser.add_argument('--tree-dropout', action='store_true',
-                        help='dynamic dropout for stack representation')
-    parser.add_argument('--use-gating', action='store_true',
-                        help='use gated score for word logits')
 
     args = parser.parse_args()
 

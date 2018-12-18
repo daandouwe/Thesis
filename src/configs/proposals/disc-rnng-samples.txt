@@ -1,0 +1,2 @@
+--dev-proposal-samples=../data/proposal-samples/dev.props
+--test-proposal-samples=../data/proposal-samples/test.props
