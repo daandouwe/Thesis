@@ -1,3 +1,7 @@
+"""
+Build a vocabulary.
+"""
+
 import argparse
 import json
 from collections import Counter
