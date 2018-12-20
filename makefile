@@ -1,5 +1,5 @@
 evalb:
-	scripts/get-evalb.sh
+	scripts/get-evalb.sh 
 
 data:
 	mkdir data && scripts/get-ptb.sh && scripts/get-unlabeled.sh
