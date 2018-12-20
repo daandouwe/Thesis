@@ -38,14 +38,14 @@ semisup-lowercase-vocab:
 # Train a supervised model
 train-disc:
 	python main.py train \
-		--model-path-base=models/disc-rnng \
+	    --model-path-base=models/disc-rnng \
 	    @configs/data/supervised.txt \
 	    @configs/model/disc-rnng.txt \
 	    @configs/training/sgd.txt
 
 train-gen:
 	python main.py train \
-		--model-path-base=models/gen-rnng \
+	    --model-path-base=models/gen-rnng \
 	    @configs/data/supervised.txt \
 	    @configs/model/gen-rnng.txt \
 	    @configs/training/sgd.txt \
@@ -53,14 +53,14 @@ train-gen:
 
 train-crf:
 	python main.py train \
-		--model-path-base=models/crf \
+	    --model-path-base=models/crf \
 	    @configs/data/supervised.txt \
 	    @configs/model/crf.txt \
 	    @configs/training/adam.txt \
 
 train-disc-vocab: semisup-vocab
 	python main.py train \
-		--model-path-base=models/disc-rnng_vocab=semisup \
+	    --model-path-base=models/disc-rnng_vocab=semisup \
 	    @configs/vocab/semisupervised.txt \
 	    @configs/data/supervised.txt \
 	    @configs/model/disc-rnng.txt \
@@ -68,7 +68,7 @@ train-disc-vocab: semisup-vocab
 
 train-gen-vocab: semisup-vocab
 	python main.py train \
-		--model-path-base=models/gen-rnng_vocab=semisup \
+	    --model-path-base=models/gen-rnng_vocab=semisup \
 	    @configs/vocab/semisupervised.txt \
 	    @configs/data/supervised.txt \
 	    @configs/model/gen-rnng.txt \
@@ -77,7 +77,7 @@ train-gen-vocab: semisup-vocab
 
 train-crf-vocab: semisup-vocab
 	python main.py train \
-		--model-path-base=models/crf_vocab=semisup \
+	    --model-path-base=models/crf_vocab=semisup \
 	    @configs/vocab/semisupervised.txt \
 	    @configs/data/supervised.txt \
 	    @configs/model/crf.txt \
@@ -86,7 +86,7 @@ train-crf-vocab: semisup-vocab
 # Finetune models semisupervised
 semisup-rnng:
 	python main.py semisup \
-		--model-path-base=models/semisup_post=disc \
+	    --model-path-base=models/semisup_post=disc \
 	    @configs/data/semisupervised.txt \
 	    @configs/model/semisup-rnng \
 	    @configs/training/adam.txt \
@@ -94,7 +94,7 @@ semisup-rnng:
 
 semisup-crf:
 	python main.py semisup \
-		--model-path-base=models/semisup_post=crf \
+	    --model-path-base=models/semisup_post=crf \
 	    @configs/data/semisupervised.txt \
 	    @configs/model/semisup-crf \
 	    @configs/training/adam.txt \
@@ -102,7 +102,7 @@ semisup-crf:
 
 semisup-rnng-vocab:
 	python main.py semisup \
-		--model-path-base=models/semisup_post=disc_vocab=semisup \
+	    --model-path-base=models/semisup_post=disc_vocab=semisup \
 	    @configs/vocab/semisupervised.txt \
 	    @configs/data/semisupervised.txt \
 	    @configs/model/semisup-rnng \
@@ -111,7 +111,7 @@ semisup-rnng-vocab:
 
 semisup-crf-vocab:
 	python main.py semisup \
-		--model-path-base=models/semisup_post=crf_vocab=semisup \
+	    --model-path-base=models/semisup_post=crf_vocab=semisup \
 	    @configs/vocab/semisupervised.txt \
 	    @configs/data/semisupervised.txt \
 	    @configs/model/semisup-crf \
