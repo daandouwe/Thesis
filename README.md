@@ -1,7 +1,7 @@
 # Latent variables for Recurrent Neural Network Grammars
 Language models with trees as latent variables.
 
-## Data
+## Setup
 Use `make` to obtain the data and install EVALB:
 ```bash
 make data    # download ptb and unlabeled data
