@@ -1,2 +1,2 @@
---dev-proposal-samples=../data/proposal-samples/crf-dev.props
---test-proposal-samples=../data/proposal-samples/crf-test.props
+--dev-proposal-samples=../data/proposals/crf-dev.props
+--test-proposal-samples=../data/proposals/crf-test.props

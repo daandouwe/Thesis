@@ -30,13 +30,13 @@ def main():
         dynet.add_argument(arg)
 
     data = parser.add_argument_group('Data')
-    data.add_argument('--train-path', default='../data/train/ptb.train.trees',
+    data.add_argument('--train-path', default='data/ptb/train.trees',
                         help='training trees')
-    data.add_argument('--dev-path', default='../data/dev/ptb.dev.trees',
+    data.add_argument('--dev-path', default='data/ptb/dev.trees',
                         help='development trees')
-    data.add_argument('--test-path', default='../data/test/ptb.test.trees',
+    data.add_argument('--test-path', default='data/ptb/test.trees',
                         help='test trees')
-    data.add_argument('--unlabeled-path', default='../data/unlabeled/news.en-00001-of-00100',
+    data.add_argument('--unlabeled-path', default='data/unlabeled/news.en-00001-of-00100',
                         help='unlabeled data for semi-supervised training')
     data.add_argument('--vocab-path', default=None,
                         help='specify a vocabulary (optional)')
@@ -115,9 +115,9 @@ def main():
                         help='evaluate model on development set (default: every epoch (-1))')
     training.add_argument('--eval-at-start', action='store_true',
                         help='evaluate model on development set at start of training')
-    training.add_argument('--dev-proposal-samples', default='../data/proposal-samples/dev.props',
+    training.add_argument('--dev-proposal-samples', default='data/proposals/dev.props',
                         help='proposal samples for development set')
-    training.add_argument('--test-proposal-samples', default='../data/proposal-samples/test.props',
+    training.add_argument('--test-proposal-samples', default='data/proposals/test.props',
                         help='proposal samples for test set')
 
     semisup = parser.add_argument_group('Semisupervised')
@@ -138,7 +138,7 @@ def main():
                         help='load model from this checkpoint')
     prediction.add_argument('--proposal-model', default='',
                         help='load discriminative model (proposal for generative model) from this checkpoint')
-    prediction.add_argument('--proposal-samples', default='../data/proposal-samples/dev.props',
+    prediction.add_argument('--proposal-samples', default='data/proposal-samples/dev.props',
                         help='load proposal samples')
     prediction.add_argument('--from-input', action='store_true',
                         help='predict for user input')
@@ -160,7 +160,7 @@ def main():
                         help='temperature to tweak distribution')
     prediction.add_argument('--use-tokenizer', action='store_true',
                         help='tokenize user input')
-    prediction.add_argument('--evalb-dir', default='~/EVALB',
+    prediction.add_argument('--evalb-dir', default='EVALB',
                         help='where the evalb excecutable is located')
     prediction.add_argument('--infile', default='.',
                         help='input file to decode')

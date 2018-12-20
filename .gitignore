@@ -2,11 +2,12 @@
 
 __pycache__
 
-brain-data
+EVALB
+
+models
 data
 notebooks
 
 src/.*
-src/models
 
 *.ipynb_checkpoints

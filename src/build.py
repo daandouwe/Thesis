@@ -46,13 +46,14 @@ def main(args):
 
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser(
         description='Build a vocabulary from labeled and optional unlabeled data.',
         fromfile_prefix_chars='@')
 
-    parser.add_argument('--train-path', default='../data/train/ptb.train.trees')
+    parser.add_argument('--train-path', default='data/ptb/train.trees')
     parser.add_argument('--unlabeled-path', default='')
-    parser.add_argument('--vocab-path', default='../data/vocab/vocab.json')
+    parser.add_argument('--vocab-path', default='data/vocab/vocab.json')
     parser.add_argument('--min-word-count', type=int, default=1)
     parser.add_argument('--lowercase', action='store_true')
 
