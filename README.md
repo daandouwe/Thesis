@@ -22,7 +22,7 @@ You also use command line arguments:
 ```bash
 python src/main.py train --parser-type=disc-rnng --model-path-base=models/disc-rnng
 ```
-To get a list of all availlable flags use
+To get a list of all available flags use
 ```bash
 python src/main.py --help
 ```
