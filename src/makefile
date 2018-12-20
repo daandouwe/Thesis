@@ -19,21 +19,21 @@ crf-lowercase-vocab: semisup-lowercase-vocab train-crf-vocab
 # Build a vocabulary
 sup-vocab:
 	python build.py \
-    @configs/vocab/supervised.txt
+	    @configs/vocab/supervised.txt
 
 sup-lowercase-vocab:
 	python build.py \
-    @configs/vocab/supervised.txt \
-		--lowercase
+	    @configs/vocab/supervised.txt \
+	    --lowercase
 
 semisup-vocab:
 	python build.py \
-    @configs/vocab/semisupervised.txt
+	    @configs/vocab/semisupervised.txt
 
 semisup-lowercase-vocab:
 	python build.py \
-    @configs/vocab/semisupervised.txt \
-		--lowercase
+	    @configs/vocab/semisupervised.txt \
+	    --lowercase
 
 # Train a supervised model
 train-disc:
@@ -121,8 +121,8 @@ semisup-crf-vocab:
 # Eval
 syneval-crf:
 	python main.py syneval \
-    @configs/model/semisup-rnng.txt
+	    @configs/model/semisup-rnng.txt
 
 syneval-crf:
 	python main.py syneval \
-    @configs/model/semisup-crf.txt
+	    @configs/model/semisup-crf.txt
