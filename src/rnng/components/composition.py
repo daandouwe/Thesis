@@ -1,6 +1,6 @@
 import dynet as dy
 
-from .feedforward import Affine
+from components.feedforward import Affine
 
 
 class BiRecurrentComposition:

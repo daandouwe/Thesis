@@ -11,12 +11,13 @@ from trainers.wakesleep import WakeSleepTrainer
 
 def main(args):
     # Set random seeds.
-    np.random.seed(args.seed)
+    np.random.seed(args.numpy_seed)
 
     if args.mode == 'train':
         trainer = SupervisedTrainer(
             args=args,
             parser_type=args.parser_type,
+            model_path_base=args.model_path_base,
             evalb_dir=args.evalb_dir,
             train_path=args.train_path,
             dev_path=args.dev_path,
@@ -117,3 +118,6 @@ def main(args):
 
     # Train the model
     trainer.train()
+
+    # Move the folder to it's final place
+    trainer.finalize_model_folder()

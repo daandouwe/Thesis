@@ -2,11 +2,11 @@ import dynet as dy
 import numpy as np
 
 from utils.trees import Node
+from components.embedding import Embedding, FineTuneEmbedding, PretrainedEmbedding
+from components.feedforward import Feedforward
 from .parser.parser import DiscParser, GenParser, Stack, Buffer, History, Terminal
-from .components.embedding import Embedding, FineTuneEmbedding, PretrainedEmbedding
 from .components.encoder import StackLSTM
 from .components.composition import BiRecurrentComposition, AttentionComposition
-from .components.feedforward import Feedforward
 
 
 class DiscRNNG(DiscParser):

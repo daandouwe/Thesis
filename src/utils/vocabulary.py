@@ -80,12 +80,24 @@ class Vocabulary:
             return [self.value(self.index_or_unk(value)) for value in values]
 
     def save(self, path):
-        # TODO: do this for everything
         path = path + '.json' if not path.endswith('.json') else path
+        json_dict = {}
+        for value, index in self.indices.items():
+            count = self.counts[value]
+            # NOTE: we use str(value) as a hack to deal with the labels
+            # for the crf parser that is to turn ('S',) into "('S',)"
+            json_dict[str(value)] = dict(index=index, count=count)
         with open(path, 'w') as f:
-            json.dump(self.indices, f, indent=4)
+            json.dump(json_dict, f, indent=4)
 
     def load(self, path):
-        # TODO: do this for everything
         with open(path, 'w') as f:
-            self.indices = json.load(f)
+            json_dict = json.load(f)
+        self.indices = {}
+        self.counts = defaultdict(int)
+        for value, value_dict in json_dict.values():
+            # NOTE: turn "('S',)" back into ('S',), see self.save
+            if value.startswith("('") and value.endswith(')'):
+                value = tuple(value)
+            self.indices[value] = value_dict['index']
+            self.counts[value] = value_dict['count']

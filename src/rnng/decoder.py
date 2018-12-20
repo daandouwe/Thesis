@@ -8,7 +8,7 @@ import dynet as dy
 import numpy as np
 
 from .model import DiscRNNG, GenRNNG
-from .parser.parser import DiscParser
+from crf.model import ChartParser
 from utils.trees import fromstring, add_dummy_tags
 from utils.general import ceil_div
 
@@ -26,7 +26,8 @@ class GenerativeDecoder:
             assert isinstance(model, GenRNNG)
             model.eval()
         if proposal is not None:
-            assert isinstance(proposal, DiscRNNG)
+            assert (isinstance(proposal, DiscRNNG) or
+                isinstance(proposal, ChartParser))
             proposal.eval()
 
         self.model = model

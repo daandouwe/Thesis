@@ -15,8 +15,8 @@ from utils.general import ceil_div
 
 def load_model(dir):
     model = dy.ParameterCollection()
-    [rnng] = dy.load(dir, model)
-    return rnng
+    [parser] = dy.load(dir, model)
+    return parser
 
 
 def is_tree(line):
@@ -37,13 +37,13 @@ def predict_tree_file(args):
     with open(args.infile, 'r') as f:
         lines = [fromstring(line.strip()).words() for line in f if line.strip()]
 
-    if args.rnng_type == 'disc':
+    if args.parser_type == 'disc':
         print('Loading discriminative model...')
         decoder = load_model(args.checkpoint)
         decoder.eval()
         print('Done.')
 
-    elif args.rnng_type == 'gen':
+    elif args.parser_type == 'gen':
         exit('Not yet...')
 
         print('Loading generative model...')
@@ -79,12 +79,12 @@ def predict_text_file(args):
         lines = [line.strip() for line in f.readlines()]
     checkfile = get_checkfile(args.checkpoint)
 
-    if args.rnng_type == 'disc':
+    if args.parser_type == 'disc':
         print('Predicting with discriminative model.')
         decoder = GreedyDecoder(use_tokenizer=False)
         decoder.load_model(path=checkfile)
 
-    elif args.rnng_type == 'gen':
+    elif args.parser_type == 'gen':
         print('Predicting with generative model.')
         decoder = GenerativeDecoder(use_tokenizer=False)
         decoder.load_model(path=checkfile)
@@ -255,50 +255,26 @@ def sample_proposals(args):
     else:
         sentences = [line.split() for line in lines]
 
+    if args.max_lines > 0:
+        sentences = sentences[:args.max_lines]
+
     parser = load_model(args.checkpoint)
 
     samples = []
     for i, words in enumerate(tqdm(sentences)):
         dy.renew_cg()
-        for _ in range(args.num_samples):
-            tree, nll = parser.sample(words, alpha=args.alpha)
-            samples.append(
-                ' ||| '.join((str(i), str(-nll.value()), tree.linearize(with_tag=False))))
+        if args.parser_type == 'crf':
+            for tree, nll in parser.sample(words, num_samples=args.num_samples):
+                samples.append(
+                    ' ||| '.join((str(i), str(-nll.value()), tree.linearize(with_tag=False))))
+        else:
+            for _ in range(args.num_samples):
+                tree, nll = parser.sample(words, alpha=args.alpha)
+                samples.append(
+                    ' ||| '.join((str(i), str(-nll.value()), tree.linearize(with_tag=False))))
 
     with open(args.outfile, 'w') as f:
         print('\n'.join(samples), file=f, end='')
-
-
-def predict_syneval(args):
-
-    model = load_model(args.checkpoint)
-    proposal = load_model(args.proposal_model)
-    decoder = GenerativeDecoder(
-        model=model, proposal=proposal, num_samples=args.num_samples)
-
-    with open(args.infile + '.pos') as f:
-        pos_sents = [line.strip().split() for line in f.readlines()]
-
-    with open(args.infile + '.neg') as f:
-        neg_sents = [line.strip().split() for line in f.readlines()]
-
-    correct = 0
-    with open(args.outfile, 'w') as f:
-        for i, (pos, neg) in enumerate(zip(pos_sents, neg_sents)):
-            pos_pp = decoder.perplexity(pos)
-            neg_pp = decoder.perplexity(neg)
-            correct += (pos_pp < neg_pp)
-
-            pos = model.word_vocab.process(pos)
-            neg = model.word_vocab.process(neg)
-
-            result =  '|||'.join(
-                    i, round(pos_pp, 2), round(neg_pp, 2), pos_pp < neg_pp, correct, ' '.join(neg), ' '.join(pos)
-                )
-            print(result)
-            print(result, file=f)
-
-    print(f'Syneval: {correct}/{len(pos_sents)} = {correct / len(pos_sents):%} correct')
 
 
 def inspect_model(args):
@@ -348,27 +324,25 @@ def inspect_model(args):
 
 def main(args):
     if args.from_input:
-        if args.rnng_type == 'disc':
+        if args.parser_type in ('disc-rnng', 'crf'):
             predict_input_disc(args)
-        elif args.rnng_type == 'gen':
+        elif args.parser_type == 'gen-rnng':
             predict_input_gen(args)
-    elif args.from_tree_file:
-        predict_tree_file(args)
     elif args.from_text_file:
         predict_text_file(args)
+    elif args.from_tree_file:
+        predict_tree_file(args)
     elif args.perplexity:
-        assert args.rnng_type == 'gen'
+        assert args.parser_type == 'gen-rnng'
         predict_perplexity(args)
     elif args.sample_proposals:
-        assert args.rnng_type == 'disc'
+        assert args.parser_type in ('disc-rnng', 'crf')
         sample_proposals(args)
     elif args.sample_gen:
-        assert args.rnng_type == 'gen'
+        assert args.parser_type == 'gen-rrng'
         sample_generative(args)
     elif args.inspect_model:
+        assert args.parser_type.endswith('rnng')
         inspect_model(args)
-    elif args.syneval:
-        assert args.rnng_type == 'gen'
-        predict_syneval(args)
     else:
         exit('Specify type of prediction. Use --from-input, --from-file or --sample-gen.')

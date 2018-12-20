@@ -1,30 +1,36 @@
+evalb:
+	get-evalb.sh
+
+data:
+	get-ptb.sh && get-unlabeled.sh
+
 disc: train-disc
 gen: train-gen
 crf: train-crf
 
-disc-semisup-vocab: build-semisup train-disc-semisup-vocab
-gen-semisup-vocab: build-semisup train-gen-semisup-vocab
-crf-semisup-vocab: build-semisup train-crf-semisup-vocab
+disc-vocab: semisup-vocab train-disc-vocab
+gen-vocab: semisup-vocab train-gen-vocab
+crf-vocab: semisup-vocab train-crf-vocab
 
-disc-semisup-lowercase-vocab: build-semisup-lowercase train-disc-semisup-vocab
-gen-semisup-lowercase-vocab: build-semisup-lowercase train-gen-semisup-vocab
-crf-semisup-lowercase-vocab: build-semisup-lowercase train-crf-semisup-vocab
+disc-lowercase-vocab: semisup-lowercase-vocab train-disc-vocab
+gen-lowercase-vocab: semisup-lowercase-vocab train-gen-vocab
+crf-lowercase-vocab: semisup-lowercase-vocab train-crf-vocab
 
 # Build a vocabulary
-build-sup:
+sup-vocab:
 	python build.py \
 		@configs/vocab/supervised.txt
 
-build-sup-lowercase:
+sup-lowercase-vocab:
 	python build.py \
 		@configs/vocab/supervised.txt \
 		--lowercase
 
-build-semisup:
+semisup-vocab:
 	python build.py \
 		@configs/vocab/semisupervised.txt
 
-build-semisup-lowercase:
+semisup-lowercase-vocab:
 	python build.py \
 		@configs/vocab/semisupervised.txt \
 		--lowercase
@@ -32,79 +38,91 @@ build-semisup-lowercase:
 # Train a supervised model
 train-disc:
 	python main.py train \
+		--model-path-base=models/disc-rnng \
 		@configs/data/supervised.txt \
 		@configs/model/disc-rnng.txt \
 		@configs/training/sgd.txt
 
 train-gen:
 	python main.py train \
+		--model-path-base=models/gen-rnng \
 		@configs/data/supervised.txt \
 		@configs/model/gen-rnng.txt \
 		@configs/training/sgd.txt \
-		@configs/proposals/disc-rnng.txt
+		@configs/proposal/disc-rnng.txt
 
 train-crf:
 	python main.py train \
+		--model-path-base=models/crf \
 		@configs/data/supervised.txt \
 		@configs/model/crf.txt \
-		@configs/training/adam.txt
+		@configs/training/adam.txt \
 
-train-disc-semisup-vocab:
+train-disc-vocab: semisup-vocab
 	python main.py train \
+		--model-path-base=models/disc-rnng_vocab=semisup \
 		@configs/vocab/semisupervised.txt \
 		@configs/data/supervised.txt \
 		@configs/model/disc-rnng.txt \
 		@configs/training/sgd.txt
 
-train-gen-semisup-vocab:
+train-gen-vocab: semisup-vocab
 	python main.py train \
-		@configs/vocab/supervised.txt \
+		--model-path-base=models/gen-rnng_vocab=semisup \
+		@configs/vocab/semisupervised.txt \
 		@configs/data/supervised.txt \
 		@configs/model/gen-rnng.txt \
 		@configs/training/sgd.txt \
-		@configs/proposals/disc-rnng.txt
+		@configs/proposal/disc-rnng.txt
 
-train-crf-semisup-vocab:
+train-crf-vocab: semisup-vocab
 	python main.py train \
-		@configs/vocab/supervised.txt \
+		--model-path-base=models/crf_vocab=semisup \
+		@configs/vocab/semisupervised.txt \
 		@configs/data/supervised.txt \
 		@configs/model/crf.txt \
 		@configs/training/adam.txt
 
-
 # Finetune models semisupervised
 semisup-rnng:
 	python main.py semisup \
+		--model-path-base=models/semisup_post=disc \
 		@configs/data/semisupervised.txt \
 		@configs/models/semisup-rnng \
 		@configs/training/adam.txt \
-		--use-argmax-baseline
+		@configs/baselines/argmax.txt
 
 semisup-crf:
 	python main.py semisup \
+		--model-path-base=models/semisup_post=crf \
 		@configs/data/semisupervised.txt \
 		@configs/models/semisup-crf \
 		@configs/training/adam.txt \
-		--use-argmax-baseline
+		@configs/baselines/argmax.txt
 
 semisup-rnng-vocab:
 	python main.py semisup \
+		--model-path-base=models/semisup_post=disc_vocab=semisup \
 		@configs/vocab/semisupervised.txt \
 		@configs/data/semisupervised.txt \
 		@configs/models/semisup-rnng \
 		@configs/training/adam.txt \
-		--use-argmax-baseline
+		@configs/baselines/argmax.txt
 
 semisup-crf-vocab:
 	python main.py semisup \
+		--model-path-base=models/semisup_post=crf_vocab=semisup \
 		@configs/vocab/semisupervised.txt \
 		@configs/data/semisupervised.txt \
 		@configs/models/semisup-crf \
 		@configs/training/adam.txt \
-		--use-argmax-baseline
+		@configs/baselines/argmax.txt
 
 # Eval
-syneval-crf-proposal:
-	python main.py predict \
-		--syneval \
-		@configs/models/semisup-crf
+syneval-crf:
+	python main.py syneval \
+		@configs/models/semisup-rnng.txt
+
+syneval-crf:
+	python main.py syneval \
+		@configs/models/semisup-crf.txt

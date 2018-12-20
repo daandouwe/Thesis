@@ -4,10 +4,12 @@ import math
 
 import dynet as dy
 import numpy as np
+from joblib import Parallel, delayed
 
 import utils.trees as trees
+from components.feedforward import Feedforward
 from .semirings import LogProbSemiring, ProbSemiring
-from .feedforward import Feedforward
+
 
 START = '<START>'
 STOP = '<STOP>'
@@ -34,6 +36,7 @@ class ChartParser(object):
         self.label_vocab = label_vocab
         self.lstm_dim = lstm_dim
 
+        # TODO: use the embedding classes
         self.word_embeddings = self.model.add_lookup_parameters(
             (word_vocab.size, word_embedding_dim))
 
@@ -70,7 +73,7 @@ class ChartParser(object):
         self.f_label.eval()
         self.lstm.disable_dropout()
 
-    def get_scores(self, words):
+    def get_node_scores(self, words):
 
         embeddings = []
         for word in [START] + words + [STOP]:
@@ -195,24 +198,23 @@ class ChartParser(object):
 
         words = tree.words()
         if is_train:
-            self.lstm.set_dropout(self.dropout)
             unked_words = self.word_vocab.unkify(words)
         else:
-            self.lstm.disable_dropout()
             unked_words = self.word_vocab.process(words)
 
         if max_margin:
-            label_scores = self.get_scores(unked_words)
+            label_scores = self.get_node_scores(unked_words)
             pred, pred_score = self.viterbi(words, label_scores)
             gold_score = self.score_tree(tree, label_scores)
             correct = pred.un_cnf().linearize() == tree.un_cnf().linearize()
             loss = dy.zeros(1) if correct else pred_score - gold_score
+            # TODO: this is not working as expected
             # print('pred', pred_score.value(), 'gold', gold_score.value())
             # print('>', pred.un_cnf().linearize())
             # print()
             return loss
         else:
-            label_scores = self.get_scores(unked_words)
+            label_scores = self.get_node_scores(unked_words)
             score = self.score_tree(tree, label_scores)
             _, lognormalizer = self.inside(unked_words, label_scores)
 
@@ -221,10 +223,9 @@ class ChartParser(object):
             return nll
 
     def parse(self, words):
-        self.lstm.disable_dropout()
         unked_words = self.word_vocab.process(words)
 
-        label_scores = self.get_scores(unked_words)
+        label_scores = self.get_node_scores(unked_words)
         tree, score = self.viterbi(words, label_scores)
         _, lognormalizer = self.inside(words, label_scores)
 
@@ -236,41 +237,44 @@ class ChartParser(object):
     def sample(self, words, num_samples=1):
         semiring = ProbSemiring
 
-        def recursion(node):
+        @functools.lru_cache(maxsize=None)
+        def get_child_probs(left, right, label):
+            splits, scores = [], []
+            for split in range(left+1, right):
+                for left_label in self.label_vocab.values:
+                    for right_label in self.label_vocab.values:
+                        left_node = (left, split, left_label)
+                        right_node = (split, right, right_label)
+                        score = semiring.product(
+                            exp_chart_np[left_node], exp_chart_np[right_node])
+                        splits.append((left_node, right_node))
+                        scores.append(score)
+            probs = np.array(scores) / np.sum(scores)
+            return splits, probs
+
+        def helper(node):
             left, right, label = node
             if right == left + 1:
                 children = [trees.LeafSpanNode(left, '*', words[left])]
                 subtree = trees.InternalSpanNode(label, children)
             else:
-                splits, scores = [], []
-                for split in range(left+1, right):
-                    for left_label in self.label_vocab.values:
-                        for right_label in self.label_vocab.values:
-                            left_node = (left, split, left_label)
-                            right_node = (split, right, right_label)
-                            score = semiring.product(
-                                chart[left_node], chart[right_node])
-                            splits.append((left_node, right_node))
-                            scores.append(score)
-                probs = np.array(scores) / np.sum(scores)
-                sampled_index = np.random.choice(len(scores), p=probs)
+                splits, probs = get_child_probs(left, right, label)
+                sampled_index = np.random.choice(len(probs), p=probs)
                 left_sampled_node, right_sampled_node = splits[sampled_index]
-                left_child = recursion(left_sampled_node)
-                right_child = recursion(right_sampled_node)
+                left_child = helper(left_sampled_node)
+                right_child = helper(right_sampled_node)
                 children = [left_child, right_child]
                 subtree = trees.InternalSpanNode(label, children)
             return subtree
 
-        self.lstm.disable_dropout()
-
         unked_words = self.word_vocab.process(words)
-
-        label_scores = self.get_scores(unked_words)
+        label_scores = self.get_node_scores(unked_words)
         chart_dy, lognormalizer = self.inside(words, label_scores)
-        chart = {node: np.exp(score.value())
+
+        exp_chart_np = {node: np.exp(score.value())
             for node, score in chart_dy.items()}
 
-        top_label_scores = [chart[0, len(words), label]
+        top_label_scores = [exp_chart_np[0, len(words), label]
             for label in self.label_vocab.values[1:]]
         top_label_probs = np.array(top_label_scores) / np.sum(top_label_scores)
 
@@ -283,9 +287,9 @@ class ChartParser(object):
             top_label = (0, len(words), sampled_label)
 
             # sample the rest of the tree from that top label
-            tree = recursion(top_label)
+            tree = helper(top_label)
 
-            # comput the probability of sampled tree
+            # compute the probability of sampled tree
             score = self.score_tree(tree, label_scores)
             logprob = score - lognormalizer
             nll = -logprob
@@ -297,3 +301,165 @@ class ChartParser(object):
             return tree, nll
         else:
             return samples
+
+    # def sample(self, words, num_samples=1):
+    #     semiring = ProbSemiring
+    #
+    #     cache = {}
+    #     def get_child_probs(left, right, label):
+    #         if (left, right, label) in cache:
+    #             return cache[left, right, label]
+    #         else:
+    #             splits, scores = [], []
+    #             for split in range(left+1, right):
+    #                 for left_label in self.label_vocab.values:
+    #                     for right_label in self.label_vocab.values:
+    #                         left_node = (left, split, left_label)
+    #                         right_node = (split, right, right_label)
+    #                         score = semiring.product(
+    #                             chart[left_node], chart[right_node])
+    #                         splits.append((left_node, right_node))
+    #                         scores.append(score)
+    #             probs = np.array(scores) / np.sum(scores)
+    #             cache[left, right, label] = splits, probs
+    #             return splits, probs
+    #
+    #     def helper(node):
+    #         left, right, label = node
+    #         if right == left + 1:
+    #             children = [trees.LeafSpanNode(left, '*', words[left])]
+    #             subtree = trees.InternalSpanNode(label, children)
+    #         else:
+    #             splits, probs = get_child_probs(left, right, label)
+    #             sampled_index = np.random.choice(len(probs), p=probs)
+    #             left_sampled_node, right_sampled_node = splits[sampled_index]
+    #             left_child = helper(left_sampled_node)
+    #             right_child = helper(right_sampled_node)
+    #             children = [left_child, right_child]
+    #             subtree = trees.InternalSpanNode(label, children)
+    #         return subtree
+    #
+    #     unked_words = self.word_vocab.process(words)
+    #
+    #     label_scores = self.get_node_scores(unked_words)
+    #     chart_dy, lognormalizer = self.inside(words, label_scores)
+    #     chart = {node: np.exp(score.npvalue())
+    #         for node, score in chart_dy.items()}
+    #     label_scores_np = {node: score.npvalue()
+    #         for node, score in label_scores.items()}
+    #     lognormalizer_np = lognormalizer.npvalue()
+    #
+    #     top_label_scores = [chart[0, len(words), label]
+    #         for label in self.label_vocab.values[1:]]
+    #     top_label_probs = np.array(top_label_scores) / np.sum(top_label_scores)
+    #
+    #     def sample_tree():
+    #         # sample top label
+    #         sampled_label_index = np.random.choice(
+    #             len(top_label_probs), p=top_label_probs) + 1
+    #         sampled_label = label_vocab_values[sampled_label_index]
+    #         top_node = (0, len(words), sampled_label)
+    #
+    #         # sample the rest of the tree from that top label
+    #         tree = helper(top_node)
+    #
+    #         # compute the probability of sampled tree
+    #         score_np = np.sum([
+    #             label_scores_np[left, right, label] for left, right, label in tree.spans()])
+    #         logprob = score_np - lognormalizer_np
+    #         nll = -logprob
+    #
+    #         return tree.un_cnf(), nll
+    #
+    #     samples = Parallel(n_jobs=8)(delayed(sample_tree)() for i in range(num_samples))
+    #
+    #     if num_samples == 1:
+    #         tree, nll = samples.pop()
+    #         return tree, nll
+    #     else:
+    #         return samples
+
+    # def sample(self, words, num_samples=1):
+    #     semiring = ProbSemiring
+    #
+    #     unked_words = self.word_vocab.process(words)
+    #     label_scores = self.get_node_scores(unked_words)
+    #     chart_dy, lognormalizer = self.inside(words, label_scores)
+    #
+    #     exp_chart_np = {node: np.exp(score.value())
+    #         for node, score in chart_dy.items()}
+    #     label_scores_np = {node: score.value()
+    #         for node, score in label_scores.items()}
+    #     lognormalizer_np = lognormalizer.npvalue()
+    #
+    #     top_label_scores = [exp_chart_np[0, len(words), label]
+    #         for label in self.label_vocab.values[1:]]
+    #     top_label_probs = np.array(top_label_scores) / np.sum(top_label_scores)
+    #     print(top_label_probs)
+    #
+    #     def sample_tree(exp_chart_np, label_scores_np, lognormalizer_np, top_label_probs, label_vocab_values):
+    #
+    #         cache = {}
+    #         def get_child_probs(left, right, label):
+    #             if (left, right, label) in cache:
+    #                 return cache[left, right, label]
+    #             else:
+    #                 splits, scores = [], []
+    #                 for split in range(left+1, right):
+    #                     for left_label in label_vocab_values:
+    #                         for right_label in label_vocab_values:
+    #                             left_node = (left, split, left_label)
+    #                             right_node = (split, right, right_label)
+    #                             score = semiring.product(
+    #                                 exp_chart_np[left_node], exp_chart_np[right_node])
+    #                             splits.append((left_node, right_node))
+    #                             scores.append(score)
+    #                 probs = np.array(scores) / np.sum(scores)
+    #                 cache[left, right, label] = splits, probs
+    #                 return splits, probs
+    #
+    #         def helper(node):
+    #             left, right, label = node
+    #             if right == left + 1:
+    #                 children = [trees.LeafSpanNode(left, '*', words[left])]
+    #                 subtree = trees.InternalSpanNode(label, children)
+    #             else:
+    #                 splits, probs = get_child_probs(left, right, label)
+    #                 sampled_index = np.random.choice(len(probs), p=probs)
+    #                 left_sampled_node, right_sampled_node = splits[sampled_index]
+    #                 left_child = helper(left_sampled_node)
+    #                 right_child = helper(right_sampled_node)
+    #                 children = [left_child, right_child]
+    #                 subtree = trees.InternalSpanNode(label, children)
+    #             return subtree
+    #
+    #         # sample top label
+    #         sampled_label_index = np.random.choice(
+    #             len(top_label_probs), p=top_label_probs) + 1
+    #         sampled_label = label_vocab_values[sampled_label_index]
+    #         top_node = (0, len(words), sampled_label)
+    #
+    #         # sample the rest of the tree from that top label
+    #         tree = helper(top_node)
+    #
+    #         # compute the probability of sampled tree
+    #         score_np = np.sum([
+    #             label_scores_np[left, right, label] for left, right, label in tree.spans()])
+    #         logprob = score_np - lognormalizer_np
+    #         nll = -logprob
+    #
+    #         return tree.un_cnf(), nll
+    #
+    #     samples = Parallel(n_jobs=8)(
+    #         delayed(sample_tree)(exp_chart_np,
+    #                              label_scores_np,
+    #                              lognormalizer_np,
+    #                              top_label_probs,
+    #                              self.label_vocab.values)
+    #         for i in range(num_samples))
+    #
+    #     if num_samples == 1:
+    #         tree, nll = samples.pop()
+    #         return tree, nll
+    #     else:
+    #         return samples

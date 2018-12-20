@@ -9,23 +9,22 @@ import dynet as dy
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
 
+from rnng.parser.actions import SHIFT, REDUCE, NT, GEN
+from rnng.model import DiscRNNG, GenRNNG
+from crf.model import ChartParser, START, STOP
 from utils.vocabulary import Vocabulary, UNK
 from utils.trees import fromstring, DUMMY
-from rnng.parser.actions import SHIFT, REDUCE, NT, GEN
-from rnng.decoder import GenerativeDecoder
-from rnng.model import DiscRNNG, GenRNNG
-from rnng.components.feedforward import Feedforward, Affine
-from crf.model import ChartParser, START, STOP
 from utils.evalb import evalb
 from utils.text import replace_quotes, replace_brackets
-from utils.general import Timer, get_folders, write_args, ceil_div
+from utils.general import Timer, get_folders, write_args, ceil_div, move_to_final_folder
 
 
 class SupervisedTrainer:
     """Supervised trainer for RNNG."""
     def __init__(
             self,
-            parser_type='disc-rnng',
+            parser_type=None,
+            model_path_base=None,
             args=None,
             train_path=None,
             dev_path=None,
@@ -78,6 +77,7 @@ class SupervisedTrainer:
 
         # Model arguments
         self.parser_type = parser_type
+        self.model_path_base = model_path_base
         self.word_emb_dim = word_emb_dim
         self.nt_emb_dim = nt_emb_dim
         self.action_emb_dim = action_emb_dim
@@ -126,10 +126,11 @@ class SupervisedTrainer:
 
     def build_paths(self):
         # Make output folder structure
-        subdir, logdir, checkdir, outdir = get_folders(self.args)
+        subdir, logdir, checkdir, outdir, vocabdir = get_folders(self.args)
         os.makedirs(logdir, exist_ok=True)
         os.makedirs(checkdir, exist_ok=True)
         os.makedirs(outdir, exist_ok=True)
+        os.makedirs(vocabdir, exist_ok=True)
         print(f'Output subdirectory: `{subdir}`.')
         print(f'Saving logs to `{logdir}`.')
         print(f'Saving predictions to `{outdir}`.')
@@ -139,11 +140,12 @@ class SupervisedTrainer:
         write_args(self.args, logdir)
 
         # Output paths
+        self.subdir = subdir
         self.model_checkpoint_path = os.path.join(checkdir, 'model')
         self.state_checkpoint_path = os.path.join(checkdir, 'state.json')
-        self.word_vocab_path = os.path.join(checkdir, 'word-vocab.json')
-        self.nt_vocab_path = os.path.join(checkdir, 'nt-vocab.json')
-        self.action_vocab_path = os.path.join(checkdir, 'action-vocab.json')
+        self.word_vocab_path = os.path.join(vocabdir, 'word-vocab.json')
+        self.nt_vocab_path = os.path.join(vocabdir, 'nt-vocab.json')
+        self.action_vocab_path = os.path.join(vocabdir, 'action-vocab.json')
         self.loss_path = os.path.join(logdir, 'loss.csv')
         self.tensorboard_writer = SummaryWriter(logdir)
 
@@ -584,3 +586,7 @@ class SupervisedTrainer:
             print('loss', file=f)
             for loss in self.losses:
                 print(loss, file=f)
+
+    def finalize_model_folder(self):
+        move_to_final_folder(
+            self.subdir, self.model_path_base, self.best_dev_fscore)

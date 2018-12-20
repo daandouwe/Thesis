@@ -1,4 +1,5 @@
 import os
+import shutil
 import time
 from datetime import datetime
 
@@ -7,24 +8,35 @@ def ceil_div(a, b):
     return ((a - 1) // b) + 1
 
 
-def get_folders(args):
-    """Create paths for logging and checkpoints."""
-    if args.disable_subdir:
-        subdir, logdir, checkdir, outdir = (
-            None, args.logdir, args.checkdir, args.outdir)
-    else:
-        subdir = get_subdir_string(args, with_params=False)  # Too many parameters for folder.
-        logdir = os.path.join(args.logdir, subdir)
-        checkdir = os.path.join(args.checkdir, subdir)
-        outdir = os.path.join(args.outdir, subdir)
-    return subdir, logdir, checkdir, outdir
-
-
-def get_subdir_string(args, with_params=True):
+def get_subdir_string():
     """Returns a concatenation of a date and timestamp."""
     date = time.strftime('%Y%m%d')
     timestamp = time.strftime('%H%M%S')
     return f'{date}_{timestamp}'
+
+
+def get_folders(args):
+    """Create paths for logging and checkpoints."""
+    subdir = os.path.join('models', 'temp', get_subdir_string())
+    logdir = os.path.join(subdir, 'log')
+    outdir = os.path.join(subdir, 'output')
+    vocabdir = os.path.join(subdir, 'vocab')
+    checkdir = os.path.join(subdir)
+    return subdir, logdir, checkdir, outdir, vocabdir
+
+
+def move_to_final_folder(subdir, model_path_base, dev_fscore):
+    """Move `subdir` to `model_path_base_dev=dev_fscore`.
+
+    Example:
+            `models/temp/20181220_181640` -> `models/disc-rnng_dev=92.43`
+        where
+            subdir = `models/temp/20181220_181640`
+            model_path_base = `models/disc-rnng`
+    """
+    final_path = model_path_base + '_dev=' + str(dev_fscore)
+    print(f'Moving folder `{subdir}` to `{final_path}`...')
+    shutil.move(subdir, final_path)
 
 
 def write_args(args, logdir, positional=('mode',)):
@@ -92,40 +104,3 @@ class Timer:
 
     def new_epoch(self):
         self.previous = time.time()
-
-
-class Config(object):
-    """Class that loads hyperparameters from json file into attributes"""
-
-    def __init__(self, source):
-        """
-        Args:
-            source: path to json file or dict
-        """
-        self.source = source
-
-        if type(source) is dict:
-            self.__dict__.update(source)
-        elif type(source) is list:
-            for s in source:
-                self.load_json(s)
-        else:
-            self.load_json(source)
-
-
-    def load_json(self, source):
-        with open(source) as f:
-            data = json.load(f)
-            self.__dict__.update(data)
-
-
-    def save(self, dir_name):
-        init_dir(dir_name)
-        if type(self.source) is list:
-            for s in self.source:
-                c = Config(s)
-                c.save(dir_name)
-        elif type(self.source) is dict:
-            json.dumps(self.source, indent=4)
-        else:
-            copyfile(self.source, dir_name + self.export_name)

@@ -9,15 +9,16 @@ import dynet as dy
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
 
-from utils.vocabulary import Vocabulary, UNK
-from utils.trees import fromstring
 from rnng.parser.actions import SHIFT, REDUCE, NT, GEN
-from rnng.decoder import GenerativeDecoder
 from rnng.model import DiscRNNG, GenRNNG
-from rnng.components.feedforward import Feedforward, Affine
+from rnng.decoder import GenerativeDecoder
+from crf.model import ChartParser, START, STOP
+from components.feedforward import Feedforward, Affine
+from utils.vocabulary import Vocabulary, UNK
+from utils.trees import fromstring, DUMMY
 from utils.evalb import evalb
 from utils.text import replace_quotes, replace_brackets
-from utils.general import Timer, get_folders, write_args, ceil_div, blockgrad
+from utils.general import Timer, get_folders, write_args, ceil_div, move_to_final_folder, blockgrad
 
 
 class UnsupervisedTrainer:
