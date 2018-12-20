@@ -4,11 +4,9 @@ __pycache__
 
 brain-data
 data
-tmp
+notebooks
 
 src/.*
-src/*.ipynb
-src/notebooks
-src/runs
+src/models
 
 *.ipynb_checkpoints

@@ -1,0 +1,202 @@
+Sampling from the generative model.
+Samples:
+> (S (NP (NP The stock market assumption) (PP like (NP the Treasury))) (VP was (NP (NP a bearish rebound) (VP <UNK> (PP into (NP a (ADJP <UNK> %) trade offering)))) (PP even down (PP with (NP (NP an <UNK>) (PP of (NP age oil)))))))
+
+> (NP Other factors)
+
+> (NP J. Major)
+
+> (PP In (NP the East))
+
+> (SINV <UNK> n't (NP Mr. <UNK>) (ADVP ever))
+
+> (S (NP The results) (VP were (VP <UNK> (PP from (NP (NP the four first three) (PP on (NP the <UNK>)))))))
+
+> (NP halfhearted annual rate tax)
+
+> (NP Mr. <UNK>)
+
+> (PRT Price)
+
+> (FRAG (SBAR (WHNP What) (S (NP IBM) (VP must (ADVP never) (VP choose)))))
+
+> (PP In (NP television stocks))
+
+> (S `` (NP You) (VP need (NP a real <UNK>)) . '')
+
+> (NP himself)
+
+> (SINV (WHADVP <UNK>))
+
+> (NP the second <UNK>)
+
+> (FRAG <UNK>)
+
+> (NP (NP Northeast Air Corp.) , (NP New York) , (NP other European ventures))
+
+> (NP <UNK> Ltd.)
+
+> (S (NP One <UNK> <UNK>) (VP wo n't (VP provide (NP higher pay plans))))
+
+> (S (NP <UNK> Corp.) (VP does n't (VP <UNK>)))
+
+> (S (NP Paribas officials) (VP agree (SBAR (S (NP it) (VP was (NP a (ADJP more <UNK>) commission) (S (VP to (VP look (NP (NP <UNK> companies) , (SBAR (WHNP which) (S (VP were (VP (ADVP strongly) held (PP in (NP <UNK>)))))))))))))))
+
+> (NP <UNK>)
+
+> (NP RJR shares)
+
+> (NP <UNK> Corp.)
+
+> (S (VP <UNK> (NP 373.40 stories)))
+
+> (ADJP scientific)
+
+> (NP <UNK>)
+
+> (NP <UNK> <UNK>)
+
+> (NP <UNK> %)
+
+> (NP Friday)
+
+> (PP to (NP (NP most commissions)))
+
+> (NP (NP <UNK>) (PP in (NP the troubled economy)))
+
+> (FRAG wows)
+
+> (S (NP <UNK> prices) (VP ended))
+
+> (SINV <UNK> (PP in (NP the past few days)))
+
+> (PP <UNK> (NP the nine months))
+
+> (NP Mr. Dinkins)
+
+> (NP <UNK> sister)
+
+> (S (NP <UNK>) (VP began (S (VP using (ADVP <UNK>)))))
+
+> (NP <UNK>)
+
+> (PP through (NP the past))
+
+> (S (NP The same selling) (VP is (VP having (NP (NP (NP <UNK>) (PP of (NP (NP credit) (SBAR (S (NP one) (ADVP now) (VP need)))))) -- (SBAR (WHNP which) (S (NP they) (ADVP so) (VP <UNK> (PRT up) (NP management) (SBAR <UNK> (S (NP they) (VP pay (NP improved results)))))))))))
+
+> (S (ADJP <UNK> (PP out (PP of (NP <UNK>)))))
+
+> (S (VP <UNK> (NP <UNK> <UNK> Lewis <UNK>) (PP in (NP <UNK>)) (PP from (NP 0.53 %))))
+
+> (PP to (NP Poland))
+
+> (S (NP Our need) (VP do n't (ADVP only) (VP <UNK> (NP stress))))
+
+> (PP in (NP 1984))
+
+> (S (VP <UNK>))
+
+> (SBAR As (S (S (NP (NP executives)) (VP were (VP <UNK> (PP in (NP the U.S.))))) , and (S (NP we) (VP refused)) ,))
+
+> (NP Another <UNK>)
+
+> (NP (NP Compaq) , (NP <UNK> Roberts) , (NP (NP <UNK>) , (NP (NP <UNK>) (PP of (NP (NP <UNK>) , (SBAR (WHNP which) (S (VP <UNK> (NP the TV)))))))) ,)
+
+> (S (NP <UNK> traders) (VP estimate (SBAR (S (NP <UNK>) (VP might n't (VP sell))))))
+
+> (NP all)
+
+> (NP Junk)
+
+> (S (NP <UNK> Lincoln Corp.) (VP <UNK> (NP $ <UNK>)))
+
+> (S (NP (NP Mr. Chung) , (NP a <UNK> veteran) ,) (VP was (ADVP also) (PP with (NP (NP the `` <UNK> '') (PP in (NP (NP the vehicles) (PP of (NP the U.S.))))))))
+
+> (NP The <UNK> week)
+
+> (S (S (NP Here) (VP were n't (ADJP <UNK>) (SBAR (WHADVP when) (S (NP people) (VP (VP <UNK> (NP an <UNK> <UNK>)) 'd (VP <UNK>)))))) , but (S (ADVP now) (NP it) (VP was (VP <UNK> (NP (NP a <UNK>) (PP of (NP (NP a <UNK>) (PP in (NP San Francisco)))))))))
+
+> (S (VP <UNK>))
+
+> (NP The two months)
+
+> (NP (NP Weisfield) (SBAR (S (VP to (VP <UNK>)))))
+
+> (NP (NP Rep. <UNK>) (NP 45 days))
+
+> (NP Wednesday)
+
+> (S `` (NP (NP (NP The <UNK>) '' (PP vs. (NP Philadelphia <UNK>))) , (NP (NP <UNK> 's) <UNK> N.Y. <UNK>) ,) (ADVP (NP (QP down to 3) miles) <UNK>) (VP had (VP prevented (S (VP talking (PP in (NP (NP <UNK> 's) <UNK>)))))) , `` . '')
+
+> (PP at (NP the computer))
+
+> (S (VP <UNK> (NP him) (PP through (NP the <UNK>))))
+
+> (WHNP Columbia)
+
+> (PP from (NP <UNK>))
+
+> (NP (NP <UNK> Fund Chairman) , (NP (NP Alfred <UNK>) (PP of (NP OTC))) ,)
+
+> (INTJ (NP both (NX (NX Elizabeth) and (NX <UNK> pages))) and (NP (NP the <UNK> (UCP <UNK> staff) <UNK>) (PP to (NP <UNK>))))
+
+> (NP <UNK> heaped)
+
+> (NP <UNK>)
+
+> (NP (NP A <UNK> interest) (PP in (NP <UNK> <UNK>)) (PP in (NP the 1989 quarter)))
+
+> (NP (NP The financial <UNK>) (PP for (NP <UNK>)) , (SBAR (WHNP which) (S (ADVP first) (VP (VP were (ADVP again) (VP announced)) and (VP were (VP repeated))))) ,)
+
+> (NP Housing)
+
+> (ADVP narrowly)
+
+> (PP from (S (VP <UNK> (NP (NP <UNK>) , (NP <UNK>) and (NP other <UNK>)))))
+
+> (S (NP <UNK> funds) (VP were (VP <UNK> (PP with (NP the Treasury)) (PP before (S (VP <UNK> (S (VP trading or <UNK> (NP the S&P)))))))))
+
+> (NP (NP <UNK> <UNK> and <UNK> costs) (PP in (NP the process)))
+
+> (S (NP <UNK> sales) (VP were (VP <UNK> (PP by (NP (NP orders) (PP from (NP foreign markets)))))))
+
+> (PP from (NP no <UNK>))
+
+> (S (VP <UNK> (VP set (PRT over) (NP the <UNK> <UNK>))))
+
+> (SINV `` (S (ADVP Sometimes far) , (NP (NP two <UNK> <UNK>) (PP at (NP (NP <UNK>) (PP in (NP the stock market))))) (VP <UNK>)) , '' (VP <UNK>) (NP (NP Douglas J. <UNK>) , (NP (NP a <UNK> vice president) (PP of (NP (NP <UNK> International) , (NP (NP a retired <UNK> member) (PP in (NP (NP <UNK> 's) <UNK> School))))))) , (S (VP <UNK> (PP in (NP (NP the <UNK>) (PP of (NP <UNK> film)))))))
+
+> (NP (NP <UNK> W. <UNK>) , (PP of (NP this trades)) ,)
+
+> (SBAR if (S (NP it) (VP <UNK> (ADVP immediately))))
+
+> (NP another)
+
+> (NP <UNK>)
+
+> (PP in (NP other business losses))
+
+> (NP <UNK>)
+
+> (PP except (NP (NP a <UNK> 's) <UNK>))
+
+> (S (SBAR While (S (NP (NP more) (PP of (NP us))) (VP got (ADJP alive)))) , `` (NP we) (VP are (VP <UNK>)) . '')
+
+> (FRAG what)
+
+> (NP (NP Next <UNK>) (PP in (NP <UNK>)))
+
+> (PP in (S (VP <UNK> (NP (NP a <UNK> quarter) (PRN LRB (NP (NP 28 %) (PP in (NP February))) RRB)))))
+
+> (SBAR While (S (NP a <UNK>) (ADVP so) (VP <UNK> (NP the issue))))
+
+> (S (NP It) (VP <UNK> (ADVP idle)))
+
+> (NP (NP <UNK> <UNK>) , (NP <UNK>) , (NP <UNK> , <UNK>))
+
+> (S -- `` (NP Nothing) (VP is (VP <UNK> (PP with (NP <UNK> income)))) , '')
+
+> (S (NP (NP A relationship) (PP with (NP an <UNK> <UNK>))) (VP is (VP <UNK>)))
+
+> (NP minimal sugar)
+

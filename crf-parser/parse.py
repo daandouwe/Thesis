@@ -171,7 +171,6 @@ class ChartParser(object):
             word_embedding_dim,
             lstm_layers,
             lstm_dim,
-            span_hidden_dim,
             label_hidden_dim,
             dropout,
     ):
@@ -194,8 +193,6 @@ class ChartParser(object):
             self.model,
             dy.VanillaLSTMBuilder)
 
-        self.f_span = Feedforward(
-            self.model, 2 * lstm_dim, [span_hidden_dim], 1)
         self.f_label = Feedforward(
             self.model, 2 * lstm_dim, [label_hidden_dim], label_vocab.size)
 
@@ -240,33 +237,25 @@ class ChartParser(object):
             return dy.concatenate([forward, backward])
 
         @functools.lru_cache(maxsize=None)
-        def get_span_score(left, right):
-            return self.f_span(get_span_encoding(left, right))
-
-        @functools.lru_cache(maxsize=None)
         def get_label_scores(left, right):
             return self.f_label(get_span_encoding(left, right))
 
         label_scores = {}
-        span_scores = {}
         for length in range(1, len(words) + 1):
             for left in range(0, len(words) + 1 - length):
                 right = left + length
-                span_scores[left, right] = get_span_score(left, right)
                 label_scores[left, right] = get_label_scores(left, right)
 
-        return span_scores, label_scores
+        return label_scores
 
-    def _score_tree(self, tree, span_scores, label_scores, semiring=LogProbSemiring):
+    def _score_tree(self, tree, label_scores, semiring=LogProbSemiring):
         tree_score = semiring.products([
-            semiring.product(
-                span_scores[left, right],
-                label_scores[left, right][self.label_vocab.index(label)])
+            label_scores[left, right][self.label_vocab.index(label)]
             for left, right, label in tree.spans()
         ])
         return tree_score
 
-    def _inside(self, words, span_scores, label_scores, semiring=LogProbSemiring):
+    def _inside(self, words, label_scores, semiring=LogProbSemiring):
         chart = {}
         summed = {}
         for length in range(1, len(words) + 1):
@@ -284,11 +273,9 @@ class ChartParser(object):
                     ])
 
                 for label, label_index in self.label_vocab.indices.items():
-                    chart[left, right, label] = semiring.products([
-                        span_scores[left, right],
+                    chart[left, right, label] = semiring.product(
                         label_scores[left, right][label_index],
-                        split_sum
-                    ])
+                        split_sum)
 
                 # the dummy node cannot be the top node
                 start = 0 if length < len(words) else 1
@@ -301,14 +288,13 @@ class ChartParser(object):
 
         return chart, lognormalizer
 
-    def _viterbi(self, words, span_scores, label_scores, semiring=LogProbSemiring, tag='*'):
+    def _viterbi(self, words, label_scores, semiring=LogProbSemiring, tag='*'):
         chart = {}
         for length in range(1, len(words) + 1):
             for left in range(0, len(words) + 1 - length):
                 right = left + length
 
                 # Obtain scores
-                span_score = span_scores[left, right]
                 label_scores_ = label_scores[left, right]
 
                 # Determine best label
@@ -341,7 +327,6 @@ class ChartParser(object):
                     subtree = trees.InternalParseNode(label, children)
 
                 score = semiring.products([
-                    span_score,
                     best_label_score,
                     best_split_score
                 ])
@@ -363,9 +348,15 @@ class ChartParser(object):
             # words = self.word_vocab.process(words)
             words = self.process(words)
 
-        span_scores, label_scores = self.get_scores(words)
-        score = self._score_tree(tree, span_scores, label_scores)
-        _, lognormalizer = self._inside(words, span_scores, label_scores)
+        t0 = time.time()
+        label_scores = self.get_scores(words)
+        t1 = time.time()
+        score = self._score_tree(tree, label_scores)
+        t2 = time.time()
+        _, lognormalizer = self._inside(words, label_scores)
+        t3 = time.time()
+
+        print('get-scores', round(t1-t0, 3), 'inside', round(t3-t2, 3))
 
         logprob = score - lognormalizer
         nll = -logprob
@@ -376,9 +367,9 @@ class ChartParser(object):
         self.lstm.disable_dropout()
         words = self.process(words)
 
-        span_scores, label_scores = self.get_scores(words)
-        tree, score = self._viterbi(words, span_scores, label_scores)
-        _, lognormalizer = self._inside(words, span_scores, label_scores)
+        label_scores = self.get_scores(words)
+        tree, score = self._viterbi(words, label_scores)
+        _, lognormalizer = self._inside(words, label_scores)
 
         logprob = score - lognormalizer
         nll = -logprob
@@ -416,8 +407,8 @@ class ChartParser(object):
 
         self.lstm.disable_dropout()
 
-        span_scores, label_scores = self.get_scores(words)
-        chart_dy, lognormalizer = self._inside(words, span_scores, label_scores)
+        label_scores = self.get_scores(words)
+        chart_dy, lognormalizer = self._inside(words, label_scores)
         chart = {node: np.exp(score.value()) for node, score in chart_dy.items()}
 
         top_label_scores = [chart[0, len(words), label] for label in self.label_vocab.values[1:]]
@@ -435,7 +426,7 @@ class ChartParser(object):
             tree = recursion(top_label)
 
             # comput the probability of sampled tree
-            score = self._score_tree(tree, span_scores, label_scores)
+            score = self._score_tree(tree, label_scores)
             logprob = score - lognormalizer
             nll = -logprob
 
@@ -485,7 +476,6 @@ def main():
         word_embedding_dim=100,
         lstm_layers=2,
         lstm_dim=100,
-        span_hidden_dim=100,
         label_hidden_dim=100,
         dropout=0.,
     )

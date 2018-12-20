@@ -42,16 +42,16 @@ def main():
         label_vocab,
         word_embedding_dim=100,
         lstm_layers=2,
-        lstm_dim=256,
-        span_hidden_dim=256,
-        label_hidden_dim=256,
-        dropout=0.5,
+        lstm_dim=250,
+        label_hidden_dim=250,
+        dropout=0.4,
     )
     optimizer = dy.AdamTrainer(model)
 
     total_loss = 0
 
     test_tree = treebank[3]
+    start_time = time.time()
 
     for i, tree in enumerate(treebank, 1):
         dy.renew_cg()
@@ -68,17 +68,18 @@ def main():
 
         total_loss += loss.value()
 
-        print('step', i, 'loss', round(total_loss/i, 2), 'forward-time', round(t1-t0, 3), 'backward-time', round(t2-t1, 3))
+        speed = i / (t2 - start_time)
+        print('step', i, 'loss', round(total_loss/i, 2), 'forward-time', round(t1-t0, 3), 'backward-time', round(t2-t1, 3), 'speed', round(speed, 2), 'sents/sec')
 
-        if i % 50 == 0:
-            pred, _ = parser.parse(test_tree.words())
-            print('='*50)
-            print('>', test_tree.un_cnf().linearize())
-            print('>', pred.un_cnf().linearize())
-            samples = parser.sample(test_tree.words(), num_samples=20)
-            for tree, _ in samples:
-                print('>', tree.un_cnf().linearize())
-            print('='*50)
+        # if i % 50 == 0:
+        #     pred, _ = parser.parse(test_tree.words())
+        #     print('='*50)
+        #     print('>', test_tree.un_cnf().linearize())
+        #     print('>', pred.un_cnf().linearize())
+        #     samples = parser.sample(test_tree.words(), num_samples=20)
+        #     for tree, _ in samples:
+        #         print('>', tree.un_cnf().linearize())
+        #     print('='*50)
 
 
 if __name__ == '__main__':

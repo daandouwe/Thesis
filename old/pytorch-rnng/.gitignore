@@ -1,0 +1,10 @@
+__pycache__
+
+*.txt
+*.oracle
+
+log
+checkpoints
+out
+notebooks
+lisa-experiments
