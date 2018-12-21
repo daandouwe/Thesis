@@ -1,3 +1,4 @@
+--dynet-autobatch=1
 --optimizer=sgd
 --lr=0.1
 --batch-size=10

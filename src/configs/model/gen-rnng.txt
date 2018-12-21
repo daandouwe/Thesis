@@ -1,3 +1,4 @@
+--dynet-mem=2000
 --parser-type=gen-rnng
 --word-emb-dim=100
 --nt-emb-dim=100

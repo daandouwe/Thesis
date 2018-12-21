@@ -10,64 +10,7 @@ import numpy as np
 from rnng.decoder import GenerativeDecoder
 from utils.trees import fromstring, InternalNode
 from utils.evalb import evalb
-from utils.general import ceil_div
-
-
-def load_model(dir):
-    model = dy.ParameterCollection()
-    [parser] = dy.load(dir, model)
-    return parser
-
-
-def is_tree(line):
-    """Simple `oracle` to see if line is a tree."""
-    assert isinstance(line, str), line
-    try:
-        Tree.fromstring(line)
-        return True
-    except ValueError:
-        return False
-
-
-def predict_tree_file(args):
-    assert os.path.exists(args.infile), 'specifiy file to parse with --infile.'
-
-    print(f'Predicting trees for lines in `{args.infile}`.')
-
-    with open(args.infile, 'r') as f:
-        lines = [fromstring(line.strip()).words() for line in f if line.strip()]
-
-    if args.parser_type == 'disc':
-        print('Loading discriminative model...')
-        decoder = load_model(args.checkpoint)
-        decoder.eval()
-        print('Done.')
-
-    elif args.parser_type == 'gen':
-        exit('Not yet...')
-
-        print('Loading generative model...')
-        decoder = GenerativeDecoder()
-        decoder.load_model(path=args.checkpoint)
-        if args.proposal_model:
-            decoder.load_proposal_model(path=args.proposal_model)
-        if args.proposal_samples:
-            decoder.load_proposal_samples(path=args.proposal_samples)
-
-    trees = []
-    for line in tqdm(lines):
-        tree, _ = decoder.parse(line)
-        trees.append(tree.linearize())
-
-    pred_path = os.path.join(args.outfile)
-    result_path = args.outfile + '.results'
-    # Save the predicted trees.
-    with open(pred_path, 'w') as f:
-        print('\n'.join(trees), file=f)
-    # Score the trees.
-    fscore = evalb(args.evalb_dir, pred_path, args.infile, result_path)
-    print(f'Predictions saved in `{pred_path}`. Results saved in `{result_path}`.')
-    print(f'F-score {fscore:.2f}.')
+from utils.general import ceil_div, load_model, is_tree
 
 
 def predict_text_file(args):
@@ -103,56 +46,97 @@ def predict_text_file(args):
         print('\n'.join(trees), file=f)
 
 
-def predict_from_tree(gold_tree):
-    """Predicts from a gold tree input and computes fscore with prediction.
+def predict_tree_file(args):
+    assert os.path.exists(args.infile), 'specifiy file to parse with --infile.'
 
-    Input should be a unicode string in the :
-        u'(S (NP (DT The) (NN equity) (NN market)) (VP (VBD was) (ADJP (JJ illiquid))) (. .))'
-    """
-    # Make a temporay directory for the EVALB files.
-    evalb_dir = os.path.expanduser('~/EVALB')  # TODO: this should be part of args.
-    temp_dir = tempfile.TemporaryDirectory(prefix='evalb-')
-    gold_path = os.path.join(temp_dir.name, 'gold.txt')
-    pred_path = os.path.join(temp_dir.name, 'predicted.txt')
-    result_path = os.path.join(temp_dir.name, 'output.txt')
+    print(f'Predicting trees for lines in `{args.infile}`.')
 
-    # Extract sentence from the gold tree.
-    sent = Tree.fromstring(gold_tree).leaves()
+    with open(args.infile, 'r') as f:
+        lines = [fromstring(line.strip()).words() for line in f if line.strip()]
 
-    # Predict a tree for the sentence.
-    pred_tree, *rest = self(sent)
-    pred_tree = pred_tree.linearize()
-    # Dump these in the temp-file.
-    with open(gold_path, 'w') as f:
-        print(gold_tree, file=f)
+    if args.parser_type == 'disc':
+        print('Loading discriminative model...')
+        parser = load_model(args.checkpoint)
+        parser.eval()
+        print('Done.')
+
+    elif args.parser_type == 'gen':
+        exit('Not yet...')
+
+        print('Loading generative model...')
+        parser = GenerativeDecoder()
+        parser.load_model(path=args.checkpoint)
+        if args.proposal_model:
+            parser.load_proposal_model(path=args.proposal_model)
+        if args.proposal_samples:
+            parser.load_proposal_samples(path=args.proposal_samples)
+
+    trees = []
+    for line in tqdm(lines):
+        tree, _ = parser.parse(line)
+        trees.append(tree.linearize())
+
+    pred_path = os.path.join(args.outfile)
+    result_path = args.outfile + '.results'
+    # Save the predicted trees.
     with open(pred_path, 'w') as f:
-        print(pred_tree, file=f)
-    fscore = evalb(evalb_dir, pred_path, gold_path, result_path)
+        print('\n'.join(trees), file=f)
+    # Score the trees.
+    fscore = evalb(args.evalb_dir, pred_path, args.infile, result_path)
+    print(f'Predictions saved in `{pred_path}`. Results saved in `{result_path}`.')
+    print(f'F-score {fscore:.2f}.')
 
-    # Cleanup the temporary directory.
-    temp_dir.cleanup()
 
-    return pred_tree, fscore
+# def predict_from_tree(gold_tree):
+#     """Predicts from a gold tree input and computes fscore with prediction.
+#
+#     Input should be a unicode string in the :
+#         u'(S (NP (DT The) (NN equity) (NN market)) (VP (VBD was) (ADJP (JJ illiquid))) (. .))'
+#     """
+#     # Make a temporay directory for the EVALB files.
+#     evalb_dir = os.path.expanduser('~/EVALB')  # TODO: this should be part of args.
+#     temp_dir = tempfile.TemporaryDirectory(prefix='evalb-')
+#     gold_path = os.path.join(temp_dir.name, 'gold.txt')
+#     pred_path = os.path.join(temp_dir.name, 'predicted.txt')
+#     result_path = os.path.join(temp_dir.name, 'output.txt')
+#
+#     # Extract sentence from the gold tree.
+#     sent = Tree.fromstring(gold_tree).leaves()
+#
+#     # Predict a tree for the sentence.
+#     pred_tree, *rest = self(sent)
+#     pred_tree = pred_tree.linearize()
+#     # Dump these in the temp-file.
+#     with open(gold_path, 'w') as f:
+#         print(gold_tree, file=f)
+#     with open(pred_path, 'w') as f:
+#         print(pred_tree, file=f)
+#     fscore = evalb(evalb_dir, pred_path, gold_path, result_path)
+#
+#     # Cleanup the temporary directory.
+#     temp_dir.cleanup()
+#
+#     return pred_tree, fscore
 
 
 def predict_input_disc(args):
     print('Predicting with discriminative model.')
 
-    rnng = load_model(args.checkpoint)
+    parser = load_model(args.checkpoint)
 
     while True:
         sentence = input('Input a sentence: ')
         words = sentence.split()
 
         print('Greedy decoder:')
-        tree, logprob = rnng.parse(words)
+        tree, logprob = parser.parse(words)
         print('  {} {:.2f}'.format(
             tree.linearize(with_tag=False), logprob.value()))
         print()
 
         print('Sampling decoder:')
         for _ in range(5):
-            tree, logprob, *rest = rnng.sample(words)
+            tree, logprob, *rest = parser.sample(words)
             print('  {} {:.2f}'.format(
                 tree.linearize(with_tag=False), logprob.value()))
         print('-'*79)
@@ -162,26 +146,26 @@ def predict_input_disc(args):
 def predict_input_gen(args):
     print('Predicting with generative model.')
 
-    model = load_model(args.checkpoint)
+    joint = load_model(args.checkpoint)
     proposal = load_model(args.proposal_model)
-    decoder = GenerativeDecoder(
-        model=model, proposal=proposal, num_samples=args.num_samples)
+    parser = GenerativeDecoder(
+        model=joint, proposal=proposal, num_samples=args.num_samples)
 
     while True:
         sentence = input('Input a sentence: ')
         words = sentence.split()
 
-        print('Processed:', ' '.join(model.word_vocab.process(words)))
+        print('Processed:', ' '.join(joint.word_vocab.process(words)))
 
-        print('Perplexity: {:.2f}'.format(decoder.perplexity(words)))
+        print('Perplexity: {:.2f}'.format(parser.perplexity(words)))
 
         print('MAP tree:')
-        tree, proposal_logprob, joint_logprob = decoder.map_tree(words)
+        tree, proposal_logprob, joint_logprob = parser.map_tree(words)
         print('  {} {:.2f} {:.2f}'.format(
             tree.linearize(with_tag=False), joint_logprob, proposal_logprob))
         print()
 
-        scored = decoder.scored_samples(words)
+        scored = parser.scored_samples(words)
 
         print(f'Unique samples: {len(scored)}/{args.num_samples}.')
 
@@ -203,11 +187,11 @@ def predict_input_gen(args):
 def sample_generative(args):
     print('Sampling from the generative model.')
 
-    model = load_model(args.checkpoint)
+    parser = load_model(args.checkpoint)
 
     print('Samples:')
     for i in range(args.num_samples):
-        tree, logprob = model.sample()
+        tree, logprob = parser.sample()
         print('>', tree.linearize(with_tag=False))
         print()
 
@@ -225,8 +209,8 @@ def predict_perplexity(args):
     else:
         sentences = [line.strip().split() for line in lines]
 
-    model = load_model(args.checkpoint)
-    decoder = GenerativeDecoder(model=model, num_samples=args.num_samples)
+    joint = load_model(args.checkpoint)
+    decoder = GenerativeDecoder(model=joint, num_samples=args.num_samples)
     decoder.load_proposal_samples(args.proposal_samples)
 
     pps = []
@@ -234,7 +218,7 @@ def predict_perplexity(args):
         dy.renew_cg()
         pp = decoder.perplexity(words)
         pps.append(pp)
-    avg_pp = np.mean(pps)  # TODO: is this correct?
+    avg_pp = np.mean(pps)  # TODO: is this correct? Answer: NO!
 
     with open(args.outfile, 'w') as f:
         print('Average perplexity:', avg_pp)
@@ -266,12 +250,14 @@ def sample_proposals(args):
         if args.parser_type == 'crf':
             for tree, nll in parser.sample(words, num_samples=args.num_samples):
                 samples.append(
-                    ' ||| '.join((str(i), str(-nll.value()), tree.linearize(with_tag=False))))
+                    ' ||| '.join(
+                        (str(i), str(-nll.value()), tree.linearize(with_tag=False))))
         else:
             for _ in range(args.num_samples):
                 tree, nll = parser.sample(words, alpha=args.alpha)
                 samples.append(
-                    ' ||| '.join((str(i), str(-nll.value()), tree.linearize(with_tag=False))))
+                    ' ||| '.join(
+                        (str(i), str(-nll.value()), tree.linearize(with_tag=False))))
 
     with open(args.outfile, 'w') as f:
         print('\n'.join(samples), file=f, end='')
@@ -280,7 +266,7 @@ def sample_proposals(args):
 def inspect_model(args):
     print(f'Inspecting attention for sentences in `{args.infile}`.')
 
-    model = load_model(args.checkpoint)
+    parser = load_model(args.checkpoint)
 
     with open(args.infile, 'r') as f:
         lines = [line.strip() for line in f.readlines()]
@@ -291,29 +277,32 @@ def inspect_model(args):
         sentences = [line.split() for line in lines]
 
     def inspect_after_reduce(model):
-        subtree = model.stack._stack[-1].subtree
+        subtree = parser.stack._stack[-1].subtree
         head = subtree.label
-        children = [child.label if isinstance(child, InternalNode) else child.word for child in subtree.children]
-        attention = model.composer._attn
-        gate = np.mean(model.composer._gate)
+        children = [child.label
+            if isinstance(child, InternalNode) else child.word
+            for child in subtree.children]
+        attention = parser.composer._attn
+        gate = np.mean(parser.composer._gate)
         attention = [attention] if not isinstance(attention, list) else attention  # in case .value() returns a float
         attentive = [f'{child} ({attn:.2f})'
             for child, attn in zip(children, attention)]
         print('  ', head, '|', ' '.join(attentive), f'[{gate:.2f}]')
 
     def parse_with_inspection(model, words):
-        model.eval()
+        parser.eval()
         nll = 0.
-        model.initialize(model.word_vocab.indices(words))
-        while not model.stack.is_finished():
-            u = model.parser_representation()
-            action_logits = model.f_action(u)
-            action_id = np.argmax(action_logits.value() + model._add_actions_mask())
+        word_ids = [parser.word_vocab.index_or_unk(word) for word in words]
+        parser.initialize(word_ids)
+        while not parser.stack.is_finished():
+            u = parser.parser_representation()
+            action_logits = parser.f_action(u)
+            action_id = np.argmax(action_logits.value() + parser._add_actions_mask())
             nll += dy.pickneglogsoftmax(action_logits, action_id)
-            model.parse_step(action_id)
-            if action_id == model.REDUCE_ID:
+            parser.parse_step(action_id)
+            if action_id == parser.REDUCE_ID:
                 inspect_after_reduce(model)
-        tree = model.get_tree()
+        tree = parser.get_tree()
         tree.substitute_leaves(iter(words))  # replaces UNKs with originals
         return tree, nll
 

@@ -20,7 +20,7 @@ def main():
     ]
 
     parser = argparse.ArgumentParser(description='RNNG parser',
-                                     fromfile_prefix_chars='@') # enable loading args from textfile
+                                     fromfile_prefix_chars='@') # enables loading args from textfile
     # Choose mode
     parser.add_argument('mode', choices=['train', 'predict', 'syneval'],
                         help='what do you want to do?')
@@ -136,36 +136,36 @@ def main():
     prediction = parser.add_argument_group('Prediction')
     prediction.add_argument('--checkpoint', default='',
                         help='load model from this checkpoint')
-    prediction.add_argument('--proposal-model', default='',
-                        help='load discriminative model (proposal for generative model) from this checkpoint')
-    prediction.add_argument('--proposal-samples', default='data/proposal-samples/dev.props',
-                        help='load proposal samples')
+    prediction.add_argument('--infile', default='.',
+                        help='input file to decode')
+    prediction.add_argument('--outfile', default='.',
+                        help='output file to write to')
     prediction.add_argument('--from-input', action='store_true',
                         help='predict for user input')
     prediction.add_argument('--from-tree-file', action='store_true',
                         help='predict trees for a file of gold trees and evaluate it against those')
     prediction.add_argument('--from-text-file', action='store_true',
                         help='predict trees for a file of tokenized sentences')
+    prediction.add_argument('--use-tokenizer', action='store_true',
+                        help='tokenize user input')
     prediction.add_argument('--sample-gen', action='store_true',
                         help='sample from generative model')
     prediction.add_argument('--sample-proposals', action='store_true',
                         help='sample proposals from discriminative model')
-    prediction.add_argument('--perplexity', action='store_true',
-                        help='evaluate perplexity')
-    prediction.add_argument('--inspect-model', action='store_true',
-                        help='inspect the attention in the model')
     prediction.add_argument('--num-samples', type=int, default=100,
                         help='number of proposal samples')
     prediction.add_argument('--alpha', type=float, default=1.0,
                         help='temperature to tweak distribution')
-    prediction.add_argument('--use-tokenizer', action='store_true',
-                        help='tokenize user input')
+    prediction.add_argument('--perplexity', action='store_true',
+                        help='evaluate perplexity')
+    prediction.add_argument('--proposal-model', default='',
+                        help='load discriminative model (proposal for generative model) from this checkpoint')
+    prediction.add_argument('--proposal-samples', default='data/proposal-samples/dev.props',
+                        help='load proposal samples')
+    prediction.add_argument('--inspect-model', action='store_true',
+                        help='inspect the attention in the model')
     prediction.add_argument('--evalb-dir', default='EVALB',
                         help='where the evalb excecutable is located')
-    prediction.add_argument('--infile', default='.',
-                        help='input file to decode')
-    prediction.add_argument('--outfile', default='.',
-                        help='output file to write to')
 
     args = parser.parse_args()
 
@@ -175,6 +175,7 @@ def main():
         predict.main(args)
     elif args.mode == 'syneval':
         syneval.main(args)
+
 
 if __name__ == '__main__':
     main()

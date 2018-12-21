@@ -6,11 +6,12 @@ from collections import Counter
 
 import numpy as np
 import dynet as dy
-from tensorboardX import SummaryWriter
 from tqdm import tqdm
+from tensorboardX import SummaryWriter
 
 from rnng.parser.actions import SHIFT, REDUCE, NT, GEN
 from rnng.model import DiscRNNG, GenRNNG
+from rnng.decoder import GenerativeDecoder
 from crf.model import ChartParser, START, STOP
 from utils.vocabulary import Vocabulary, UNK
 from utils.trees import fromstring, DUMMY
@@ -446,8 +447,10 @@ class SupervisedTrainer:
         with open(self.state_checkpoint_path, 'w') as f:
             state = {
                 'parser-type': self.parser_type,
+                'num-params': int(self.parser.num_params),
                 'num-epochs': self.current_epoch,
                 'num-updates': self.num_updates,
+                'current-lr': self.get_lr(),
                 'best-dev-fscore': self.best_dev_fscore,
                 'best-dev-epoch': self.best_dev_epoch,
                 'test-fscore': self.test_fscore,

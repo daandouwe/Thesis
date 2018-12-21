@@ -1,3 +1,4 @@
+--dynet-mem=1000
 --parser-type=crf
 --lstm-dim=250
 --label-hidden-dim=250

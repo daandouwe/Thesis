@@ -1,0 +1,5 @@
+--sample-proposals
+--parser-type=crf
+--num-samples=100
+--infile=data/ptb/test.trees
+--outfile=data/proposals/crf-test.props

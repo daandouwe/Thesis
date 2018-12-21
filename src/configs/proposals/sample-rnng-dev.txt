@@ -1,0 +1,6 @@
+--sample-proposals
+--parser-type=disc-rnng
+--num-samples=100
+--alpha=0.8
+--infile=data/ptb/dev.trees
+--outfile=data/proposals/rnng-dev.props

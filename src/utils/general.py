@@ -3,6 +3,8 @@ import shutil
 import time
 from datetime import datetime
 
+import dynet as dy
+
 
 def ceil_div(a, b):
     return ((a - 1) // b) + 1
@@ -61,6 +63,22 @@ def blockgrad(expression):
         return expression.value()
     else:  # already detached
         return expression
+
+
+def load_model(dir):
+    model = dy.ParameterCollection()
+    [parser] = dy.load(dir, model)
+    return parser
+
+
+def is_tree(line):
+    """Simple `oracle` to see if line is a tree."""
+    assert isinstance(line, str), line
+    try:
+        Tree.fromstring(line)
+        return True
+    except ValueError:
+        return False
 
 
 class Timer:
