@@ -9,42 +9,27 @@ import dynet as dy
 from tqdm import tqdm
 from tensorboardX import SummaryWriter
 
-from rnng.parser.actions import SHIFT, REDUCE, NT, GEN
-from rnng.model import DiscRNNG, GenRNNG
-from rnng.decoder import GenerativeDecoder
-from crf.model import ChartParser, START, STOP
+from lm.model import LanguageModel, MultitaskLanguageModel, START, STOP
 from utils.vocabulary import Vocabulary, UNK
 from utils.trees import fromstring, DUMMY
-from utils.evalb import evalb
 from utils.text import replace_quotes, replace_brackets
 from utils.general import Timer, get_folders, write_args, ceil_div, move_to_final_folder
 
 
-class SupervisedTrainer:
+class LanguageModelTrainer:
     """Supervised trainer for RNNG."""
     def __init__(
             self,
-            parser_type=None,
             model_path_base=None,
+            multitask=False,
             args=None,
             train_path=None,
             dev_path=None,
             test_path=None,
             vocab_path=None,
-            evalb_dir=None,
-            dev_proposal_samples=None,
-            test_proposal_samples=None,
-            word_emb_dim=None,
-            label_emb_dim=None,
-            action_emb_dim=None,
-            stack_lstm_dim=None,
-            buffer_lstm_dim=None,
-            terminal_lstm_dim=None,
-            history_lstm_dim=None,
+            emb_dim=None,
             lstm_dim=None,
             lstm_layers=None,
-            composition=None,
-            f_hidden_dim=None,
             label_hidden_dim=None,
             max_epochs=inf,
             max_time=inf,
@@ -62,33 +47,20 @@ class SupervisedTrainer:
             print_every=1,
             eval_every=-1,  # default is every epoch (-1)
     ):
-        assert parser_type in ('disc-rnng', 'gen-rnng', 'crf'), parser_type
-
         self.args = args
 
         # Data arguments
-        self.evalb_dir = evalb_dir
         self.train_path = train_path
         self.dev_path = dev_path
         self.test_path = test_path
         self.vocab_path = vocab_path
-        self.dev_proposal_samples = dev_proposal_samples
-        self.test_proposal_samples = test_proposal_samples
 
         # Model arguments
-        self.parser_type = parser_type
         self.model_path_base = model_path_base
-        self.word_emb_dim = word_emb_dim
-        self.label_emb_dim = label_emb_dim
-        self.action_emb_dim = action_emb_dim
-        self.stack_lstm_dim = stack_lstm_dim
-        self.buffer_lstm_dim = buffer_lstm_dim
-        self.terminal_lstm_dim = terminal_lstm_dim
-        self.history_lstm_dim = history_lstm_dim
+        self.multitask = multitask
+        self.emb_dim = emb_dim
         self.lstm_dim = lstm_dim
         self.lstm_layers = lstm_layers
-        self.composition = composition
-        self.f_hidden_dim = f_hidden_dim
         self.label_hidden_dim = label_hidden_dim
         self.dropout = dropout
 
@@ -113,15 +85,10 @@ class SupervisedTrainer:
         self.losses = []
         self.num_updates = 0
 
-        self.current_dev_fscore = -inf
-        self.best_dev_fscore = -inf
+        self.current_dev_pp = inf
+        self.best_dev_pp = inf
         self.best_dev_epoch = 0
-        self.test_fscore = -inf
-
-        self.current_dev_perplexity = -inf
-        self.best_dev_perplexity = -inf
-        self.best_dev_perplexity_epoch = 0
-        self.test_perplexity = -inf
+        self.test_pp = inf
 
     def build_paths(self):
         # Make output folder structure
@@ -143,18 +110,9 @@ class SupervisedTrainer:
         self.model_checkpoint_path = os.path.join(checkdir, 'model')
         self.state_checkpoint_path = os.path.join(checkdir, 'state.json')
         self.word_vocab_path = os.path.join(vocabdir, 'word-vocab.json')
-        self.label_vocab_path = os.path.join(vocabdir, 'label-vocab.json')
-        self.action_vocab_path = os.path.join(vocabdir, 'action-vocab.json')
+        self.label_vocab_path = os.path.join(vocabdir, 'nt-vocab.json')
         self.loss_path = os.path.join(logdir, 'loss.csv')
         self.tensorboard_writer = SummaryWriter(logdir)
-
-        # Dev paths
-        self.dev_pred_path = os.path.join(outdir, 'dev.pred.trees')
-        self.dev_result_path = os.path.join(outdir, 'dev.result')
-
-        # Test paths
-        self.test_pred_path = os.path.join(outdir, 'test.pred.trees')
-        self.test_result_path = os.path.join(outdir, 'test.result')
 
     def build_corpus(self):
         print(f'Loading training trees from `{self.train_path}`...')
@@ -169,11 +127,11 @@ class SupervisedTrainer:
         with open(self.test_path) as f:
             test_treebank = [fromstring(line.strip()) for line in f]
 
-        if self.parser_type == 'crf':
-            print(f'Converting trees to CNF...')
-            train_treebank = [tree.cnf() for tree in train_treebank]
-            dev_treebank = [tree.cnf() for tree in dev_treebank]
-            test_treebank = [tree.cnf() for tree in test_treebank]
+        if self.multitask:
+            # need trees with span-information
+            train_treebank = [tree.convert() for tree in train_treebank]
+            dev_treebank = [tree.convert() for tree in dev_treebank]
+            test_treebank = [tree.convert() for tree in test_treebank]
 
         print("Constructing vocabularies...")
         if self.vocab_path is not None:
@@ -185,30 +143,16 @@ class SupervisedTrainer:
             words = [word for tree in train_treebank for word in tree.words()]
         labels = [label for tree in train_treebank for label in tree.labels()]
 
-        if self.parser_type == 'crf':
+        if self.multitask:
             words = [UNK, START, STOP] + words
-            labels = [(DUMMY,)] + labels
         else:
-            words = [UNK] + words
+            words = [UNK, START] + words
 
         word_vocab = Vocabulary.fromlist(words, unk_value=UNK)
         label_vocab = Vocabulary.fromlist(labels)
 
-        if self.parser_type.endswith('rnng'):
-            # Order is very important! See for example DiscParser class
-            if self.parser_type == 'disc-rnng':
-                actions = [SHIFT, REDUCE] + [NT(label) for label in label_vocab]
-            elif self.parser_type == 'gen-rnng':
-                actions = [REDUCE] + [NT(label) for label in label_vocab] + [GEN(word) for word in word_vocab]
-            action_vocab = Vocabulary()
-            for action in actions:
-                action_vocab.add(action)
-        else:
-            action_vocab = Vocabulary()
-
         self.word_vocab = word_vocab
         self.label_vocab = label_vocab
-        self.action_vocab = action_vocab
 
         self.train_treebank = train_treebank
         self.dev_treebank = dev_treebank
@@ -216,7 +160,7 @@ class SupervisedTrainer:
 
         print('\n'.join((
             'Corpus statistics:',
-            f'Vocab: {word_vocab.size:,} words, {label_vocab.size:,} nonterminals, {action_vocab.size:,} actions',
+            f'Vocab: {word_vocab.size:,} words, {label_vocab.size:,} nonterminals',
             f'Train: {len(train_treebank):,} sentences',
             f'Dev: {len(dev_treebank):,} sentences',
             f'Test: {len(test_treebank):,} sentences')))
@@ -227,61 +171,28 @@ class SupervisedTrainer:
         print('Initializing model...')
         self.model = dy.ParameterCollection()
 
-        if self.parser_type == 'disc-rnng':
-            parser = DiscRNNG(
-                model=self.model,
-                word_vocab=self.word_vocab,
-                nt_vocab=self.label_vocab,
-                action_vocab=self.action_vocab,
-                word_emb_dim=self.word_emb_dim,
-                nt_emb_dim=self.label_emb_dim,
-                action_emb_dim=self.action_emb_dim,
-                stack_lstm_dim=self.stack_lstm_dim,
-                buffer_lstm_dim=self.buffer_lstm_dim,
-                history_lstm_dim=self.history_lstm_dim,
-                lstm_layers=self.lstm_layers,
-                composition=self.composition,
-                f_hidden_dim=self.f_hidden_dim,
-                dropout=self.dropout,
-                use_glove=self.use_glove,
-                glove_dir=self.glove_dir,
-                fine_tune_embeddings=self.fine_tune_embeddings,
-                freeze_embeddings=self.freeze_embeddings,
-            )
-        elif self.parser_type == 'gen-rnng':
-            parser = GenRNNG(
-                model=self.model,
-                word_vocab=self.word_vocab,
-                nt_vocab=self.label_vocab,
-                action_vocab=self.action_vocab,
-                word_emb_dim=self.word_emb_dim,
-                nt_emb_dim=self.label_emb_dim,
-                action_emb_dim=self.action_emb_dim,
-                stack_lstm_dim=self.stack_lstm_dim,
-                terminal_lstm_dim=self.terminal_lstm_dim,
-                history_lstm_dim=self.history_lstm_dim,
-                lstm_layers=self.lstm_layers,
-                composition=self.composition,
-                f_hidden_dim=self.f_hidden_dim,
-                dropout=self.dropout,
-                use_glove=self.use_glove,
-                glove_dir=self.glove_dir,
-                fine_tune_embeddings=self.freeze_embeddings,
-                freeze_embeddings=self.freeze_embeddings,
-            )
-        elif self.parser_type == 'crf':
-            parser = ChartParser(
+        if self.multitask:
+            lm = MultitaskLanguageModel(
                 model=self.model,
                 word_vocab=self.word_vocab,
                 label_vocab=self.label_vocab,
-                word_embedding_dim=self.word_emb_dim,
-                lstm_layers=self.lstm_layers,
+                word_embedding_dim=self.emb_dim,
                 lstm_dim=self.lstm_dim,
+                lstm_layers=self.lstm_layers,
                 label_hidden_dim=self.label_hidden_dim,
                 dropout=self.dropout,
             )
-        self.parser = parser
-        print('Number of parameters: {:,}'.format(self.parser.num_params))
+        else:
+            lm = LanguageModel(
+                model=self.model,
+                word_vocab=self.word_vocab,
+                word_embedding_dim=self.emb_dim,
+                lstm_dim=self.lstm_dim,
+                lstm_layers=self.lstm_layers,
+                dropout=self.dropout,
+            )
+        self.lm = lm
+        print('Number of parameters: {:,}'.format(self.lm.num_params))
 
     def build_optimizer(self):
         assert self.model is not None, 'build model first'
@@ -300,13 +211,6 @@ class SupervisedTrainer:
         Train the model. At any point you can
         use Ctrl + C to break out of training early.
         """
-
-        if self.parser_type == 'gen-rnng':
-            # These are needed for evaluation
-            assert self.dev_proposal_samples is not None, 'specify proposal samples with --dev-proposal-samples.'
-            assert self.test_proposal_samples is not None, 'specify proposal samples with --test-proposal-samples.'
-            assert os.path.exists(self.dev_proposal_samples), self.dev_proposal_samples
-            assert os.path.exists(self.test_proposal_samples), self.test_proposal_samples
 
         # Construct model and optimizer
         self.build_paths()
@@ -337,8 +241,8 @@ class SupervisedTrainer:
                 self.anneal_lr()
 
                 print('-'*99)
-                print('| End of epoch {:3d}/{} | Elapsed {} | Current dev F1 {:4.2f} | Best dev F1 {:4.2f} (epoch {:2d})'.format(
-                    epoch, self.max_epochs, self.timer.format_elapsed(), self.current_dev_fscore, self.best_dev_fscore, self.best_dev_epoch))
+                print('| End of epoch {:3d}/{} | Elapsed {} | Current dev pp {:4.2f} | Best dev pp {:4.2f} (epoch {:2d})'.format(
+                    epoch, self.max_epochs, self.timer.format_elapsed(), self.current_dev_pp, self.best_dev_pp, self.best_dev_epoch))
                 print('-'*99)
         except KeyboardInterrupt:
             print('-'*99)
@@ -350,20 +254,20 @@ class SupervisedTrainer:
         # Check test scores
         self.check_test()
 
-        # Save model again but with test fscore
+        # Save model again but with test pp
         self.save_checkpoint()
 
         # Save the losses for plotting and diagnostics
         self.write_losses()
 
         print('='*99)
-        print('| End of training | Best dev F1 {:3.2f} (epoch {:2d}) | Test F1 {:3.2f}'.format(
-            self.best_dev_fscore, self.best_dev_epoch, self.test_fscore))
+        print('| End of training | Best dev pp {:3.2f} (epoch {:2d}) | Test pp {:3.2f}'.format(
+            self.best_dev_pp, self.best_dev_epoch, self.test_pp))
         print('='*99)
 
     def train_epoch(self):
         """One epoch of sequential training."""
-        self.parser.train()
+        self.lm.train()
         epoch_timer = Timer()
         num_sentences = len(self.train_treebank)
         num_batches = num_sentences // self.batch_size
@@ -379,12 +283,16 @@ class SupervisedTrainer:
 
             # Compute loss on minibatch
             dy.renew_cg()
-            loss = dy.esum([self.parser.forward(tree) for tree in minibatch])
+            if self.multitask:
+                losses = [self.lm.forward(tree.words(), spans=tree.spans()) for tree in minibatch]
+            else:
+                losses = [self.lm.forward(tree.words()) for tree in minibatch]
+            loss = dy.esum(losses)
             loss /= self.batch_size
 
             # Add penalty if fine-tuning embeddings
             if self.fine_tune_embeddings:
-                delta_penalty = self.parser.word_embedding.delta_penalty()
+                delta_penalty = self.lm.word_embedding.delta_penalty()
                 loss += delta_penalty
 
             # Update parameters
@@ -414,6 +322,9 @@ class SupervisedTrainer:
                 if self.fine_tune_embeddings:
                     self.tensorboard_writer.add_scalar(
                         'train/embedding-l2', delta_penalty.value(), self.num_updates)
+                if self.multitask:
+                    self.tensorboard_writer.add_scalar(
+                        'train/scaffold-accuracy', self.lm.correct / self.lm.predicted, self.num_updates)
 
     def get_lr(self):
         return self.optimizer.learning_rate
@@ -427,7 +338,7 @@ class SupervisedTrainer:
         return batches
 
     def anneal_lr(self):
-        if self.current_dev_fscore < self.best_dev_fscore:  # if F1 has gotten worse
+        if self.current_dev_pp > self.best_dev_pp:
             if self.current_epoch > (self.best_dev_epoch + self.lr_decay_patience):  # if we've waited long enough
                 lr = self.get_lr() / self.lr_decay
                 print(f'Annealing the learning rate from {self.get_lr():.1e} to {lr:.1e}.')
@@ -436,151 +347,67 @@ class SupervisedTrainer:
     def save_checkpoint(self):
         assert self.model is not None, 'no model built'
 
-        dy.save(self.model_checkpoint_path, [self.parser])
+        dy.save(self.model_checkpoint_path, [self.lm])
 
         self.word_vocab.save(self.word_vocab_path)
         self.label_vocab.save(self.label_vocab_path)
-        self.action_vocab.save(self.action_vocab_path)
 
         with open(self.state_checkpoint_path, 'w') as f:
             state = {
-                'parser-type': self.parser_type,
-                'num-params': int(self.parser.num_params),
+                'model': 'rnn-lm',
+                'multitask': self.multitask,
+                'num-params': int(self.lm.num_params),
                 'num-epochs': self.current_epoch,
                 'num-updates': self.num_updates,
                 'current-lr': self.get_lr(),
-                'best-dev-fscore': self.best_dev_fscore,
+                'best-dev-pp': self.best_dev_pp,
                 'best-dev-epoch': self.best_dev_epoch,
-                'test-fscore': self.test_fscore,
+                'test-pp': self.test_pp,
             }
             json.dump(state, f, indent=4)
 
     def load_checkpoint(self):
         self.model = dy.ParameterCollection()
-        [self.parser] = dy.load(self.model_checkpoint_path, self.model)
+        [self.lm] = dy.load(self.model_checkpoint_path, self.model)
 
-    def predict(self, examples):
-        self.parser.eval()
-        trees = []
-        for gold in tqdm(examples):
+    def perplexity(self, treebank):
+        nll = 0
+        num_words = 0
+        self.lm.eval()
+        for tree in tqdm(treebank):
             dy.renew_cg()
-            tree, *rest = self.parser.parse(gold.words())
-            trees.append(tree.linearize())
-        self.parser.train()
-        return trees
+            words = tree.words()
+            num_words += len(words)
+            nll += self.lm.forward(words).value()
+        self.lm.train()
+        pp = np.exp(nll / num_words)
+        return round(pp, 2)
 
     def check_dev(self):
-        if self.parser_type in ('disc-rnng', 'crf'):
-            self.check_dev_disc()
-        if self.parser_type == 'gen-rnng':
-            self.check_dev_gen()
+        print('Evaluating perplexity on development set...')
+
+        dev_pp = self.perplexity(self.dev_treebank)
+
+        # Log score to tensorboard
+        self.tensorboard_writer.add_scalar(
+            'dev/pp', dev_pp, self.num_updates)
+
+        self.current_dev_pp = dev_pp
+        if dev_pp < self.best_dev_pp:
+            print(f'Saving new best model to `{self.model_checkpoint_path}`...')
+            self.best_dev_epoch = self.current_epoch
+            self.best_dev_pp = dev_pp
+            self.save_checkpoint()
 
     def check_test(self):
-        if self.parser_type in ('disc-rnng', 'crf'):
-            self.check_test_disc()
-        if self.parser_type == 'gen-rnng':
-            self.check_test_gen()
+        print('Evaluating perplexity on development set...')
 
-    def check_dev_disc(self):
-        print('Evaluating F1 on development set...')
-
-        # Predict trees
-        trees = self.predict(self.dev_treebank)
-        with open(self.dev_pred_path, 'w') as f:
-            print('\n'.join(trees), file=f)
-
-        # Compute f-score
-        dev_fscore = evalb(
-            self.evalb_dir, self.dev_pred_path, self.dev_path, self.dev_result_path)
+        test_pp = self.perplexity(self.test_treebank)
 
         # Log score to tensorboard
         self.tensorboard_writer.add_scalar(
-            'dev/f-score', dev_fscore, self.num_updates)
-
-        self.current_dev_fscore = dev_fscore
-        if dev_fscore > self.best_dev_fscore:
-            print(f'Saving new best model to `{self.model_checkpoint_path}`...')
-            self.best_dev_epoch = self.current_epoch
-            self.best_dev_fscore = dev_fscore
-            self.save_checkpoint()
-
-    def check_dev_gen(self):
-        print('Evaluating F1 and perplexity on development set...')
-
-        decoder = GenerativeDecoder(model=self.parser)
-
-        trees, dev_perplexity = decoder.predict_from_proposal_samples(
-            path=self.dev_proposal_samples)
-
-        with open(self.dev_pred_path, 'w') as f:
-            print('\n'.join(trees), file=f)
-
-        dev_fscore = evalb(
-            self.evalb_dir, self.dev_pred_path, self.dev_path, self.dev_result_path)
-
-        # Log score to tensorboard
-        self.tensorboard_writer.add_scalar(
-            'dev/f-score', dev_fscore, self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'dev/perplexity', dev_perplexity, self.num_updates)
-
-        self.current_dev_fscore = dev_fscore
-        self.dev_perplexity = dev_perplexity
-
-        if dev_fscore > self.best_dev_fscore:
-            print(f'Saving new best model to `{self.model_checkpoint_path}`...')
-            self.best_dev_epoch = self.current_epoch
-            self.best_dev_fscore = dev_fscore
-            self.save_checkpoint()
-
-    def check_test_disc(self):
-        print('Evaluating F1 on test set...')
-
-        print(f'Loading best saved model from `{self.model_checkpoint_path}` '
-              f'(epoch {self.best_dev_epoch}, fscore {self.best_dev_fscore})...')
-        self.load_checkpoint()
-
-        # Predict trees.
-        trees = self.predict(self.test_treebank)
-        with open(self.test_pred_path, 'w') as f:
-            print('\n'.join(trees), file=f)
-
-        # Compute f-score.
-        test_fscore = evalb(
-            self.evalb_dir, self.test_pred_path, self.test_path, self.test_result_path)
-
-        self.tensorboard_writer.add_scalar(
-            'test/f-score', test_fscore)
-
-        self.test_fscore = test_fscore
-
-    def check_test_gen(self):
-        print('Evaluating F1 and perplexity on test set...')
-
-        print(f'Loading best saved model from `{self.model_checkpoint_path}` '
-              f'(epoch {self.best_dev_epoch}, fscore {self.best_dev_fscore})...')
-        self.load_checkpoint()
-        self.parser.eval()
-
-        decoder = GenerativeDecoder(model=self.parser)
-
-        trees, test_perplexity = decoder.predict_from_proposal_samples(
-            path=self.test_proposal_samples)
-        with open(self.test_pred_path, 'w') as f:
-            print('\n'.join(trees), file=f)
-
-        # Compute f-score.
-        test_fscore = evalb(
-            self.evalb_dir, self.test_pred_path, self.test_path, self.test_result_path)
-
-        # Log score to tensorboard.
-        self.tensorboard_writer.add_scalar(
-            'test/f-score', test_fscore)
-        self.tensorboard_writer.add_scalar(
-            'test/perplexity', test_perplexity)
-
-        self.test_fscore = test_fscore
-        self.test_perplexity = test_perplexity
+            'test/pp', test_pp, self.num_updates)
+        self.test_pp = test_pp
 
     def write_losses(self):
         with open(self.loss_path, 'w') as f:
@@ -590,4 +417,4 @@ class SupervisedTrainer:
 
     def finalize_model_folder(self):
         move_to_final_folder(
-            self.subdir, self.model_path_base, self.best_dev_fscore)
+            self.subdir, self.model_path_base, self.best_dev_pp)

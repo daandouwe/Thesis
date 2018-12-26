@@ -44,8 +44,8 @@ def main():
                         help='minimal word count')
 
     model = parser.add_argument_group('Model (shared)')
-    model.add_argument('--parser-type', choices=['disc-rnng', 'gen-rnng', 'crf'], required=True,
-                        help='type of parser')
+    model.add_argument('--parser-type', choices=['disc-rnng', 'gen-rnng', 'crf', 'semisup-crf', 'semisup-rnng', 'rnn-lm'],
+                        help='type of parser', required=True)
     model.add_argument('--model-path-base', required=True,
                         help='path base to use for saving models')
     model.add_argument('--word-emb-dim', type=int, default=100,
@@ -69,7 +69,7 @@ def main():
 
     rnng = parser.add_argument_group('Model (RNNG)')
 
-    rnng.add_argument('--nt-emb-dim', type=int, default=100,
+    rnng.add_argument('--label-emb-dim', type=int, default=100,
                         help='dim of nonterminal embeddings')
     rnng.add_argument('--action-emb-dim', type=int, default=100,
                         help='dim of nonterminal embeddings')
@@ -107,7 +107,7 @@ def main():
                         help='anneal lr by lr /= lr-decay')
     training.add_argument('--lr-decay-patience', type=int, default=2,
                         help='wait this many epochs of deteriorating fscore before applying lr-decay')
-    training.add_argument('--clip', type=float, default=5.,
+    training.add_argument('--max-grad-norm', type=float, default=5.,
                         help='clip gradient if norm is greater than this value')
     training.add_argument('--print-every', type=int, default=10,
                         help='how often to print training progress')
@@ -132,14 +132,22 @@ def main():
     semisup.add_argument('--use-mlp-baseline', action='store_true',
                         help='optional baseline')
 
+    lm = parser.add_argument_group('Language model')
+    lm.add_argument('--multitask', action='store_true',
+                    help='predict labeled spans as side objective')
+
     # Predict arguments
     prediction = parser.add_argument_group('Prediction')
     prediction.add_argument('--checkpoint', default='',
                         help='load model from this checkpoint')
-    prediction.add_argument('--infile', default='.',
+    prediction.add_argument('--infile', default='',
                         help='input file to decode')
-    prediction.add_argument('--outfile', default='.',
+    prediction.add_argument('--outfile', default='',
                         help='output file to write to')
+    prediction.add_argument('--indir', default='',
+                        help='input directory (primarily syneval)')
+    prediction.add_argument('--outdir', default='',
+                        help='output directory to write to (primarily syneval)')
     prediction.add_argument('--from-input', action='store_true',
                         help='predict for user input')
     prediction.add_argument('--from-tree-file', action='store_true',
@@ -164,8 +172,14 @@ def main():
                         help='load proposal samples')
     prediction.add_argument('--inspect-model', action='store_true',
                         help='inspect the attention in the model')
+    prediction.add_argument('--capitalize', action='store_true',
+                        help='capitalize the sentence (especially for syneval)')
+    prediction.add_argument('--add-period', action='store_true',
+                        help='add a period at the end of the sentence (especially for syneval)')
     prediction.add_argument('--evalb-dir', default='EVALB',
                         help='where the evalb excecutable is located')
+
+
 
     args = parser.parse_args()
 

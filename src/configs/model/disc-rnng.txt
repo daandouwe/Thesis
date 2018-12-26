@@ -1,13 +1,12 @@
---dynet-mem=1000
 --parser-type=disc-rnng
 --word-emb-dim=100
---nt-emb-dim=100
---action-emb-dim=100
+--label-emb-dim=100
+--action-emb-dim=50
 --stack-lstm-dim=128
 --buffer-lstm-dim=128
---terminal-lstm-dim=128
---history-lstm-dim=128
+--history-lstm-dim=64
 --lstm-layers=2
 --composition=attention
 --f-hidden-dim=128
 --dropout=0.2
+--dynet-mem=1000

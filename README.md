@@ -1,5 +1,5 @@
 # Latent variables for Recurrent Neural Network Grammars
-Language models with trees as latent variables.
+Language models with latent trees.
 
 ## Setup
 Use `make` to obtain the data and install EVALB:
