@@ -120,8 +120,8 @@ train-crf-vocab: semisup-vocab
 semisup-rnng:
 	python src/main.py semisup \
 	    --model-path-base=models/semisup_post=disc \
-			--joint-model=${GEN_PATH}/model \
-			--posterior-model=${DISC_PATH}/model \
+	    --joint-model=${GEN_PATH}/model \
+	    --posterior-model=${DISC_PATH}/model \
 	    @src/configs/data/semisupervised.txt \
 	    @src/configs/training/adam.txt \
 	    @src/configs/baseline/argmax.txt
@@ -129,8 +129,8 @@ semisup-rnng:
 semisup-crf:
 	python src/main.py semisup \
 	    --model-path-base=models/semisup_post=crf \
-			--joint-model=${GEN_PATH}/model \
-			--posterior-model=${CRF_PATH}/model \
+	    --joint-model=${GEN_PATH}/model \
+	    --posterior-model=${CRF_PATH}/model \
 	    @src/configs/data/semisupervised.txt \
 	    @src/configs/training/adam.txt \
 	    @src/configs/baseline/argmax.txt
@@ -138,8 +138,8 @@ semisup-crf:
 semisup-rnng-vocab:
 	python src/main.py semisup \
 	    --model-path-base=models/semisup_post=disc_vocab=semisup \
-			--joint-model=${GEN_VOCAB_PATH}/model \
-			--posterior-model=${DISC_VOCAB_PATH}/model \
+	    --joint-model=${GEN_VOCAB_PATH}/model \
+	    --posterior-model=${DISC_VOCAB_PATH}/model \
 	    @src/configs/vocab/semisupervised.txt \
 	    @src/configs/data/semisupervised.txt \
 	    @src/configs/training/adam.txt \
@@ -148,8 +148,8 @@ semisup-rnng-vocab:
 semisup-crf-vocab:
 	python src/main.py semisup \
 	    --model-path-base=models/semisup_post=crf_vocab=semisup \
-			--joint-model=${GEN_VOCAB_PATH}/model \
-			--posterior-model=${CRF_VOCAB_PATH}/model \
+	    --joint-model=${GEN_VOCAB_PATH}/model \
+	    --posterior-model=${CRF_VOCAB_PATH}/model \
 	    @src/configs/vocab/semisupervised.txt \
 	    @src/configs/data/semisupervised.txt \
 	    @src/configs/training/adam.txt \
@@ -186,8 +186,8 @@ syneval-lm:
 	    --checkpoint=${LM_PATH}/model \
 	    --model-path-base= \
 	    --indir=data/syneval/converted
-			--add-period \
-			--capitalize
+	    --add-period \
+	    --capitalize
 
 .PHONY : clean
 clean :
