@@ -78,18 +78,18 @@ train-crf:
 train-lm:
 	python src/main.py train \
 	    --model-path-base=models/lm \
-			@src/configs/data/supervised.txt \
-			@src/configs/model/lm.txt \
-			@src/configs/training/sgd.txt \
-			--batch-size=64
+	    @src/configs/data/supervised.txt \
+	    @src/configs/model/lm.txt \
+	    @src/configs/training/sgd.txt \
+	    --batch-size=64
 
 train-multitask-lm:
 	python src/main.py train \
 	    --model-path-base=models/multitask-lm \
-			@src/configs/data/supervised.txt \
-			@src/configs/model/multitask-lm.txt \
-			@src/configs/training/sgd.txt \
-			--batch-size=64
+	    @src/configs/data/supervised.txt \
+	    @src/configs/model/multitask-lm.txt \
+	    @src/configs/training/sgd.txt \
+	    --batch-size=64
 
 train-disc-vocab: semisup-vocab
 	python src/main.py train \
