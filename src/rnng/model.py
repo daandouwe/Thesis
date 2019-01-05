@@ -63,10 +63,6 @@ class DiscRNNG(DiscParser):
         else:
             self.word_embedding = Embedding(self.model, self.num_words, word_emb_dim)
 
-        ## TODO:
-        # self.word_embedding = Projector(word_embedding, stack_lstm_dim)
-        ##
-
         # Encoders
         self.stack_encoder = StackLSTM(
             self.model, word_emb_dim, stack_lstm_dim, lstm_layers, dropout)

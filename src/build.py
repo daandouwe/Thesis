@@ -55,6 +55,7 @@ if __name__ == '__main__':
     parser.add_argument('--unlabeled-path', default='')
     parser.add_argument('--vocab-path', default='data/vocab/vocab.json')
     parser.add_argument('--min-word-count', type=int, default=1)
+    parser.add_argument('--max-vocab-size', type=int, default=50000)
     parser.add_argument('--lowercase', action='store_true')
 
     args = parser.parse_args()

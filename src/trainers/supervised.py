@@ -195,7 +195,7 @@ class SupervisedTrainer:
         label_vocab = Vocabulary.fromlist(labels)
 
         if self.parser_type.endswith('rnng'):
-            # Order is very important! See for example DiscParser class
+            # Order is very important! See DiscParser/GenParser classes for why
             if self.parser_type == 'disc-rnng':
                 actions = [SHIFT, REDUCE] + [NT(label) for label in label_vocab]
             elif self.parser_type == 'gen-rnng':

@@ -22,6 +22,7 @@ class LanguageModelTrainer:
             self,
             model_path_base=None,
             multitask=False,
+            predict_all_spans=False,
             args=None,
             train_path=None,
             dev_path=None,
@@ -58,6 +59,7 @@ class LanguageModelTrainer:
         # Model arguments
         self.model_path_base = model_path_base
         self.multitask = multitask
+        self.predict_all_spans = predict_all_spans
         self.emb_dim = emb_dim
         self.lstm_dim = lstm_dim
         self.lstm_layers = lstm_layers
@@ -141,7 +143,11 @@ class LanguageModelTrainer:
             words = [word for word, count in vocab.items() for _ in range(count)]
         else:
             words = [word for tree in train_treebank for word in tree.words()]
-        labels = [label for tree in train_treebank for label in tree.labels()]
+
+        if self.multitask:
+            labels = [label for tree in train_treebank for label in tree.labels()]
+        else:
+            labels = []
 
         if self.multitask:
             words = [UNK, START, STOP] + words
@@ -181,6 +187,7 @@ class LanguageModelTrainer:
                 lstm_layers=self.lstm_layers,
                 label_hidden_dim=self.label_hidden_dim,
                 dropout=self.dropout,
+                predict_all_spans=self.predict_all_spans
             )
         else:
             lm = LanguageModel(
@@ -189,7 +196,7 @@ class LanguageModelTrainer:
                 word_embedding_dim=self.emb_dim,
                 lstm_dim=self.lstm_dim,
                 lstm_layers=self.lstm_layers,
-                dropout=self.dropout,
+                dropout=self.dropout
             )
         self.lm = lm
         print('Number of parameters: {:,}'.format(self.lm.num_params))
@@ -400,7 +407,7 @@ class LanguageModelTrainer:
             self.save_checkpoint()
 
     def check_test(self):
-        print('Evaluating perplexity on development set...')
+        print('Evaluating perplexity on test set...')
 
         test_pp = self.perplexity(self.test_treebank)
 

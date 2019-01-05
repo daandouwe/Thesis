@@ -1,5 +1,6 @@
 --parser-type=rnn-lm
---lstm-layer=2
+--word-emb-dim=100
 --lstm-dim=300
+--lstm-layer=2
 --dropout=0.2
---dynet-mem=1000
+--dynet-mem=5000

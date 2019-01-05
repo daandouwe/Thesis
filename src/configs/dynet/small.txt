@@ -1,0 +1,2 @@
+--dynet-autobatch=1
+--dynet-mem=2000

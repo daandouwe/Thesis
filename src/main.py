@@ -115,9 +115,9 @@ def main():
                         help='evaluate model on development set (default: every epoch (-1))')
     training.add_argument('--eval-at-start', action='store_true',
                         help='evaluate model on development set at start of training')
-    training.add_argument('--dev-proposal-samples', default='data/proposals/dev.props',
+    training.add_argument('--dev-proposal-samples', default='data/proposals/rnng-dev.props',
                         help='proposal samples for development set')
-    training.add_argument('--test-proposal-samples', default='data/proposals/test.props',
+    training.add_argument('--test-proposal-samples', default='data/proposals/rnng-test.props',
                         help='proposal samples for test set')
 
     semisup = parser.add_argument_group('Semisupervised')
@@ -135,6 +135,8 @@ def main():
     lm = parser.add_argument_group('Language model')
     lm.add_argument('--multitask', action='store_true',
                     help='predict labeled spans as side objective')
+    lm.add_argument('--all-spans', action='store_true',
+                    help='also predict null spans')
 
     # Predict arguments
     prediction = parser.add_argument_group('Prediction')
@@ -178,7 +180,6 @@ def main():
                         help='add a period at the end of the sentence (especially for syneval)')
     prediction.add_argument('--evalb-dir', default='EVALB',
                         help='where the evalb excecutable is located')
-
 
 
     args = parser.parse_args()

@@ -18,13 +18,11 @@ class StackElement(NamedTuple):
 class Stack:
 
     def __init__(self, word_vocab, nt_vocab, word_embedding, nt_embedding, encoder, composer, empty_emb):
-        word_embedding_dim = word_embedding.shape()[1]
-        nt_embedding_dim = nt_embedding.shape()[1]
-        assert (word_embedding_dim == nt_embedding_dim)
+        assert (word_embedding.embedding_dim == nt_embedding.embedding_dim)
 
         self.word_vocab = word_vocab
         self.nt_vocab = nt_vocab
-        self.embedding_dim = word_embedding_dim
+        self.embedding_dim = word_embedding.embedding_dim
         self.word_embedding = word_embedding
         self.nt_embedding = nt_embedding
         self.encoder = encoder
@@ -111,7 +109,7 @@ class Buffer:
 
     def __init__(self, vocab, embedding, encoder, empty_emb):
         self.vocab = vocab
-        self.embedding_dim = embedding.shape()[1]
+        self.embedding_dim = embedding.embedding_dim
         self.embedding = embedding
         self.encoder = encoder
         self.empty_emb = empty_emb
@@ -146,7 +144,7 @@ class Terminal:
     def __init__(self, vocab, embedding, encoder, empty_emb):
         super(Terminal, self).__init__()
         self.vocab = vocab
-        self.embedding_dim = embedding.shape()[1]
+        self.embedding_dim = embedding.embedding_dim
         self.embedding = embedding
         self.encoder = encoder
         self.empty_emb = empty_emb
@@ -173,7 +171,7 @@ class History:
 
     def __init__(self, vocab, embedding, encoder, empty_emb):
         self.vocab = vocab
-        self.embedding_dim = embedding.shape()[1]
+        self.embedding_dim = embedding.embedding_dim
         self.embedding = embedding
         self.encoder = encoder
         self.empty_emb = empty_emb

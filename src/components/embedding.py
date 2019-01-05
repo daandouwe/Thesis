@@ -23,10 +23,6 @@ class Embedding:
     def __call__(self, index):
         return self.embedding[index]
 
-    @property
-    def shape(self):
-        return self.embedding.shape
-
 
 class PretrainedEmbedding:
     """Pretrained word embeddings with optional freezing."""
@@ -49,10 +45,6 @@ class PretrainedEmbedding:
             return dy.lookup(self.embedding, index, update=False)
         else:
             return self.embedding[index]
-
-    @property
-    def shape(self):
-        return self.embedding.shape
 
 
 class FineTuneEmbedding:
@@ -105,10 +97,6 @@ class FineTuneEmbedding:
         """Return the (average) L2 norm of Δ scaled by the weight-decay term."""
         return self.weight_decay * self.delta_norm()
 
-    @property
-    def shape(self):
-        return self.embedding.shape
-
 
 class CharEmbedding:
     """Character LSTM embeddings."""
@@ -123,7 +111,8 @@ class CharEmbedding:
 
         self.embedding_dim = word_embedding_dim
         self.char_vocab = Vocabulary.fromlist(
-            self.VOCAB + [self.UNK, self.START, self.STOP])
+            [self.UNK, self.START, self.STOP] + self.VOCAB,
+            unk_value=self.UNK)
 
         self.char_embeddings = self.model.add_lookup_parameters(
             (char_vocab.size, char_embedding_dim))
@@ -141,16 +130,14 @@ class CharEmbedding:
     def __call__(self, word):
         assert isinstance(word, str)
 
-        chars = [char_vocab.index_or_unk(char, self.UNK)
+        chars = [char_vocab.index_or_unk(char)
             for char in [self.START] + list(word) + [self.STOP]]
+
         char_lstm_outputs = self.char_lstm.transduce([
             self.char_embeddings[index] for index in chars])
-        char_encoding = self.output(dy.concatenate([
+
+        word_embedding = self.output(dy.concatenate([
             char_lstm_outputs[-1][:self.char_lstm_dim],
             char_lstm_outputs[0][self.char_lstm_dim:]]))
 
-        return char_encoding
-
-    @property
-    def shape(self):
-        return (1, self.embedding_dim)
+        return word_embedding

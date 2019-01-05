@@ -117,6 +117,7 @@ def main(args):
         trainer = LanguageModelTrainer(
             model_path_base=args.model_path_base,
             multitask=args.multitask,
+            predict_all_spans=args.all_spans,
             args=args,
             train_path=args.train_path,
             dev_path=args.dev_path,

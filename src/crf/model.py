@@ -143,9 +143,55 @@ class ChartParser(object):
                     for label in self.label_vocab.values[start:]
                 ])
 
+        # implicit top node that expands to all but the dummy node
         lognormalizer = summed[0, len(words)]
 
-        return chart, lognormalizer
+        return chart, summed, lognormalizer
+
+    def outside(self, words, label_scores, inside_chart, inside_summed, semiring=LogProbSemiring):
+
+        chart = {}
+        outside_summed = {}
+
+        for length in range(len(words), 0, -1):
+            for left in range(len(words) - length, -1, -1):
+                right = left + length
+
+                if left == 0 and right == len(words):
+                    # TODO: this is a total hack, and incorrect too
+                    chart[left, right, self.label_vocab.values[0]] = semiring.one()
+                    for label in self.label_vocab.values[1:]:
+                        chart[left, right, label] = semiring.zero()
+                        # chart[left, right, label] = semiring.sums([
+                        #     inside_chart[left, right, l]
+                        #     for l in self.label_vocab.values[1:]
+                        #     if l != label
+                        # ])
+                else:
+                    left_split_sum = semiring.zero() if left == 0 else semiring.sums([
+                        semiring.product(
+                            inside_summed[start, left],
+                            outside_summed[start, right])
+                        for start in range(0, left)
+                    ])
+                    right_split_sum = semiring.zero() if right == len(words) else semiring.sums([
+                        semiring.product(
+                            inside_summed[right, end],
+                            outside_summed[left, end])
+                        for end in range(right + 1, len(words) + 1)
+                    ])
+                    split_sum = semiring.sum(left_split_sum, right_split_sum)
+                    for label in self.label_vocab.values:
+                        chart[left, right, label] = split_sum
+
+                outside_summed[left, right] = semiring.sums([
+                    semiring.product(
+                        label_scores[left, right][label_index],
+                        chart[left, right, label])
+                    for label, label_index in self.label_vocab.indices.items()
+                ])
+
+        return chart
 
     def viterbi(self, words, label_scores, semiring=LogProbSemiring, tag='*'):
 
@@ -193,7 +239,38 @@ class ChartParser(object):
 
         return tree, score
 
-    def forward(self, tree, is_train=True, max_margin=False):
+    def marginals(self, inside_chart, outside_chart, lognormalizer, semiring=LogProbSemiring, eps=1e-4):
+        assert set(inside_chart) == set(outside_chart)
+
+        marginals = {}
+        for node in inside_chart:
+            marginals[node] = dy.exp(
+                semiring.division(
+                    semiring.product(
+                        inside_chart[node],
+                        outside_chart[node]),
+                    lognormalizer)
+            )
+
+        # # TODO: this should not be needed
+        # total = dy.esum(list(marginals.values()))
+        # if not abs(total.value() - 1.) < eps:
+        #     for node, value in marginals.items():
+        #         marginals[node] = dy.cdiv(value, total)
+
+        return marginals
+
+    def entropy(self, marginals, label_scores, lognormalizer):
+
+        expected_scores = dy.esum([
+            marginals[left, right, label] * label_scores[left, right][self.label_vocab.index(label)]
+            for left, right, label in marginals
+        ])
+        entropy = -expected_scores + lognormalizer
+
+        return entropy
+
+    def forward(self, tree, is_train=True, max_margin=False, return_entropy=True):
         assert isinstance(tree, trees.SpanNode)
 
         words = tree.words()
@@ -202,24 +279,50 @@ class ChartParser(object):
         else:
             unked_words = self.word_vocab.process(words)
 
-        if max_margin:
-            label_scores = self.get_node_scores(unked_words)
-            pred, pred_score = self.viterbi(words, label_scores)
-            gold_score = self.score_tree(tree, label_scores)
-            correct = pred.un_cnf().linearize() == tree.un_cnf().linearize()
-            loss = dy.zeros(1) if correct else pred_score - gold_score
-            # TODO: this is not working as expected
-            # print('pred', pred_score.value(), 'gold', gold_score.value())
-            # print('>', pred.un_cnf().linearize())
-            # print()
-            return loss
-        else:
-            label_scores = self.get_node_scores(unked_words)
-            score = self.score_tree(tree, label_scores)
-            _, lognormalizer = self.inside(unked_words, label_scores)
+        # if max_margin:
+        #     label_scores = self.get_node_scores(unked_words)
+        #     pred, pred_score = self.viterbi(words, label_scores)
+        #     gold_score = self.score_tree(tree, label_scores)
+        #     correct = pred.un_cnf().linearize() == tree.un_cnf().linearize()
+        #     loss = dy.zeros(1) if correct else pred_score - gold_score
+        #     # TODO: this is not working as expected
+        #     # print('pred', pred_score.value(), 'gold', gold_score.value())
+        #     # print('>', pred.un_cnf().linearize())
+        #     # print()
+        #     return loss
 
-            logprob = score - lognormalizer
-            nll = -logprob
+        label_scores = self.get_node_scores(unked_words)
+        score = self.score_tree(tree, label_scores)
+        inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
+
+        logprob = score - lognormalizer
+        nll = -logprob
+
+        if return_entropy:
+            # Should not be needed
+            # label_scores = {(left, right): dy.inputVector(label_scores[left, right].value())
+            #     for left, right in label_scores}
+            # inside_summed = {(left, right): dy.scalarInput(inside_summed[left, right].value())
+            #     for left, right in inside_summed}
+            # lognormalizer = dy.scalarInput(lognormalizer.value())
+
+            outside_chart = self.outside(words, label_scores, inside_chart, inside_summed)
+            marginals = self.marginals(inside_chart, outside_chart, lognormalizer)
+            entropy = self.entropy(marginals, label_scores, lognormalizer)
+
+            score_sum = dy.esum([
+                label_scores[left, right][self.label_vocab.index(label)]
+                for left, right, label in marginals
+            ])
+
+            print(
+                'score-sum', round(score_sum.value(), 2),
+                'entropy', round(entropy.value(), 2),
+                'marginal-sum', round(dy.esum(list(marginals.values())).value(), 2)
+            )
+            # return nll, entropy
+            return nll
+        else:
             return nll
 
     def parse(self, words):
@@ -227,7 +330,7 @@ class ChartParser(object):
 
         label_scores = self.get_node_scores(unked_words)
         tree, score = self.viterbi(words, label_scores)
-        _, lognormalizer = self.inside(words, label_scores)
+        _, _, lognormalizer = self.inside(words, label_scores)
 
         logprob = score - lognormalizer
         nll = -logprob
@@ -269,13 +372,13 @@ class ChartParser(object):
 
         unked_words = self.word_vocab.process(words)
         label_scores = self.get_node_scores(unked_words)
-        chart_dy, lognormalizer = self.inside(words, label_scores)
+        chart_dy, _, lognormalizer = self.inside(words, label_scores)
 
         exp_chart_np = {node: np.exp(score.value())
             for node, score in chart_dy.items()}
 
         top_label_scores = [exp_chart_np[0, len(words), label]
-            for label in self.label_vocab.values[1:]]
+            for label in self.label_vocab.values[1:]]  # dummy label is excluded from top
         top_label_probs = np.array(top_label_scores) / np.sum(top_label_scores)
 
         samples = []

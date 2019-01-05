@@ -26,7 +26,6 @@ class LanguageModel(object):
         self.word_vocab = word_vocab
         self.lstm_dim = lstm_dim
 
-        # TODO: use the embedding classes
         self.embeddings = self.model.add_lookup_parameters(
             (word_vocab.size, word_embedding_dim))
 
@@ -65,19 +64,17 @@ class LanguageModel(object):
 
         if self.training:
             words = self.word_vocab.unkify(words)
-        else:
-            words = self.word_vocab.process(words)
 
         rnn = self.rnn_builder.initial_state()
 
-        nll = dy.zeros(1)
-        for prev, word in zip([START] + words[:-1], words):
-            input = self.embeddings[self.word_vocab.index_or_unk(prev)]
-            rnn = rnn.add_input(input)
-            logits = self.out(rnn.output())
-            nll += dy.pickneglogsoftmax(
-                logits, self.word_vocab.index_or_unk(word))
-        return nll
+        word_ids = [self.word_vocab.index_or_unk(word) for word in [START] + words]
+
+        prev_embeddings = [self.embeddings[word_id] for word_id in word_ids[:-1]]
+        lstm_outputs = rnn.transduce(prev_embeddings)
+        logits = self.out(dy.concatenate_to_batch(lstm_outputs))
+        nlls = dy.pickneglogsoftmax_batch(logits, word_ids[1:])
+
+        return dy.sum_batches(nlls)
 
 
 class MultitaskLanguageModel(object):
@@ -91,6 +88,7 @@ class MultitaskLanguageModel(object):
             lstm_dim,
             label_hidden_dim,
             dropout,
+            predict_all_spans=False
     ):
         self.spec = locals()
         self.spec.pop("self")
@@ -100,8 +98,8 @@ class MultitaskLanguageModel(object):
         self.word_vocab = word_vocab
         self.label_vocab = label_vocab
         self.lstm_dim = lstm_dim
+        self.predict_all_spans = predict_all_spans
 
-        # TODO: use the embedding classes
         self.embeddings = self.model.add_lookup_parameters(
             (word_vocab.size, word_embedding_dim))
 
@@ -113,9 +111,10 @@ class MultitaskLanguageModel(object):
 
         self.out = Affine(
             self.model, lstm_dim, word_vocab.size)
+
+        num_labels = label_vocab.size + 1 if predict_all_spans else label_vocab.size
         self.f_label = Feedforward(
-            # self.model, 2 * lstm_dim, [label_hidden_dim], label_vocab.size)
-            self.model, 2 * lstm_dim, [label_hidden_dim], label_vocab.size + 1)  # when predicting all spans
+            self.model, lstm_dim, [label_hidden_dim], num_labels)
 
         self.dropout = dropout
         self.training = True
@@ -147,61 +146,60 @@ class MultitaskLanguageModel(object):
 
         if self.training:
             words = self.word_vocab.unkify(words)
-        else:
-            words = self.word_vocab.process(words)
 
         rnn = self.rnn_builder.initial_state()
 
         if multitask:
-            lstm_outputs = []
-            word_nll = dy.zeros(1)
-            for prev, word in zip([START] + words, words + [STOP]):  # need stop to make span prediction work
-                input = self.embeddings[self.word_vocab.index_or_unk(prev)]
-                rnn = rnn.add_input(input)
-                hidden = rnn.output()
-                logits = self.out(hidden)
-                word_nll += dy.pickneglogsoftmax(
-                    logits, self.word_vocab.index_or_unk(word))
-                lstm_outputs.append(hidden)
+            # need stop token to make span encodings possible (see below)
+            word_ids = [self.word_vocab.index_or_unk(word)
+                for word in [START] + words + [STOP]]
 
-            # # predict labeled spans as 'scaffold' task
-            # label_nll = dy.zeros(1)
-            # for left, right, label in spans:
-            #     hidden = dy.concatenate(
-            #         [lstm_outputs[left], lstm_outputs[right]])
-            #     logits = self.f_label(hidden)
-            #     label_id = self.label_vocab.index(label)
-            #     label_nll += dy.pickneglogsoftmax(
-            #         logits, label_id)
-            #     # easy track progress on this task
-            #     self.correct += np.argmax(logits.value()) == label_id
-            #     self.predicted += 1
+            prev_embeddings = [self.embeddings[word_id] for word_id in word_ids[:-1]]
+            lstm_outputs = rnn.transduce(prev_embeddings)
+            logits = self.out(dy.concatenate_to_batch(lstm_outputs))
+            nlls = dy.pickneglogsoftmax_batch(logits, word_ids[1:])
+            word_nll = dy.sum_batches(nlls)
 
-            # Predict tag for each span (null for nonexistent spans)
-            # Runs at about 2/3 of the speed on the above
-            spans = {(left, right): self.label_vocab.index(label)
-                for left, right, label in spans}
+            # predict label for each possible span (null for nonexistent spans)
+            if self.predict_all_spans:
+                gold_spans = {(left, right): self.label_vocab.index(label)
+                    for left, right, label in spans}
 
-            label_nll = dy.zeros(1)
-            for length in range(1, len(words) + 1):
-                for left in range(0, len(words) + 1 - length):
-                    right = left + length
-                    label_id = spans.get((left, right), self.label_vocab.size)  # last index is for null label
-                    hidden = dy.concatenate(
-                        [lstm_outputs[left], lstm_outputs[right]])
-                    logits = self.f_label(hidden)
-                    label_nll += dy.pickneglogsoftmax(
-                        logits, label_id)
-                    self.correct += np.argmax(logits.value()) == label_id
-                    self.predicted += 1
+                all_spans = [(left, left + length)
+                    for length in range(1, len(words) + 1)
+                    for left in range(0, len(words) + 1 - length)]
+
+                label_ids = [gold_spans.get((left, right), self.label_vocab.size)  # last index is for null label
+                    for left, right in all_spans]
+
+                # 'lstm minus' features, same as those of the crf parser
+                span_encodings = [lstm_outputs[right] - lstm_outputs[left]
+                    for left, right in all_spans]
+            # only predict labels for existing spans
+            else:
+                label_ids = [self.label_vocab.index(label) for _, _, label in spans]
+
+                # 'lstm minus' features, same as those of the crf parser
+                span_encodings = [lstm_outputs[right] - lstm_outputs[left]
+                    for left, right, label in spans]
+
+            logits = self.f_label(dy.concatenate_to_batch(span_encodings))
+            nlls = dy.pickneglogsoftmax_batch(logits, label_ids)
+            label_nll = dy.sum_batches(nlls)
+
+            # easy proxy to track progress on this task
+            self.correct += np.sum(np.argmax(logits.npvalue(), axis=0) == label_ids)
+            self.predicted += len(label_ids)
 
             nll = word_nll + label_nll
         else:
-            nll = dy.zeros(1)
-            for prev, word in zip([START] + words[:-1], words):
-                input = self.embeddings[self.word_vocab.index_or_unk(prev)]
-                rnn = rnn.add_input(input)
-                logits = self.out(rnn.output())
-                nll += dy.pickneglogsoftmax(
-                    logits, self.word_vocab.index_or_unk(word))
+            word_ids = [self.word_vocab.index_or_unk(word)
+                for word in [START] + words]
+
+            prev_embeddings = [self.embeddings[word_id] for word_id in word_ids[:-1]]
+            lstm_outputs = rnn.transduce(prev_embeddings)
+            logits = self.out(dy.concatenate_to_batch(lstm_outputs))
+            nlls = dy.pickneglogsoftmax_batch(logits, word_ids[1:])
+            nll = dy.sum_batches(nlls)
+
         return nll

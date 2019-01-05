@@ -9,4 +9,3 @@
 --composition=attention
 --f-hidden-dim=128
 --dropout=0.2
---dynet-mem=1000

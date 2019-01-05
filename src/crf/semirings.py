@@ -1,4 +1,5 @@
 import dynet as dy
+import numpy as np
 
 
 class Semiring(object):
