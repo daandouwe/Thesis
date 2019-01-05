@@ -1,0 +1,66 @@
+#!/bin/bash
+#SBATCH -N 1
+#SBATCH -p gpu
+#SBATCH -J gen-gpu
+#SBATCH -o lisa/out/gen-gpu.out
+#SBATCH -t 5-00:00:00
+
+module load Python/3.6.3-foss-2017b
+
+# activate gpu environment
+source ${HOME}/envs/dynet-gpu/bin/activate
+
+# send an e-mail when the job starts
+echo "Job $SLURM_JOB_NAME started at `date`" | mail $USER -s "Started job $SLURM_JOB_NAME"
+
+# write sterr and stout of each experiment here
+OUTPUT_DIR=${HOME}/thesis/lisa/out/${SLURM_JOB_NAME}
+mkdir -p ${OUTPUT_DIR}
+
+# always run from the main directory
+cd ${HOME}/thesis
+
+# we can run training runs in parallel, each on a different processor (16 in total)
+# with a different seed, and we tell each script which seed
+# all other arguments are passed to the parser
+for gpu in 0 1 2 3; do
+  # we can fit two models on one gpu
+
+  sleep 5
+  seed=$((gpu + 1))  # 1..4
+
+  # regular gen-rnng
+  lisa/train-gpu.sh ${gpu} ${seed} ${OUTPUT_DIR} \
+      --model-path-base models/gen-rnng_seed=${seed} \
+      --max-time $((5 * 23 * 3600)) \
+      --max-epochs 100 \
+      --dynet-mem 3500 \
+      @src/configs/data/supervised.txt \
+      @src/configs/model/gen-rnng.txt \
+      @src/configs/proposals/rnng.txt \
+      @src/configs/training/sgd.txt \
+      &
+
+  sleep 5
+  seed=$((gpu + 4 + 1))  # 5..8
+
+  # gen-rnng with only a stack
+  lisa/train-gpu.sh ${gpu} ${seed} ${OUTPUT_DIR} \
+      --model-path-base models/gen-rnng_stack-only_seed=${seed} \
+      --max-time $((5 * 23 * 3600)) \
+      --max-epochs 100 \
+      --dynet-mem 3500 \
+      @src/configs/data/supervised.txt \
+      @src/configs/model/gen-rnng-stack-only.txt \
+      @src/configs/proposals/rnng.txt \
+      @src/configs/training/sgd.txt \
+      &
+done
+
+# this waits until all sub-jobs finish
+wait
+
+echo "Jobs finished"
+echo "Job $SLURM_JOB_NAME ended at `date`" | mail $USER -s "Ended job $SLURM_JOB_NAME"
+
+sleep 300
