@@ -23,11 +23,11 @@ class GenerativeDecoder:
             alpha=0.8,
     ):
         if model is not None:
-            assert isinstance(model, GenRNNG)
+            assert isinstance(model, GenRNNG), type(model)
             model.eval()
         if proposal is not None:
             assert (isinstance(proposal, DiscRNNG) or
-                isinstance(proposal, ChartParser))
+                isinstance(proposal, ChartParser)), type(proposal)
             proposal.eval()
 
         self.model = model
@@ -125,7 +125,12 @@ class GenerativeDecoder:
             sample_id, logprob, tree = int(sample_id), float(logprob), fromstring(add_dummy_tags(tree.strip()))
             if sample_id > sent_id:
                 # Arrived at the first sample of next sentence
-                assert len(samples) == self.num_samples, f'not enough samples for line {sample_id}'
+                if self.num_samples > len(samples):
+                    raise ValueError('not enough samples for line {}'.format(sample_id))
+                elif self.num_samples < len(samples):
+                    samples = samples[:self.num_samples]
+                else:
+                    pass
                 proposals.append(samples)
                 sent_id = sample_id
                 samples = []
@@ -149,7 +154,8 @@ class GenerativeDecoder:
         state_checkpoint_path = os.path.join(dir, 'state.json')
         [proposal] = dy.load(model_checkpoint_path, dy.ParameterCollection())
 
-        assert isinstance(proposal, DiscRNNG), f'expected discriminative model got {type(proposal)}'
+        assert (isinstance(proposal, DiscRNNG) or
+            isinstance(proposal, ChartParser)), type(proposal)
 
         with open(state_checkpoint_path, 'r') as f:
             state = json.load(f)
@@ -162,24 +168,32 @@ class GenerativeDecoder:
         self.proposal.eval()
         self.use_loaded_samples = False
 
-    def generate_proposal_samples(self, examples, path):
-        # TODO: make this more general: for sentences, not just trees!
+    def generate_proposal_samples(self, sentences, path):
         """Use the proposal model to generate proposal samples."""
         samples = []
-        for i, tree in enumerate(tqdm(examples)):
-            dy.renew_cg()
-            for _ in range(self.num_samples):
-                tree, nll = self.proposal.sample(tree.words(), alpha=self.alpha)
-                samples.append(
-                    ' ||| '.join((str(i), str(-nll.value()), tree.linearize(with_tag=False))))
+
+        if isinstance(self.proposal, DiscRNNG):
+            for i, words in enumerate(tqdm(sentences)):
+                for _ in range(self.num_samples):
+                    dy.renew_cg()
+                    tree, nll = self.proposal.sample(words, alpha=self.alpha)
+                    samples.append(
+                        ' ||| '.join((str(i), str(-nll.value()), tree.linearize(with_tag=False))))
+
+        elif isinstance(self.proposal, ChartParser):
+            for i, words in enumerate(tqdm(sentences)):
+                dy.renew_cg()
+                for tree, nll in self.proposal.sample(words, self.num_samples):
+                    samples.append(
+                        ' ||| '.join((str(i), str(-nll.value()), tree.linearize(with_tag=False))))
 
         with open(path, 'w') as f:
             print('\n'.join(samples), file=f, end='')
 
     def predict_from_proposal_samples(self, path):
         """
-        Predict MAP trees and perplexity from proposal samples in path.
-        Especially useful for evaluation during training.
+        Predict MAP trees and perplexity from proposal samples in `path`.
+        Does this in one go, so especially useful for evaluation during training.
         """
 
         # Load scored proposal samples
@@ -223,8 +237,8 @@ class GenerativeDecoder:
             nlls.append(-logprob)  # the estimate for -log p(x)
             lengths.append(len(tree.words()))  # need for computing total perplexity
 
-        # NOTE: we compute perplexity as average over words,
-        # which is correct, and not averaged over sentences.
+        # The perplexity is averaged over the total number of words,
+        # which is correct, and not averaged over individual sentences.
         perplexity = np.exp(np.sum(nlls) / np.sum(lengths))
 
-        return trees, perplexity
+        return trees, round(perplexity, 2)

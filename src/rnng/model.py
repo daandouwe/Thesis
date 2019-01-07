@@ -8,6 +8,8 @@ from .parser.parser import DiscParser, GenParser, Stack, Buffer, History, Termin
 from .components.encoder import StackLSTM
 from .components.composition import BiRecurrentComposition, AttentionComposition
 
+from .parser.actions import get_word, is_gen
+
 
 class DiscRNNG(DiscParser):
     def __init__(

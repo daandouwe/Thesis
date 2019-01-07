@@ -4,7 +4,6 @@ import tempfile
 
 import dynet as dy
 from tqdm import tqdm
-from nltk import Tree
 import numpy as np
 
 from rnng.decoder import GenerativeDecoder
@@ -22,12 +21,12 @@ def predict_text_file(args):
         lines = [line.strip() for line in f.readlines()]
     checkfile = get_checkfile(args.checkpoint)
 
-    if args.parser_type == 'disc':
+    if args.model_type == 'disc':
         print('Predicting with discriminative model.')
         decoder = GreedyDecoder(use_tokenizer=False)
         decoder.load_model(path=checkfile)
 
-    elif args.parser_type == 'gen':
+    elif args.model_type == 'gen':
         print('Predicting with generative model.')
         decoder = GenerativeDecoder(use_tokenizer=False)
         decoder.load_model(path=checkfile)
@@ -54,13 +53,13 @@ def predict_tree_file(args):
     with open(args.infile, 'r') as f:
         lines = [fromstring(line.strip()).words() for line in f if line.strip()]
 
-    if args.parser_type == 'disc':
+    if args.model_type == 'disc':
         print('Loading discriminative model...')
         parser = load_model(args.checkpoint)
         parser.eval()
         print('Done.')
 
-    elif args.parser_type == 'gen':
+    elif args.model_type == 'gen':
         exit('Not yet...')
 
         print('Loading generative model...')
@@ -85,38 +84,6 @@ def predict_tree_file(args):
     fscore = evalb(args.evalb_dir, pred_path, args.infile, result_path)
     print(f'Predictions saved in `{pred_path}`. Results saved in `{result_path}`.')
     print(f'F-score {fscore:.2f}.')
-
-
-# def predict_from_tree(gold_tree):
-#     """Predicts from a gold tree input and computes fscore with prediction.
-#
-#     Input should be a unicode string in the :
-#         u'(S (NP (DT The) (NN equity) (NN market)) (VP (VBD was) (ADJP (JJ illiquid))) (. .))'
-#     """
-#     # Make a temporay directory for the EVALB files.
-#     evalb_dir = os.path.expanduser('~/EVALB')  # TODO: this should be part of args.
-#     temp_dir = tempfile.TemporaryDirectory(prefix='evalb-')
-#     gold_path = os.path.join(temp_dir.name, 'gold.txt')
-#     pred_path = os.path.join(temp_dir.name, 'predicted.txt')
-#     result_path = os.path.join(temp_dir.name, 'output.txt')
-#
-#     # Extract sentence from the gold tree.
-#     sent = Tree.fromstring(gold_tree).leaves()
-#
-#     # Predict a tree for the sentence.
-#     pred_tree, *rest = self(sent)
-#     pred_tree = pred_tree.linearize()
-#     # Dump these in the temp-file.
-#     with open(gold_path, 'w') as f:
-#         print(gold_tree, file=f)
-#     with open(pred_path, 'w') as f:
-#         print(pred_tree, file=f)
-#     fscore = evalb(evalb_dir, pred_path, gold_path, result_path)
-#
-#     # Cleanup the temporary directory.
-#     temp_dir.cleanup()
-#
-#     return pred_tree, fscore
 
 
 def predict_input_disc(args):
@@ -210,20 +177,50 @@ def predict_perplexity(args):
         sentences = [line.strip().split() for line in lines]
 
     joint = load_model(args.checkpoint)
-    decoder = GenerativeDecoder(model=joint, num_samples=args.num_samples)
-    decoder.load_proposal_samples(args.proposal_samples)
+    decoder = GenerativeDecoder(
+        model=joint, num_samples=args.num_samples)
+    decoder.load_proposal_samples(
+        args.proposal_samples)
 
-    pps = []
+    nlls = []
+    lengths = []
+    perplexities = []
+    processed = []
     for words in tqdm(sentences):
         dy.renew_cg()
-        pp = decoder.perplexity(words)
-        pps.append(pp)
-    avg_pp = np.mean(pps)  # TODO: is this correct? Answer: NO!
+        logprob = decoder.logprob(words)
+        perplexity = np.exp(-logprob / len(words))
+        unked_words = joint.word_vocab.process(words)
 
-    with open(args.outfile, 'w') as f:
-        print('Average perplexity:', avg_pp)
-        for pp, words in zip(pps, sentences):
-            print(pp, '|||', ' '.join(words), file=f)
+        nlls.append(-logprob)
+        lengths.append(len(words))
+        perplexities.append(perplexity)
+        processed.append(unked_words)
+
+    average_perplexity = np.exp(np.sum(nlls) / np.sum(lengths))
+
+    fields = zip(range(len(sentences)), perplexities, nlls, lengths, processed)
+
+    outfile = args.outfile + '.tsv' if not args.outfile.endswith('.tsv') else args.outfile
+    print(f'Writing results to `{outfile}`...')
+
+    with open(outfile, 'w') as f:
+        print('\t'.join(
+                'id', 'perplexity', 'nll', 'length', 'avg-perplexity', 'processed-sentence')
+            file=f)
+
+        for i, pp, nll, length, words in fields:
+            results = '\t'.join((
+                i,
+                pp,
+                nll,
+                length,
+                average_perplexity,
+                ' '.join(words)
+            ))
+            print(results, file=f)
+
+    print('Average perplexity:', round(average_perplexity, 2))
 
 
 def sample_proposals(args):
@@ -245,14 +242,15 @@ def sample_proposals(args):
     parser = load_model(args.checkpoint)
 
     samples = []
-    for i, words in enumerate(tqdm(sentences)):
-        dy.renew_cg()
-        if args.parser_type == 'crf':
+    if args.model_type == 'crf':
+        for i, words in enumerate(tqdm(sentences)):
+            dy.renew_cg()
             for tree, nll in parser.sample(words, num_samples=args.num_samples):
                 samples.append(
                     ' ||| '.join(
                         (str(i), str(-nll.value()), tree.linearize(with_tag=False))))
-        else:
+    else:
+        for i, words in enumerate(tqdm(sentences)):
             for _ in range(args.num_samples):
                 tree, nll = parser.sample(words, alpha=args.alpha)
                 samples.append(
@@ -313,25 +311,25 @@ def inspect_model(args):
 
 def main(args):
     if args.from_input:
-        if args.parser_type in ('disc-rnng', 'crf'):
+        if args.model_type in ('disc-rnng', 'crf'):
             predict_input_disc(args)
-        elif args.parser_type == 'gen-rnng':
+        elif args.model_type == 'gen-rnng':
             predict_input_gen(args)
     elif args.from_text_file:
         predict_text_file(args)
     elif args.from_tree_file:
         predict_tree_file(args)
     elif args.perplexity:
-        assert args.parser_type == 'gen-rnng'
+        assert args.model_type == 'gen-rnng'
         predict_perplexity(args)
     elif args.sample_proposals:
-        assert args.parser_type in ('disc-rnng', 'crf')
+        assert args.model_type in ('disc-rnng', 'crf')
         sample_proposals(args)
     elif args.sample_gen:
-        assert args.parser_type == 'gen-rrng'
+        assert args.model_type == 'gen-rrng'
         sample_generative(args)
     elif args.inspect_model:
-        assert args.parser_type.endswith('rnng')
+        assert args.model_type.endswith('rnng')
         inspect_model(args)
     else:
         exit('Specify type of prediction. Use --from-input, --from-file or --sample-gen.')

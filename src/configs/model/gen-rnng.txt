@@ -1,4 +1,4 @@
---parser-type=gen-rnng
+--model-type=gen-rnng
 --word-emb-dim=100
 --label-emb-dim=100
 --action-emb-dim=100

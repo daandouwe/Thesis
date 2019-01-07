@@ -4,6 +4,7 @@ import time
 from datetime import datetime
 
 import dynet as dy
+from nltk import Tree
 
 
 def ceil_div(a, b):
@@ -65,9 +66,10 @@ def blockgrad(expression):
         return expression
 
 
-def load_model(dir):
+def load_model(dir, name='model'):
+    path = os.path.join(dir, name)
     model = dy.ParameterCollection()
-    [parser] = dy.load(dir, model)
+    [parser] = dy.load(path, model)
     return parser
 
 

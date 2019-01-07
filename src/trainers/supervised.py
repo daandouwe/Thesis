@@ -6,8 +6,8 @@ from collections import Counter
 
 import numpy as np
 import dynet as dy
-from tqdm import tqdm
 from tensorboardX import SummaryWriter
+from tqdm import tqdm
 
 from rnng.parser.actions import SHIFT, REDUCE, NT, GEN
 from rnng.model import DiscRNNG, GenRNNG
@@ -24,7 +24,7 @@ class SupervisedTrainer:
     """Supervised trainer for RNNG."""
     def __init__(
             self,
-            parser_type=None,
+            model_type=None,
             model_path_base=None,
             args=None,
             train_path=None,
@@ -48,12 +48,13 @@ class SupervisedTrainer:
             label_hidden_dim=None,
             max_epochs=inf,
             max_time=inf,
-            lr=None,
             batch_size=1,
+            optimizer_type=None,
             dropout=0.,
-            weight_decay=None,
+            lr=None,
             lr_decay=None,
             lr_decay_patience=None,
+            weight_decay=None,
             max_grad_norm=None,
             use_glove=False,
             glove_dir=None,
@@ -62,7 +63,7 @@ class SupervisedTrainer:
             print_every=1,
             eval_every=-1,  # default is every epoch (-1)
     ):
-        assert parser_type in ('disc-rnng', 'gen-rnng', 'crf'), parser_type
+        assert model_type in ('disc-rnng', 'gen-rnng', 'crf'), model_type
 
         self.args = args
 
@@ -76,7 +77,7 @@ class SupervisedTrainer:
         self.test_proposal_samples = test_proposal_samples
 
         # Model arguments
-        self.parser_type = parser_type
+        self.model_type = model_type
         self.model_path_base = model_path_base
         self.word_emb_dim = word_emb_dim
         self.label_emb_dim = label_emb_dim
@@ -94,6 +95,7 @@ class SupervisedTrainer:
 
         # Training arguments
         self.batch_size = batch_size
+        self.optimizer_type = optimizer_type
         self.lr = lr
         self.lr_decay = lr_decay
         self.lr_decay_patience = lr_decay_patience
@@ -126,10 +128,12 @@ class SupervisedTrainer:
     def build_paths(self):
         # Make output folder structure
         subdir, logdir, checkdir, outdir, vocabdir = get_folders(self.args)
+
         os.makedirs(logdir, exist_ok=True)
         os.makedirs(checkdir, exist_ok=True)
         os.makedirs(outdir, exist_ok=True)
         os.makedirs(vocabdir, exist_ok=True)
+
         print(f'Output subdirectory: `{subdir}`.')
         print(f'Saving logs to `{logdir}`.')
         print(f'Saving predictions to `{outdir}`.')
@@ -138,13 +142,17 @@ class SupervisedTrainer:
         # Save arguments
         write_args(self.args, logdir)
 
-        # Output paths
         self.subdir = subdir
+
+        # Model paths
         self.model_checkpoint_path = os.path.join(checkdir, 'model')
         self.state_checkpoint_path = os.path.join(checkdir, 'state.json')
+
         self.word_vocab_path = os.path.join(vocabdir, 'word-vocab.json')
         self.label_vocab_path = os.path.join(vocabdir, 'label-vocab.json')
         self.action_vocab_path = os.path.join(vocabdir, 'action-vocab.json')
+
+        # Output paths
         self.loss_path = os.path.join(logdir, 'loss.csv')
         self.tensorboard_writer = SummaryWriter(logdir)
 
@@ -169,7 +177,7 @@ class SupervisedTrainer:
         with open(self.test_path) as f:
             test_treebank = [fromstring(line.strip()) for line in f]
 
-        if self.parser_type == 'crf':
+        if self.model_type == 'crf':
             print(f'Converting trees to CNF...')
             train_treebank = [tree.cnf() for tree in train_treebank]
             dev_treebank = [tree.cnf() for tree in dev_treebank]
@@ -185,7 +193,7 @@ class SupervisedTrainer:
             words = [word for tree in train_treebank for word in tree.words()]
         labels = [label for tree in train_treebank for label in tree.labels()]
 
-        if self.parser_type == 'crf':
+        if self.model_type == 'crf':
             words = [UNK, START, STOP] + words
             labels = [(DUMMY,)] + labels
         else:
@@ -194,11 +202,11 @@ class SupervisedTrainer:
         word_vocab = Vocabulary.fromlist(words, unk_value=UNK)
         label_vocab = Vocabulary.fromlist(labels)
 
-        if self.parser_type.endswith('rnng'):
+        if self.model_type.endswith('rnng'):
             # Order is very important! See DiscParser/GenParser classes for why
-            if self.parser_type == 'disc-rnng':
+            if self.model_type == 'disc-rnng':
                 actions = [SHIFT, REDUCE] + [NT(label) for label in label_vocab]
-            elif self.parser_type == 'gen-rnng':
+            elif self.model_type == 'gen-rnng':
                 actions = [REDUCE] + [NT(label) for label in label_vocab] + [GEN(word) for word in word_vocab]
             action_vocab = Vocabulary()
             for action in actions:
@@ -227,7 +235,7 @@ class SupervisedTrainer:
         print('Initializing model...')
         self.model = dy.ParameterCollection()
 
-        if self.parser_type == 'disc-rnng':
+        if self.model_type == 'disc-rnng':
             parser = DiscRNNG(
                 model=self.model,
                 word_vocab=self.word_vocab,
@@ -248,7 +256,7 @@ class SupervisedTrainer:
                 fine_tune_embeddings=self.fine_tune_embeddings,
                 freeze_embeddings=self.freeze_embeddings,
             )
-        elif self.parser_type == 'gen-rnng':
+        elif self.model_type == 'gen-rnng':
             parser = GenRNNG(
                 model=self.model,
                 word_vocab=self.word_vocab,
@@ -269,7 +277,7 @@ class SupervisedTrainer:
                 fine_tune_embeddings=self.freeze_embeddings,
                 freeze_embeddings=self.freeze_embeddings,
             )
-        elif self.parser_type == 'crf':
+        elif self.model_type == 'crf':
             parser = ChartParser(
                 model=self.model,
                 word_vocab=self.word_vocab,
@@ -286,10 +294,10 @@ class SupervisedTrainer:
     def build_optimizer(self):
         assert self.model is not None, 'build model first'
 
-        print(f'Building {self.args.optimizer} optimizer...')
-        if self.args.optimizer == 'sgd':
+        print(f'Building {self.optimizer_type} optimizer...')
+        if self.optimizer_type == 'sgd':
             self.optimizer = dy.SimpleSGDTrainer(self.model, learning_rate=self.lr)
-        elif self.args.optimizer == 'adam':
+        elif self.optimizer_type == 'adam':
             self.optimizer = dy.AdamTrainer(self.model, alpha=self.lr)
 
         self.optimizer.set_clip_threshold(self.max_grad_norm)
@@ -301,7 +309,7 @@ class SupervisedTrainer:
         use Ctrl + C to break out of training early.
         """
 
-        if self.parser_type == 'gen-rnng':
+        if self.model_type == 'gen-rnng':
             # These are needed for evaluation
             assert self.dev_proposal_samples is not None, 'specify proposal samples with --dev-proposal-samples.'
             assert self.test_proposal_samples is not None, 'specify proposal samples with --test-proposal-samples.'
@@ -444,7 +452,7 @@ class SupervisedTrainer:
 
         with open(self.state_checkpoint_path, 'w') as f:
             state = {
-                'parser-type': self.parser_type,
+                'model-type': self.model_type,
                 'num-params': int(self.parser.num_params),
                 'num-epochs': self.current_epoch,
                 'num-updates': self.num_updates,
@@ -470,15 +478,15 @@ class SupervisedTrainer:
         return trees
 
     def check_dev(self):
-        if self.parser_type in ('disc-rnng', 'crf'):
+        if self.model_type in ('disc-rnng', 'crf'):
             self.check_dev_disc()
-        if self.parser_type == 'gen-rnng':
+        if self.model_type == 'gen-rnng':
             self.check_dev_gen()
 
     def check_test(self):
-        if self.parser_type in ('disc-rnng', 'crf'):
+        if self.model_type in ('disc-rnng', 'crf'):
             self.check_test_disc()
-        if self.parser_type == 'gen-rnng':
+        if self.model_type == 'gen-rnng':
             self.check_test_gen()
 
     def check_dev_disc(self):

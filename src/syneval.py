@@ -9,7 +9,7 @@ import numpy as np
 from tqdm import tqdm
 
 from rnng.decoder import GenerativeDecoder
-
+from utils.general import load_model
 
 FILES = [
     'long_vp_coord',
@@ -37,18 +37,11 @@ FILES = [
 ]
 
 
-def load_model(dir):
-    model = dy.ParameterCollection()
-    [parser] = dy.load(dir, model)
-    return parser
-
-
 def syneval_rnn(args):
     model = load_model(args.checkpoint)
     model.eval()
 
-    model_path, _ = os.path.split(args.checkpoint)
-    outpath = os.path.join(model_path, 'output', 'syneval_results.tsv')
+    outpath = os.path.join(args.checkpoint, 'output', 'syneval_results.tsv')
 
     print('Predicting syneval.')
     print(f'Loading model from `{args.checkpoint}`.')
@@ -117,42 +110,71 @@ def syneval_rnng(args):
     decoder = GenerativeDecoder(
         model=model, proposal=proposal, num_samples=args.num_samples)
 
-    with open(args.infile + '.pos') as f:
-        pos_sents = [line.strip().split() for line in f.readlines()]
+    outpath = os.path.join(args.checkpoint, 'output', 'syneval_results.tsv')
 
-    with open(args.infile + '.neg') as f:
-        neg_sents = [line.strip().split() for line in f.readlines()]
+    print('Predicting syneval.')
+    print(f'Loading model from `{args.checkpoint}`.')
+    print(f'Loading syneval examples from directory `{args.indir}`.')
+    print(f'Writing predictions to `{outpath}`.')
 
-    assert len(pos_sents) == len(neg_sents)
-
-    correct = 0
-    with open(args.outfile + '.tsv', 'w') as f:
+    with open(outpath, 'w') as outfile:
         print('\t'.join((
-            'index', 'pos-perplexity', 'neg-perplexity', 'correct', 'pos-sentence-processed', 'neg-sentence-processed')),
-            file=f)
-        for i, (pos, neg) in enumerate(tqdm(list(zip(pos_sents, neg_sents)))):
-            pos_pp = decoder.perplexity(pos)
-            neg_pp = decoder.perplexity(neg)
-            correct += (pos_pp < neg_pp)
+                'name', 'index', 'pos-perplexity', 'neg-perplexity',
+                'correct', 'pos-sentence-processed', 'neg-sentence-processed')),
+            file=outfile)
 
-            pos = model.word_vocab.process(pos)
-            neg = model.word_vocab.process(neg)
+        for fname in FILES:
+            print(f'Predicting `{fname}`...')
 
-            result =  ' ||| '.join((
-                str(i),
-                str(round(pos_pp, 2)),
-                str(round(neg_pp, 2)),
-                str(int(pos_pp < neg_pp)),
-                ' '.join(pos),
-                ' '.join(neg)
-            ))
-            print(result, file=f)
+            inpath = os.path.join(args.indir, fname)
 
-    print(f'Syneval: {correct}/{len(pos_sents)} = {correct / len(pos_sents):%} correct')
+            with open(inpath + '.pos') as f:
+                pos_sents = [line.strip() for line in f.readlines()]
+                if args.capitalize:
+                    pos_sents = [sent.capitalize() for sent in pos_sents]
+                if args.add_period:
+                    pos_sents = [sent + ' .' for sent in pos_sents]
+
+            with open(inpath + '.neg') as f:
+                neg_sents = [line.strip() for line in f.readlines()]
+                if args.capitalize:
+                    neg_sents = [sent.capitalize() for sent in neg_sents]
+                if args.add_period:
+                    neg_sents = [sent + ' .' for sent in neg_sents]
+
+            pos_sents = [sent.split() for sent in pos_sents]
+            neg_sents = [sent.split() for sent in neg_sents]
+
+            assert len(pos_sents) == len(neg_sents)
+
+            correct = 0
+            for i, (pos, neg) in enumerate(tqdm(list(zip(pos_sents, neg_sents)))):
+                dy.renew_cg()
+
+                pos_pp = decoder.perplexity(pos)
+                neg_pp = decoder.perplexity(neg)
+                correct += (pos_pp < neg_pp)
+
+                # see which words are unked during prediction
+                pos = model.word_vocab.process(pos)
+                neg = model.word_vocab.process(neg)
+
+                result =  '\t'.join((
+                    fname,
+                    str(i),
+                    str(round(pos_pp, 2)),
+                    str(round(neg_pp, 2)),
+                    str(int(pos_pp < neg_pp)),
+                    ' '.join(pos),
+                    ' '.join(neg)
+                ))
+                print(result, file=outfile)
+
+            print(f'{fname}: {correct}/{len(pos_sents)} = {correct / len(pos_sents):.2%} correct')
 
 
 def main(args):
-    if args.parser_type == 'gen-rnng':
+    if args.model_type == 'gen-rnng':
         syneval_rnng(args)
-    elif args.parser_type == 'rnn-lm':
+    elif args.model_type == 'rnn-lm':
         syneval_rnn(args)

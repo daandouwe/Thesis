@@ -1,4 +1,4 @@
---parser-type=disc-rnng
+--model-type=disc-rnng
 --word-emb-dim=100
 --label-emb-dim=100
 --action-emb-dim=50

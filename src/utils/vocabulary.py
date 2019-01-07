@@ -41,23 +41,23 @@ class Vocabulary:
         return self.values[index]
 
     def index(self, value):
-        assert value in self.values
+        assert value in self.values, value
         return self.indices[value]
 
     def count(self, value):
-        assert value in self.values
+        assert value in self.values, value
         return self.counts[value]
 
     def index_or_unk(self, value):
         assert self.unk_value is not None
-        if value in self.indices:
+        if value in self.values:
             return self.indices[value]
         else:
             return self.indices[self.unk_value]
 
     def count_or_unk(self, value):
         assert self.unk_value is not None
-        if value in self.counts:
+        if value in self.values:
             return self.counts[value]
         else:
             return self.counts[self.unk_value]
@@ -66,11 +66,14 @@ class Vocabulary:
         assert self.unk_value is not None
         unked = []
         for i, word in enumerate(values):
-            count = self.count_or_unk(word)
-            if not count or np.random.rand() < 1 / (1 + count):
+            if word not in self.values:
                 unked.append(self.unk_value)
             else:
-                unked.append(word)
+                count = self.count(word)
+                if np.random.rand() < 1 / (1 + count):
+                    unked.append(self.unk_value)
+                else:
+                    unked.append(word)
         return unked
 
     def process(self, values):
@@ -85,18 +88,18 @@ class Vocabulary:
         for value, index in self.indices.items():
             count = self.counts[value]
             # NOTE: we use str(value) as a hack to deal with the labels
-            # for the crf parser that is to turn ('S',) into "('S',)"
+            # for the crf parser, that is, we turn ('S',) into "('S',)"
             json_dict[str(value)] = dict(index=index, count=count)
         with open(path, 'w') as f:
             json.dump(json_dict, f, indent=4)
 
     def load(self, path):
-        with open(path, 'w') as f:
+        with open(path) as f:
             json_dict = json.load(f)
         self.indices = {}
         self.counts = defaultdict(int)
         for value, value_dict in json_dict.values():
-            # NOTE: turn "('S',)" back into ('S',), see self.save
+            # NOTE: this turns "('S',)" back into ('S',), see self.save
             if value.startswith("('") and value.endswith(')'):
                 value = tuple(value)
             self.indices[value] = value_dict['index']

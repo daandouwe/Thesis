@@ -14,10 +14,10 @@ def main(args):
     # Set random seeds.
     np.random.seed(args.numpy_seed)
 
-    if args.parser_type in ('disc-rnng', 'gen-rnng', 'crf'):
+    if args.model_type in ('disc-rnng', 'gen-rnng', 'crf'):
         trainer = SupervisedTrainer(
             args=args,
-            parser_type=args.parser_type,
+            model_type=args.model_type,
             model_path_base=args.model_path_base,
             evalb_dir=args.evalb_dir,
             train_path=args.train_path,
@@ -38,6 +38,8 @@ def main(args):
             composition=args.composition,
             f_hidden_dim=args.f_hidden_dim,
             label_hidden_dim=args.label_hidden_dim,
+            batch_size=args.batch_size,
+            optimizer_type=args.optimizer,
             lr=args.lr,
             lr_decay=args.lr_decay,
             lr_decay_patience=args.lr_decay_patience,
@@ -50,13 +52,14 @@ def main(args):
             freeze_embeddings=args.freeze_embeddings,
             print_every=args.print_every,
             eval_every=args.eval_every,
-            batch_size=args.batch_size,
             max_epochs=args.max_epochs,
             max_time=args.max_time,
         )
-    elif args.parser_type in ('semisup-rnng', 'semisup-crf'):
+    elif args.model_type in ('semisup-rnng', 'semisup-crf'):
         trainer = SemiSupervisedTrainer(
             args=args,
+            model_type=args.model_type,
+            model_path_base=args.model_path_base,
             evalb_dir=args.evalb_dir,
             train_path=args.train_path,
             dev_path=args.dev_path,
@@ -64,27 +67,26 @@ def main(args):
             unlabeled_path=args.unlabeled_path,
             joint_model_path=args.joint_model_path,
             post_model_path=args.post_model_path,
+            lmbda=1.0,
             use_argmax_baseline=args.use_argmax_baseline,
             use_mlp_baseline=args.use_mlp_baseline,
-            lmbda=1.0,
             clip_learning_signal=None,
             num_samples=args.num_samples,
             alpha=args.alpha,
+            batch_size=args.batch_size,
+            optimizer_type=args.optimizer,
             lr=args.lr,
             lr_decay=args.lr_decay,
             lr_decay_patience=args.lr_decay_patience,
             max_grad_norm=args.max_grad_norm,
             weight_decay=args.weight_decay,
-            use_glove=args.use_glove,
-            glove_dir=args.glove_dir,
             print_every=args.print_every,
             eval_every=args.eval_every,
             eval_at_start=args.eval_at_start,
-            batch_size=args.batch_size,
             max_epochs=args.max_epochs,
             max_time=args.max_time,
         )
-    elif args.parser_type in ('unsup-rnng', 'unsup-crf'):
+    elif args.model_type in ('unsup-rnng', 'unsup-crf'):
         trainer = UnsupervisedTrainer(
             args=args,
             evalb_dir=args.evalb_dir,
@@ -113,7 +115,7 @@ def main(args):
             max_epochs=args.max_epochs,
             max_time=args.max_time,
         )
-    elif args.parser_type == 'rnn-lm':
+    elif args.model_type == 'rnn-lm':
         trainer = LanguageModelTrainer(
             model_path_base=args.model_path_base,
             multitask=args.multitask,

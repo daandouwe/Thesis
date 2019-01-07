@@ -1,4 +1,4 @@
---parser-type=rnn-lm
+--model-type=rnn-lm
 --word-emb-dim=100
 --lstm-dim=300
 --lstm-layer=2

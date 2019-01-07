@@ -44,7 +44,7 @@ def main():
                         help='minimal word count')
 
     model = parser.add_argument_group('Model (shared)')
-    model.add_argument('--parser-type', choices=['disc-rnng', 'gen-rnng', 'crf', 'semisup-crf', 'semisup-rnng', 'rnn-lm'],
+    model.add_argument('--model-type', choices=['disc-rnng', 'gen-rnng', 'crf', 'semisup-crf', 'semisup-rnng', 'rnn-lm'],
                         help='type of parser', required=True)
     model.add_argument('--model-path-base', required=True,
                         help='path base to use for saving models')
@@ -170,7 +170,7 @@ def main():
                         help='evaluate perplexity')
     prediction.add_argument('--proposal-model', default='',
                         help='load discriminative model (proposal for generative model) from this checkpoint')
-    prediction.add_argument('--proposal-samples', default='data/proposal-samples/dev.props',
+    prediction.add_argument('--proposal-samples', default='data/proposals/rnng-dev.props',
                         help='load proposal samples')
     prediction.add_argument('--inspect-model', action='store_true',
                         help='inspect the attention in the model')

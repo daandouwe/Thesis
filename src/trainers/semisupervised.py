@@ -25,6 +25,8 @@ class SemiSupervisedTrainer:
 
     def __init__(
             self,
+            model_type=None,
+            model_path_base=None,
             args=None,
             evalb_dir=None,
             unlabeled_path=None,
@@ -42,18 +44,20 @@ class SemiSupervisedTrainer:
             max_time=inf,
             num_samples=3,
             alpha=None,
-            lr=None,
             batch_size=1,
-            weight_decay=None,
+            optimizer_type=None,
+            lr=None,
             lr_decay=None,
             lr_decay_patience=None,
+            weight_decay=None,
             max_grad_norm=None,
-            use_glove=False,
             glove_dir=None,
             print_every=1,
             eval_every=-1,  # default is every epoch (-1)
             eval_at_start=False
     ):
+        assert model_type in ('semisup-rnng', 'semisup-crf'), model_type
+
         self.args = args
 
         # Data
@@ -67,6 +71,8 @@ class SemiSupervisedTrainer:
         self.model = None  # will be a dynet ParameterCollection
         self.joint_model_path = joint_model_path
         self.post_model_path = post_model_path
+        self.model_path_base = model_path_base
+        self.posterior_type = model_type.split('-')[1]
 
         # Baselines
         self.lmbda = lmbda  # scaling coefficient for unsupervised objective
@@ -80,14 +86,13 @@ class SemiSupervisedTrainer:
         self.max_time = max_time
         self.num_samples = num_samples
         self.alpha = alpha
-        self.lr = lr
         self.batch_size = batch_size
-        self.weight_decay = weight_decay
+        self.optimizer_type = optimizer_type
+        self.lr = lr
         self.lr_decay = lr_decay
         self.lr_decay_patience = lr_decay_patience
+        self.weight_decay = weight_decay
         self.max_grad_norm = max_grad_norm
-        self.use_glove = use_glove
-        self.glove_dir = glove_dir
         self.print_every = print_every
         self.eval_every = eval_every
         self.eval_at_start = eval_at_start
@@ -109,10 +114,13 @@ class SemiSupervisedTrainer:
 
     def build_paths(self):
         # Make output folder structure
-        subdir, logdir, checkdir, outdir = get_folders(self.args)
+        subdir, logdir, checkdir, outdir, vocabdir = get_folders(self.args)
+
         os.makedirs(logdir, exist_ok=True)
         os.makedirs(checkdir, exist_ok=True)
         os.makedirs(outdir, exist_ok=True)
+        os.makedirs(vocabdir, exist_ok=True)
+
         print(f'Output subdirectory: `{subdir}`.')
         print(f'Saving logs to `{logdir}`.')
         print(f'Saving predictions to `{outdir}`.')
@@ -121,14 +129,19 @@ class SemiSupervisedTrainer:
         # Save arguments
         write_args(self.args, logdir)
 
-        # Output paths
+        self.subdir = subdir
+
+        # Model paths
         self.post_model_checkpoint_path = os.path.join(checkdir, 'post-model')
         self.joint_model_checkpoint_path = os.path.join(checkdir, 'joint-model')
         self.post_state_checkpoint_path = os.path.join(checkdir, 'post-state.json')
         self.joint_state_checkpoint_path = os.path.join(checkdir, 'joint-state.json')
+
         self.word_vocab_path = os.path.join(checkdir, 'word-vocab.json')
-        self.nt_vocab_path = os.path.join(checkdir, 'nt-vocab.json')
+        self.label_vocab_path = os.path.join(checkdir, 'label-vocab.json')
         self.action_vocab_path = os.path.join(checkdir, 'action-vocab.json')
+
+        # Output paths
         self.loss_path = os.path.join(logdir, 'loss.csv')
         self.tensorboard_writer = SummaryWriter(logdir)
 
@@ -164,30 +177,52 @@ class SemiSupervisedTrainer:
                 if len(line.split()) < self.max_unlabeled_sent_len
             ]
 
-        # TODO: Here we should load the vocabulary from the saved model!
-        print("Constructing vocabularies...")
-        words = [word for tree in train_treebank for word in tree.words()] + [UNK]
-        nonterminals = [label for tree in train_treebank for label in tree.labels()]
+        self.word_vocab = self.joint_model.word_vocab
+        self.label_vocab = self.joint_model.nt_vocab
+        self.action_vocab = self.joint_model.action_vocab
 
-        word_vocab = Vocabulary.fromlist(words, unk_value=UNK)
-        nt_vocab = Vocabulary.fromlist(nonterminals)
+        # self.word_vocab = Vocabulary().load(
+        #     os.path.join(self.joint_model_path, 'vocab', 'word-vocab.json'))
+        # self.label_vocab = Vocabulary().load(
+        #     os.path.join(self.joint_model_path, 'vocab', 'label-vocab.json'))
+        # self.action_vocab = Vocabulary().load(
+        #     os.path.join(self.joint_model_path, 'vocab', 'action-vocab.json'))
 
-        # Order is very important, see DiscParser class
-        disc_actions = [SHIFT, REDUCE] + [NT(label) for label in nt_vocab]
-        disc_action_vocab = Vocabulary()
-        for action in disc_actions:
-            disc_action_vocab.add(action)
-
-        # Order is very important, see GenParser class
-        gen_action_vocab = Vocabulary()
-        gen_actions = [REDUCE] + [NT(label) for label in nt_vocab] + [GEN(word) for word in word_vocab]
-        for action in gen_actions:
-            gen_action_vocab.add(action)
-
-        self.word_vocab = word_vocab
-        self.nt_vocab = nt_vocab
-        self.gen_action_vocab = gen_action_vocab
-        self.disc_action_vocab = disc_action_vocab
+        # # TODO: Here we should load the vocabulary from the saved model!
+        # # print("Constructing vocabularies...")
+        # # words = [word for tree in train_treebank for word in tree.words()] + [UNK]
+        # # nonterminals = [label for tree in train_treebank for label in tree.labels()]
+        #
+        # print("Constructing vocabularies...")
+        # if self.vocab_path is not None:
+        #     print(f'Using word vocabulary specified in `{self.vocab_path}`')
+        #     with open(self.vocab_path) as f:
+        #         vocab = json.load(f)
+        #     words = [word for word, count in vocab.items() for _ in range(count)]
+        # else:
+        #     words = [word for tree in train_treebank for word in tree.words()]
+        # labels = [label for tree in train_treebank for label in tree.labels()]
+        #
+        #
+        # word_vocab = Vocabulary.fromlist(words, unk_value=UNK)
+        # label_vocab = Vocabulary.fromlist(nonterminals)
+        #
+        # # Order is very important, see DiscParser class
+        # disc_actions = [SHIFT, REDUCE] + [NT(label) for label in label_vocab]
+        # disc_action_vocab = Vocabulary()
+        # for action in disc_actions:
+        #     disc_action_vocab.add(action)
+        #
+        # # Order is very important, see GenParser class
+        # gen_action_vocab = Vocabulary()
+        # gen_actions = [REDUCE] + [NT(label) for label in label_vocab] + [GEN(word) for word in word_vocab]
+        # for action in gen_actions:
+        #     gen_action_vocab.add(action)
+        #
+        # self.word_vocab = word_vocab
+        # self.label_vocab = label_vocab
+        # self.gen_action_vocab = gen_action_vocab
+        # self.disc_action_vocab = disc_action_vocab
 
         self.train_treebank = train_treebank
         self.dev_treebank = dev_treebank
@@ -196,7 +231,7 @@ class SemiSupervisedTrainer:
 
         print('\n'.join((
             'Corpus statistics:',
-            f'Vocab: {word_vocab.size:,} words, {nt_vocab.size:,} nonterminals, {gen_action_vocab.size:,} actions',
+            f'Vocab: {self.word_vocab.size:,} words, {self.label_vocab.size:,} nonterminals, {self.action_vocab.size:,} actions',
             f'Train: {len(train_treebank):,} sentences',
             f'Dev: {len(dev_treebank):,} sentences',
             f'Test: {len(test_treebank):,} sentences',
@@ -219,7 +254,7 @@ class SemiSupervisedTrainer:
 
         with open(state_path) as f:
             state = json.load(f)
-        epochs, fscore = state['epochs'], state['test-fscore']
+        epochs, fscore = state['num-epochs'], state['test-fscore']
         print(f'Loaded joint model trained for {epochs} epochs with test fscore {fscore}.')
 
     def load_post_model(self):
@@ -229,22 +264,25 @@ class SemiSupervisedTrainer:
         state_path = os.path.join(self.post_model_path, 'state.json')
 
         [self.post_model] = dy.load(model_path, self.model)
-        assert isinstance(self.post_model, DiscRNNG), type(self.post_model)
+        if self.posterior_type == 'rnng':
+            assert isinstance(self.post_model, DiscRNNG), type(self.post_model)
+        elif self.posterior_type == 'crf':
+            assert isinstance(self.post_model, ChartParser), type(self.post_model)
         self.post_model.train()
 
         with open(state_path) as f:
             state = json.load(f)
-        epochs, fscore = state['epochs'], state['test-fscore']
+        epochs, fscore = state['num-epochs'], state['test-fscore']
         print(f'Loaded post model trained for {epochs} epochs with test fscore {fscore}.')
 
     def build_optimizer(self):
         assert self.model is not None, 'build model first'
 
-        if self.args.optimizer == 'sgd':
+        if self.optimizer_type == 'sgd':
             self.optimizer = dy.SimpleSGDTrainer(self.model, learning_rate=self.lr)
             self.baseline_optimizer = dy.SimpleSGDTrainer(self.baseline_model, learning_rate=10*self.lr)
 
-        elif self.args.optimizer == 'adam':
+        elif self.optimizer_type == 'adam':
             self.optimizer = dy.AdamTrainer(self.model, alpha=self.lr)
             self.baseline_optimizer = dy.AdamTrainer(self.baseline_model, alpha=10*self.lr)
 
@@ -255,7 +293,10 @@ class SemiSupervisedTrainer:
     def build_baseline_parameters(self):
         self.baseline_model = dy.ParameterCollection()
 
+        # TODO: make this compatible with CRF parser
+
         emb_dim = self.post_model.buffer_encoder.hidden_size
+
         self.gating = Feedforward(
             self.baseline_model, emb_dim, [128], 1)
         self.feedforward = Feedforward(
@@ -268,8 +309,8 @@ class SemiSupervisedTrainer:
 
     def train(self):
         self.build_paths()
-        self.build_corpus()
         self.load_models()
+        self.build_corpus()
         self.build_baseline_parameters()
         self.build_optimizer()
 
@@ -391,16 +432,19 @@ class SemiSupervisedTrainer:
     def supervised_step(self, batch):
         losses = []
         for tree in batch:
-            loss = self.joint_model.forward(tree) + 0.1 * self.post_model.forward(tree)
+            post_tree = tree.cnf() if self.posterior_type == 'cnf' else tree
+            loss = self.joint_model.forward(tree) + 0.1 * self.post_model.forward(post_tree)
             # loss = self.joint_model.forward(tree)
             losses.append(loss)
         loss = dy.esum(losses) / self.batch_size
         return loss
 
     def unsupervised_step(self, batch):
+        # Keep track of losses
         losses = []
         baseline_losses = []
-        # For various types of logging
+
+        # Keep track of various types statistics
         histogram = dict(
             signal=[],
             baselines=[],
@@ -428,7 +472,7 @@ class SemiSupervisedTrainer:
             centered_learning_signal = learning_signal - a * baselines
 
             # Normalize
-            normalized_learning_signal = self.normalize(centered_learning_signal)
+            normalized_learning_signal = self.normalize_signal(centered_learning_signal)
 
             # Optional clipping of learning signal
             if self.clip_learning_signal is not None:
@@ -466,7 +510,10 @@ class SemiSupervisedTrainer:
         return loss, baseline_loss
 
     def sample(self, words):
-        samples = [self.post_model.sample(words, self.alpha) for _ in range(self.num_samples)]
+        if self.posterior_type == 'crf':
+            samples = self.post_model.sample(words, self.num_samples)  # repeated sampling is cheaper this way
+        else:
+            samples = [self.post_model.sample(words, self.alpha) for _ in range(self.num_samples)]
         trees, nlls = zip(*samples)
         logprob = dy.esum([-nll for nll in nlls]) / len(nlls)
         return trees, logprob
@@ -476,6 +523,7 @@ class SemiSupervisedTrainer:
         return dy.esum(logprobs) / len(logprobs)
 
     def posterior(self, trees):
+        trees = [tree.cnf() for tree in trees] if self.posterior_type == 'cnf' else trees
         logprobs = [-self.post_model.forward(tree) for tree in trees]
         return dy.esum(logprobs) / len(logprobs)
 
@@ -496,6 +544,9 @@ class SemiSupervisedTrainer:
 
     def mlp_baseline(self, words):
         """Baseline parametrized by a feedfoward network."""
+
+        # TODO: make compatible with CRF parser
+
         # Get the word embeddings from the posterior model
         embeddings = [
             self.post_model.word_embedding(word_id)
@@ -541,7 +592,7 @@ class SemiSupervisedTrainer:
             # no baseline no scaling
             return 1.
 
-    def normalize(self, signal):
+    def normalize_signal(self, signal):
         """Normalize the centered learning-signal."""
         signal_mean = np.mean(self.centered_learning_signals) if self.num_updates > 0 else 0.
         signal_var = np.var(self.centered_learning_signals) if self.num_updates > 1 else 1.
@@ -567,8 +618,12 @@ class SemiSupervisedTrainer:
         return cov, corr
 
     def estimate_elbo(self, n=2000):
-        """Estimate the ELBO using the training samples."""
-        # Recall that 1/n ELBO = 1/n E_q[log p(x, y) - q(y|x)] = 1/n learning_signal
+        """Estimate the ELBO using the training samples.
+
+        Recall that
+            1/n ELBO = 1/n E_q[log p(x, y) - q(y|x)]
+                     = 1/n learning_signal
+        """
         return np.mean(self.learning_signals[-n:])  # we take a running average for scaled comparison
 
     def write_tensoboard_losses(self, loss, sup_loss, unsup_loss, baseline_loss):
@@ -584,6 +639,7 @@ class SemiSupervisedTrainer:
             'semisup/loss/baseline', baseline_loss, self.num_updates)
 
     def write_tensoboard_histogram(self, histogram):
+
         # Write batch values as histograms
         self.tensorboard_writer.add_histogram(
             'semisup/histogram/learning-signal', np.array(histogram['signal']), self.num_updates)
@@ -643,11 +699,12 @@ class SemiSupervisedTrainer:
         print('Evaluating F1 and perplexity on development set...')
 
         decoder = GenerativeDecoder(
-            model=self.joint_model, proposal=self.post_model)
+            model=self.joint_model, proposal=self.post_model, num_samples=100)
 
         print('Sampling proposals with posterior model...')
+        dev_sentences = [tree.words() for tree in self.dev_treebank]
         decoder.generate_proposal_samples(
-            examples=self.dev_treebank, path=self.dev_proposals_path)
+            sentences=dev_sentences, path=self.dev_proposals_path)
 
         print('Scoring proposals with joint model...')
         trees, dev_perplexity = decoder.predict_from_proposal_samples(
@@ -672,11 +729,12 @@ class SemiSupervisedTrainer:
         print('Evaluating F1 and perplexity on test set...')
 
         decoder = GenerativeDecoder(
-            model=self.joint_model, proposal=self.post_model)
+            model=self.joint_model, proposal=self.post_model, num_samples=100)
 
         print('Sampling proposals with posterior model...')
+        test_sentences = [tree.words() for tree in self.test_treebank]
         decoder.generate_proposal_samples(
-            examples=self.test_treebank, path=self.test_proposals_path)
+            test_sentences=self.test_treebank, path=self.test_proposals_path)
 
         print('Scoring proposals with joint model...')
         trees, test_perplexity = decoder.predict_from_proposal_samples(
@@ -702,25 +760,29 @@ class SemiSupervisedTrainer:
         dy.save(self.joint_model_checkpoint_path, [self.joint_model])
 
         self.word_vocab.save(self.word_vocab_path)
-        self.nt_vocab.save(self.nt_vocab_path)
-        self.disc_action_vocab.save(self.action_vocab_path)
+        self.label_vocab.save(self.label_vocab_path)
+        self.action_vocab.save(self.action_vocab_path)
 
         with open(self.joint_state_checkpoint_path, 'w') as f:
             state = {
-                'rnng-type': 'gen',
+                'model': 'gen-rnng',
                 'semisup-method': 'vi',
-                'epochs': self.current_epoch,
+                'num-epochs': self.current_epoch,
                 'num-updates': self.num_updates,
-                'dev-perplexity': self.current_dev_perplexity,
+                'best-dev-perplexity': self.current_dev_perplexity,
             }
             json.dump(state, f, indent=4)
 
         with open(self.post_state_checkpoint_path, 'w') as f:
             state = {
-                'rnng-type': 'disc',
+                'model': self.posterior_type,
                 'semisup-method': 'vi',
-                'epochs': self.current_epoch,
+                'num-epochs': self.current_epoch,
                 'num-updates': self.num_updates,
-                'dev-fscore': self.current_dev_fscore,
+                'best-dev-fscore': self.current_dev_fscore,
             }
             json.dump(state, f, indent=4)
+
+    def finalize_model_folder(self):
+        move_to_final_folder(
+            self.subdir, self.model_path_base, self.current_dev_perplexity)

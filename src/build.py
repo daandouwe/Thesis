@@ -35,13 +35,16 @@ def main(args):
 
     counts = Counter(words)
 
-    vocabulary = dict((word, count) for word, count in counts.most_common() if count >= args.min_word_count)
+    if args.max_vocab_size > 0:
+        vocabulary = dict(counts.most_common(args.max_vocab_size))
+    else:
+        vocabulary = dict((word, count) for word, count in counts.most_common() if count >= args.min_word_count)
 
     with open(args.vocab_path, 'w') as f:
         json.dump(vocabulary, f, indent=4)
 
     casing = 'lowercased ' if args.lowercase else 'non-lowercased'
-    print(f'Built {casing} vocabulary of size {len(vocabulary)} with minimum count {args.min_word_count}.')
+    print(f'Built {casing} vocabulary of size {len(vocabulary):,} with minimum count {args.min_word_count} and maximum size {args.max_vocab_size:,}.')
     print(f'Saved vocabulary to `{args.vocab_path}`.')
 
 

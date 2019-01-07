@@ -1,4 +1,4 @@
---parser-type=crf
+--model-type=crf
 --lstm-dim=250
 --label-hidden-dim=250
 --dropout=0.4
