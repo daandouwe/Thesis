@@ -31,7 +31,7 @@ for gpu in 0 1 2 3; do
 
   # predict all spans
   lisa/train-gpu.sh ${gpu} ${seed} ${OUTPUT_DIR} \
-      --model-path-base models/multitask-lm_seed=${seed}  \
+      --model-path-base models/multitask-lm_all-spans  \
       --max-time $((5 * 23 * 3600)) \
       --max-epochs 200 \
       --dynet-mem 3500 \
@@ -46,7 +46,7 @@ for gpu in 0 1 2 3; do
 
   # predict only gold spans
   lisa/train-gpu.sh ${gpu} ${seed} ${OUTPUT_DIR} \
-      --model-path-base models/multitask-lm_seed=${seed}  \
+      --model-path-base models/multitask-lm  \
       --max-time $((5 * 23 * 3600)) \
       --max-epochs 200 \
       --dynet-mem 3500 \

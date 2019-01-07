@@ -31,7 +31,7 @@ for gpu in 0 1 2 3; do
 
   # regular gen-rnng
   lisa/train-gpu.sh ${gpu} ${seed} ${OUTPUT_DIR} \
-      --model-path-base models/gen-rnng_seed=${seed} \
+      --model-path-base models/gen-rnng \
       --max-time $((5 * 23 * 3600)) \
       --max-epochs 100 \
       --dynet-mem 3500 \
@@ -46,7 +46,7 @@ for gpu in 0 1 2 3; do
 
   # gen-rnng with only a stack
   lisa/train-gpu.sh ${gpu} ${seed} ${OUTPUT_DIR} \
-      --model-path-base models/gen-rnng_stack-only_seed=${seed} \
+      --model-path-base models/gen-rnng_stack-only \
       --max-time $((5 * 23 * 3600)) \
       --max-epochs 100 \
       --dynet-mem 3500 \

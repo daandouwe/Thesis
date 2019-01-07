@@ -23,7 +23,7 @@ echo "`date` Training starts"
 which python
 python --version
 
-python src/main.py train --dynet-autobatch 1 --dynet-gpus 1 --dynet-devices GPU:${GPU} --dynet-seed ${SEED} --numpy-seed ${SEED} ${PARSER_ARGS[@]} &>> ${OUTPUT_DIR}/train${SEED}.log &
+python src/main.py train --dynet-autobatch 1 --dynet-devices GPU:${GPU} --dynet-seed ${SEED} --numpy-seed ${SEED} ${PARSER_ARGS[@]} &>> ${OUTPUT_DIR}/train${SEED}.log &
 
 wait
 

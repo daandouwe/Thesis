@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J gen
-#SBATCH -o lisa/out/gen.out
-#SBATCH -t 5-00:00:00
+#SBATCH -J disc-adam
+#SBATCH -o lisa/out/disc-adam.out
+#SBATCH -t 2-00:00:00
 
 module load Python/3.6.3-foss-2017b
 
@@ -26,15 +26,13 @@ for seed in {1..10}; do
   sleep 5
 
   lisa/train.sh ${seed} ${OUTPUT_DIR} \
-      --model-path-base models/gen-rnng \
-      --max-time $((5 * 23 * 3600)) \
+      --model-path-base models/disc-rnng_optim=adam \
+      --max-time $((2 * 22 * 3600)) \
       --max-epochs 100 \
       --dynet-autobatch 1 \
-      --dynet-mem 2500 \
       @src/configs/data/supervised.txt \
-      @src/configs/model/gen-rnng.txt \
-      @src/configs/proposals/rnng.txt \
-      @src/configs/training/sgd.txt \
+      @src/configs/model/disc-rnng.txt \
+      @src/configs/training/adam.txt \
       &
 done
 

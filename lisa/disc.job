@@ -21,9 +21,12 @@ cd ${HOME}/thesis
 # with a different seed, and we tell each script which seed
 # all other arguments are passed to the parser
 for seed in {1..10}; do
-  sleep 5  # do not conflate the timestamped foldernames
+
+  # do not conflate the timestamped foldernames
+  sleep 5
+
   lisa/train.sh ${seed} ${OUTPUT_DIR} \
-      --model-path-base models/disc-rnng_seed=${seed} \
+      --model-path-base models/disc-rnng \
       --max-time $((2 * 22 * 3600)) \
       --max-epochs 100 \
       --dynet-autobatch 1 \
