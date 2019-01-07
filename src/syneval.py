@@ -15,24 +15,24 @@ FILES = [
     'long_vp_coord',
     # 'npi_across_anim',  # TODO: has three categories
     # 'npi_across_inanim',  # TODO: has three categories
-    # 'obj_rel_across_anim',
-    # 'obj_rel_across_inanim',
-    # 'obj_rel_no_comp_across_anim',
-    # 'obj_rel_no_comp_across_inanim',
-    # 'obj_rel_no_comp_within_anim',
-    # 'obj_rel_no_comp_within_inanim',
-    # 'obj_rel_within_anim',
-    # 'obj_rel_within_inanim',
-    # 'prep_anim',
-    # 'prep_inanim',
-    # 'reflexive_sent_comp',
-    # 'reflexives_across',
-    # 'sent_comp',
+    'obj_rel_across_anim',
+    'obj_rel_across_inanim',
+    'obj_rel_no_comp_across_anim',
+    'obj_rel_no_comp_across_inanim',
+    'obj_rel_no_comp_within_anim',
+    'obj_rel_no_comp_within_inanim',
+    'obj_rel_within_anim',
+    'obj_rel_within_inanim',
+    'prep_anim',
+    'prep_inanim',
+    'reflexive_sent_comp',
+    'reflexives_across',
+    'sent_comp',
     'simple_agrmt',
     # 'simple_npi_anim',  # TODO: has three categories
     # 'simple_npi_inanim',  # TODO: has three categories
     'simple_reflexives',
-    # 'subj_rel',
+    'subj_rel',
     'vp_coord',
 ]
 

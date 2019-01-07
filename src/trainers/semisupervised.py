@@ -54,7 +54,9 @@ class SemiSupervisedTrainer:
             glove_dir=None,
             print_every=1,
             eval_every=-1,  # default is every epoch (-1)
-            eval_at_start=False
+            eval_at_start=False,
+            num_dev_samples=None,
+            num_test_samples=None
     ):
         assert model_type in ('semisup-rnng', 'semisup-crf'), model_type
 
@@ -96,6 +98,8 @@ class SemiSupervisedTrainer:
         self.print_every = print_every
         self.eval_every = eval_every
         self.eval_at_start = eval_at_start
+        self.num_dev_samples = num_dev_samples
+        self.num_test_samples = num_test_samples
 
         self.num_updates = 0
         self.learning_signals = []
@@ -181,49 +185,6 @@ class SemiSupervisedTrainer:
         self.label_vocab = self.joint_model.nt_vocab
         self.action_vocab = self.joint_model.action_vocab
 
-        # self.word_vocab = Vocabulary().load(
-        #     os.path.join(self.joint_model_path, 'vocab', 'word-vocab.json'))
-        # self.label_vocab = Vocabulary().load(
-        #     os.path.join(self.joint_model_path, 'vocab', 'label-vocab.json'))
-        # self.action_vocab = Vocabulary().load(
-        #     os.path.join(self.joint_model_path, 'vocab', 'action-vocab.json'))
-
-        # # TODO: Here we should load the vocabulary from the saved model!
-        # # print("Constructing vocabularies...")
-        # # words = [word for tree in train_treebank for word in tree.words()] + [UNK]
-        # # nonterminals = [label for tree in train_treebank for label in tree.labels()]
-        #
-        # print("Constructing vocabularies...")
-        # if self.vocab_path is not None:
-        #     print(f'Using word vocabulary specified in `{self.vocab_path}`')
-        #     with open(self.vocab_path) as f:
-        #         vocab = json.load(f)
-        #     words = [word for word, count in vocab.items() for _ in range(count)]
-        # else:
-        #     words = [word for tree in train_treebank for word in tree.words()]
-        # labels = [label for tree in train_treebank for label in tree.labels()]
-        #
-        #
-        # word_vocab = Vocabulary.fromlist(words, unk_value=UNK)
-        # label_vocab = Vocabulary.fromlist(nonterminals)
-        #
-        # # Order is very important, see DiscParser class
-        # disc_actions = [SHIFT, REDUCE] + [NT(label) for label in label_vocab]
-        # disc_action_vocab = Vocabulary()
-        # for action in disc_actions:
-        #     disc_action_vocab.add(action)
-        #
-        # # Order is very important, see GenParser class
-        # gen_action_vocab = Vocabulary()
-        # gen_actions = [REDUCE] + [NT(label) for label in label_vocab] + [GEN(word) for word in word_vocab]
-        # for action in gen_actions:
-        #     gen_action_vocab.add(action)
-        #
-        # self.word_vocab = word_vocab
-        # self.label_vocab = label_vocab
-        # self.gen_action_vocab = gen_action_vocab
-        # self.disc_action_vocab = disc_action_vocab
-
         self.train_treebank = train_treebank
         self.dev_treebank = dev_treebank
         self.test_treebank = test_treebank
@@ -273,7 +234,7 @@ class SemiSupervisedTrainer:
         with open(state_path) as f:
             state = json.load(f)
         epochs, fscore = state['num-epochs'], state['test-fscore']
-        print(f'Loaded post model trained for {epochs} epochs with test fscore {fscore}.')
+        print(f'Loaded posterior model of type `{self.posterior_type}` trained for {epochs} epochs with test fscore {fscore}.')
 
     def build_optimizer(self):
         assert self.model is not None, 'build model first'
@@ -511,7 +472,8 @@ class SemiSupervisedTrainer:
 
     def sample(self, words):
         if self.posterior_type == 'crf':
-            samples = self.post_model.sample(words, self.num_samples)  # repeated sampling is cheaper this way
+            # repeated sampling is cheaper this way
+            samples = self.post_model.sample(words, self.num_samples)
         else:
             samples = [self.post_model.sample(words, self.alpha) for _ in range(self.num_samples)]
         trees, nlls = zip(*samples)
@@ -537,6 +499,9 @@ class SemiSupervisedTrainer:
 
     def argmax_baseline(self, words):
         """Parameter-free baseline based on argmax decoding."""
+
+        # TODO: make compatible with CRF parser
+
         tree, post_nll = self.post_model.parse(words)
         post_logprob = -post_nll
         joint_logprob = -self.joint_model.forward(tree)
@@ -624,7 +589,8 @@ class SemiSupervisedTrainer:
             1/n ELBO = 1/n E_q[log p(x, y) - q(y|x)]
                      = 1/n learning_signal
         """
-        return np.mean(self.learning_signals[-n:])  # we take a running average for scaled comparison
+        # take running average for batch-size independent comparison
+        return np.mean(self.learning_signals[-n:])
 
     def write_tensoboard_losses(self, loss, sup_loss, unsup_loss, baseline_loss):
         self.tensorboard_writer.add_scalar(
@@ -699,16 +665,16 @@ class SemiSupervisedTrainer:
         print('Evaluating F1 and perplexity on development set...')
 
         decoder = GenerativeDecoder(
-            model=self.joint_model, proposal=self.post_model, num_samples=100)
+            model=self.joint_model, proposal=self.post_model, num_samples=self.num_dev_samples)
 
         print('Sampling proposals with posterior model...')
         dev_sentences = [tree.words() for tree in self.dev_treebank]
         decoder.generate_proposal_samples(
-            sentences=dev_sentences, path=self.dev_proposals_path)
+            sentences=dev_sentences, outpath=self.dev_proposals_path)
 
         print('Scoring proposals with joint model...')
         trees, dev_perplexity = decoder.predict_from_proposal_samples(
-            path=self.dev_proposals_path)
+            inpath=self.dev_proposals_path)
 
         with open(self.dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
@@ -729,16 +695,16 @@ class SemiSupervisedTrainer:
         print('Evaluating F1 and perplexity on test set...')
 
         decoder = GenerativeDecoder(
-            model=self.joint_model, proposal=self.post_model, num_samples=100)
+            model=self.joint_model, proposal=self.post_model, num_samples=self.num_test_samples)
 
         print('Sampling proposals with posterior model...')
         test_sentences = [tree.words() for tree in self.test_treebank]
         decoder.generate_proposal_samples(
-            test_sentences=self.test_treebank, path=self.test_proposals_path)
+            test_sentences=self.test_treebank, outpath=self.test_proposals_path)
 
         print('Scoring proposals with joint model...')
         trees, test_perplexity = decoder.predict_from_proposal_samples(
-            path=self.test_proposals_path)
+            inpath=self.test_proposals_path)
 
         with open(self.test_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)

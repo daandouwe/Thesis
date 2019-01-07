@@ -54,6 +54,8 @@ def main(args):
             eval_every=args.eval_every,
             max_epochs=args.max_epochs,
             max_time=args.max_time,
+            num_dev_samples=args.num_dev_samples,
+            num_test_samples=args.num_test_samples,
         )
     elif args.model_type in ('semisup-rnng', 'semisup-crf'):
         trainer = SemiSupervisedTrainer(
@@ -85,6 +87,8 @@ def main(args):
             eval_at_start=args.eval_at_start,
             max_epochs=args.max_epochs,
             max_time=args.max_time,
+            num_dev_samples=args.num_dev_samples,
+            num_test_samples=args.num_test_samples,
         )
     elif args.model_type in ('unsup-rnng', 'unsup-crf'):
         trainer = UnsupervisedTrainer(

@@ -270,7 +270,7 @@ class ChartParser(object):
 
         return entropy
 
-    def forward(self, tree, is_train=True, max_margin=False, return_entropy=True):
+    def forward(self, tree, is_train=True, max_margin=False, return_entropy=False):
         assert isinstance(tree, trees.SpanNode)
 
         words = tree.words()
@@ -383,6 +383,7 @@ class ChartParser(object):
 
         samples = []
         for _ in range(num_samples):
+
             # sample top label
             sampled_label_index = np.random.choice(
                 len(top_label_probs), p=top_label_probs) + 1

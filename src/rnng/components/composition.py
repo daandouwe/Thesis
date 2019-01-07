@@ -15,8 +15,8 @@ class BiRecurrentComposition:
         self.dropout = dropout
 
     def train(self):
-        self.fwd_rnn_builder.set_dropouts(dropout, dropout)
-        self.bwd_rnn_builder.set_dropouts(dropout, dropout)
+        self.fwd_rnn_builder.set_dropouts(self.dropout, self.dropout)
+        self.bwd_rnn_builder.set_dropouts(self.dropout, self.dropout)
 
     def eval(self):
         self.fwd_rnn_builder.disable_dropout()

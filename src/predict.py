@@ -206,7 +206,7 @@ def predict_perplexity(args):
 
     with open(outfile, 'w') as f:
         print('\t'.join(
-                'id', 'perplexity', 'nll', 'length', 'avg-perplexity', 'processed-sentence')
+                'id', 'perplexity', 'nll', 'length', 'avg-perplexity', 'processed-sentence'),
             file=f)
 
         for i, pp, nll, length, words in fields:
@@ -274,7 +274,7 @@ def inspect_model(args):
     else:
         sentences = [line.split() for line in lines]
 
-    def inspect_after_reduce(model):
+    def inspect_after_reduce(parser):
         subtree = parser.stack._stack[-1].subtree
         head = subtree.label
         children = [child.label
@@ -287,7 +287,7 @@ def inspect_model(args):
             for child, attn in zip(children, attention)]
         print('  ', head, '|', ' '.join(attentive), f'[{gate:.2f}]')
 
-    def parse_with_inspection(model, words):
+    def parse_with_inspection(parser, words):
         parser.eval()
         nll = 0.
         word_ids = [parser.word_vocab.index_or_unk(word) for word in words]
@@ -299,13 +299,16 @@ def inspect_model(args):
             nll += dy.pickneglogsoftmax(action_logits, action_id)
             parser.parse_step(action_id)
             if action_id == parser.REDUCE_ID:
-                inspect_after_reduce(model)
+                inspect_after_reduce(parser)
         tree = parser.get_tree()
         tree.substitute_leaves(iter(words))  # replaces UNKs with originals
         return tree, nll
 
     for sentence in sentences:
-        parse_with_inspection(model, sentence)
+        tree, _ = parser.parse(sentence)
+        print('>', ' '.join(sentence))
+        print('>', tree.linearize(with_tag=False))
+        parse_with_inspection(parser, sentence)
         print()
 
 

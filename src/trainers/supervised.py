@@ -62,6 +62,8 @@ class SupervisedTrainer:
             freeze_embeddings=False,
             print_every=1,
             eval_every=-1,  # default is every epoch (-1)
+            num_dev_samples=None,
+            num_test_samples=None,
     ):
         assert model_type in ('disc-rnng', 'gen-rnng', 'crf'), model_type
 
@@ -109,6 +111,8 @@ class SupervisedTrainer:
         self.max_time = max_time
         self.eval_every = eval_every
         self.print_every = print_every
+        self.num_dev_samples = num_dev_samples
+        self.num_test_samples = num_test_samples
 
         # Training bookkeeping
         self.timer = Timer()
@@ -330,6 +334,9 @@ class SupervisedTrainer:
                     break
                 if self.timer.elapsed() > self.max_time:
                     break
+                if self.get_lr() < self.lr / 10**5:
+                    break
+
                 self.current_epoch = epoch
 
                 # Shuffle batches every epoch
@@ -513,12 +520,13 @@ class SupervisedTrainer:
             self.save_checkpoint()
 
     def check_dev_gen(self):
-        print('Evaluating F1 and perplexity on development set...')
+        print(f'Evaluating F1 and perplexity on development set using {self.num_dev_samples} samples...')
 
-        decoder = GenerativeDecoder(model=self.parser)
+        decoder = GenerativeDecoder(
+            model=self.parser, num_samples=self.num_dev_samples)
 
         trees, dev_perplexity = decoder.predict_from_proposal_samples(
-            path=self.dev_proposal_samples)
+            inpath=self.dev_proposal_samples)
 
         with open(self.dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
@@ -563,17 +571,19 @@ class SupervisedTrainer:
         self.test_fscore = test_fscore
 
     def check_test_gen(self):
-        print('Evaluating F1 and perplexity on test set...')
+        print(f'Evaluating F1 and perplexity on test set using {self.num_test_samples} samples...')
 
         print(f'Loading best saved model from `{self.model_checkpoint_path}` '
               f'(epoch {self.best_dev_epoch}, fscore {self.best_dev_fscore})...')
         self.load_checkpoint()
         self.parser.eval()
 
-        decoder = GenerativeDecoder(model=self.parser)
+        decoder = GenerativeDecoder(
+            model=self.parser, num_samples=self.num_test_samples)
 
         trees, test_perplexity = decoder.predict_from_proposal_samples(
-            path=self.test_proposal_samples)
+            inpath=self.test_proposal_samples)
+
         with open(self.test_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
 

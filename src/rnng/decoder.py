@@ -168,7 +168,7 @@ class GenerativeDecoder:
         self.proposal.eval()
         self.use_loaded_samples = False
 
-    def generate_proposal_samples(self, sentences, path):
+    def generate_proposal_samples(self, sentences, outpath):
         """Use the proposal model to generate proposal samples."""
         samples = []
 
@@ -187,22 +187,31 @@ class GenerativeDecoder:
                     samples.append(
                         ' ||| '.join((str(i), str(-nll.value()), tree.linearize(with_tag=False))))
 
-        with open(path, 'w') as f:
+        with open(outpath, 'w') as f:
             print('\n'.join(samples), file=f, end='')
 
-    def predict_from_proposal_samples(self, path):
+    def predict_from_proposal_samples(self, inpath):
         """
-        Predict MAP trees and perplexity from proposal samples in `path`.
+        Predict MAP trees and perplexity from proposal samples in `inpath`.
         Does this in one go, so especially useful for evaluation during training.
         """
 
         # Load scored proposal samples
         all_samples = defaultdict(list)  # i -> [samples for sentence i]
-        with open(path) as f:
+        with open(inpath) as f:
             for line in f:
                 i, proposal_logprob, tree = line.strip().split(' ||| ')
                 i, proposal_logprob, tree = int(i), float(proposal_logprob), fromstring(add_dummy_tags(tree.strip()))
                 all_samples[i].append((tree, proposal_logprob))
+
+        # Check if number of samples is as desired
+        for i, samples in all_samples.items():
+            if self.num_samples > len(samples):
+                raise ValueError('not enough samples for line {}'.format(sample_id))
+            elif self.num_samples < len(samples):
+                all_samples[i] = samples[:self.num_samples]
+            else:
+                pass
 
         # Score the trees
         for i, samples in tqdm(all_samples.items()):

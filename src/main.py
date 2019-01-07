@@ -93,6 +93,8 @@ def main():
                         help='max number of epochs')
     training.add_argument('--max-time', type=int, default=inf,
                         help='max time in seconds')
+    training.add_argument('--max-lines', type=int, default=-1,
+                        help='max lines from the dataset')
     training.add_argument('--batch-size', type=int, default=1,
                         help='size of mini batch')
     training.add_argument('--dropout', type=float, default=0.2,
@@ -119,6 +121,10 @@ def main():
                         help='proposal samples for development set')
     training.add_argument('--test-proposal-samples', default='data/proposals/rnng-test.props',
                         help='proposal samples for test set')
+    training.add_argument('--num-dev-samples', type=int, default=20,
+                        help='number of samples to estimate the development fscore and perplexity')
+    training.add_argument('--num-test-samples', type=int, default=100,
+                        help='number of samples to estimate the test fscore and perplexity')
 
     semisup = parser.add_argument_group('Semisupervised')
     semisup.add_argument('--joint-model-path', default='checkpoints/joint',

@@ -175,6 +175,7 @@ class MultitaskLanguageModel(object):
                 # 'lstm minus' features, same as those of the crf parser
                 span_encodings = [lstm_outputs[right] - lstm_outputs[left]
                     for left, right in all_spans]
+
             # only predict labels for existing spans
             else:
                 label_ids = [self.label_vocab.index(label) for _, _, label in spans]
@@ -192,6 +193,7 @@ class MultitaskLanguageModel(object):
             self.predicted += len(label_ids)
 
             nll = word_nll + label_nll
+
         else:
             word_ids = [self.word_vocab.index_or_unk(word)
                 for word in [START] + words]
