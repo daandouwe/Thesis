@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J syneval-lm
-#SBATCH -o lisa/out/syneval-lm.out
+#SBATCH -J syneval-lm-caps
+#SBATCH -o lisa/out/syneval-lm-caps.out
 #SBATCH -t 0-24:00:00
 
 module load Python/3.6.3-foss-2017b
@@ -31,6 +31,7 @@ for p in $LM_PATHS; do
       --model-path-base '' \
 	    --checkpoint models/${p} \
 	    --indir data/syneval/converted \
+      --capitalize \
       &
 done
 
