@@ -17,8 +17,6 @@ gen-gpu: train-gen-gpu
 lm-gpu: train-lm-gpu
 multitask-lm-gpu: train-multitask-lm-gpu
 
-gen-stack-only: train-gen-stack-only
-
 disc-vocab: semisup-vocab train-disc-vocab
 gen-vocab: semisup-vocab train-gen-vocab
 crf-vocab: semisup-vocab train-crf-vocab
@@ -26,6 +24,14 @@ crf-vocab: semisup-vocab train-crf-vocab
 disc-lowercase-vocab: semisup-lowercase-vocab train-disc-vocab
 gen-lowercase-vocab: semisup-lowercase-vocab train-gen-vocab
 crf-lowercase-vocab: semisup-lowercase-vocab train-crf-vocab
+
+gen-stack-only: train-gen-stack-only
+
+semisup-rnng: train-semisup-rnng
+semisup-crf: train-semisup-crf
+semisup-rnng-vocab: train-semisup-rnng-vocab
+semisup-crf-vocab: train-semisup-crf-vocab
+
 
 # build a vocabulary
 sup-vocab:
@@ -49,9 +55,7 @@ semisup-lowercase-vocab:
 # Train a supervised model
 train-disc:
 	python src/main.py train \
-	    --dynet-gpus=1 \
 	    --dynet-autobatch=1 \
-	    --dynet-mem=8000 \
 	    --model-path-base=models/disc-rnng \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/disc-rnng.txt \
@@ -69,9 +73,9 @@ train-gen:
 
 train-crf:
 	python src/main.py train \
-	    --model-path-base=models/crf \
 	    --dynet-autobatch=1 \
-	    --dynet-mem=2000 \
+	    --dynet-mem=1000 \
+	    --model-path-base=models/crf \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/crf.txt \
 	    @src/configs/training/adam.txt \
@@ -79,7 +83,7 @@ train-crf:
 train-lm:
 	python src/main.py train \
 	    --dynet-autobatch=1 \
-	    --dynet-mem=8000 \
+	    --dynet-mem=1000 \
 	    --model-path-base=models/lm \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/lm.txt \
@@ -88,7 +92,7 @@ train-lm:
 train-multitask-lm:
 	python src/main.py train \
       --dynet-autobatch=1 \
-	    --dynet-mem=8000 \
+	    --dynet-mem=1000 \
 	    --model-path-base=models/multitask-lm \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/multitask-lm.txt \
@@ -98,7 +102,7 @@ train-gen-gpu:
 	python src/main.py train \
 	    --dynet-gpus=1 \
 	    --dynet-autobatch=1 \
-	    --dynet-mem=8000 \
+	    --dynet-mem=3000 \
 	    --model-path-base=models/gen-rnng \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/gen-rnng.txt \
@@ -119,7 +123,7 @@ train-multitask-lm-gpu:
 	python src/main.py train \
 	    --dynet-gpus=1 \
 	    --dynet-autobatch=1 \
-	    --dynet-mem=8000 \
+	    --dynet-mem=3000 \
 	    --model-path-base=models/multitask-lm \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/multitask-lm.txt \
@@ -127,6 +131,8 @@ train-multitask-lm-gpu:
 
 train-disc-vocab: semisup-vocab
 	python src/main.py train \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=1000 \
 	    --model-path-base=models/disc-rnng_vocab=semisup \
 	    @src/configs/vocab/semisupervised.txt \
 	    @src/configs/data/supervised.txt \
@@ -135,6 +141,8 @@ train-disc-vocab: semisup-vocab
 
 train-gen-vocab: semisup-vocab
 	python src/main.py train \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=3000 \
 	    --model-path-base=models/gen-rnng_vocab=semisup \
 	    @src/configs/vocab/semisupervised.txt \
 	    @src/configs/data/supervised.txt \
@@ -144,6 +152,8 @@ train-gen-vocab: semisup-vocab
 
 train-crf-vocab: semisup-vocab
 	python src/main.py train \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=1000 \
 	    --model-path-base=models/crf_vocab=semisup \
 	    @src/configs/vocab/semisupervised.txt \
 	    @src/configs/data/supervised.txt \
@@ -154,7 +164,7 @@ train-gen-stack-only:
 	python src/main.py train \
 	    --dynet-autobatch=1 \
 	    --dynet-mem=3000 \
-	    --model-path-base=models/gen-rnng \
+	    --model-path-base=models/gen-rnng_stack-only \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/gen-rnng-stack-only.txt \
 	    @src/configs/training/sgd.txt \
@@ -162,43 +172,63 @@ train-gen-stack-only:
 
 
 # finetune models semisupervised
-semisup-rnng:
-	python src/main.py semisup \
+train-semisup-rnng:
+	python src/main.py train \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=6000 \
 	    --model-path-base=models/semisup_post=disc \
-	    --joint-model=${GEN_PATH} \
-	    --posterior-model=${DISC_PATH} \
+	    --model-type=semisup-rnng \
+	    --joint-model-path=${GEN_PATH} \
+	    --post-model-path=${DISC_PATH} \
+	    --num-samples=1 \
 	    @src/configs/data/semisupervised.txt \
 	    @src/configs/training/adam.txt \
-	    @src/configs/baseline/argmax.txt
+	    @src/configs/baseline/argmax.txt \
+	    --batch-size=1
 
-semisup-crf:
-	python src/main.py semisup \
+train-semisup-crf:
+	python src/main.py train \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=6000 \
 	    --model-path-base=models/semisup_post=crf \
-	    --joint-model=${GEN_PATH} \
-	    --posterior-model=${CRF_PATH} \
+	    --model-type=semisup-crf \
+	    --joint-model-path=${GEN_PATH} \
+	    --post-model-path=${CRF_PATH} \
+	    --num-samples=1 \
 	    @src/configs/data/semisupervised.txt \
 	    @src/configs/training/adam.txt \
-	    @src/configs/baseline/argmax.txt
+	    @src/configs/baseline/argmax.txt \
+	    --batch-size=1 \
 
-semisup-rnng-vocab:
-	python src/main.py semisup \
+train-semisup-rnng-vocab:
+	python src/main.py train \
+    	--dynet-autobatch=1 \
+	    --dynet-mem=6000 \
 	    --model-path-base=models/semisup_post=disc_vocab=semisup \
-	    --joint-model=${GEN_VOCAB_PATH} \
-	    --posterior-model=${DISC_VOCAB_PATH} \
+	    --model-type=semisup-rnng \
+	    --joint-model-path=${GEN_VOCAB_PATH} \
+	    --post-model-path=${DISC_VOCAB_PATH} \
+	    --num-samples=1 \
 	    @src/configs/vocab/semisupervised.txt \
 	    @src/configs/data/semisupervised.txt \
 	    @src/configs/training/adam.txt \
-	    @src/configs/baseline/argmax.txt
+	    @src/configs/baseline/argmax.txt \
+	    --batch-size=1 \
 
-semisup-crf-vocab:
-	python src/main.py semisup \
+train-semisup-crf-vocab:
+	python src/main.py train \
+    	--dynet-autobatch=1 \
+	    --dynet-mem=6000 \
 	    --model-path-base=models/semisup_post=crf_vocab=semisup \
-	    --joint-model=${GEN_VOCAB_PATH} \
-	    --posterior-model=${CRF_VOCAB_PATH} \
+	    --model-type=semisup-crf \
+	    --joint-model-path=${GEN_VOCAB_PATH} \
+	    --post-model-path=${CRF_VOCAB_PATH} \
+	    --num-samples=1 \
 	    @src/configs/vocab/semisupervised.txt \
 	    @src/configs/data/semisupervised.txt \
 	    @src/configs/training/adam.txt \
-	    @src/configs/baseline/argmax.txt
+	    @src/configs/baseline/argmax.txt \
+	    --batch-size=1 \
 
 # sample proposals
 proposals-rnng: proposals-rnng-dev proposals-rnng-test
@@ -225,34 +255,65 @@ proposals-crf-test:
 	    @src/configs/proposals/sample-crf-test.txt
 
 # evaluation
-eval-pp:
+eval-test-pp:
 	python src/main.py predict \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=5000 \
+	    --model-type=gen-rnng \
+	    --model-path-base='' \
 	    --perplexity \
-			--checkpoint=${GEN_PATH}
+	    --checkpoint=${GEN_PATH} \
+	    --infile=data/ptb/test.trees \
+	    --proposal-samples=data/proposals/rnng-test.props \
+	    --num-samples=100
 
 syneval-lm:
 	python src/main.py syneval \
 	    --dynet-autobatch=1 \
 	    --dynet-mem=3000 \
-	    --parser-type=rnn-lm \
+	    --model-type=rnn-lm \
 	    --checkpoint=${LM_PATH} \
 	    --model-path-base='' \
 	    --indir=data/syneval/converted \
-	    --add-period \
 	    --capitalize
 
-syneval-multi-lm:
+syneval-multitask-lm:
 	python src/main.py syneval \
 	    --dynet-autobatch=1 \
 	    --dynet-mem=3000 \
-	    --parser-type=rnn-lm \
+	    --model-type=rnn-lm \
 	    --checkpoint=${MULTI_LM_PATH} \
 	    --model-path-base='' \
 	    --indir=data/syneval/converted \
-	    --add-period \
 	    --capitalize
 
+syneval-rnng:
+	python src/main.py syneval \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=5000 \
+	    --model-type=gen-rnng \
+	    --checkpoint=${GEN_PATH} \
+	    --proposal-model=${DISC_PATH} \
+	    --model-path-base='' \
+	    --indir=data/syneval/converted \
+	    --num-samples=20 \
+	    --capitalize
 
+syneval-disc:
+	python src/main.py syneval \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=3000 \
+	    --model-type=disc-rnng \
+	    --checkpoint=${DISC_PATH} \
+	    --model-path-base='' \
+	    --indir=data/syneval/converted \
+	    --num-samples=10 \
+	    --capitalize \
+	    --add-period \
+	    --syneval-short
+
+
+# clear temporary models
 .PHONY : clean
 clean :
 	-rm -r models/temp/*
