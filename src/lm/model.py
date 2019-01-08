@@ -150,6 +150,7 @@ class MultitaskLanguageModel(object):
         rnn = self.rnn_builder.initial_state()
 
         if multitask:
+
             # need stop token to make span encodings possible (see below)
             word_ids = [self.word_vocab.index_or_unk(word)
                 for word in [START] + words + [STOP]]

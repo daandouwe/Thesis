@@ -53,7 +53,7 @@ def main():
     model.add_argument('--use-glove', action='store_true',
                         help='using pretrained glove embeddings')
     model.add_argument('--glove-dir', default='~/embeddings/glove',
-                        help='to be constructed in main')
+                        help='location of glove embeddings')
     model.add_argument('--fine-tune-embeddings', action='store_true',
                         help='train minimal additive refinement of pretrained embeddings')
     model.add_argument('--freeze-embeddings', action='store_true',
@@ -85,6 +85,12 @@ def main():
                         help='composition function used by stack-lstm')
     rnng.add_argument('--f-hidden-dim', type=int, default=128,
                         help='dimension of all scoring feedforwards')
+
+    lm = parser.add_argument_group('Model (LM)')
+    lm.add_argument('--multitask', action='store_true',
+                    help='predict labeled spans as side objective')
+    lm.add_argument('--all-spans', action='store_true',
+                    help='also predict null spans')
 
     training = parser.add_argument_group('Training')
     training.add_argument('--numpy-seed', type=int, default=42,
@@ -138,54 +144,54 @@ def main():
     semisup.add_argument('--use-mlp-baseline', action='store_true',
                         help='optional baseline')
 
-    lm = parser.add_argument_group('Language model')
-    lm.add_argument('--multitask', action='store_true',
-                    help='predict labeled spans as side objective')
-    lm.add_argument('--all-spans', action='store_true',
-                    help='also predict null spans')
-
     # Predict arguments
-    prediction = parser.add_argument_group('Prediction')
-    prediction.add_argument('--checkpoint', default='',
+    pred = parser.add_argument_group('Prediction')
+    pred.add_argument('--checkpoint', default='',
                         help='load model from this checkpoint')
-    prediction.add_argument('--infile', default='',
+    pred.add_argument('--infile', default='',
                         help='input file to decode')
-    prediction.add_argument('--outfile', default='',
+    pred.add_argument('--outfile', default='',
                         help='output file to write to')
-    prediction.add_argument('--indir', default='',
+    pred.add_argument('--indir', default='',
                         help='input directory (primarily syneval)')
-    prediction.add_argument('--outdir', default='',
+    pred.add_argument('--outdir', default='',
                         help='output directory to write to (primarily syneval)')
-    prediction.add_argument('--from-input', action='store_true',
+    pred.add_argument('--from-input', action='store_true',
                         help='predict for user input')
-    prediction.add_argument('--from-tree-file', action='store_true',
+    pred.add_argument('--from-tree-file', action='store_true',
                         help='predict trees for a file of gold trees and evaluate it against those')
-    prediction.add_argument('--from-text-file', action='store_true',
+    pred.add_argument('--from-text-file', action='store_true',
                         help='predict trees for a file of tokenized sentences')
-    prediction.add_argument('--use-tokenizer', action='store_true',
+    pred.add_argument('--use-tokenizer', action='store_true',
                         help='tokenize user input')
-    prediction.add_argument('--sample-gen', action='store_true',
+    pred.add_argument('--sample-gen', action='store_true',
                         help='sample from generative model')
-    prediction.add_argument('--sample-proposals', action='store_true',
+    pred.add_argument('--sample-proposals', action='store_true',
                         help='sample proposals from discriminative model')
-    prediction.add_argument('--num-samples', type=int, default=100,
+    pred.add_argument('--num-samples', type=int, default=100,
                         help='number of proposal samples')
-    prediction.add_argument('--alpha', type=float, default=1.0,
+    pred.add_argument('--alpha', type=float, default=1.0,
                         help='temperature to tweak distribution')
-    prediction.add_argument('--perplexity', action='store_true',
+    pred.add_argument('--perplexity', action='store_true',
                         help='evaluate perplexity')
-    prediction.add_argument('--proposal-model', default='',
+    pred.add_argument('--proposal-model', default='',
                         help='load discriminative model (proposal for generative model) from this checkpoint')
-    prediction.add_argument('--proposal-samples', default='data/proposals/rnng-dev.props',
+    pred.add_argument('--proposal-samples', default='data/proposals/rnng-dev.props',
                         help='load proposal samples')
-    prediction.add_argument('--inspect-model', action='store_true',
+    pred.add_argument('--inspect-model', action='store_true',
                         help='inspect the attention in the model')
-    prediction.add_argument('--capitalize', action='store_true',
-                        help='capitalize the sentence (especially for syneval)')
-    prediction.add_argument('--add-period', action='store_true',
-                        help='add a period at the end of the sentence (especially for syneval)')
-    prediction.add_argument('--evalb-dir', default='EVALB',
+    pred.add_argument('--evalb-dir', default='EVALB',
                         help='where the evalb excecutable is located')
+
+    syn = parser.add_argument_group('Syneval')
+    syn.add_argument('--syneval-short', action='store_true',
+                        help='evaluate on a subset of syneval (only the small datasets)')
+    syn.add_argument('--syneval-max-lines', type=int, default=100,
+                        help='subsample the syneval dataset if it exceeds this (especially for gen-rnng)')
+    syn.add_argument('--capitalize', action='store_true',
+                        help='capitalize the sentence (especially for syneval)')
+    syn.add_argument('--add-period', action='store_true',
+                        help='add a period at the end of the sentence (especially for syneval)')
 
 
     args = parser.parse_args()
