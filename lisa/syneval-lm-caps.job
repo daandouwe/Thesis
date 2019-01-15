@@ -11,10 +11,10 @@ module load Python/3.6.3-foss-2017b
 export MKL_NUM_THREADS=1
 
 # gather all lm paths to be evaluated
-LM_PATHS=$(ls ${HOME}/thesis/models | grep '^lm_*')
+PATHS=$(ls ${HOME}/thesis/models | grep '^lm_*')
 
 # send an e-mail when the job starts
-echo "Job $SLURM_JOB_NAME started at `date` for the models $LM_PATHS" | mail $USER -s "Started job $SLURM_JOB_NAME"
+echo "Job $SLURM_JOB_NAME started at `date` for the models $PATHS" | mail $USER -s "Started job $SLURM_JOB_NAME"
 
 # write sterr and stout of each experiment here
 OUTPUT_DIR=${HOME}/thesis/lisa/out/${SLURM_JOB_NAME}
@@ -23,14 +23,13 @@ mkdir -p ${OUTPUT_DIR}
 # always run from the main directory
 cd ${HOME}/thesis
 
-for p in $LM_PATHS; do
+for p in $PATHS; do
   python src/main.py syneval \
       --dynet-autobatch 1 \
       --dynet-mem 2500 \
       --model-type rnn-lm \
-      --model-path-base '' \
 	    --checkpoint models/${p} \
-	    --indir data/syneval/converted \
+	    --indir data/syneval/data/converted \
       --capitalize \
       &
 done

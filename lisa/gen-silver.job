@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J gen
-#SBATCH -o lisa/out/gen.out
+#SBATCH -J gen-silver
+#SBATCH -o lisa/out/gen-silver.out
 #SBATCH -t 5-00:00:00
 
 # send an e-mail when the job starts
@@ -18,7 +18,7 @@ cd ${HOME}/thesis
 source lisa/lisa-setup.sh
 
 # create supervised vocab
-python src/main.py build @src/configs/vocab/supervised.txt
+python src/main.py build @src/configs/vocab/semisupervised.txt
 
 # we can run training runs in parallel, each on a different processor (16 in total)
 # with a different seed, and we tell each script which seed
@@ -31,13 +31,13 @@ for seed in {1..10}; do
   lisa/train.sh ${seed} ${OUTPUT_DIR} \
       --dynet-autobatch 1 \
       --dynet-mem 2500 \
-      --model-path-base models/gen-rnng \
+      --model-path-base models/gen-rnng_data=silver-gold \
       --max-time $((5 * 23 * 3600)) \
       --max-epochs 100 \
       --eval-every-epochs 4 \
       --lr-decay-patience 8 \
-      @src/configs/vocab/supervised.txt \
-      @src/configs/data/supervised.txt \
+      @src/configs/vocab/semisupervised.txt \
+      @src/configs/data/supervised-silver.txt \
       @src/configs/model/gen-rnng.txt \
       @src/configs/proposals/rnng.txt \
       @src/configs/training/sgd.txt \
