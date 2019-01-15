@@ -1,58 +1,54 @@
+PTB=data/ptb/train.trees
+OBW=news.en-00001-of-00100.processed
+
 
 # setup
 evalb:
 	scripts/install-evalb.sh
 
 data:
-	mkdir data && scripts/get-ptb.sh && scripts/get-unlabeled.sh  && scripts/get-syneval.sh
+	mkdir data && scripts/get-ptb.sh && scripts/process-unlabeled.sh && scripts/get-syneval.sh
+
+silver: predict-silver
+	cat data/silver/${OBW}.trees ${PTB} | gshuf > data/silver/silver-gold.trees
+
 
 # train a model
 disc: train-disc
-gen: train-gen
+gen: sup-vocab train-gen
 crf: train-crf
-lm: train-lm
-multitask-lm: train-multitask-lm
+lm: sup-vocab train-lm
+multitask-lm: sup-vocab train-multitask-lm
 
-gen-gpu: train-gen-gpu
-lm-gpu: train-lm-gpu
-multitask-lm-gpu: train-multitask-lm-gpu
+gen-stack-only: sup-vocab train-gen-stack-only
 
-disc-vocab: semisup-vocab train-disc-vocab
-gen-vocab: semisup-vocab train-gen-vocab
-crf-vocab: semisup-vocab train-crf-vocab
+gen-gpu: sup-vocab train-gen-gpu
+lm-gpu: sup-vocab train-lm-gpu
+multitask-lm-gpu: sup-vocab train-multitask-lm-gpu
 
-disc-lowercase-vocab: semisup-lowercase-vocab train-disc-vocab
-gen-lowercase-vocab: semisup-lowercase-vocab train-gen-vocab
-crf-lowercase-vocab: semisup-lowercase-vocab train-crf-vocab
-
-gen-stack-only: train-gen-stack-only
+disc-semisup-vocab: semisup-vocab train-disc-vocab
+gen-semisup-vocab: semisup-vocab train-gen-vocab
+crf-semisup-vocab: semisup-vocab train-crf-vocab
 
 semisup-rnng: train-semisup-rnng
 semisup-crf: train-semisup-crf
 semisup-rnng-vocab: train-semisup-rnng-vocab
 semisup-crf-vocab: train-semisup-crf-vocab
 
+gen-silver: semisup-vocab train-gen-silver
+
 
 # build a vocabulary
 sup-vocab:
-	python src/build.py \
-	    @src/configs/vocab/supervised.txt
-
-sup-lowercase-vocab:
-	python src/build.py \
+	python src/main.py build \
 	    @src/configs/vocab/supervised.txt \
-	    --lowercase
 
 semisup-vocab:
-	python src/build.py \
+	python src/main.py build \
 	    @src/configs/vocab/semisupervised.txt
 
-semisup-lowercase-vocab:
-	python src/build.py \
-	    @src/configs/vocab/semisupervised.txt \
-	    --lowercase
 
-# Train a supervised model
+# train a supervised model
 train-disc:
 	python src/main.py train \
 	    --dynet-autobatch=1 \
@@ -66,25 +62,59 @@ train-gen:
 	    --dynet-autobatch=1 \
 	    --dynet-mem=3000 \
 	    --model-path-base=models/gen-rnng \
-	    @src/configs/data/supervised.txt \
+	    @src/configs/vocab/supervised.txt \
+			@src/configs/data/supervised.txt \
 	    @src/configs/model/gen-rnng.txt \
 	    @src/configs/training/sgd.txt \
-	    @src/configs/proposals/rnng.txt
+	    @src/configs/proposals/rnng.txt \
+	    --eval-every-epochs=4 \
+	    --num-dev-samples=50 \
+	    --num-test-samples=100
+
+train-gen-stack-only:
+	python src/main.py train \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=3000 \
+	    --model-path-base=models/gen-rnng_stack-only \
+			@src/configs/vocab/supervised.txt \
+	    @src/configs/data/supervised.txt \
+	    @src/configs/model/gen-rnng-stack-only.txt \
+	    @src/configs/training/sgd.txt \
+	    @src/configs/proposals/rnng.txt \
+	    --eval-every-epochs=4 \
+	    --num-dev-samples=50 \
+	    --num-test-samples=100
+
+train-gen-silver:
+	python src/main.py train \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=3000 \
+	    --model-path-base=models/gen-rnng_data=silver-gold \
+	    @src/configs/vocab/semisupervised.txt \
+	    @src/configs/data/supervised-silver.txt \
+	    @src/configs/model/gen-rnng.txt \
+	    @src/configs/training/sgd.txt \
+	    @src/configs/proposals/rnng.txt \
+	    --eval-every-epochs=4 \
+	    --num-dev-samples=50 \
+	    --num-test-samples=100
+
 
 train-crf:
 	python src/main.py train \
 	    --dynet-autobatch=1 \
-	    --dynet-mem=1000 \
+	    --dynet-mem=3000 \
 	    --model-path-base=models/crf \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/crf.txt \
-	    @src/configs/training/adam.txt \
+	    @src/configs/training/sgd.txt
 
 train-lm:
 	python src/main.py train \
 	    --dynet-autobatch=1 \
-	    --dynet-mem=1000 \
+	    --dynet-mem=3000 \
 	    --model-path-base=models/lm \
+			@src/configs/vocab/supervised.txt \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/lm.txt \
 	    @src/configs/training/sgd.txt
@@ -94,27 +124,36 @@ train-multitask-lm:
       --dynet-autobatch=1 \
 	    --dynet-mem=1000 \
 	    --model-path-base=models/multitask-lm \
+			@src/configs/vocab/supervised.txt \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/multitask-lm.txt \
 	    @src/configs/training/sgd.txt
 
+
+# gpu models
 train-gen-gpu:
 	python src/main.py train \
 	    --dynet-gpus=1 \
 	    --dynet-autobatch=1 \
 	    --dynet-mem=3000 \
 	    --model-path-base=models/gen-rnng \
+			@src/configs/vocab/supervised.txt \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/gen-rnng.txt \
 	    @src/configs/training/sgd.txt \
-	    @src/configs/proposals/rnng.txt
+	    @src/configs/proposals/rnng.txt \
+	    --eval-every-epochs=4 \
+	    --num-dev-samples=50 \
+	      --num-test-samples=100
 
 train-lm-gpu:
 	python src/main.py train \
-	    --dynet-gpus=1 \
+	    --dynet-gpu=1 \
+			--dynet-gpus=1 \
 	    --dynet-autobatch=1 \
 	    --dynet-mem=3000 \
 	    --model-path-base=models/lm \
+			@src/configs/vocab/supervised.txt \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/lm.txt \
 	    @src/configs/training/sgd.txt
@@ -125,10 +164,13 @@ train-multitask-lm-gpu:
 	    --dynet-autobatch=1 \
 	    --dynet-mem=3000 \
 	    --model-path-base=models/multitask-lm \
+			@src/configs/vocab/supervised.txt \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/multitask-lm.txt \
 	    @src/configs/training/sgd.txt
 
+
+# semisup vocab models
 train-disc-vocab: semisup-vocab
 	python src/main.py train \
 	    --dynet-autobatch=1 \
@@ -148,7 +190,10 @@ train-gen-vocab: semisup-vocab
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/gen-rnng.txt \
 	    @src/configs/training/sgd.txt \
-	    @src/configs/proposal/disc-rnng.txt
+	    @src/configs/proposals/rnng.txt \
+	    --eval-every-epochs=4 \
+	    --num-dev-samples=50 \
+	    --num-test-samples=100
 
 train-crf-vocab: semisup-vocab
 	python src/main.py train \
@@ -160,18 +205,8 @@ train-crf-vocab: semisup-vocab
 	    @src/configs/model/crf.txt \
 	    @src/configs/training/adam.txt
 
-train-gen-stack-only:
-	python src/main.py train \
-	    --dynet-autobatch=1 \
-	    --dynet-mem=3000 \
-	    --model-path-base=models/gen-rnng_stack-only \
-	    @src/configs/data/supervised.txt \
-	    @src/configs/model/gen-rnng-stack-only.txt \
-	    @src/configs/training/sgd.txt \
-	    @src/configs/proposals/rnng.txt
 
-
-# finetune models semisupervised
+# semisupervised training
 train-semisup-rnng:
 	python src/main.py train \
 	    --dynet-autobatch=1 \
@@ -183,8 +218,10 @@ train-semisup-rnng:
 	    --num-samples=1 \
 	    @src/configs/data/semisupervised.txt \
 	    @src/configs/training/adam.txt \
-	    @src/configs/baseline/argmax.txt \
-	    --batch-size=1
+	    @src/configs/baseline/mlp.txt \
+	    --batch-size=1 \
+	    --num-dev-samples=50 \
+	    --num-test-samples=100
 
 train-semisup-crf:
 	python src/main.py train \
@@ -199,6 +236,8 @@ train-semisup-crf:
 	    @src/configs/training/adam.txt \
 	    @src/configs/baseline/argmax.txt \
 	    --batch-size=1 \
+	    --num-dev-samples=50 \
+	    --num-test-samples=100
 
 train-semisup-rnng-vocab:
 	python src/main.py train \
@@ -214,6 +253,8 @@ train-semisup-rnng-vocab:
 	    @src/configs/training/adam.txt \
 	    @src/configs/baseline/argmax.txt \
 	    --batch-size=1 \
+	    --num-dev-samples=50 \
+	    --num-test-samples=100
 
 train-semisup-crf-vocab:
 	python src/main.py train \
@@ -229,6 +270,9 @@ train-semisup-crf-vocab:
 	    @src/configs/training/adam.txt \
 	    @src/configs/baseline/argmax.txt \
 	    --batch-size=1 \
+	    --num-dev-samples=50 \
+	    --num-test-samples=100
+
 
 # sample proposals
 proposals-rnng: proposals-rnng-dev proposals-rnng-test
@@ -254,28 +298,37 @@ proposals-crf-test:
 	    --checkpoint=${CRF_PATH} \
 	    @src/configs/proposals/sample-crf-test.txt
 
-# evaluation
+# predict silver training trees
+predict-silver:
+	mkdir -p data/silver && \
+	python src/main.py predict \
+	    --from-text-file \
+	    --model-type=disc-rnng \
+	    --checkpoint=${DISC_PATH} \
+	    --infile=data/unlabeled/${OBW} \
+	    --outfile=data/silver/${OBW}.trees
+
+
+# evaluate perplexity
 eval-test-pp:
 	python src/main.py predict \
 	    --dynet-autobatch=1 \
 	    --dynet-mem=5000 \
 	    --model-type=gen-rnng \
-	    --model-path-base='' \
 	    --perplexity \
 	    --checkpoint=${GEN_PATH} \
 	    --infile=data/ptb/test.trees \
 	    --proposal-samples=data/proposals/rnng-test.props \
 	    --num-samples=100
 
+# syneval
 syneval-lm:
 	python src/main.py syneval \
 	    --dynet-autobatch=1 \
 	    --dynet-mem=3000 \
 	    --model-type=rnn-lm \
 	    --checkpoint=${LM_PATH} \
-	    --model-path-base='' \
-	    --indir=data/syneval/converted \
-	    --capitalize
+	    --indir=data/syneval/data/converted
 
 syneval-multitask-lm:
 	python src/main.py syneval \
@@ -283,9 +336,7 @@ syneval-multitask-lm:
 	    --dynet-mem=3000 \
 	    --model-type=rnn-lm \
 	    --checkpoint=${MULTI_LM_PATH} \
-	    --model-path-base='' \
-	    --indir=data/syneval/converted \
-	    --capitalize
+	    --indir=data/syneval/data/converted
 
 syneval-rnng:
 	python src/main.py syneval \
@@ -294,10 +345,9 @@ syneval-rnng:
 	    --model-type=gen-rnng \
 	    --checkpoint=${GEN_PATH} \
 	    --proposal-model=${DISC_PATH} \
-	    --model-path-base='' \
-	    --indir=data/syneval/converted \
-	    --num-samples=20 \
-	    --capitalize
+	    --indir=data/syneval/data/converted \
+	    --num-samples=50 \
+	    --syneval-max-lines=1000 \
 
 syneval-disc:
 	python src/main.py syneval \
@@ -305,12 +355,8 @@ syneval-disc:
 	    --dynet-mem=3000 \
 	    --model-type=disc-rnng \
 	    --checkpoint=${DISC_PATH} \
-	    --model-path-base='' \
-	    --indir=data/syneval/converted \
-	    --num-samples=10 \
-	    --capitalize \
-	    --add-period \
-	    --syneval-short
+	    --indir=data/syneval/data/converted \
+	    --num-samples=50
 
 
 # clear temporary models
