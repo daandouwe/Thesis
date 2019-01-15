@@ -2,6 +2,7 @@ import os
 import argparse
 from math import inf
 
+import build
 import train
 import predict
 import syneval
@@ -22,7 +23,7 @@ def main():
     parser = argparse.ArgumentParser(description='RNNG parser',
                                      fromfile_prefix_chars='@') # enables loading args from textfile
     # Choose mode
-    parser.add_argument('mode', choices=['train', 'predict', 'syneval'],
+    parser.add_argument('mode', choices=['build', 'train', 'predict', 'syneval'],
                         help='what do you want to do?')
 
     dynet = parser.add_argument_group('Dynet')
@@ -36,17 +37,23 @@ def main():
                         help='development trees')
     data.add_argument('--test-path', default='data/ptb/test.trees',
                         help='test trees')
-    data.add_argument('--unlabeled-path', default='data/unlabeled/news.en-00001-of-00100',
+    data.add_argument('--unlabeled-path', default='data/unlabeled/news.en-00001-of-00100.processed',
                         help='unlabeled data for semi-supervised training')
     data.add_argument('--vocab-path', default=None,
                         help='specify a vocabulary (optional)')
-    data.add_argument('--min-word-count', default=None,
-                        help='minimal word count')
+
+    vocab = parser.add_argument_group('Vocabulary')
+    vocab.add_argument('--min-word-count', type=int, default=None,
+                        help='minimal word count for vocab')
+    vocab.add_argument('--max-vocab-size', type=int, default=-1,
+                        help='maxinum number of words in vocab')
+    vocab.add_argument('--lowercase', action='store_true',
+                        help='lowercase vocab')
 
     model = parser.add_argument_group('Model (shared)')
     model.add_argument('--model-type', choices=['disc-rnng', 'gen-rnng', 'crf', 'semisup-crf', 'semisup-rnng', 'rnn-lm'],
-                        help='type of parser', required=True)
-    model.add_argument('--model-path-base', required=True,
+                        help='type of model', default='disc-rnng')
+    model.add_argument('--model-path-base', default='disc-rnng',
                         help='path base to use for saving models')
     model.add_argument('--word-emb-dim', type=int, default=100,
                         help='dim of word embeddings')
@@ -92,7 +99,7 @@ def main():
     lm.add_argument('--all-spans', action='store_true',
                     help='also predict null spans')
 
-    training = parser.add_argument_group('Training')
+    training = parser.add_argument_group('Train')
     training.add_argument('--numpy-seed', type=int, default=42,
                         help='random seed to use')
     training.add_argument('--max-epochs', type=int, default=inf,
@@ -120,9 +127,11 @@ def main():
     training.add_argument('--print-every', type=int, default=10,
                         help='how often to print training progress')
     training.add_argument('--eval-every', type=int, default=-1,
-                        help='evaluate model on development set (default: every epoch (-1))')
+                        help='evaluate model on development set each number of updates (default: every epoch (-1))')
+    training.add_argument('--eval-every-epochs', type=int, default=1,
+                        help='evaluate model on development set each number of epochs (for gen-rnng)')
     training.add_argument('--eval-at-start', action='store_true',
-                        help='evaluate model on development set at start of training')
+                        help='evaluate model on development set at start of training (for semisupervised)')
     training.add_argument('--dev-proposal-samples', default='data/proposals/rnng-dev.props',
                         help='proposal samples for development set')
     training.add_argument('--test-proposal-samples', default='data/proposals/rnng-test.props',
@@ -145,7 +154,7 @@ def main():
                         help='optional baseline')
 
     # Predict arguments
-    pred = parser.add_argument_group('Prediction')
+    pred = parser.add_argument_group('Predict')
     pred.add_argument('--checkpoint', default='',
                         help='load model from this checkpoint')
     pred.add_argument('--infile', default='',
@@ -186,16 +195,17 @@ def main():
     syn = parser.add_argument_group('Syneval')
     syn.add_argument('--syneval-short', action='store_true',
                         help='evaluate on a subset of syneval (only the small datasets)')
-    syn.add_argument('--syneval-max-lines', type=int, default=100,
+    syn.add_argument('--syneval-max-lines', type=int, default=-1,
                         help='subsample the syneval dataset if it exceeds this (especially for gen-rnng)')
     syn.add_argument('--capitalize', action='store_true',
                         help='capitalize the sentence (especially for syneval)')
     syn.add_argument('--add-period', action='store_true',
                         help='add a period at the end of the sentence (especially for syneval)')
 
-
     args = parser.parse_args()
 
+    if args.mode == 'build':
+        build.main(args)
     if args.mode == 'train':
         train.main(args)
     elif args.mode == 'predict':

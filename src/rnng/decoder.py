@@ -95,10 +95,10 @@ class GenerativeDecoder:
         if self.use_loaded_samples:
             samples = next(self.samples)
         else:
-            dy.renew_cg()
             words = list(words)
             samples = []
             for _ in range(self.num_samples):
+                dy.renew_cg()
                 tree, nll = self.proposal.sample(words, alpha=self.alpha)
                 samples.append((tree, -nll.value()))
 

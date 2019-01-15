@@ -279,7 +279,7 @@ class LeafSpanNode(SpanNode):
 def fromstring(tree, strip_top=False):
     """Return a tree from a string."""
     assert isinstance(tree, str), tree
-    assert len(tree) > 0
+    assert len(tree) > 0, tree
 
     tokens = tree.replace("(", " ( ").replace(")", " ) ").split()
 
@@ -325,6 +325,8 @@ def fromstring(tree, strip_top=False):
 def add_dummy_tags(tree, tag='*'):
     """Turns '(NP The tagless tree)' into '(NP (* The) (* tagless) (* tree))'."""
     assert isinstance(tree, str), tree
+    assert len(tree) > 0, tree
+
     i = 0
     max_idx = (len(tree) - 1)
     new_tree = ''

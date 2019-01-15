@@ -1,4 +1,5 @@
 --train-path=data/ptb/train.trees
---unlabeled-path=data/unlabeled/news.en-00001-of-00100
+--unlabeled-path=data/unlabeled/news.en-00001-of-00100.processed
 --vocab-path=data/vocab/semisup-vocab.json
 --min-word-count=3
+--max-vocab-size=-1

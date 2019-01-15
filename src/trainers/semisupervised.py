@@ -12,12 +12,11 @@ from tqdm import tqdm
 from rnng.parser.actions import SHIFT, REDUCE, NT, GEN
 from rnng.model import DiscRNNG, GenRNNG
 from rnng.decoder import GenerativeDecoder
-from crf.model import ChartParser, START, STOP
+from crf.model import ChartParser
 from components.feedforward import Feedforward, Affine
-from utils.vocabulary import Vocabulary, UNK
-from utils.trees import fromstring, DUMMY
+from components.baseline import FeedforwardBaseline
+from utils.trees import fromstring
 from utils.evalb import evalb
-from utils.text import replace_quotes, replace_brackets
 from utils.general import Timer, get_folders, write_args, ceil_div, move_to_final_folder, blockgrad
 
 
@@ -39,7 +38,6 @@ class SemiSupervisedTrainer:
             use_argmax_baseline=False,
             use_mlp_baseline=False,
             clip_learning_signal=-20,
-            max_unlabeled_sent_len=40,
             max_epochs=inf,
             max_time=inf,
             num_samples=3,
@@ -81,7 +79,6 @@ class SemiSupervisedTrainer:
         self.use_argmax_baseline = use_argmax_baseline
         self.use_mlp_baseline = use_mlp_baseline
         self.clip_learning_signal = clip_learning_signal
-        self.max_unlabeled_sent_len = max_unlabeled_sent_len
 
         # Training
         self.max_epochs = max_epochs
@@ -175,11 +172,7 @@ class SemiSupervisedTrainer:
 
         print(f'Loading unlabeled data from `{self.unlabeled_path}`...')
         with open(self.unlabeled_path) as f:
-            unlabeled_data = [
-                replace_brackets(replace_quotes(line.strip().split()))
-                for line in f
-                if len(line.split()) < self.max_unlabeled_sent_len
-            ]
+            unlabeled_data = [line.strip().split() for line in f]
 
         self.word_vocab = self.joint_model.word_vocab
         self.label_vocab = self.joint_model.nt_vocab
@@ -241,27 +234,29 @@ class SemiSupervisedTrainer:
 
         if self.optimizer_type == 'sgd':
             self.optimizer = dy.SimpleSGDTrainer(self.model, learning_rate=self.lr)
-            self.baseline_optimizer = dy.SimpleSGDTrainer(self.baseline_model, learning_rate=10*self.lr)
+            self.baseline_optimizer = dy.SimpleSGDTrainer(self.baseline_parameters, learning_rate=10*self.lr)
 
         elif self.optimizer_type == 'adam':
             self.optimizer = dy.AdamTrainer(self.model, alpha=self.lr)
-            self.baseline_optimizer = dy.AdamTrainer(self.baseline_model, alpha=10*self.lr)
+            self.baseline_optimizer = dy.AdamTrainer(self.baseline_parameters, alpha=10*self.lr)
 
         self.optimizer.set_clip_threshold(self.max_grad_norm)
         self.baseline_optimizer.set_clip_threshold(self.max_grad_norm)
         self.model.set_weight_decay(self.weight_decay)
 
-    def build_baseline_parameters(self):
-        self.baseline_model = dy.ParameterCollection()
+    def build_baseline_model(self):
+        self.baseline_parameters = dy.ParameterCollection()
 
-        # TODO: make this compatible with CRF parser
+        if self.use_mlp_baseline:
+            print('Building feedforward baseline model...')
 
-        emb_dim = self.post_model.buffer_encoder.hidden_size
+            if self.posterior_type == 'crf':
+                lstm_dim = 2 * self.post_model.lstm_dim
+            elif self.posterior_type == 'rnng':
+                lstm_dim = self.post_model.buffer_encoder.hidden_size
 
-        self.gating = Feedforward(
-            self.baseline_model, emb_dim, [128], 1)
-        self.feedforward = Feedforward(
-            self.baseline_model, emb_dim, [128], 1)
+            self.baseline_model = FeedforwardBaseline(
+                self.baseline_parameters, self.posterior_type, lstm_dim)
 
     def batchify(self, data):
         batches = [data[i*self.batch_size:(i+1)*self.batch_size]
@@ -272,7 +267,7 @@ class SemiSupervisedTrainer:
         self.build_paths()
         self.load_models()
         self.build_corpus()
-        self.build_baseline_parameters()
+        self.build_baseline_model()
         self.build_optimizer()
 
         self.num_updates = 0
@@ -306,7 +301,7 @@ class SemiSupervisedTrainer:
                 self.train_epoch()
 
                 print('='*89)
-                print(f'| End of epoch {epoch} | elapsed {self.timer.elapsed()}')
+                print(f'| End of epoch {epoch} | elapsed {self.timer.format_elapsed()}')
                 print('='*89)
         except KeyboardInterrupt:
             print('-'*99)
@@ -375,9 +370,9 @@ class SemiSupervisedTrainer:
 
                 self.write_tensoboard_losses(loss, sup_loss, unsup_loss, baseline_loss)
 
-                print('| epoch {:3d} | step {:5d}/{:5d} ({:.1%}) | loss {:6.3f} | sup-loss {:5.3f} | unsup-loss {:6.3f} | baseline-loss {:3.3f} | elapsed {} | {:.2f} updates/sec | eta {}'.format(
+                print('| epoch {:3d} | step {:5d}/{:5d} ({:.1%}) | sup-loss {:5.3f} | unsup-elbo {:.3f} | elapsed {} | {:.2f} updates/sec | eta {}'.format(
                     self.current_epoch, i, len(labeled_batches), i / len(labeled_batches),
-                    loss, sup_loss, unsup_loss, baseline_loss,
+                    sup_loss, self.estimate_elbo(),
                     self.timer.format_elapsed_epoch(), i / self.timer.elapsed_epoch(),
                     self.timer.format_eta(i, len(labeled_batches))))
 
@@ -394,8 +389,8 @@ class SemiSupervisedTrainer:
         losses = []
         for tree in batch:
             post_tree = tree.cnf() if self.posterior_type == 'cnf' else tree
-            loss = self.joint_model.forward(tree) + 0.1 * self.post_model.forward(post_tree)
-            # loss = self.joint_model.forward(tree)
+            # loss = self.joint_model.forward(tree) + 0.1 * self.post_model.forward(post_tree)
+            loss = self.joint_model.forward(tree)
             losses.append(loss)
         loss = dy.esum(losses) / self.batch_size
         return loss
@@ -416,6 +411,8 @@ class SemiSupervisedTrainer:
             unique=[],
             scale=[]
         )
+
+        # TODO: make compatible with CRF parser's entropy computation
 
         for words in batch:
             # Get samples with their \mean_y [log q(y|x)] for samples y
@@ -500,7 +497,7 @@ class SemiSupervisedTrainer:
     def argmax_baseline(self, words):
         """Parameter-free baseline based on argmax decoding."""
 
-        # TODO: make compatible with CRF parser
+        # TODO: make compatible with CRF parser's entropy computation
 
         tree, post_nll = self.post_model.parse(words)
         post_logprob = -post_nll
@@ -509,35 +506,7 @@ class SemiSupervisedTrainer:
 
     def mlp_baseline(self, words):
         """Baseline parametrized by a feedfoward network."""
-
-        # TODO: make compatible with CRF parser
-
-        # Get the word embeddings from the posterior model
-        embeddings = [
-            self.post_model.word_embedding(word_id)
-            for word_id in self.post_model.word_vocab.indices(words)]
-        # Obtain an rnn from the rnn builder of the posterior model's buffer encoder
-        rnn = self.post_model.buffer_encoder.rnn_builder.initial_state()
-        # Use this rnn to compute rnn embeddings (In reverse! See class `Buffer`.)
-        encodings = rnn.transduce(reversed(embeddings))
-
-        # Detach the embeddings from the computation graph
-        encodings = [dy.inputTensor(blockgrad(encoding)) for encoding in encodings]
-
-        # Compute gated sum to give one sentence encoding
-        gates = [dy.logistic(self.gating(encoding)) for encoding in encodings]
-        encoding = dy.esum([
-            dy.cmult(gate, encoding)
-            for gate, encoding in zip(gates, encodings)])
-
-        # Compute scalar baseline-value using sentence encoding
-        baseline = self.feedforward(encoding)
-
-        # For fun
-        # print('>', ' '.join('{} ({})'.format(
-            # word, round(gate.value(), 1)) for word, gate in zip(words, reversed(gates))))
-
-        return baseline
+        return self.baseline_model.forward(words, self.post_model)
 
     def optimal_baseline_scale(self, n=500):
         """Estimate optimal scaling for baseline."""
@@ -586,8 +555,8 @@ class SemiSupervisedTrainer:
         """Estimate the ELBO using the training samples.
 
         Recall that
-            1/n ELBO = 1/n E_q[log p(x, y) - q(y|x)]
-                     = 1/n learning_signal
+            ELBO = E_q[log p(x, y) - q(y|x)]
+                 = 1/n sum learning_signal
         """
         # take running average for batch-size independent comparison
         return np.mean(self.learning_signals[-n:])
@@ -732,20 +701,32 @@ class SemiSupervisedTrainer:
         with open(self.joint_state_checkpoint_path, 'w') as f:
             state = {
                 'model': 'gen-rnng',
-                'semisup-method': 'vi',
+
                 'num-epochs': self.current_epoch,
                 'num-updates': self.num_updates,
+                'elapsed': self.timer.format_elapsed(),
+
+                'best-dev-fscore': self.current_dev_fscore,
+                'test-fscore': self.test_fscore,
+
                 'best-dev-perplexity': self.current_dev_perplexity,
+                'test-perplexity': self.test_perplexity,
             }
             json.dump(state, f, indent=4)
 
         with open(self.post_state_checkpoint_path, 'w') as f:
             state = {
                 'model': self.posterior_type,
-                'semisup-method': 'vi',
+
                 'num-epochs': self.current_epoch,
                 'num-updates': self.num_updates,
+                'elapsed': self.timer.format_elapsed(),
+
                 'best-dev-fscore': self.current_dev_fscore,
+                'test-fscore': self.test_fscore,
+
+                'best-dev-perplexity': self.current_dev_perplexity,
+                'test-perplexity': self.test_perplexity,
             }
             json.dump(state, f, indent=4)
 

@@ -51,7 +51,7 @@ def main(args):
             fine_tune_embeddings=args.fine_tune_embeddings,
             freeze_embeddings=args.freeze_embeddings,
             print_every=args.print_every,
-            eval_every=args.eval_every,
+            eval_every_epochs=args.eval_every_epochs,
             max_epochs=args.max_epochs,
             max_time=args.max_time,
             num_dev_samples=args.num_dev_samples,

@@ -87,18 +87,20 @@ class LanguageModelTrainer:
         self.losses = []
         self.num_updates = 0
 
-        self.current_dev_pp = inf
-        self.best_dev_pp = inf
+        self.current_dev_perplexity = inf
+        self.best_dev_perplexity = inf
         self.best_dev_epoch = 0
-        self.test_pp = inf
+        self.test_perplexity = inf
 
     def build_paths(self):
         # Make output folder structure
         subdir, logdir, checkdir, outdir, vocabdir = get_folders(self.args)
+
         os.makedirs(logdir, exist_ok=True)
         os.makedirs(checkdir, exist_ok=True)
         os.makedirs(outdir, exist_ok=True)
         os.makedirs(vocabdir, exist_ok=True)
+
         print(f'Output subdirectory: `{subdir}`.')
         print(f'Saving logs to `{logdir}`.')
         print(f'Saving predictions to `{outdir}`.')
@@ -107,12 +109,15 @@ class LanguageModelTrainer:
         # Save arguments
         write_args(self.args, logdir)
 
-        # Output paths
         self.subdir = subdir
+
+        # Model paths
         self.model_checkpoint_path = os.path.join(checkdir, 'model')
         self.state_checkpoint_path = os.path.join(checkdir, 'state.json')
         self.word_vocab_path = os.path.join(vocabdir, 'word-vocab.json')
         self.label_vocab_path = os.path.join(vocabdir, 'nt-vocab.json')
+
+        # Output paths
         self.loss_path = os.path.join(logdir, 'loss.csv')
         self.tensorboard_writer = SummaryWriter(logdir)
 
@@ -249,7 +254,7 @@ class LanguageModelTrainer:
 
                 print('-'*99)
                 print('| End of epoch {:3d}/{} | Elapsed {} | Current dev pp {:4.2f} | Best dev pp {:4.2f} (epoch {:2d})'.format(
-                    epoch, self.max_epochs, self.timer.format_elapsed(), self.current_dev_pp, self.best_dev_pp, self.best_dev_epoch))
+                    epoch, self.max_epochs, self.timer.format_elapsed(), self.current_dev_perplexity, self.best_dev_perplexity, self.best_dev_epoch))
                 print('-'*99)
         except KeyboardInterrupt:
             print('-'*99)
@@ -269,7 +274,7 @@ class LanguageModelTrainer:
 
         print('='*99)
         print('| End of training | Best dev pp {:3.2f} (epoch {:2d}) | Test pp {:3.2f}'.format(
-            self.best_dev_pp, self.best_dev_epoch, self.test_pp))
+            self.best_dev_perplexity, self.best_dev_epoch, self.test_perplexity))
         print('='*99)
 
     def train_epoch(self):
@@ -345,7 +350,7 @@ class LanguageModelTrainer:
         return batches
 
     def anneal_lr(self):
-        if self.current_dev_pp > self.best_dev_pp:
+        if self.current_dev_perplexity > self.best_dev_perplexity:
             if self.current_epoch > (self.best_dev_epoch + self.lr_decay_patience):  # if we've waited long enough
                 lr = self.get_lr() / self.lr_decay
                 print(f'Annealing the learning rate from {self.get_lr():.1e} to {lr:.1e}.')
@@ -364,12 +369,15 @@ class LanguageModelTrainer:
                 'model': 'rnn-lm',
                 'multitask': self.multitask,
                 'num-params': int(self.lm.num_params),
+
                 'num-epochs': self.current_epoch,
                 'num-updates': self.num_updates,
+                'elapsed': self.timer.format_elapsed(),
                 'current-lr': self.get_lr(),
-                'best-dev-pp': self.best_dev_pp,
-                'best-dev-epoch': self.best_dev_epoch,
-                'test-pp': self.test_pp,
+
+                'best-dev-perplexity': self.best_dev_perplexity,
+                'best-dev-perplexity-epoch': self.best_dev_epoch,
+                'test-perplexity': self.test_perplexity,
             }
             json.dump(state, f, indent=4)
 
@@ -387,34 +395,34 @@ class LanguageModelTrainer:
             num_words += len(words)
             nll += self.lm.forward(words).value()
         self.lm.train()
-        pp = np.exp(nll / num_words)
-        return round(pp, 2)
+        perplexity = np.exp(nll / num_words)
+        return round(perplexity, 2)
 
     def check_dev(self):
         print('Evaluating perplexity on development set...')
 
-        dev_pp = self.perplexity(self.dev_treebank)
+        dev_perplexity = self.perplexity(self.dev_treebank)
 
         # Log score to tensorboard
         self.tensorboard_writer.add_scalar(
-            'dev/pp', dev_pp, self.num_updates)
+            'dev/perplexity', dev_perplexity, self.current_epoch)
 
-        self.current_dev_pp = dev_pp
-        if dev_pp < self.best_dev_pp:
+        self.current_dev_perplexity = dev_perplexity
+        if dev_perplexity < self.best_dev_perplexity:
             print(f'Saving new best model to `{self.model_checkpoint_path}`...')
             self.best_dev_epoch = self.current_epoch
-            self.best_dev_pp = dev_pp
+            self.best_dev_perplexity = dev_perplexity
             self.save_checkpoint()
 
     def check_test(self):
         print('Evaluating perplexity on test set...')
 
-        test_pp = self.perplexity(self.test_treebank)
+        test_perplexity = self.perplexity(self.test_treebank)
 
         # Log score to tensorboard
         self.tensorboard_writer.add_scalar(
-            'test/pp', test_pp, self.num_updates)
-        self.test_pp = test_pp
+            'test/perplexity', test_perplexity, self.current_epoch)
+        self.test_perplexity = test_perplexity
 
     def write_losses(self):
         with open(self.loss_path, 'w') as f:
@@ -424,4 +432,4 @@ class LanguageModelTrainer:
 
     def finalize_model_folder(self):
         move_to_final_folder(
-            self.subdir, self.model_path_base, self.best_dev_pp)
+            self.subdir, self.model_path_base, self.best_dev_perplexity)

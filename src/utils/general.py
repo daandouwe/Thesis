@@ -32,12 +32,15 @@ def move_to_final_folder(subdir, model_path_base, dev_fscore):
     """Move `subdir` to `model_path_base_dev=dev_fscore`.
 
     Example:
-            `models/temp/20181220_181640` -> `models/disc-rnng_dev=92.43`
-        where
+            `models/temp/20181220_181640` -> `models/disc-rnng_dev=89.43`
+        when
             subdir = `models/temp/20181220_181640`
             model_path_base = `models/disc-rnng`
     """
     final_path = model_path_base + '_dev=' + str(dev_fscore)
+    # avoid overwriting existing folders
+    while os.path.exists(final_path):
+        final_path += '0'  # if needed: dev=87.46 -> dev=87.460 -> dev=87.4600 etc.
     print(f'Moving folder `{subdir}` to `{final_path}`...')
     shutil.move(subdir, final_path)
 
@@ -71,6 +74,12 @@ def load_model(dir, name='model'):
     model = dy.ParameterCollection()
     [parser] = dy.load(path, model)
     return parser
+
+
+def load_semisup_models(dir):
+    joint_model = load_model(dir, name='joint-model')
+    post_model = load_model(dir, name='post-model')
+    return joint_model, post_model
 
 
 def is_tree(line):

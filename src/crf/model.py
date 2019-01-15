@@ -37,7 +37,7 @@ class ChartParser(object):
         self.lstm_dim = lstm_dim
 
         # TODO: use the embedding classes
-        self.word_embeddings = self.model.add_lookup_parameters(
+        self.word_embedding = self.model.add_lookup_parameters(
             (word_vocab.size, word_embedding_dim))
 
         self.lstm = dy.BiRNNBuilder(
@@ -77,7 +77,7 @@ class ChartParser(object):
 
         embeddings = []
         for word in [START] + words + [STOP]:
-            word_embedding = self.word_embeddings[self.word_vocab.index(word)]
+            word_embedding = self.word_embedding[self.word_vocab.index(word)]
             embeddings.append(word_embedding)
 
         lstm_outputs = self.lstm.transduce(embeddings)
@@ -270,7 +270,7 @@ class ChartParser(object):
 
         return entropy
 
-    def forward(self, tree, is_train=True, max_margin=False, return_entropy=False):
+    def forward(self, tree, is_train=True, max_margin=False, return_entropy=True):
         assert isinstance(tree, trees.SpanNode)
 
         words = tree.words()

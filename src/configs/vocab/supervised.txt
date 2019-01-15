@@ -1,3 +1,5 @@
 --train-path=data/ptb/train.trees
+--unlabeled-path=
 --vocab-path=data/vocab/vocab.json
---min-word-count=1
+--min-word-count=2
+--max-vocab-size=-1

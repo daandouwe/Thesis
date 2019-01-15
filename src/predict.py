@@ -18,28 +18,33 @@ def predict_text_file(args):
     print(f'Predicting trees for lines in `{args.infile}`.')
 
     with open(args.infile, 'r') as f:
-        lines = [line.strip() for line in f.readlines()]
-    checkfile = get_checkfile(args.checkpoint)
+        lines = [line.strip().split() for line in f.readlines()]
 
-    if args.model_type == 'disc':
-        print('Predicting with discriminative model.')
-        decoder = GreedyDecoder(use_tokenizer=False)
-        decoder.load_model(path=checkfile)
-
-    elif args.model_type == 'gen':
-        print('Predicting with generative model.')
-        decoder = GenerativeDecoder(use_tokenizer=False)
-        decoder.load_model(path=checkfile)
+    if args.model_type == 'disc-rnng':
+        print('Predicting with discriminative RNNG.')
+        parser = load_model(args.checkpoint)
+    elif args.model_type == 'crf':
+        print('Predicting with CRF parser.')
+        parser = load_model(args.checkpoint)
+    elif args.model_type == 'gen-rnng':
+        print('Predicting with generative RNNG.')
+        model = load_model(args.checkpoint)
+        parser = GenerativeDecoder(model=model)
         if args.proposal_model:
-            decoder.load_proposal_model(path=args.proposal_model)
-        if args.proposal_samples:
-            decoder.load_proposal_samples(path=args.proposal_samples)
+            parser.load_proposal_model(args.proposal_model)
+        elif args.proposal_samples:
+            parser.load_proposal_samples(args.proposal_samples)
+        else:
+            raise ValueError('Specify proposals.')
+    else:
+        raise ValueError('Specify model-type.')
 
     print(f'Predicting trees for `{args.infile}`...')
     trees = []
-    for line in tqdm(lines):
-        tree, *rest = decoder(line)
-        trees.append(tree.linearize(with_tag=False))
+    for words in tqdm(lines):
+        dy.renew_cg()
+        tree, *rest = parser.parse(words)
+        trees.append(tree.linearize(with_tag=True))
     print(f'Saved predicted trees in `{args.outfile}`.')
     with open(args.outfile, 'w') as f:
         print('\n'.join(trees), file=f)
@@ -262,6 +267,8 @@ def sample_proposals(args):
 
 
 def inspect_model(args):
+    assert args.model_type == 'disc-rnng', args.model_type
+
     print(f'Inspecting attention for sentences in `{args.infile}`.')
 
     parser = load_model(args.checkpoint)
@@ -323,16 +330,16 @@ def main(args):
     elif args.from_tree_file:
         predict_tree_file(args)
     elif args.perplexity:
-        assert args.model_type == 'gen-rnng'
+        assert args.model_type == 'gen-rnng', args.model_type
         predict_perplexity(args)
     elif args.sample_proposals:
-        assert args.model_type in ('disc-rnng', 'crf')
+        assert args.model_type in ('disc-rnng', 'crf'), args.model_type
         sample_proposals(args)
     elif args.sample_gen:
-        assert args.model_type == 'gen-rrng'
+        assert args.model_type == 'gen-rnng', args.model_type
         sample_generative(args)
     elif args.inspect_model:
-        assert args.model_type.endswith('rnng')
+        assert args.model_type.endswith('rnng'), args.model_type
         inspect_model(args)
     else:
         exit('Specify type of prediction. Use --from-input, --from-file or --sample-gen.')

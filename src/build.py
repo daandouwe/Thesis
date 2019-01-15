@@ -7,7 +7,7 @@ import json
 from collections import Counter
 
 from utils.trees import fromstring
-from utils.text import BRACKETS, replace_brackets, replace_quotes
+from utils.text import BRACKETS
 
 
 def main(args):
@@ -22,7 +22,7 @@ def main(args):
     if args.unlabeled_path:
         print(f'Loading unlabeled data from `{args.unlabeled_path}`...')
         with open(args.unlabeled_path) as f:
-            unlabeled_data = [replace_brackets(replace_quotes(line.strip().split())) for line in f]
+            unlabeled_data = [line.strip().split() for line in f]
 
         unlabeled_words = [word for sentence in unlabeled_data for word in sentence]
         words = ptb_words + unlabeled_words
@@ -31,7 +31,7 @@ def main(args):
 
     if args.lowercase:
         print('Using lowercased vocabulary.')
-        words = [word.lower() if word not in BRACKETS else word for word in words]  # do not lowercase brackets
+        words = [word.lower() if word not in BRACKETS else word for word in words]  # do not lowercase escaped brackets
 
     counts = Counter(words)
 

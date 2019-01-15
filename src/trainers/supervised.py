@@ -16,12 +16,11 @@ from crf.model import ChartParser, START, STOP
 from utils.vocabulary import Vocabulary, UNK
 from utils.trees import fromstring, DUMMY
 from utils.evalb import evalb
-from utils.text import replace_quotes, replace_brackets
 from utils.general import Timer, get_folders, write_args, ceil_div, move_to_final_folder
 
 
 class SupervisedTrainer:
-    """Supervised trainer for RNNG."""
+
     def __init__(
             self,
             model_type=None,
@@ -61,7 +60,7 @@ class SupervisedTrainer:
             fine_tune_embeddings=False,
             freeze_embeddings=False,
             print_every=1,
-            eval_every=-1,  # default is every epoch (-1)
+            eval_every_epochs=1,
             num_dev_samples=None,
             num_test_samples=None,
     ):
@@ -109,7 +108,7 @@ class SupervisedTrainer:
         self.freeze_embeddings = freeze_embeddings
         self.max_epochs = max_epochs
         self.max_time = max_time
-        self.eval_every = eval_every
+        self.eval_every_epochs = eval_every_epochs
         self.print_every = print_every
         self.num_dev_samples = num_dev_samples
         self.num_test_samples = num_test_samples
@@ -346,7 +345,8 @@ class SupervisedTrainer:
                 self.train_epoch()
 
                 # Check development scores
-                self.check_dev()
+                if epoch % self.eval_every_epochs == 0:
+                    self.check_dev()
 
                 # Anneal learning rate depending on development set f-score
                 self.anneal_lr()
@@ -442,11 +442,20 @@ class SupervisedTrainer:
         return batches
 
     def anneal_lr(self):
-        if self.current_dev_fscore < self.best_dev_fscore:  # if F1 has gotten worse
-            if self.current_epoch > (self.best_dev_epoch + self.lr_decay_patience):  # if we've waited long enough
-                lr = self.get_lr() / self.lr_decay
-                print(f'Annealing the learning rate from {self.get_lr():.1e} to {lr:.1e}.')
-                self.set_lr(lr)
+        # anneal based on perplexity
+        if self.model_type == 'gen-rnng':
+            if self.current_dev_perplexity < self.best_dev_perplexity:  # if perplexity has gotten worse
+                if self.current_epoch > (self.best_dev_perplexity_epoch + self.lr_decay_patience):  # if we've waited long enough
+                    lr = self.get_lr() / self.lr_decay
+                    print(f'Annealing the learning rate from {self.get_lr():.1e} to {lr:.1e}.')
+                    self.set_lr(lr)
+        # anneal based on fscore
+        else:
+            if self.current_dev_fscore < self.best_dev_fscore:  # if F1 has gotten worse
+                if self.current_epoch > (self.best_dev_epoch + self.lr_decay_patience):  # if we've waited long enough
+                    lr = self.get_lr() / self.lr_decay
+                    print(f'Annealing the learning rate from {self.get_lr():.1e} to {lr:.1e}.')
+                    self.set_lr(lr)
 
     def save_checkpoint(self):
         assert self.model is not None, 'no model built'
@@ -459,14 +468,23 @@ class SupervisedTrainer:
 
         with open(self.state_checkpoint_path, 'w') as f:
             state = {
-                'model-type': self.model_type,
+                'model': self.model_type,
                 'num-params': int(self.parser.num_params),
+
                 'num-epochs': self.current_epoch,
                 'num-updates': self.num_updates,
+                'elapsed': self.timer.format_elapsed(),
                 'current-lr': self.get_lr(),
+
+                'current-dev-fscore': self.current_dev_fscore,
                 'best-dev-fscore': self.best_dev_fscore,
                 'best-dev-epoch': self.best_dev_epoch,
                 'test-fscore': self.test_fscore,
+
+                'current-dev-perplexity': self.current_dev_perplexity,
+                'best-dev-perplexity': self.best_dev_perplexity,
+                'best-dev-perplexity-epoch': self.best_dev_perplexity_epoch,
+                'test-perplexity': self.test_perplexity
             }
             json.dump(state, f, indent=4)
 
@@ -510,7 +528,7 @@ class SupervisedTrainer:
 
         # Log score to tensorboard
         self.tensorboard_writer.add_scalar(
-            'dev/f-score', dev_fscore, self.num_updates)
+            'dev/f-score', dev_fscore, self.current_epoch)
 
         self.current_dev_fscore = dev_fscore
         if dev_fscore > self.best_dev_fscore:
@@ -536,9 +554,9 @@ class SupervisedTrainer:
 
         # Log score to tensorboard
         self.tensorboard_writer.add_scalar(
-            'dev/f-score', dev_fscore, self.num_updates)
+            'dev/f-score', dev_fscore, self.current_epoch)
         self.tensorboard_writer.add_scalar(
-            'dev/perplexity', dev_perplexity, self.num_updates)
+            'dev/perplexity', dev_perplexity, self.current_epoch)
 
         self.current_dev_fscore = dev_fscore
         self.dev_perplexity = dev_perplexity
@@ -566,7 +584,7 @@ class SupervisedTrainer:
             self.evalb_dir, self.test_pred_path, self.test_path, self.test_result_path)
 
         self.tensorboard_writer.add_scalar(
-            'test/f-score', test_fscore)
+            'test/f-score', test_fscore, self.current_epoch)
 
         self.test_fscore = test_fscore
 
@@ -593,9 +611,9 @@ class SupervisedTrainer:
 
         # Log score to tensorboard.
         self.tensorboard_writer.add_scalar(
-            'test/f-score', test_fscore)
+            'test/f-score', test_fscore, self.current_epoch)
         self.tensorboard_writer.add_scalar(
-            'test/perplexity', test_perplexity)
+            'test/perplexity', test_perplexity, self.current_epoch)
 
         self.test_fscore = test_fscore
         self.test_perplexity = test_perplexity
@@ -607,5 +625,11 @@ class SupervisedTrainer:
                 print(loss, file=f)
 
     def finalize_model_folder(self):
-        move_to_final_folder(
-            self.subdir, self.model_path_base, self.best_dev_fscore)
+        # the generative model is selected on perplexity
+        if self.model_type == 'gen-rnng':
+            move_to_final_folder(
+                self.subdir, self.model_path_base, self.best_dev_perplexity)
+        # the discriminative model is selected on fscore
+        else:
+            move_to_final_folder(
+                self.subdir, self.model_path_base, self.best_dev_fscore)

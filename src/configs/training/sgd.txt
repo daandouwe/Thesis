@@ -1,5 +1,5 @@
 --optimizer=sgd
 --lr=0.1
 --batch-size=10
---print-every=1
+--print-every=50
 --lr-decay-patience=5

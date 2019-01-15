@@ -17,7 +17,6 @@ from components.feedforward import Feedforward, Affine
 from utils.vocabulary import Vocabulary, UNK
 from utils.trees import fromstring, DUMMY
 from utils.evalb import evalb
-from utils.text import replace_quotes, replace_brackets
 from utils.general import Timer, get_folders, write_args, ceil_div, move_to_final_folder, blockgrad
 
 
@@ -32,7 +31,6 @@ class UnsupervisedTrainer:
             test_path=None,
             min_word_count=1,
             num_labels=30,
-            max_sent_len=40,
             use_argmax_baseline=False,
             use_mlp_baseline=False,
             clip_learning_signal=None,
@@ -147,11 +145,7 @@ class UnsupervisedTrainer:
 
         print(f'Loading unlabeled training data from `{self.train_path}`...')
         with open(self.train_path) as f:
-            train_data = [
-                replace_brackets(replace_quotes(line.strip().split()))
-                for line in f
-                if len(line.split()) < self.max_sent_len
-            ]
+            train_data = [line.strip().split() for line in f]
 
         # TODO: replace with unlabeled data.
         print(f'Loading development trees from `{self.dev_path}`...')

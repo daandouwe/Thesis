@@ -17,7 +17,6 @@ from components.feedforward import Feedforward, Affine
 from utils.vocabulary import Vocabulary, UNK
 from utils.trees import fromstring, DUMMY
 from utils.evalb import evalb
-from utils.text import replace_quotes, replace_brackets
 from utils.general import Timer, get_folders, write_args, ceil_div, move_to_final_folder, blockgrad
 
 
@@ -143,11 +142,7 @@ class WakeSleepTrainer:
 
         print(f'Loading unlabeled data from `{self.unlabeled_path}`...')
         with open(self.unlabeled_path) as f:
-            unlabeled_data = [
-                replace_brackets(replace_quotes(line.strip().split()))
-                for line in f
-                if len(line.split()) < self.max_unlabeled_sent_len
-            ]
+            unlabeled_data = [line.strip().split() for line in f]
 
         print("Constructing vocabularies...")
         words = [word for tree in train_treebank for word in tree.words()] + [UNK]
