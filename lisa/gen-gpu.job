@@ -5,9 +5,8 @@
 #SBATCH -o lisa/out/gen-gpu.out
 #SBATCH -t 5-00:00:00
 
-module load Python/3.6.3-foss-2017b
-
 # activate gpu environment
+source lisa/lisa-setup.sh
 source ${HOME}/envs/dynet-gpu/bin/activate
 
 # send an e-mail when the job starts
