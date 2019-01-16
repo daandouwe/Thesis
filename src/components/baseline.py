@@ -7,7 +7,7 @@ from utils.general import blockgrad
 class FeedforwardBaseline:
 
     def __init__(self, model, model_type, lstm_dim, hidden_dim=128):
-        assert model_type in ('rnng', 'crf'), model_type
+        assert model_type in ('disc', 'crf'), model_type
 
         self.model = model.add_subcollection('FeedforwardBaseline')
 
@@ -29,7 +29,7 @@ class FeedforwardBaseline:
         if self.model_type == 'crf':
             lstm_outputs = parser.lstm.transduce(embeddings)
 
-        elif self.model_type == 'rnng':
+        elif self.model_type == 'disc':
             lstm = parser.buffer_encoder.rnn_builder.initial_state()
             lstm_outputs = lstm.transduce(reversed(embeddings))  # in reverse! see class Buffer for why
 

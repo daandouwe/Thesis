@@ -120,13 +120,13 @@ class SupervisedTrainer:
 
         self.current_dev_fscore = -inf
         self.best_dev_fscore = -inf
-        self.best_dev_epoch = 0
         self.test_fscore = -inf
 
         self.current_dev_perplexity = -inf
         self.best_dev_perplexity = -inf
-        self.best_dev_perplexity_epoch = 0
         self.test_perplexity = -inf
+
+        self.best_dev_epoch = 0
 
     def build_paths(self):
         # Make output folder structure
@@ -194,6 +194,7 @@ class SupervisedTrainer:
             words = [word for word, count in vocab.items() for _ in range(count)]
         else:
             words = [word for tree in train_treebank for word in tree.words()]
+
         labels = [label for tree in train_treebank for label in tree.labels()]
 
         if self.model_type == 'crf':
@@ -442,20 +443,21 @@ class SupervisedTrainer:
         return batches
 
     def anneal_lr(self):
-        # anneal based on perplexity
         if self.model_type == 'gen-rnng':
-            if self.current_dev_perplexity < self.best_dev_perplexity:  # if perplexity has gotten worse
-                if self.current_epoch > (self.best_dev_perplexity_epoch + self.lr_decay_patience):  # if we've waited long enough
-                    lr = self.get_lr() / self.lr_decay
-                    print(f'Annealing the learning rate from {self.get_lr():.1e} to {lr:.1e}.')
-                    self.set_lr(lr)
-        # anneal based on fscore
+            # perplexity has increased
+            deteriorated = self.current_dev_perplexity > self.best_dev_perplexity
         else:
-            if self.current_dev_fscore < self.best_dev_fscore:  # if F1 has gotten worse
-                if self.current_epoch > (self.best_dev_epoch + self.lr_decay_patience):  # if we've waited long enough
-                    lr = self.get_lr() / self.lr_decay
-                    print(f'Annealing the learning rate from {self.get_lr():.1e} to {lr:.1e}.')
-                    self.set_lr(lr)
+            # fscore has decreased
+            deteriorated = self.current_dev_fscore < self.best_dev_fscore
+
+        # if results are deteriorating
+        if deteriorated:
+            # and if we've waited long enough
+            if self.current_epoch > (self.best_dev_epoch + self.lr_decay_patience):
+                # we anneal the learning rate
+                lr = self.get_lr() / self.lr_decay
+                print(f'Annealing the learning rate from {self.get_lr():.1e} to {lr:.1e}.')
+                self.set_lr(lr)
 
     def save_checkpoint(self):
         assert self.model is not None, 'no model built'
@@ -476,14 +478,14 @@ class SupervisedTrainer:
                 'elapsed': self.timer.format_elapsed(),
                 'current-lr': self.get_lr(),
 
+                'best-dev-epoch': self.best_dev_epoch,
+
                 'current-dev-fscore': self.current_dev_fscore,
                 'best-dev-fscore': self.best_dev_fscore,
-                'best-dev-epoch': self.best_dev_epoch,
                 'test-fscore': self.test_fscore,
 
                 'current-dev-perplexity': self.current_dev_perplexity,
                 'best-dev-perplexity': self.best_dev_perplexity,
-                'best-dev-perplexity-epoch': self.best_dev_perplexity_epoch,
                 'test-perplexity': self.test_perplexity
             }
             json.dump(state, f, indent=4)
@@ -531,6 +533,7 @@ class SupervisedTrainer:
             'dev/f-score', dev_fscore, self.current_epoch)
 
         self.current_dev_fscore = dev_fscore
+
         if dev_fscore > self.best_dev_fscore:
             print(f'Saving new best model to `{self.model_checkpoint_path}`...')
             self.best_dev_epoch = self.current_epoch
@@ -559,12 +562,17 @@ class SupervisedTrainer:
             'dev/perplexity', dev_perplexity, self.current_epoch)
 
         self.current_dev_fscore = dev_fscore
-        self.dev_perplexity = dev_perplexity
+        self.current_dev_perplexity = dev_perplexity
 
+        # keep track of best fscore
         if dev_fscore > self.best_dev_fscore:
+            self.best_dev_fscore = dev_fscore
+
+        # but model selection is based on perplexity
+        if dev_perplexity < self.best_dev_perplexity:
             print(f'Saving new best model to `{self.model_checkpoint_path}`...')
             self.best_dev_epoch = self.current_epoch
-            self.best_dev_fscore = dev_fscore
+            self.best_dev_perplexity = dev_perplexity
             self.save_checkpoint()
 
     def check_test_disc(self):
@@ -625,11 +633,6 @@ class SupervisedTrainer:
                 print(loss, file=f)
 
     def finalize_model_folder(self):
-        # the generative model is selected on perplexity
-        if self.model_type == 'gen-rnng':
-            move_to_final_folder(
-                self.subdir, self.model_path_base, self.best_dev_perplexity)
-        # the discriminative model is selected on fscore
-        else:
-            move_to_final_folder(
-                self.subdir, self.model_path_base, self.best_dev_fscore)
+        score = self.best_dev_perplexity if self.model_type == 'gen-rnng' else self.best_dev_fscore
+        move_to_final_folder(
+            self.subdir, self.model_path_base, score)

@@ -51,7 +51,7 @@ def main():
                         help='lowercase vocab')
 
     model = parser.add_argument_group('Model (shared)')
-    model.add_argument('--model-type', choices=['disc-rnng', 'gen-rnng', 'crf', 'semisup-crf', 'semisup-rnng', 'rnn-lm'],
+    model.add_argument('--model-type', choices=['disc-rnng', 'gen-rnng', 'crf', 'semisup-crf', 'semisup-disc', 'fully-unsup-disc', 'rnn-lm'],
                         help='type of model', default='disc-rnng')
     model.add_argument('--model-path-base', default='disc-rnng',
                         help='path base to use for saving models')

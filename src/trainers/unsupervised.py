@@ -13,33 +13,37 @@ from rnng.parser.actions import SHIFT, REDUCE, NT, GEN
 from rnng.model import DiscRNNG, GenRNNG
 from rnng.decoder import GenerativeDecoder
 from crf.model import ChartParser, START, STOP
-from components.feedforward import Feedforward, Affine
+from components.baseline import FeedforwardBaseline
 from utils.vocabulary import Vocabulary, UNK
 from utils.trees import fromstring, DUMMY
 from utils.evalb import evalb
 from utils.general import Timer, get_folders, write_args, ceil_div, move_to_final_folder, blockgrad
 
 
-class UnsupervisedTrainer:
+class FullyUnsupervisedTrainer:
 
     def __init__(
             self,
+            model_type=None,
+            model_path_base=None,
             args=None,
             evalb_dir=None,
+            unlabeled_path=None,
             train_path=None,
             dev_path=None,
             test_path=None,
-            min_word_count=1,
+            vocab_path=None,
             num_labels=30,
             use_argmax_baseline=False,
             use_mlp_baseline=False,
             clip_learning_signal=None,
             max_epochs=inf,
             max_time=inf,
-            num_samples=1,
+            num_samples=3,
             alpha=None,
             lr=None,
             batch_size=1,
+            optimizer_type=None,
             weight_decay=None,
             lr_decay=None,
             lr_decay_patience=None,
@@ -48,19 +52,29 @@ class UnsupervisedTrainer:
             glove_dir=None,
             print_every=1,
             eval_every=-1,
-            eval_at_start=False
+            eval_at_start=False,
+            num_dev_samples=None,
+            num_test_samples=None
+
     ):
+        assert model_type in ('fully-unsup-disc', 'fully-unsup-crf'), model_type
+
+        posterior_type = model_type.split('-')[-1]
+
         self.args = args
 
         # Data
+        self.evalb_dir = evalb_dir
         self.train_path = train_path
         self.dev_path = dev_path
         self.test_path = test_path
-        self.min_word_count = min_word_count
-        self.max_sent_len = max_sent_len
+        self.vocab_path = vocab_path
         self.num_labels = num_labels
 
-        self.evalb_dir = evalb_dir
+        # Model paths
+        self.model = None  # will be a dynet ParameterCollection
+        self.model_path_base = model_path_base
+        self.posterior_type = posterior_type
 
         # Baselines
         self.use_argmax_baseline = use_argmax_baseline
@@ -74,6 +88,7 @@ class UnsupervisedTrainer:
         self.alpha = alpha
         self.lr = lr
         self.batch_size = batch_size
+        self.optimizer_type = optimizer_type
         self.weight_decay = weight_decay
         self.lr_decay = lr_decay
         self.lr_decay_patience = lr_decay_patience
@@ -83,6 +98,8 @@ class UnsupervisedTrainer:
         self.print_every = print_every
         self.eval_every = eval_every
         self.eval_at_start = eval_at_start
+        self.num_dev_samples = num_dev_samples
+        self.num_test_samples = num_test_samples
 
         self.num_updates = 0
         self.learning_signals = []
@@ -104,10 +121,13 @@ class UnsupervisedTrainer:
 
     def build_paths(self):
         # Make output folder structure
-        subdir, logdir, checkdir, outdir = get_folders(self.args)
+        subdir, logdir, checkdir, outdir, vocabdir = get_folders(self.args)
+
         os.makedirs(logdir, exist_ok=True)
         os.makedirs(checkdir, exist_ok=True)
         os.makedirs(outdir, exist_ok=True)
+        os.makedirs(vocabdir, exist_ok=True)
+
         print(f'Output subdirectory: `{subdir}`.')
         print(f'Saving logs to `{logdir}`.')
         print(f'Saving predictions to `{outdir}`.')
@@ -116,14 +136,19 @@ class UnsupervisedTrainer:
         # Save arguments
         write_args(self.args, logdir)
 
-        # Output paths
+        self.subdir = subdir
+
+        # Model paths
         self.post_model_checkpoint_path = os.path.join(checkdir, 'post-model')
         self.joint_model_checkpoint_path = os.path.join(checkdir, 'joint-model')
         self.post_state_checkpoint_path = os.path.join(checkdir, 'post-state.json')
         self.joint_state_checkpoint_path = os.path.join(checkdir, 'joint-state.json')
+
         self.word_vocab_path = os.path.join(checkdir, 'word-vocab.json')
-        self.nt_vocab_path = os.path.join(checkdir, 'nt-vocab.json')
+        self.label_vocab_path = os.path.join(checkdir, 'nt-vocab.json')
         self.action_vocab_path = os.path.join(checkdir, 'action-vocab.json')
+
+        # Ouput paths
         self.loss_path = os.path.join(logdir, 'loss.csv')
         self.tensorboard_writer = SummaryWriter(logdir)
 
@@ -145,9 +170,8 @@ class UnsupervisedTrainer:
 
         print(f'Loading unlabeled training data from `{self.train_path}`...')
         with open(self.train_path) as f:
-            train_data = [line.strip().split() for line in f]
+            train_data = [fromstring(line.strip()).words() for line in f]
 
-        # TODO: replace with unlabeled data.
         print(f'Loading development trees from `{self.dev_path}`...')
         with open(self.dev_path) as f:
             dev_treebank = [fromstring(line.strip()) for line in f]
@@ -157,29 +181,39 @@ class UnsupervisedTrainer:
             test_treebank = [fromstring(line.strip()) for line in f]
 
         print("Constructing vocabularies...")
-        words = [word for sentence in train_data for word in sentence]
-        counts = Counter(words)
-        words = [word for word in words if counts[word] > self.min_word_count] + [UNK]
+        if self.vocab_path is not None:
+            print(f'Using word vocabulary specified in `{self.vocab_path}`')
+            with open(self.vocab_path) as f:
+                vocab = json.load(f)
+            words = [word for word, count in vocab.items() for _ in range(count)]
+        else:
+            words = [word for tree in train_treebank for word in tree.words()]
 
-        nonterminals = [str(i) for i in range(self.num_labels)]
+        labels = [str(i) for i in range(self.num_labels)]
+
+        if self.posterior_type == 'crf':
+            words = [UNK, START, STOP] + words
+            labels = [(DUMMY,)] + labels
+        else:
+            words = [UNK] + words
 
         word_vocab = Vocabulary.fromlist(words, unk_value=UNK)
-        nt_vocab = Vocabulary.fromlist(nonterminals)
+        label_vocab = Vocabulary.fromlist(labels)
 
         # Order is very important, see DiscParser class
-        disc_actions = [SHIFT, REDUCE] + [NT(label) for label in nt_vocab]
+        disc_actions = [SHIFT, REDUCE] + [NT(label) for label in label_vocab]
         disc_action_vocab = Vocabulary()
         for action in disc_actions:
             disc_action_vocab.add(action)
 
         # Order is very important, see GenParser class
         gen_action_vocab = Vocabulary()
-        gen_actions = [REDUCE] + [NT(label) for label in nt_vocab] + [GEN(word) for word in word_vocab]
+        gen_actions = [REDUCE] + [NT(label) for label in label_vocab] + [GEN(word) for word in word_vocab]
         for action in gen_actions:
             gen_action_vocab.add(action)
 
         self.word_vocab = word_vocab
-        self.nt_vocab = nt_vocab
+        self.label_vocab = label_vocab
         self.gen_action_vocab = gen_action_vocab
         self.disc_action_vocab = disc_action_vocab
 
@@ -192,7 +226,7 @@ class UnsupervisedTrainer:
 
         print('\n'.join((
             'Corpus statistics:',
-            f'Vocab: {word_vocab.size:,} words, {nt_vocab.size:,} nonterminals, {gen_action_vocab.size:,} actions',
+            f'Vocab: {word_vocab.size:,} words, {label_vocab.size:,} nonterminals, {gen_action_vocab.size:,} actions',
             f'Unlabeled: {len(train_data):,} sentences')))
 
     def build_models(self):
@@ -204,7 +238,7 @@ class UnsupervisedTrainer:
         self.post_model = DiscRNNG(
             model=self.model,
             word_vocab=self.word_vocab,
-            nt_vocab=self.nt_vocab,
+            nt_vocab=self.label_vocab,
             action_vocab=self.disc_action_vocab,
             word_emb_dim=100,
             nt_emb_dim=100,
@@ -222,7 +256,7 @@ class UnsupervisedTrainer:
         self.joint_model = GenRNNG(
             model=self.model,
             word_vocab=self.word_vocab,
-            nt_vocab=self.nt_vocab,
+            nt_vocab=self.label_vocab,
             action_vocab=self.gen_action_vocab,
             word_emb_dim=100,
             nt_emb_dim=100,
@@ -241,26 +275,31 @@ class UnsupervisedTrainer:
     def build_optimizer(self):
         assert self.model is not None, 'build model first'
 
-        if self.args.optimizer == 'sgd':
+        if self.optimizer_type == 'sgd':
             self.optimizer = dy.SimpleSGDTrainer(self.model, learning_rate=self.lr)
-            self.baseline_optimizer = dy.SimpleSGDTrainer(self.baseline_model, learning_rate=10*self.lr)
+            self.baseline_optimizer = dy.SimpleSGDTrainer(self.baseline_parameters, learning_rate=10*self.lr)
 
-        elif self.args.optimizer == 'adam':
+        elif self.optimizer_type == 'adam':
             self.optimizer = dy.AdamTrainer(self.model, alpha=self.lr)
-            self.baseline_optimizer = dy.AdamTrainer(self.baseline_model, alpha=10*self.lr)
+            self.baseline_optimizer = dy.AdamTrainer(self.baseline_parameters, alpha=10*self.lr)
 
         self.optimizer.set_clip_threshold(self.max_grad_norm)
         self.baseline_optimizer.set_clip_threshold(self.max_grad_norm)
         self.model.set_weight_decay(self.weight_decay)
 
-    def build_baseline_parameters(self):
-        self.baseline_model = dy.ParameterCollection()
+    def build_baseline_model(self):
+        self.baseline_parameters = dy.ParameterCollection()
 
-        emb_dim = self.post_model.buffer_encoder.hidden_size
-        self.gating = Feedforward(
-            self.baseline_model, emb_dim, [128], 1)
-        self.feedforward = Feedforward(
-            self.baseline_model, emb_dim, [128], 1)
+        if self.use_mlp_baseline:
+            print('Building feedforward baseline model...')
+
+            if self.posterior_type == 'crf':
+                lstm_dim = 2 * self.post_model.lstm_dim
+            elif self.posterior_type == 'disc':
+                lstm_dim = self.post_model.buffer_encoder.hidden_size
+
+            self.baseline_model = FeedforwardBaseline(
+                self.baseline_parameters, self.posterior_type, lstm_dim)
 
     def batchify(self, data):
         batches = [data[i*self.batch_size:(i+1)*self.batch_size]
@@ -271,7 +310,7 @@ class UnsupervisedTrainer:
         self.build_paths()
         self.build_corpus()
         self.build_models()
-        self.build_baseline_parameters()
+        self.build_baseline_model()
         self.build_optimizer()
 
         self.num_updates = 0
@@ -284,7 +323,7 @@ class UnsupervisedTrainer:
 
             print(89*'=')
             print('| Start | dev F1 {:4.2f} | dev perplexity {:4.2f}'.format(
-                self.current_dev_fscore, self.current_dev_perplexity))
+                self.current_dev_fscore, self.dev_perplexity))
             print(89*'=')
 
         try:
@@ -368,12 +407,14 @@ class UnsupervisedTrainer:
                 self.timer.new_epoch()
                 print(89*'=')
                 print('| dev F1 {:4.2f} | dev perplexity {:4.2f}'.format(
-                    self.current_dev_fscore, self.current_dev_perplexity))
+                    self.current_dev_fscore, self.dev_perplexity))
                 print(89*'=')
 
     def unsupervised_step(self, batch):
+        # Keep track of losses
         losses = []
         baseline_losses = []
+
         # For various types of logging
         histogram = dict(
             signal=[],
@@ -385,6 +426,8 @@ class UnsupervisedTrainer:
             unique=[],
             scale=[]
         )
+
+        # TODO: make compatible with CRF parser's entropy computation
 
         for words in batch:
             # Get samples with their \mean_y [log q(y|x)] for samples y
@@ -440,7 +483,11 @@ class UnsupervisedTrainer:
         return loss, baseline_loss
 
     def sample(self, words):
-        samples = [self.post_model.sample(words, self.alpha) for _ in range(self.num_samples)]
+        if self.posterior_type == 'crf':
+            # repeated sampling is cheaper this way
+            samples = self.post_model.sample(words, self.num_samples)
+        else:
+            samples = [self.post_model.sample(words, self.alpha) for _ in range(self.num_samples)]
         trees, nlls = zip(*samples)
         logprob = dy.esum([-nll for nll in nlls]) / len(nlls)
         return trees, logprob
@@ -463,6 +510,9 @@ class UnsupervisedTrainer:
 
     def argmax_baseline(self, words):
         """Parameter-free baseline based on argmax decoding."""
+
+        # TODO: make compatible with CRF parser's entropy computation
+
         tree, post_nll = self.post_model.parse(words)
         post_logprob = -post_nll
         joint_logprob = -self.joint_model.forward(tree)
@@ -470,32 +520,7 @@ class UnsupervisedTrainer:
 
     def mlp_baseline(self, words):
         """Baseline parametrized by a feedfoward network."""
-        # Get the word embeddings from the posterior model
-        embeddings = [
-            self.post_model.word_embedding(word_id)
-            for word_id in self.post_model.word_vocab.indices(words)]
-        # Obtain an rnn from the rnn builder of the posterior model's buffer encoder
-        rnn = self.post_model.buffer_encoder.rnn_builder.initial_state()
-        # Use this rnn to compute rnn embeddings (In reverse! See class `Buffer`.)
-        encodings = rnn.transduce(reversed(embeddings))
-
-        # Detach the embeddings from the computation graph
-        encodings = [dy.inputTensor(blockgrad(encoding)) for encoding in encodings]
-
-        # Compute gated sum to give one sentence encoding
-        gates = [dy.logistic(self.gating(encoding)) for encoding in encodings]
-        encoding = dy.esum([
-            dy.cmult(gate, encoding)
-            for gate, encoding in zip(gates, encodings)])
-
-        # Compute scalar baseline-value using sentence encoding
-        baseline = self.feedforward(encoding)
-
-        # For fun
-        # print('>', ' '.join('{} ({})'.format(
-            # word, round(gate.value(), 1)) for word, gate in zip(words, reversed(gates))))
-
-        return baseline
+        return self.baseline_model.forward(words, self.post_model)
 
     def optimal_baseline_scale(self, n=500):
         """Estimate optimal scaling for baseline."""
@@ -615,7 +640,6 @@ class UnsupervisedTrainer:
         for tree in tqdm(treebank):
             dy.renew_cg()
             tree, _ = self.post_model.parse(tree.words())
-            print(tree.linearize(with_tag=False))
             trees.append(tree.linearize())
         self.post_model.train()
         return trees
@@ -627,21 +651,24 @@ class UnsupervisedTrainer:
         trees = self.parse_post_model(self.dev_treebank)
         with open(self.post_dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
+
         post_dev_fscore = evalb(
             self.evalb_dir, self.post_dev_pred_path, self.dev_path, self.post_dev_result_path)
         print('Post fscore: ', post_dev_fscore)
 
         print('Predicting with joint model...')
         decoder = GenerativeDecoder(
-            model=self.joint_model, proposal=self.post_model)
+            model=self.joint_model, proposal=self.post_model, num_samples=self.num_dev_samples)
 
         print('Sampling proposals with posterior model...')
+        dev_sentences = [tree.words() for tree in self.dev_treebank]
         decoder.generate_proposal_samples(
-            examples=self.dev_treebank, path=self.dev_proposals_path)
+            sentences=dev_sentences, outpath=self.dev_proposals_path)
 
         print('Scoring proposals with joint model...')
         trees, dev_perplexity = decoder.predict_from_proposal_samples(
-            path=self.dev_proposals_path)
+            inpath=self.dev_proposals_path)
+
         with open(self.joint_dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
 
@@ -667,21 +694,24 @@ class UnsupervisedTrainer:
         trees = self.parse_post_model(self.test_treebank)
         with open(self.post_test_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
+
         post_test_fscore = evalb(
             self.evalb_dir, self.post_test_pred_path, self.test_path, self.post_test_result_path)
         print('Post fscore: ', post_test_fscore)
 
         print('Predicting with joint model...')
         decoder = GenerativeDecoder(
-            model=self.joint_model, proposal=self.post_model)
+            model=self.joint_model, proposal=self.post_model, num_samples=self.num_test_samples)
 
         print('Sampling proposals with posterior model...')
+        test_sentences = [tree.words() for tree in self.test_treebank]
         decoder.generate_proposal_samples(
-            examples=self.test_treebank, path=self.test_proposals_path)
+            sentences=self.test_treebank, outpath=self.test_proposals_path)
 
         print('Scoring proposals with joint model...')
         trees, test_perplexity = decoder.predict_from_proposal_samples(
-            path=self.test_proposals_path)
+            inpath=self.test_proposals_path)
+
         with open(self.joint_test_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
 
@@ -705,23 +735,47 @@ class UnsupervisedTrainer:
         dy.save(self.joint_model_checkpoint_path, [self.joint_model])
 
         self.word_vocab.save(self.word_vocab_path)
-        self.nt_vocab.save(self.nt_vocab_path)
+        self.label_vocab.save(self.label_vocab_path)
         self.disc_action_vocab.save(self.action_vocab_path)
 
         with open(self.joint_state_checkpoint_path, 'w') as f:
             state = {
-                'rnng-type': 'gen',
-                'epochs': self.current_epoch,
+                'model': 'gen-rnng',
+
+                'num-epochs': self.current_epoch,
                 'num-updates': self.num_updates,
-                'dev-perplexity': self.current_dev_perplexity,
+                'elapsed': self.timer.format_elapsed(),
+
+                'post-dev-fscore': self.post_dev_fscore,
+                'post-test-fscore': self.post_test_fscore,
+
+                'joint_dev_fscore': self.joint_dev_fscore,
+                'joint_test_fscore': self.joint_test_fscore,
+
+                'dev-perplexity': self.dev_perplexity,
+                'test-perplexity': self.test_perplexity,
             }
             json.dump(state, f, indent=4)
 
         with open(self.post_state_checkpoint_path, 'w') as f:
             state = {
-                'rnng-type': 'disc',
-                'epochs': self.current_epoch,
+                'model': self.posterior_type,
+
+                'num-epochs': self.current_epoch,
                 'num-updates': self.num_updates,
-                'dev-fscore': self.current_dev_fscore,
+                'elapsed': self.timer.format_elapsed(),
+
+                'post-dev-fscore': self.post_dev_fscore,
+                'post-test-fscore': self.post_test_fscore,
+
+                'joint_dev_fscore': self.joint_dev_fscore,
+                'joint_test_fscore': self.joint_test_fscore,
+
+                'dev-perplexity': self.dev_perplexity,
+                'test-perplexity': self.test_perplexity,
             }
             json.dump(state, f, indent=4)
+
+    def finalize_model_folder(self):
+        move_to_final_folder(
+            self.subdir, self.model_path_base, self.dev_perplexity)

@@ -13,7 +13,6 @@ from rnng.parser.actions import SHIFT, REDUCE, NT, GEN
 from rnng.model import DiscRNNG, GenRNNG
 from rnng.decoder import GenerativeDecoder
 from crf.model import ChartParser
-from components.feedforward import Feedforward, Affine
 from components.baseline import FeedforwardBaseline
 from utils.trees import fromstring
 from utils.evalb import evalb
@@ -37,7 +36,7 @@ class SemiSupervisedTrainer:
             lmbda=1.0,
             use_argmax_baseline=False,
             use_mlp_baseline=False,
-            clip_learning_signal=-20,
+            clip_learning_signal=None,
             max_epochs=inf,
             max_time=inf,
             num_samples=3,
@@ -56,7 +55,9 @@ class SemiSupervisedTrainer:
             num_dev_samples=None,
             num_test_samples=None
     ):
-        assert model_type in ('semisup-rnng', 'semisup-crf'), model_type
+        assert model_type in ('semisup-disc', 'semisup-crf'), model_type
+
+        posterior_type = model_type.split('-')[-1]
 
         self.args = args
 
@@ -72,7 +73,7 @@ class SemiSupervisedTrainer:
         self.joint_model_path = joint_model_path
         self.post_model_path = post_model_path
         self.model_path_base = model_path_base
-        self.posterior_type = model_type.split('-')[1]
+        self.posterior_type = posterior_type
 
         # Baselines
         self.lmbda = lmbda  # scaling coefficient for unsupervised objective
@@ -218,7 +219,7 @@ class SemiSupervisedTrainer:
         state_path = os.path.join(self.post_model_path, 'state.json')
 
         [self.post_model] = dy.load(model_path, self.model)
-        if self.posterior_type == 'rnng':
+        if self.posterior_type == 'disc':
             assert isinstance(self.post_model, DiscRNNG), type(self.post_model)
         elif self.posterior_type == 'crf':
             assert isinstance(self.post_model, ChartParser), type(self.post_model)
@@ -252,7 +253,7 @@ class SemiSupervisedTrainer:
 
             if self.posterior_type == 'crf':
                 lstm_dim = 2 * self.post_model.lstm_dim
-            elif self.posterior_type == 'rnng':
+            elif self.posterior_type == 'disc':
                 lstm_dim = self.post_model.buffer_encoder.hidden_size
 
             self.baseline_model = FeedforwardBaseline(
@@ -669,7 +670,7 @@ class SemiSupervisedTrainer:
         print('Sampling proposals with posterior model...')
         test_sentences = [tree.words() for tree in self.test_treebank]
         decoder.generate_proposal_samples(
-            test_sentences=self.test_treebank, outpath=self.test_proposals_path)
+            sentences=test_sentences, outpath=self.test_proposals_path)
 
         print('Scoring proposals with joint model...')
         trees, test_perplexity = decoder.predict_from_proposal_samples(
@@ -706,9 +707,11 @@ class SemiSupervisedTrainer:
                 'num-updates': self.num_updates,
                 'elapsed': self.timer.format_elapsed(),
 
+                'current-dev-fscore': self.current_dev_fscore,
                 'best-dev-fscore': self.current_dev_fscore,
                 'test-fscore': self.test_fscore,
 
+                'current-dev-perplexity': self.current_dev_perplexity,
                 'best-dev-perplexity': self.current_dev_perplexity,
                 'test-perplexity': self.test_perplexity,
             }

@@ -5,7 +5,7 @@ import numpy as np
 
 from trainers.supervised import SupervisedTrainer
 from trainers.semisupervised import SemiSupervisedTrainer
-from trainers.unsupervised import UnsupervisedTrainer
+from trainers.unsupervised import FullyUnsupervisedTrainer
 from trainers.wakesleep import WakeSleepTrainer
 from trainers.lm import LanguageModelTrainer
 
@@ -57,7 +57,7 @@ def main(args):
             num_dev_samples=args.num_dev_samples,
             num_test_samples=args.num_test_samples,
         )
-    elif args.model_type in ('semisup-rnng', 'semisup-crf'):
+    elif args.model_type in ('semisup-disc', 'semisup-crf'):
         trainer = SemiSupervisedTrainer(
             args=args,
             model_type=args.model_type,
@@ -90,21 +90,24 @@ def main(args):
             num_dev_samples=args.num_dev_samples,
             num_test_samples=args.num_test_samples,
         )
-    elif args.model_type in ('unsup-rnng', 'unsup-crf'):
-        trainer = UnsupervisedTrainer(
+    elif args.model_type in ('fully-unsup-disc', 'fully-unsup-crf'):
+        trainer = FullyUnsupervisedTrainer(
             args=args,
+            model_type=args.model_type,
+            model_path_base=args.model_path_base,
             evalb_dir=args.evalb_dir,
-            train_path=args.unlabeled_path,
+            train_path=args.train_path,
             dev_path=args.dev_path,
             test_path=args.test_path,
-            min_word_count=5,
-            max_sent_len=40,
-            num_labels=30,
+            vocab_path=args.vocab_path,
+            num_labels=10,
             use_argmax_baseline=args.use_argmax_baseline,
             use_mlp_baseline=args.use_mlp_baseline,
             clip_learning_signal=None,
             num_samples=args.num_samples,
             alpha=args.alpha,
+            batch_size=args.batch_size,
+            optimizer_type=args.optimizer,
             lr=args.lr,
             lr_decay=args.lr_decay,
             lr_decay_patience=args.lr_decay_patience,
@@ -115,9 +118,10 @@ def main(args):
             print_every=args.print_every,
             eval_every=args.eval_every,
             eval_at_start=args.eval_at_start,
-            batch_size=args.batch_size,
             max_epochs=args.max_epochs,
             max_time=args.max_time,
+            num_dev_samples=args.num_dev_samples,
+            num_test_samples=args.num_test_samples,
         )
     elif args.model_type == 'rnn-lm':
         trainer = LanguageModelTrainer(
@@ -149,7 +153,9 @@ def main(args):
             print_every=args.print_every,
             eval_every=args.eval_every,
         )
-
+    else:
+        raise ValueError(f'Invalid model {args.model_type}.')
+        
     # Train the model
     trainer.train()
 
