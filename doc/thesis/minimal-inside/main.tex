@@ -1,0 +1,167 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts,latexsym,dsfont,xspace}
+\usepackage{physics,nicefrac}
+\usepackage{natbib}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\definecolor{darkblue}{rgb}{0, 0, 0.5}
+\hypersetup{colorlinks=true,citecolor=darkblue, linkcolor=darkblue, urlcolor=darkblue}
+\usepackage{microtype}      % microtypography
+\usepackage{pgf}
+\usepackage{apalike}
+\setcounter{tocdepth}{3}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{paralist}
+\usepackage{tikz}
+\usepackage{subcaption}
+\usetikzlibrary{bayesnet}
+\usepackage{comment}
+
+% \graphicspath{ {./images/} }
+
+\title{Inside recursion for minimal span-based parser}
+
+\author{Daan van Stigt}
+
+\begin{document}
+\maketitle
+
+\section{Semiring formulation}
+So yeah, the highlights are: an edge connects three nodes, a parent and two \textsc{children}, each node is a labelled \textsc{span}; you need to identify the scoring function for an edge, let’s call it $w(e)$,  in this case we have
+\begin{align}
+    w(e) = f(\textsc{head}(e)) \bigotimes_{c \in \textsc{children}(e)} g(\textsc{span}(c))
+\end{align}
+where $f$ and $g$ are parametric functions; then you can compute the Inside recursion for a node v
+\begin{align}
+    I(v) = \bigoplus_{e \in BS(v)} w(e) \otimes \bigotimes_{c \in \textsc{children}(e)} I(c)
+\end{align}
+where I’m using $BS(v)$ to denote the set of edges incoming to $v$; note that BS here basically enumerates the different ways to segment the string under $(i,j)$ into two adjacent parts and the different labels of each child \textsc{span} (let’s call these $a$ and $b$, each an element in the labelset $L$), thus we can write
+\begin{align}
+I(v=[i,j,l]) = \bigoplus_{ \substack{ e=[i,j,l,k,a,b]: \\ a \in L, \\ b \in L, \\ k \in \{i+1,...,j-1\} } } w(e) \otimes I([i,k,a]) \otimes I([k+1,j,b])
+\end{align}
+Now the key is to realise that $w(e)$ factorises and therefore we can rewrite this as
+\begin{align}
+    I(v=[i,j,l]) = f(i,j,l) &\otimes \bigoplus_{k=i+1}^{j-1} g(i,k) \otimes g(k+1,j) \\
+        &\otimes \bigoplus_{a \in L}  I([i,k,a]) \\
+        &\otimes \bigoplus_{b\in L} I([k+1,j,b])
+\end{align}
+and this finally motivates having an inside table for the \textsc{span}s (with labels summed out), let’s call that
+\begin{align}
+    S(i,j) = \bigoplus_{l \in L} I(i,j,l)
+\end{align}
+and then we have the result
+\begin{align}
+\label{eq:inside-semiring}
+    I(i,j,l) = f(i,j,l)\otimes \bigoplus_{k=i+1}^{j-1} g(i,k)\otimes g(k+1,j) \otimes S(i,k) \otimes S(k+1,j).
+\end{align}
+
+
+\section{Alternative formulation}
+
+In this derivation we follow Michael Collins notes on the Inside-Outside Algorithm.\footnote{\url{http://www.cs.columbia.edu/~mcollins/io.pdf}}
+
+Let a sentence be $x_1,\dots,x_n$, where each $x_i$
+is a word. We are given a CFG $(N, \Sigma, R, S)$ in Chomsky normal
+form. Let $\psi$ be a function that maps any rule production $r \in R$ of the form $\langle A \to B \;C, i, k, j \rangle$ or $\langle A, i, i+1 \rangle$ to a value $\psi(r) \geq 0$. Let a tree $T$ be a set of such rules $r$ with the only constraint that these rules make up a tree.
+
+Following the minimal span parser we define $\psi$ as
+\begin{align}
+\label{eq:rule-score}
+    \log\psi(A \to B \;C, i, k, j) &\triangleq s_{label}(i, j, A) + s_{span}(i, j) \\
+    &\text{and} \\
+    \log\psi(A, i, i+1) &\triangleq s_{label}(i, i+1, A) + s_{span}(i, i+1),
+\end{align}
+and thus the potential of a tree as
+\begin{align}
+\label{eq:tree-score}
+    \log\Psi(T) &= \sum_{r \in T} \log\psi(r) \\
+        &= \sum_{\langle A, i, j \rangle \in T} s_{label}(i, j, A) + s_{span}(i, j), \\
+\end{align}
+Note that the potential function as defined in \ref{eq:rule-score} disregards most of the information in a binary rule. In particular we see that $B$, $C$ and $k$, the labels and split-point of the children, are discarded.
+
+Now note that equation \label{eq:tree-score} corresponds exactly to the second formula in section 3 of the minimal span-based parser paper
+\begin{align}
+s_{tree}(T) = \sum_{(\ell(i,j))\in T}[s_{label}(i, j, \ell) + s_{span}(i, j)] .
+\end{align}
+which is how I derived that \ref{eq:rule-score} is the correct formula for the rule score.
+
+We obtain our CRF objective when we normalize this score globally
+\begin{align}
+\label{eq:crf-objective}
+    P(T) &= \frac{\prod_{r \in T} \psi(r)}{\sum_{T' \in \mathcal{T}} \prod_{r' \in T'} \psi(r')} \\
+\end{align}
+or equivalently
+\begin{align}
+\label{eq:logcrf-objective}
+    \log P(T) &= \sum_{r \in T} \log \psi(r) - \log \sum_{T \in \mathcal{T}} \prod_{r \in T} \psi(r) \\
+\end{align}
+
+From the aforementioned notes we get the following general result for the inside value $\alpha$. For all $A \in N$, for all $0 \leq i < n$
+\begin{align}
+    \label{eq:collins-inside}
+    \alpha(A,i,i+1) = \psi(A, i, i+1)
+\end{align}
+and for all $(i, j)$ such that $1 \leq i < j \leq n$:
+\begin{align}
+    \label{eq:collins-inside}
+    \alpha(A,i,j) = \sum_{A \to B C} \sum_{k=i+1}^{j-1} \psi(A \to B \;C, i, k, j) \cdot \alpha(B,i,k) \cdot \alpha(C,k,j)
+\end{align}
+% \begin{align}
+% \label{eq:rule-score}
+%     \log\psi(A \to B \;C, i, k, j) \triangleq s_{label}(i, j, A) + s_{span}(i, k) + s_{span}(k, j),
+% \end{align}
+Note that we are considering a CFG in which the rule set is complete, i.e.
+\begin{align}
+    \langle A \to B \;C \rangle \in R \text{ for each } (A, B, C) \in N^3,
+\end{align}
+and recall that the labels $B$ and $C$ do not appear in the scoring functions in \ref{eq:rule-score}. These facts will allow us to simplify the expression in formula \ref{eq:collins-inside} as
+\begin{subequations}
+\begin{align}
+    \alpha(A,i,j) &= \sum_{B \in N} \sum_{C \in N} \sum_{k=i+1}^{j-1} \tilde{s}_{label}(i, j, A) \cdot \tilde{s}_{span}(i, j) \alpha(B,i,k) \cdot \alpha(C,k,j) \\
+        &= \tilde{s}_{label}(i, j, A) \cdot \tilde{s}_{span}(i, j) \sum_{k=i+1}^{j-1} \sum_{B \in N} \alpha(B,i,k) \cdot \sum_{C \in N} \alpha(C,k,j) \\
+        &= \tilde{s}_{label}(i, j, A) \cdot \tilde{s}_{span}(i, j) \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \label{eq:final-inside}
+\end{align}
+\end{subequations}
+where we've introduced a number of notational abbreviations
+\begin{align}
+    \tilde{s}_{label}(i, j, A) &= \exp( s_{label}(i, j, A) ) \\
+    \tilde{s}_{span}(i, j) &= \exp( s_{span}(i, j) ) \\
+    S(i,j) &= \sum_{A \in N} \alpha(A,i,j)
+\end{align}
+Note that this is the exact same formula as \ref{eq:inside-semiring}.
+
+From equation \ref{eq:final-inside} we can deduce that we in fact do even need to store the values $\alpha(i, j, A)$ but that it suffices to only store the marginalized values $S(i, j)$. In this case, the recursion simplifies even further:
+\begin{subequations}
+\begin{align}
+    S(i, j) &= \sum_{A \in N} \alpha(A,i,j) \\
+        &=  \sum_{A \in N} \tilde{s}_{label}(i, j, A) \cdot \tilde{s}_{span}(i, j) \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \\
+        &= \Bigg[ \sum_{A \in N} \tilde{s}_{label}(i, j, A) \cdot \tilde{s}_{span}(i, j) \Bigg] \Bigg[\sum_{k=i+1}^{j-1} S(i,k) \cdot  S(k,j) \Bigg]
+\end{align}
+\end{subequations}
+where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting. We can now recognize this as the `inside' equivalent of the expression from the paper\footnote{I believe there is actually an error in this equation: it should read  $s_{label}(i, j, \ell) + s_{span}(i, j)$ instead of just $s_{label}(i, j, \ell)$. This is implied by the score for a single node, which is given by equation \ref{eq:rule-score}, taken directly from the paper.}
+\begin{align}
+    s_{best}(i, j) = \max_{\ell} [s_{label}(i, j, \ell)] + \max_{k}[ s_{split}(i, k, j)].
+\end{align}
+The recursions are the same; the semirings are different. The viterbi recursion given above is in the \textsc{ViterbiSemiring}, which uses the $\max$ operator as $\oplus$; the inside recursion given in \ref{eq:final-inside} has standard addition (+) instead.
+
+
+\section{Outside}
+\begin{align*}
+    \beta(A, i, j) &= \sum_{B \to C A \in R} \sum_{k=1}^{i-1} \psi(B \to C A, k, i-1, j) \cdot \alpha(C, k, i-1) \cdot \beta(B, k, j) \\
+            &\qquad + \sum_{B \to A C \in R} \sum_{k=j+1}^{n} \psi(B \to A, C, i, j, k) \cdot \alpha(C, j+1, k) \cdot \beta(B, i, k) \\
+        &= \sum_{B \in N} \sum_{C \in N} \sum_{k=1}^{i-1} \psi(B, k, j) \cdot \alpha(C, k, i-1) \cdot \beta(B, k, j) \\
+            &\qquad + \sum_{B \in N} \sum_{C \in N} \sum_{k=j+1}^{n} \psi(B, i, k) \cdot \alpha(C, j+1, k) \cdot \beta(B, i, k) \\
+        &=  \sum_{k=1}^{i-1}  \Bigg[ \sum_{B \in N} \psi(B, k, j)  \cdot \beta(B, k, j) \Bigg] \cdot \Bigg[ \sum_{C \in N} \alpha(C, k, i-1) \Bigg] \\
+            &\qquad + \sum_{k=j+1}^{n}  \Bigg[ \sum_{B \in N}  \psi(B, i, k) \cdot \beta(B, i, k) \Bigg] \cdot  \Bigg[ \sum_{C \in N} \alpha(C, j+1, k) \Bigg] \\
+        &=  \sum_{k=1}^{i-1}  S'(k, j) \cdot S(k, i-1) + \sum_{k=j+1}^{n} S'(i, k) \cdot  S(j+1, k) \\
+\end{align*}
+where
+\begin{align*}
+    S(i, j) &= \sum_{A \in N} \alpha(A, i, j) \\
+    S'(i, j) &= \sum_{A \in N} \psi(A, i, j) \beta(A, i, j)
+\end{align*}
+
+
+\end{document}

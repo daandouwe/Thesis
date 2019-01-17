@@ -1,0 +1,18 @@
+[0] Config.pm:343> INFO - This is Biber 2.5
+[0] Config.pm:346> INFO - Logfile is 'FnTarticle.blg'
+[42] biber-darwin:290> INFO - === Thu Jan 17, 2019, 15:02:47
+[71] Biber.pm:351> INFO - Reading 'FnTarticle.bcf'
+[179] Biber.pm:776> INFO - Found 11 citekeys in bib section 0
+[191] Biber.pm:3493> INFO - Processing section 0
+[204] Biber.pm:3657> INFO - Looking for bibtex format file 'BIB.bib' for section 0
+[209] bibtex.pm:1187> INFO - Decoding LaTeX character macros into UTF-8
+[214] bibtex.pm:1048> INFO - Found BibTeX data source 'BIB.bib'
+[215] Utils.pm:149> WARN - Duplicate entry key: 'Blei+2016:VI' in file 'BIB.bib', skipping ...
+[231] Utils.pm:149> WARN - I didn't find a database entry for 'Baydin+2015:AD' (section 0)
+[251] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[251] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[252] Biber.pm:3306> INFO - Sorting list 'nyt/global/' of type 'entry' with scheme 'nyt' and locale 'en-US'
+[252] Biber.pm:3310> INFO - No sort tailoring available for locale 'en-US'
+[263] bbl.pm:526> INFO - Writing 'FnTarticle.bbl' with encoding 'UTF-8'
+[265] bbl.pm:619> INFO - Output to FnTarticle.bbl
+[266] Biber.pm:108> INFO - WARNINGS: 2
