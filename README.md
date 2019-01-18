@@ -1,5 +1,5 @@
-# Latent variables for Recurrent Neural Network Grammars
-Language models with latent trees.
+# Neural language models with latent syntax
+Language models with syntax in guises of various kind.
 
 ## Setup
 Use `make` to obtain the data and install EVALB:
@@ -16,13 +16,16 @@ make gen         # train generative rnng
 make crf         # train crf
 make disc-vocab  # train discriminative rnng with shared ptb/unlabeled vocabulary
 ```
-For more information, see the makefile.
+You can list all the options with
+```bash
+make list
+```
 
-You also use command line arguments:
+Alternatively, you use command line arguments:
 ```bash
 python src/main.py train --parser-type=disc-rnng --model-path-base=models/disc-rnng
 ```
-To get a list of all available flags use
+For all available options use
 ```bash
 python src/main.py --help
 ```
