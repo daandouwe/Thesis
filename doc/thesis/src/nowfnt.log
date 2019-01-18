@@ -1,0 +1,2644 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  18 JAN 2019 17:36
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**nowfnt.cls
+(./nowfnt.cls
+LaTeX2e <2016/03/31>
+Babel <3.9r> and hyphenation patterns for 83 language(s) loaded.
+
+LaTeX Warning: You have requested package `',
+               but the package provides `nowfnt'.
+
+Package: nowfnt 2017/09/21 v0.95a NOW document class
+(/usr/local/texlive/2016/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2015/08/02 v2.2a e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count79
+)
+! You can't use `\spacefactor' in vertical mode.
+\@->\spacefactor 
+                 \@m {}
+l.25 \@
+       for\now@temp:=\nowfntlistofjournals\do
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.25 \@
+       for\now@temp:=\nowfntlistofjournals\do
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.25 \@
+       for\now@temp:=\nowfntlistofjournals\do
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 25.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 25.
+! Undefined control sequence.
+l.25 \@for\now
+              @temp:=\nowfntlistofjournals\do
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.26  {\edef\next{\noexpand\DeclareOption{\now
+                                              @temp}{\noexpand\def\noexpand\...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.26 ...expand\def\noexpand\nowfnt@journalkey{\now
+                                                  @temp}}}%
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.28 
+     
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+Missing character: There is no è in font cmex10!
+
+Overfull \hbox (78.79872pt too wide) in paragraph at lines 25--28
+[]$[]\OML/cmm/m/it/10 for\OT1/cmr/m/n/10 @\OML/cmm/m/it/10 temp \OT1/cmr/m/n/10
+ :=
+ []
+
+
+Overfull \hbox (52.89137pt too wide) in paragraph at lines 25--28
+\OML/cmm/m/it/10 examplefnt[]$ 
+ []
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.32 \newif\if@
+               nowfntbook
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Missing character: There is no @ in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no j in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no u in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no j in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no u in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no u in font nullfont!
+Missing character: There is no e in font nullfont!
+
+! LaTeX Error: Command \nowfnt already defined.
+               Or name \end... illegal, see p.192 of the manual.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.36 \newcommand\nowfnt@
+                        journalstate{1}
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+Missing character: There is no j in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no u in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no 1 in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no k in font nullfont!
+
+! LaTeX Error: Command \nowfnt already defined.
+               Or name \end... illegal, see p.192 of the manual.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.38 \newcommand\nowfnt@
+                        ebookstate{0}
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+Missing character: There is no e in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no m in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no m in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no e in font nullfont!
+
+! LaTeX Error: Command \nowfnt already defined.
+               Or name \end... illegal, see p.192 of the manual.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.41 \newcommand\nowfnt@
+                        samplestate{0}
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+Missing character: There is no s in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no m in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no h in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no r in font nullfont!
+
+! LaTeX Error: Command \nowfnt already defined.
+               Or name \end... illegal, see p.192 of the manual.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.43 \newcommand\nowfnt@
+                        chapterstate{0}
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+Missing character: There is no c in font nullfont!
+Missing character: There is no h in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no h in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no d in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no n in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 32--50
+[]
+ []
+
+! You can't use `\spacefactor' in vertical mode.
+\@->\spacefactor 
+                 \@m {}
+l.51 \@
+       nowfntwrapperfalse
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.51 \@
+       nowfntwrapperfalse
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.51 \@
+       nowfntwrapperfalse
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.52 
+     
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+Missing character: There is no è in font cmex10!
+
+Overfull \hbox (114.65768pt too wide) in paragraph at lines 51--52
+[]$[]\OML/cmm/m/it/10 nowfntwrapperfalse$ 
+ []
+
+! Missing number, treated as zero.
+<to be read again> 
+                   @
+l.127 \ifnum\numexpr \nowfnt
+                            @bookstate+ \nowfnt@ebookstate + \nowfnt@journal...
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+! Missing = inserted for \ifnum.
+<to be read again> 
+                   @
+l.127 \ifnum\numexpr \nowfnt
+                            @bookstate+ \nowfnt@ebookstate + \nowfnt@journal...
+I was expecting to see `<', `=', or `>'. Didn't.
+
+! Missing number, treated as zero.
+<to be read again> 
+                   @
+l.127 \ifnum\numexpr \nowfnt
+                            @bookstate+ \nowfnt@ebookstate + \nowfnt@journal...
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.127 \ifnum\numexpr \nowfnt
+                            @bookstate+ \nowfnt@ebookstate + \nowfnt@journal...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Missing character: There is no @ in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no + in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no + in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no j in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no u in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no m in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no = in font nullfont!
+Missing character: There is no 1 in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 127--131
+[]
+ []
+
+
+! Package etoolbox Error: Invalid boolean expression.
+
+See the etoolbox package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.132 ...pperbook} or bool{@nowfntchaptertwoside}}
+                                                  
+Boolean '@nowfntbook' undefined.
+
+
+! Package etoolbox Error: Invalid boolean expression.
+
+See the etoolbox package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.132 ...pperbook} or bool{@nowfntchaptertwoside}}
+                                                  
+Boolean '@nowfntwrapperbook' undefined.
+
+
+! Package etoolbox Error: Invalid boolean expression.
+
+See the etoolbox package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.132 ...pperbook} or bool{@nowfntchaptertwoside}}
+                                                  
+Boolean '@nowfntchaptertwoside' undefined.
+
+
+! Package etoolbox Error: Boolean '\if@nowfntplain' undefined.
+
+See the etoolbox package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.138 \ifbool{@nowfntplain}
+                           
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! Package etoolbox Error: Boolean '\if@nowfntplain' undefined.
+
+See the etoolbox package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.143 \ifbool{@nowfntplain}
+                           
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/lastpage/lastpage.sty
+Package: lastpage 2015/03/29 v1.2m Refers to last page's name (HMM; JPG)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/tools/multicol.sty
+Package: multicol 2016/04/07 v1.8p multicolumn formatting (FMi)
+\c@tracingmulticols=\count80
+\mult@box=\box26
+\multicol@leftmargin=\dimen102
+\c@unbalance=\count81
+\c@collectmore=\count82
+\doublecol@number=\count83
+\multicoltolerance=\count84
+\multicolpretolerance=\count85
+\full@width=\dimen103
+\page@free=\dimen104
+\premulticols=\dimen105
+\postmulticols=\dimen106
+\multicolsep=\skip41
+\multicolbaselineskip=\skip42
+\partial@page=\box27
+\last@line=\box28
+\maxbalancingoverflow=\dimen107
+\mult@rightbox=\box29
+\mult@grightbox=\box30
+\mult@gfirstbox=\box31
+\mult@firstbox=\box32
+\@tempa=\box33
+\@tempa=\box34
+\@tempa=\box35
+\@tempa=\box36
+\@tempa=\box37
+\@tempa=\box38
+\@tempa=\box39
+\@tempa=\box40
+\@tempa=\box41
+\@tempa=\box42
+\@tempa=\box43
+\@tempa=\box44
+\@tempa=\box45
+\@tempa=\box46
+\@tempa=\box47
+\@tempa=\box48
+\@tempa=\box49
+\c@columnbadness=\count86
+\c@finalcolumnbadness=\count87
+\last@try=\dimen108
+\multicolovershoot=\dimen109
+\multicolundershoot=\dimen110
+\mult@nat@firstbox=\box50
+\colbreak@box=\box51
+\mc@col@check@num=\count88
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/tools/array.sty
+Package: array 2014/10/28 v2.4c Tabular extension package (FMi)
+\col@sep=\dimen111
+\extrarowheight=\dimen112
+\NC@list=\toks14
+\extratabsurround=\skip43
+\backup@length=\skip44
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/footmisc/footmisc.sty
+Package: footmisc 2011/06/06 v5.5b a miscellany of footnote facilities
+\FN@temptoken=\toks15
+\footnotemargin=\dimen113
+\c@pp@next@reset=\count89
+Package footmisc Info: Declaring symbol style bringhurst on input line 855.
+Package footmisc Info: Declaring symbol style chicago on input line 863.
+Package footmisc Info: Declaring symbol style wiley on input line 872.
+Package footmisc Info: Declaring symbol style lamport-robust on input line 883.
+
+Package footmisc Info: Declaring symbol style lamport* on input line 903.
+Package footmisc Info: Declaring symbol style lamport*-robust on input line 924
+.
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/pdfpages/pdfpages.sty
+Package: pdfpages 2016/04/19 v0.5f Insert pages of external PDF documents (AM)
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2014/10/28 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count90
+\calc@Bcount=\count91
+\calc@Adimen=\dimen114
+\calc@Bdimen=\dimen115
+\calc@Askip=\skip45
+\calc@Bskip=\skip46
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count92
+\calc@Cskip=\skip47
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/eso-pic/eso-pic.sty
+Package: eso-pic 2015/07/21 v2.0g eso-pic (RN)
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/atbegshi.sty
+Package: atbegshi 2016/05/16 v1.17 At begin shipout hook (HO)
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2016/05/14 v3.1 Provides the ifpdf switch
+))
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks16
+)
+! Missing \endcsname inserted.
+<to be read again> 
+                   \@classoptionslist 
+l.259 \ProcessOptionsWithKV{ESO}
+                                %
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+! Extra \endcsname.
+\@ifundefined ...dafter \ifx \csname #1\endcsname 
+                                                  \relax \expandafter \@firs...
+l.259 \ProcessOptionsWithKV{ESO}
+                                %
+I'm ignoring this, since I wasn't doing a \csname.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+\Gread@gobject=\count93
+)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1364.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1367.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics/dvipsnam.def
+File: dvipsnam.def 2015/12/30 v3.0k Driver-dependent file (DPC,SPQR)
+)))
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2014/10/28 v1.0g Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2016/05/09 v1.0r Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/01/02 v1.10 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 96.
+)
+\Gin@req@height=\dimen116
+\Gin@req@width=\dimen117
+)
+\AM@pagewidth=\dimen118
+\AM@pageheight=\dimen119
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/pdfpages/pppdftex.def
+File: pppdftex.def 2016/04/19 v0.5f Pdfpages driver for pdfTeX (AM)
+)
+\AM@pagebox=\box52
+\AM@global@opts=\toks17
+\AM@toc@title=\toks18
+\c@AM@survey=\count94
+\AM@templatesizebox=\box53
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/tools/xr.sty
+Package: xr 1994/05/28 v5.02 eXternal References (DPC)
+)
+\c@nowfnt@tempcnt=\count95
+
+
+! LaTeX Error: Command \nowfnt already defined.
+               Or name \end... illegal, see p.192 of the manual.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.204 \newcommand\nowfnt@
+                         journalcolor{.}
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.204 \newcommand\nowfnt@j
+                          ournalcolor{.}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Missing character: There is no j in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no u in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no . in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 204--206
+[]
+ []
+
+! Use of \nowfnt doesn't match its definition.
+<argument> \nowfnt @journalk
+                            ey-journaldata
+l.208 
+      
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Undefined control sequence.
+<recently read> \define 
+                        
+l.222 \define
+             @key{nowfnt}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.222 \define@
+              key{nowfnt}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Missing character: There is no @ in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no d in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no i in font nullfont!
+! Illegal parameter number in definition of \nowfnt.
+<to be read again> 
+                   1
+l.223   {doi}{\def\nowfnt@issuedoi{#1
+                                     }}
+You meant to type ## instead of #, right?
+Or maybe a } was forgotten somewhere earlier, and things
+are all screwed up? I'm going to assume that you meant ##.
+
+! Undefined control sequence.
+l.224 \define
+             @key{nowfnt}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no @ in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no g in font nullfont!
+Missing character: There is no e in font nullfont!
+! Illegal parameter number in definition of \nowfnt.
+<to be read again> 
+                   1
+l.225   {firstpage}{\def\nowfnt@issuefirstpage{#1
+                                                 }}
+You meant to type ## instead of #, right?
+Or maybe a } was forgotten somewhere earlier, and things
+are all screwed up? I'm going to assume that you meant ##.
+
+! Undefined control sequence.
+l.226 \define
+             @key{nowfnt}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no @ in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no g in font nullfont!
+Missing character: There is no e in font nullfont!
+! Illegal parameter number in definition of \nowfnt.
+<to be read again> 
+                   1
+l.227   {lastpage}{\def\nowfnt@issuelastpage{#1
+                                               }}
+You meant to type ## instead of #, right?
+Or maybe a } was forgotten somewhere earlier, and things
+are all screwed up? I'm going to assume that you meant ##.
+
+! Undefined control sequence.
+l.228 \define
+             @key{nowfnt}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no @ in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no n in font nullfont!
+! Illegal parameter number in definition of \nowfnt.
+<to be read again> 
+                   1
+l.229  {isbn}{\def\nowfnt@issueisbn{#1
+                                      }}
+You meant to type ## instead of #, right?
+Or maybe a } was forgotten somewhere earlier, and things
+are all screwed up? I'm going to assume that you meant ##.
+
+! Undefined control sequence.
+l.230 \define
+             @key{nowfnt}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no @ in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no n in font nullfont!
+! Illegal parameter number in definition of \nowfnt.
+<to be read again> 
+                   1
+l.231  {eisbn}{\def\nowfnt@issueeisbn{#1
+                                        }}
+You meant to type ## instead of #, right?
+Or maybe a } was forgotten somewhere earlier, and things
+are all screwed up? I'm going to assume that you meant ##.
+
+! Undefined control sequence.
+l.232 \define
+             @key{nowfnt}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no @ in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no u in font nullfont!
+Missing character: There is no e in font nullfont!
+! Illegal parameter number in definition of \nowfnt.
+<to be read again> 
+                   1
+l.233  {issue}{\def\nowfnt@issueissue{#1
+                                        }}
+You meant to type ## instead of #, right?
+Or maybe a } was forgotten somewhere earlier, and things
+are all screwed up? I'm going to assume that you meant ##.
+
+! Undefined control sequence.
+l.234 \define
+             @key{nowfnt}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no @ in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no g in font nullfont!
+Missing character: There is no h in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no r in font nullfont!
+! Illegal parameter number in definition of \nowfnt.
+<to be read again> 
+                   1
+l.235 ...tyear}{\edef\nowfnt@issuecopyrightyear{#1
+                                                  }}
+You meant to type ## instead of #, right?
+Or maybe a } was forgotten somewhere earlier, and things
+are all screwed up? I'm going to assume that you meant ##.
+
+! Undefined control sequence.
+l.236 \define
+             @key{nowfnt}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no @ in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no g in font nullfont!
+Missing character: There is no h in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no r in font nullfont!
+! Illegal parameter number in definition of \nowfnt.
+<to be read again> 
+                   1
+l.237 ...owner}{\def\nowfnt@issuecopyrightowner{#1
+                                                  }}
+You meant to type ## instead of #, right?
+Or maybe a } was forgotten somewhere earlier, and things
+are all screwed up? I'm going to assume that you meant ##.
+
+! Undefined control sequence.
+l.238 \define
+             @key{nowfnt}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no @ in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no u in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no r in font nullfont!
+! Illegal parameter number in definition of \nowfnt.
+<to be read again> 
+                   1
+l.239  {pubyear}{\edef\nowfnt@issuepubyear{#1
+                                             }}
+You meant to type ## instead of #, right?
+Or maybe a } was forgotten somewhere earlier, and things
+are all screwed up? I'm going to assume that you meant ##.
+
+! Undefined control sequence.
+l.240 \define
+             @key{nowfnt}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no @ in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no v in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no u in font nullfont!
+Missing character: There is no m in font nullfont!
+Missing character: There is no e in font nullfont!
+! Illegal parameter number in definition of \nowfnt.
+<to be read again> 
+                   1
+l.241  {volume}{\def\nowfnt@issuevolume{#1
+                                          }}
+You meant to type ## instead of #, right?
+Or maybe a } was forgotten somewhere earlier, and things
+are all screwed up? I'm going to assume that you meant ##.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 222--242
+[]
+ []
+
+! Undefined control sequence.
+l.243 \define
+             @key{nowfnt}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.243 \define@
+              key{nowfnt}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Missing character: There is no @ in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no d in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no d in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no y in font nullfont!
+! Illegal parameter number in definition of \nowfnt.
+<to be read again> 
+                   1
+l.244  {editedby}{\def\nowfnt@editedby{#1
+                                         }}
+You meant to type ## instead of #, right?
+Or maybe a } was forgotten somewhere earlier, and things
+are all screwed up? I'm going to assume that you meant ##.
+
+
+! Package keyval Error: editedby undefined.
+
+See the keyval package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.245 \setkeys{nowfnt}{editedby=Edited by}
+                                          
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 243--246
+[]
+ []
+
+! Undefined control sequence.
+l.247 \define
+             @key{nowfnt}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.247 \define@
+              key{nowfnt}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Missing character: There is no @ in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no y in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no w in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no u in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no e in font nullfont!
+! Illegal parameter number in definition of \nowfnt.
+<to be read again> 
+                   1
+l.248  {source}{\def\nowfnt@sourcetext{#1
+                                         }}
+You meant to type ## instead of #, right?
+Or maybe a } was forgotten somewhere earlier, and things
+are all screwed up? I'm going to assume that you meant ##.
+
+
+! Package keyval Error: source undefined.
+
+See the keyval package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.249 \setkeys{nowfnt}{source=MISSING}
+                                      
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 247--250
+[]
+ []
+
+
+! Package keyval Error: doi undefined.
+
+See the keyval package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.266  }
+        
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! Package keyval Error: firstpage undefined.
+
+See the keyval package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.266  }
+        
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! Package keyval Error: isbn undefined.
+
+See the keyval package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.266  }
+        
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! Package keyval Error: eisbn undefined.
+
+See the keyval package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.266  }
+        
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! Package keyval Error: issue undefined.
+
+See the keyval package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.266  }
+        
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! Package keyval Error: copyrightyear undefined.
+
+See the keyval package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.266  }
+        
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! Package keyval Error: copyrightowner undefined.
+
+See the keyval package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.266  }
+        
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! Package keyval Error: pubyear undefined.
+
+See the keyval package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.266  }
+        
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! Package keyval Error: volume undefined.
+
+See the keyval package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.266  }
+        
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! Package keyval Error: lastpage undefined.
+
+See the keyval package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.266  }
+        
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/microtype/microtype.sty
+Package: microtype 2016/05/14 v2.6a Micro-typographical refinements (RS)
+\MT@toks=\toks19
+\MT@count=\count96
+LaTeX Info: Redefining \textls on input line 774.
+\MT@outer@kern=\dimen120
+LaTeX Info: Redefining \textmicrotypecontext on input line 1310.
+\MT@listname@count=\count97
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/microtype/microtype-pdftex.def
+File: microtype-pdftex.def 2016/05/14 v2.6a Definitions specific to pdftex (RS)
+
+LaTeX Info: Redefining \lsstyle on input line 916.
+LaTeX Info: Redefining \lslig on input line 916.
+\MT@outer@space=\skip48
+)
+
+Package microtype Warning: Could not find configuration file `.cfg'!
+(microtype)                This will almost certainly cause undesired results.
+(microtype)                Please fix your installation.
+
+! Missing \endcsname inserted.
+<to be read again> 
+                   \@classoptionslist 
+l.2190 \MT@ProcessOptionsWithKV{MT}
+                                   
+The control sequence marked <to be read again> should
+not appear between \csname and \endcsname.
+
+)
+
+! LaTeX Error: \scriptsize undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.293 \renewcommand\scriptsize
+                              {\@setfontsize\scriptsize\@viipt\@viiipt}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: \tiny undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.294 \renewcommand\tiny
+                        {\@setfontsize\tiny\@vpt\@vipt}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: \large undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.295 \renewcommand\large
+                         {\@setfontsize\large\@xipt{13}}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: \LARGE undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.296 \renewcommand\LARGE
+                         {\@setfontsize\LARGE\@xvpt{19}}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: \Huge undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.297 \renewcommand\Huge
+                        {\@setfontsize\Huge\@xxviipt{27}}
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: Command \nowfnt already defined.
+               Or name \end... illegal, see p.192 of the manual.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.301 \newcommand\nowfnt@
+                         font@frontmattersection{\normalfont\bfseries\sffami...
+
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.301 \newcommand\nowfnt@f
+                          ont@frontmattersection{\normalfont\bfseries\sffami...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+! Argument of reserved@f has an extra }.
+<inserted text> 
+                par 
+l.301 ...tion{\normalfont\bfseries\sffamily\LARGE}
+                                                  
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
+! Paragraph ended before reserved@f was complete.
+<to be read again> 
+                   par 
+l.301 ...tion{\normalfont\bfseries\sffamily\LARGE}
+                                                  
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+Overfull \hbox (125.66692pt too wide) in paragraph at lines 301--301
+[]OT1/cmr/m/n/10 font@frontmattersection 
+ []
+
+! Extra }, or forgotten endgroup.
+<recently read> }
+                 
+l.301 ...tion{\normalfont\bfseries\sffamily\LARGE}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+
+! LaTeX Error: Missing begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.302 \newcommand\nowfnt@f
+                          ont@frontmattersubsection{\normalfont\normalsize\s...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+If you say, e.g., `\def\a1{...}', then you must always
+put `1' after `\a', since control sequence names are
+made up of letters only. The macro here has not been
+followed by the required stuff, so I'm ignoring it.
+
+! Use of @ doesn't match its definition.
+normalsize ->@s
+               etfontsizenormalsize @xipt@xivpt abovedisplayskip 9p @ @plus2...
+l.302 ...ntmattersubsection{\normalfont\normalsize
+                                                  \sffamily\bfseries}
+(That makes 100 errors; please try again.) 
+Here is how much of TeX's memory you used:
+ 3561 strings out of 493014
+ 52420 string characters out of 6133351
+ 150553 words of memory out of 5000000
+ 7108 multiletter control sequences out of 15000+600000
+ 3640 words of font info for 14 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 98i,2n,39p,771b,60s stack positions out of 5000i,500n,10000p,200000b,80000s
+
+!  ==> Fatal error occurred, no output PDF file produced!

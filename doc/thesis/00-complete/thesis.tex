@@ -1,0 +1,98 @@
+% !Mode:: "TeX:DE:UTF-8:Main"
+%
+%
+%JOURNAL CODE  SEE DOCUMENTATION
+
+\documentclass[examplefnt,biber]{../src/nowfnt} % creates the journal version, needs biber version
+%wrapper for book and ebook are created automatically.
+
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsmath,amssymb,amsfonts,latexsym,dsfont,xspace}
+
+% a few definitions that are *not* needed in general:
+\newcommand{\ie}{\emph{i.e.}}
+\newcommand{\eg}{\emph{e.g.}}
+\newcommand{\etc}{\emph{etc}}
+\newcommand{\now}{\textsc{now}}
+
+%ARTICLE TITLE
+\title{My First Thesis}
+
+
+%ARTICLE SUB-TITLE
+\subtitle{Smart Things as Said by Me}
+
+
+%AUTHORS FOR COVER PAGE
+% separate authors by \and, item by \\
+% Don't use verbatim or problematic symbols.
+% _ in mail address should be entered as \_
+% Pay attention to large mail-addresses ...
+
+%if there are many author twocolumn mode can be activated.
+%\booltrue{authortwocolumn} %SEE DOCUMENTATION
+\maintitleauthorlist{
+Daan van Stigt \\
+Institute for Logic, Language and Computation (ILLC) \\
+}
+
+%BIBLIOGRAPHY FILE
+\addbibresource{../src/BIB.bib}
+
+\begin{document}
+
+\makeabstracttitle
+
+\begin{abstract}
+This is the best thesis. I have all the best words. Also, do check out my code. You will be blown away. Such wow. Much amazings.
+
+\end{abstract}
+
+
+\chapter{Introduction}
+\label{01-introduction}
+\input{../01-introduction/introduction}
+
+
+\chapter{Background}
+\label{02-background}
+\input{../02-background/background}
+
+
+\chapter{CRF parser}
+\label{04-crf}
+\input{../04-crf-parser/crf-parser}
+
+
+\chapter{Semisupervised learning of RNNG}
+\label{05-semisupervised}
+\input{../05-semisupervised/semisupervised}
+
+
+\chapter{Targeted syntactic evaluation}
+\label{06-syneval}
+\input{../06-syneval/syneval}
+
+
+\chapter{Conclusion}
+\label{07-conclusion}
+\input{../07-conclusion/conclusion}
+
+
+% end of main matter
+
+\begin{acknowledgements}
+The author is grateful to the author, for he is his own eternal flame of inspiration.
+\end{acknowledgements}
+
+\appendix
+\chapter{Figures}
+\label{App:journalcodes}
+
+%BACKMATTER SEE DOCUMENTATION
+\backmatter  % references, restarts sample
+
+\printbibliography
+
+\end{document}
