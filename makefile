@@ -1,19 +1,19 @@
 PTB ?= data/ptb/train.trees
 OBW ?= news.en-00001-of-00100.processed
-SYNEVAL ?= data/syneval/data/converted
+SYN ?= data/syneval/data/converted
 
 GEN_EVAL_EVERY ?= 4
-NUM_DEV_SAMPLES ?= 50
-NUM_TEST_SAMPLES ?= 100
+DEV_NUM_SAMPLES ?= 50
+TEST_NUM_SAMPLES ?= 100
 
 SEMISUP_NUM_SAMPLES ?= 3
 SEMISUP_BATCH_SIZE ?= 5
 
 UNSUP_NUM_SAMPLES ?= 1
-UNSUP_BATCH_SIZE ?= 10
+UNSUP_BATCH_SIZE ?= 1
 
-SYNEVAL_NUM_SAMPLES ?= 50
-SYNEVAL_MAX_LINES ?= 1000
+SYN_NUM_SAMPLES ?= 50
+SYN_MAX_LINES ?= 1000
 
 
 # setup
@@ -31,36 +31,35 @@ silver: predict-silver
 disc: train-disc
 crf: train-crf
 
-gen: sup-vocab train-gen
-gen-stack-only: sup-vocab train-gen-stack-only
-gen-gpu: sup-vocab train-gen-gpu
-gen-silver: semisup-vocab train-gen-silver
+gen: vocab-sup train-gen
+gen-stack-only: vocab-sup train-gen-stack-only
+gen-gpu: vocab-sup train-gen-gpu
+gen-silver: vocab-semisup train-gen-silver
 
-lm: sup-vocab train-lm
-lm-gpu: sup-vocab train-lm-gpu
+lm: vocab-sup train-lm
+lm-gpu: vocab-sup train-lm-gpu
 
-multitask-lm: sup-vocab train-multitask-lm
-multitask-lm-gpu: sup-vocab train-multitask-lm-gpu
+multitask-lm: vocab-sup train-multitask-lm
+multitask-lm-gpu: vocab-sup train-multitask-lm-gpu
 
-disc-semisup-vocab: semisup-vocab train-disc-vocab
-crf-semisup-vocab: semisup-vocab train-crf-vocab
-gen-semisup-vocab: semisup-vocab train-gen-vocab
+disc-semisup-vocab: vocab-semisup train-disc-vocab
+crf-semisup-vocab: vocab-semisup train-crf-vocab
+gen-semisup-vocab: vocab-semisup train-gen-vocab
 
 semisup-disc: train-semisup-disc
 semisup-crf: train-semisup-crf
 semisup-disc-vocab: train-semisup-disc-vocab
 semisup-crf-vocab: train-semisup-crf-vocab
 
-# fully-unsup-disc: sup-vocab train-fully-unsup-disc
-fully-unsup-disc: train-fully-unsup-disc
+fully-unsup-disc: vocab-sup train-fully-unsup-disc
 
 
 # build a vocabulary
-sup-vocab:
+vocab-sup:
 	python src/main.py build \
 	    @src/configs/vocab/supervised.txt \
 
-semisup-vocab:
+vocab-semisup:
 	python src/main.py build \
 	    @src/configs/vocab/semisupervised.txt
 
@@ -85,8 +84,8 @@ train-gen:
 	    @src/configs/training/sgd.txt \
 	    @src/configs/proposals/rnng.txt \
 	    --eval-every-epochs=${GEN_EVAL_EVERY} \
-	    --num-dev-samples=${NUM_DEV_SAMPLES} \
-	    --num-test-samples=${NUM_TEST_SAMPLES}
+	    --num-dev-samples=${DEV_NUM_SAMPLES} \
+	    --num-test-samples=${TEST_NUM_SAMPLES}
 
 train-gen-stack-only:
 	python src/main.py train \
@@ -99,8 +98,8 @@ train-gen-stack-only:
 	    @src/configs/training/sgd.txt \
 	    @src/configs/proposals/rnng.txt \
 	    --eval-every-epochs=${GEN_EVAL_EVERY} \
-	    --num-dev-samples=${NUM_DEV_SAMPLES} \
-	    --num-test-samples=${NUM_TEST_SAMPLES}
+	    --num-dev-samples=${DEV_NUM_SAMPLES} \
+	    --num-test-samples=${TEST_NUM_SAMPLES}
 
 train-gen-silver:
 	python src/main.py train \
@@ -113,8 +112,8 @@ train-gen-silver:
 	    @src/configs/training/sgd.txt \
 	    @src/configs/proposals/rnng.txt \
 	    --eval-every-epochs=${GEN_EVAL_EVERY} \
-	    --num-dev-samples=${NUM_DEV_SAMPLES} \
-	    --num-test-samples=${NUM_TEST_SAMPLES}
+	    --num-dev-samples=${DEV_NUM_SAMPLES} \
+	    --num-test-samples=${TEST_NUM_SAMPLES}
 
 
 train-crf:
@@ -160,8 +159,8 @@ train-gen-gpu:
 	    @src/configs/training/sgd.txt \
 	    @src/configs/proposals/rnng.txt \
 	    --eval-every-epochs=${GEN_EVAL_EVERY} \
-	    --num-dev-samples=${NUM_DEV_SAMPLES} \
-	    --num-test-samples=${NUM_TEST_SAMPLES}
+	    --num-dev-samples=${DEV_NUM_SAMPLES} \
+	    --num-test-samples=${TEST_NUM_SAMPLES}
 
 train-lm-gpu:
 	python src/main.py train \
@@ -188,7 +187,7 @@ train-multitask-lm-gpu:
 
 
 # semisup vocab models
-train-disc-vocab: semisup-vocab
+train-disc-vocab: vocab-semisup
 	python src/main.py train \
 	    --dynet-autobatch=1 \
 	    --dynet-mem=1000 \
@@ -198,7 +197,7 @@ train-disc-vocab: semisup-vocab
 	    @src/configs/model/disc-rnng.txt \
 	    @src/configs/training/sgd.txt
 
-train-gen-vocab: semisup-vocab
+train-gen-vocab: vocab-semisup
 	python src/main.py train \
 	    --dynet-autobatch=1 \
 	    --dynet-mem=3000 \
@@ -209,10 +208,10 @@ train-gen-vocab: semisup-vocab
 	    @src/configs/training/sgd.txt \
 	    @src/configs/proposals/rnng.txt \
 	    --eval-every-epochs=${GEN_EVAL_EVERY} \
-	    --num-dev-samples=${NUM_DEV_SAMPLES} \
-	    --num-test-samples=${NUM_TEST_SAMPLES}
+	    --num-dev-samples=${DEV_NUM_SAMPLES} \
+	    --num-test-samples=${TEST_NUM_SAMPLES}
 
-train-crf-vocab: semisup-vocab
+train-crf-vocab: vocab-semisup
 	python src/main.py train \
 	    --dynet-autobatch=1 \
 	    --dynet-mem=1000 \
@@ -232,14 +231,14 @@ train-semisup-disc:
 	    --model-type=semisup-disc \
 	    --joint-model-path=${GEN_VOCAB_PATH} \
 	    --post-model-path=${DISC_VOCAB_PATH} \
-	    --num-samples=${SEMISUP_NUM_SAMPLES} \
 	    @src/configs/vocab/semisupervised.txt \
 	    @src/configs/data/semisupervised.txt \
 	    @src/configs/training/adam.txt \
 	    @src/configs/baseline/argmax.txt \
+	    --num-samples=${SEMISUP_NUM_SAMPLES} \
 	    --batch-size=${SEMISUP_BATCH_SIZE} \
-	    --num-dev-samples=${NUM_DEV_SAMPLES} \
-	    --num-test-samples=${NUM_TEST_SAMPLES}
+	    --num-dev-samples=${DEV_NUM_SAMPLES} \
+	    --num-test-samples=${TEST_NUM_SAMPLES}
 
 train-semisup-crf:
 	python src/main.py train \
@@ -249,31 +248,31 @@ train-semisup-crf:
 	    --model-type=semisup-crf \
 	    --joint-model-path=${GEN_VOCAB_PATH} \
 	    --post-model-path=${CRF_VOCAB_PATH} \
-	    --num-samples=${SEMISUP_NUM_SAMPLES} \
 	    @src/configs/vocab/semisupervised.txt \
 	    @src/configs/data/semisupervised.txt \
 	    @src/configs/training/adam.txt \
 	    @src/configs/baseline/argmax.txt \
+	    --num-samples=${SEMISUP_NUM_SAMPLES} \
 	    --batch-size=${SEMISUP_BATCH_SIZE} \
-	    --num-dev-samples=${NUM_DEV_SAMPLES} \
-	    --num-test-samples=${NUM_TEST_SAMPLES}
+	    --num-dev-samples=${DEV_NUM_SAMPLES} \
+	    --num-test-samples=${TEST_NUM_SAMPLES}
 
 
 # unsupervised training
-train-fully-unsup-disc:
+train-fully-unsup-disc: sup-vocab
 	python src/main.py train \
 	    --dynet-autobatch=1 \
-	    --dynet-mem=6000 \
+	    --dynet-mem=4000 \
 	    --model-path-base=models/fully-unsup-disc \
 	    --model-type=fully-unsup-disc \
-	    --num-samples=${UNSUP_NUM_SAMPLES} \
 	    @src/configs/vocab/supervised.txt \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/training/adam.txt \
 	    @src/configs/baseline/mlp.txt \
+			--num-samples=${UNSUP_NUM_SAMPLES} \
 	    --batch-size=${UNSUP_BATCH_SIZE} \
-	    --num-dev-samples=${NUM_DEV_SAMPLES} \
-	    --num-test-samples=${NUM_TEST_SAMPLES} \
+	    --num-dev-samples=${DEV_NUM_SAMPLES} \
+	    --num-test-samples=${TEST_NUM_SAMPLES} \
 			--print-every=1
 
 
@@ -322,7 +321,7 @@ eval-test-pp:
 	    --checkpoint=${GEN_PATH} \
 	    --infile=data/ptb/test.trees \
 	    --proposal-samples=data/proposals/rnng-test.props \
-	    --num-samples=${NUM_TEST_SAMPLES}
+	    --num-samples=${TEST_NUM_SAMPLES}
 
 # syneval
 syneval-lm:
@@ -331,7 +330,7 @@ syneval-lm:
 	    --dynet-mem=3000 \
 	    --model-type=rnn-lm \
 	    --checkpoint=${LM_PATH} \
-	    --indir=${SYNEVAL}
+	    --indir=${SYN}
 
 syneval-multitask-lm:
 	python src/main.py syneval \
@@ -339,7 +338,7 @@ syneval-multitask-lm:
 	    --dynet-mem=3000 \
 	    --model-type=rnn-lm \
 	    --checkpoint=${MULTI_LM_PATH} \
-	    --indir=${SYNEVAL}
+	    --indir=${SYN}
 
 syneval-rnng:
 	python src/main.py syneval \
@@ -348,9 +347,9 @@ syneval-rnng:
 	    --model-type=gen-rnng \
 	    --checkpoint=${GEN_PATH} \
 	    --proposal-model=${DISC_PATH} \
-	    --indir=${SYNEVAL} \
-	    --num-samples=${SYNEVAL_NUM_SAMPLES} \
-	    --syneval-max-lines=${SYNEVAL_MAX_LINES} \
+	    --indir=${SYN} \
+	    --num-samples=${SYN_NUM_SAMPLES} \
+	    --syneval-max-lines=${SYN_MAX_LINES} \
 
 syneval-disc:
 	python src/main.py syneval \
@@ -358,11 +357,15 @@ syneval-disc:
 	    --dynet-mem=3000 \
 	    --model-type=disc-rnng \
 	    --checkpoint=${DISC_PATH} \
-	    --indir=${SYNEVAL} \
-	    --num-samples=${SYNEVAL_NUM_SAMPLES}
+	    --indir=${SYN} \
+	    --num-samples=${SYN_NUM_SAMPLES}
+
+
+# list all actions
+list :
+	grep -o '^.*[^ ]:' Makefile | rev | cut '-c2-' | rev | sort -u
 
 
 # clear temporary models
-.PHONY : clean
 clean :
 	-rm -r models/temp/*
