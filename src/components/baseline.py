@@ -25,7 +25,7 @@ class FeedforwardBaseline:
         word_indices = [parser.word_vocab.index_or_unk(word) for word in words]
         embeddings = [parser.word_embedding[word_id] for word_id in word_indices]
 
-        # use the rnn from the parsing model
+        # use the rnn from the posterior model to create contextual embeddings
         if self.model_type == 'crf':
             lstm_outputs = parser.lstm.transduce(embeddings)
 
@@ -33,7 +33,7 @@ class FeedforwardBaseline:
             lstm = parser.buffer_encoder.rnn_builder.initial_state()
             lstm_outputs = lstm.transduce(reversed(embeddings))  # in reverse! see class Buffer for why
 
-        # detach the embeddings (gradients not wanted for the lstms)
+        # detach the embeddings (gradients undesired for this part of the baseline)
         lstm_outputs = [dy.inputTensor(blockgrad(encoding)) for encoding in lstm_outputs]
 
         gates = [dy.logistic(self.gating(output)) for output in lstm_outputs]

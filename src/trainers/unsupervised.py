@@ -33,7 +33,7 @@ class FullyUnsupervisedTrainer:
             dev_path=None,
             test_path=None,
             vocab_path=None,
-            num_labels=30,
+            num_labels=10,
             use_argmax_baseline=False,
             use_mlp_baseline=False,
             clip_learning_signal=None,
@@ -379,7 +379,6 @@ class FullyUnsupervisedTrainer:
             self.optimizer.update()
 
             # Optimize baseline
-            baseline_loss.forward()
             baseline_loss.backward()
             self.baseline_optimizer.update()
 
@@ -448,9 +447,7 @@ class FullyUnsupervisedTrainer:
             normalized_learning_signal = self.normalize(centered_learning_signal)
 
             # Optional clipping of learning signal
-            if self.clip_learning_signal is not None:
-                if normalized_learning_signal.value() < self.clip_learning_signal:
-                    normalized_learning_signal = dy.scalarInput(self.clip_learning_signal)
+            normalized_learning_signal = self.clip(normalized_learning_signal)
 
             baseline_loss = centered_learning_signal**2
             post_loss = -blockgrad(normalized_learning_signal) * post_logprob
@@ -545,6 +542,12 @@ class FullyUnsupervisedTrainer:
         signal_mean = np.mean(self.centered_learning_signals) if self.num_updates > 0 else 0.
         signal_var = np.var(self.centered_learning_signals) if self.num_updates > 1 else 1.
         return (signal - signal_mean) / np.sqrt(signal_var)
+
+    def clip(self, signal):
+        if self.clip_learning_signal is not None:
+            if signal.value() < self.clip_learning_signal:
+                signal = dy.scalarInput(self.clip_learning_signal)
+        return signal
 
     def baseline_signal_covariance(self, n=200):
         """Estimate covariance between baseline and learning signal."""
@@ -749,8 +752,8 @@ class FullyUnsupervisedTrainer:
                 'post-dev-fscore': self.post_dev_fscore,
                 'post-test-fscore': self.post_test_fscore,
 
-                'joint_dev_fscore': self.joint_dev_fscore,
-                'joint_test_fscore': self.joint_test_fscore,
+                'joint-dev-fscore': self.joint_dev_fscore,
+                'joint-test-fscore': self.joint_test_fscore,
 
                 'dev-perplexity': self.dev_perplexity,
                 'test-perplexity': self.test_perplexity,
@@ -768,8 +771,8 @@ class FullyUnsupervisedTrainer:
                 'post-dev-fscore': self.post_dev_fscore,
                 'post-test-fscore': self.post_test_fscore,
 
-                'joint_dev_fscore': self.joint_dev_fscore,
-                'joint_test_fscore': self.joint_test_fscore,
+                'joint-dev-fscore': self.joint_dev_fscore,
+                'joint-test-fscore': self.joint_test_fscore,
 
                 'dev-perplexity': self.dev_perplexity,
                 'test-perplexity': self.test_perplexity,

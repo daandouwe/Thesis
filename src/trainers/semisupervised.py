@@ -109,10 +109,10 @@ class SemiSupervisedTrainer:
         self.baseline_losses = []
 
         self.current_dev_fscore = -inf
-        self.current_dev_perplexity = -inf
+        self.current_dev_perplexity = inf
 
         self.test_fscore = -inf
-        self.test_perplexity = -inf
+        self.test_perplexity = inf
 
     def build_paths(self):
         # Make output folder structure
@@ -431,12 +431,10 @@ class SemiSupervisedTrainer:
             centered_learning_signal = learning_signal - a * baselines
 
             # Normalize
-            normalized_learning_signal = self.normalize_signal(centered_learning_signal)
+            normalized_learning_signal = self.normalize(centered_learning_signal)
 
             # Optional clipping of learning signal
-            if self.clip_learning_signal is not None:
-                if normalized_learning_signal.value() < self.clip_learning_signal:
-                    normalized_learning_signal = dy.scalarInput(self.clip_learning_signal)
+            normalized_learning_signal = self.clip(normalized_learning_signal)
 
             baseline_loss = centered_learning_signal**2
             post_loss = -blockgrad(normalized_learning_signal) * post_logprob
@@ -527,30 +525,17 @@ class SemiSupervisedTrainer:
             # no baseline no scaling
             return 1.
 
-    def normalize_signal(self, signal):
+    def normalize(self, signal):
         """Normalize the centered learning-signal."""
         signal_mean = np.mean(self.centered_learning_signals) if self.num_updates > 0 else 0.
         signal_var = np.var(self.centered_learning_signals) if self.num_updates > 1 else 1.
         return (signal - signal_mean) / np.sqrt(signal_var)
 
-    def baseline_signal_covariance(self, n=200):
-        """Estimate covariance between baseline and learning signal."""
-        baseline_values = np.array(self.baseline_values[-n:])
-        signal_values = np.array(self.learning_signals[-n:])
-
-        baseline_mean = np.mean(baseline_values) if self.num_updates > 1 else 0.
-        baseline_var = np.var(baseline_values) if self.num_updates > 2 else 1.
-
-        signal_mean = np.mean(signal_values) if self.num_updates > 1 else 0.
-        signal_var = np.var(signal_values) if self.num_updates > 2 else 1.
-
-        if self.num_updates > 2:
-            cov = np.mean((baseline_values - baseline_mean) * (signal_values - signal_mean))
-        else:
-            cov = 0
-        corr = cov / (np.sqrt(signal_var) * np.sqrt(baseline_var))
-
-        return cov, corr
+    def clip(self, signal):
+        if self.clip_learning_signal is not None:
+            if signal.value() < self.clip_learning_signal:
+                signal = dy.scalarInput(self.clip_learning_signal)
+        return signal
 
     def estimate_elbo(self, n=2000):
         """Estimate the ELBO using the training samples.

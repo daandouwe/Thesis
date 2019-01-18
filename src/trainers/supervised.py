@@ -122,9 +122,9 @@ class SupervisedTrainer:
         self.best_dev_fscore = -inf
         self.test_fscore = -inf
 
-        self.current_dev_perplexity = -inf
-        self.best_dev_perplexity = -inf
-        self.test_perplexity = -inf
+        self.current_dev_perplexity = inf
+        self.best_dev_perplexity = inf
+        self.test_perplexity = inf
 
         self.best_dev_epoch = 0
 
