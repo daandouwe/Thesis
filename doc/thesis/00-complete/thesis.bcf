@@ -2274,24 +2274,27 @@
   <!-- CITATION DATA -->
   <!-- SECTION 0 -->
   <bcf:bibdata section="0">
-    <bcf:datasource type="file" datatype="bibtex">../src/BIB.bib</bcf:datasource>
+    <bcf:datasource type="file" datatype="bibtex">../src/bibliography.bib</bcf:datasource>
   </bcf:bibdata>
   <bcf:section number="0">
     <bcf:citekey order="1">Dyer+2016:RNNG</bcf:citekey>
-    <bcf:citekey order="2">Baydin+2015:AD</bcf:citekey>
-    <bcf:citekey order="3">Blei+2016:VI</bcf:citekey>
-    <bcf:citekey order="4">Williams1992:REINFORCE</bcf:citekey>
-    <bcf:citekey order="5">Paisley+2012:VISS</bcf:citekey>
-    <bcf:citekey order="6">Mnih+2014:NVIL</bcf:citekey>
-    <bcf:citekey order="7">Ranganath+2014:BBVI</bcf:citekey>
-    <bcf:citekey order="8">Miao+16:LLVAE</bcf:citekey>
-    <bcf:citekey order="9">Williams1992:REINFORCE</bcf:citekey>
-    <bcf:citekey order="10">Fu2006</bcf:citekey>
-    <bcf:citekey order="11">Baydin+2015:AD</bcf:citekey>
-    <bcf:citekey order="12">Schulman+2015:surrogate</bcf:citekey>
-    <bcf:citekey order="13">Paisley+2012:VISS</bcf:citekey>
-    <bcf:citekey order="14">Ross:2006:SIM</bcf:citekey>
-    <bcf:citekey order="15">Ross:2006:SIM</bcf:citekey>
+    <bcf:citekey order="2">Buys+2015:neural-gen-dep</bcf:citekey>
+    <bcf:citekey order="3">Buys+2018</bcf:citekey>
+    <bcf:citekey order="4">Dyer+2016:RNNG</bcf:citekey>
+    <bcf:citekey order="5">Baydin+2015:AD</bcf:citekey>
+    <bcf:citekey order="6">Blei+2016:VI</bcf:citekey>
+    <bcf:citekey order="7">Williams1992:REINFORCE</bcf:citekey>
+    <bcf:citekey order="8">Paisley+2012:VISS</bcf:citekey>
+    <bcf:citekey order="9">Mnih+2014:NVIL</bcf:citekey>
+    <bcf:citekey order="10">Ranganath+2014:BBVI</bcf:citekey>
+    <bcf:citekey order="11">Miao+16:LLVAE</bcf:citekey>
+    <bcf:citekey order="12">Williams1992:REINFORCE</bcf:citekey>
+    <bcf:citekey order="13">Fu2006</bcf:citekey>
+    <bcf:citekey order="14">Baydin+2015:AD</bcf:citekey>
+    <bcf:citekey order="15">Schulman+2015:surrogate</bcf:citekey>
+    <bcf:citekey order="16">Paisley+2012:VISS</bcf:citekey>
+    <bcf:citekey order="17">Ross:2006:SIM</bcf:citekey>
+    <bcf:citekey order="18">Ross:2006:SIM</bcf:citekey>
   </bcf:section>
   <bcf:sortlist section="0" name="nyt/global/" type="entry" sortscheme="nyt" sortnamekeyscheme="global" labelprefix="">
   <bcf:sorting>

@@ -301,6 +301,8 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmss17.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmssbx10.tfm
 INPUT ../01-introduction/introduction.tex
 INPUT ../01-introduction/introduction.tex
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmsso10.tfm
 INPUT ../02-background/background.tex
 INPUT ../02-background/background.tex
 INPUT ../03-rnng/rnng.tex
@@ -324,10 +326,8 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam5
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm5.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/latex-fonts/lasy5.tfm
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmsso10.tfm
 INPUT ../05-semisupervised/semisupervised.tex
 INPUT ../05-semisupervised/semisupervised.tex
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
 INPUT ../06-multitask/multitask.tex
 INPUT ../06-multitask/multitask.tex
 INPUT ../07-syneval/syneval.tex
@@ -335,13 +335,15 @@ INPUT ../07-syneval/syneval.tex
 INPUT ../08-conclusion/conclusion.tex
 INPUT ../08-conclusion/conclusion.tex
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmss17.tfm
+INPUT ../09-app-data/data.tex
+INPUT ../09-app-data/data.tex
 INPUT thesis.aux
 INPUT thesis.run.xml
 OUTPUT thesis.run.xml
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb

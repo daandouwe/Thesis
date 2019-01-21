@@ -1,19 +1,19 @@
 [0] Config.pm:343> INFO - This is Biber 2.5
 [0] Config.pm:346> INFO - Logfile is 'thesis.blg'
-[43] biber-darwin:290> INFO - === Fri Jan 18, 2019, 18:12:08
-[64] Biber.pm:351> INFO - Reading 'thesis.bcf'
-[164] Biber.pm:776> INFO - Found 11 citekeys in bib section 0
-[178] Biber.pm:3493> INFO - Processing section 0
-[217] Biber.pm:3657> INFO - Looking for bibtex format file '../src/BIB.bib' for section 0
-[226] bibtex.pm:1187> INFO - Decoding LaTeX character macros into UTF-8
-[237] bibtex.pm:1048> INFO - Found BibTeX data source '../src/BIB.bib'
-[238] Utils.pm:149> WARN - Duplicate entry key: 'Blei+2016:VI' in file '../src/BIB.bib', skipping ...
-[276] Utils.pm:149> WARN - I didn't find a database entry for 'Baydin+2015:AD' (section 0)
-[276] Utils.pm:149> WARN - I didn't find a database entry for 'Miao+16:LLVAE' (section 0)
-[298] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[299] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[299] Biber.pm:3306> INFO - Sorting list 'nyt/global/' of type 'entry' with scheme 'nyt' and locale 'en-US'
-[299] Biber.pm:3310> INFO - No sort tailoring available for locale 'en-US'
-[309] bbl.pm:526> INFO - Writing 'thesis.bbl' with encoding 'UTF-8'
-[311] bbl.pm:619> INFO - Output to thesis.bbl
-[311] Biber.pm:108> INFO - WARNINGS: 3
+[58] biber-darwin:290> INFO - === Mon Jan 21, 2019, 17:05:44
+[87] Biber.pm:351> INFO - Reading 'thesis.bcf'
+[192] Biber.pm:776> INFO - Found 11 citekeys in bib section 0
+[204] Biber.pm:3493> INFO - Processing section 0
+[253] Biber.pm:3657> INFO - Looking for bibtex format file '../src/BIB.bib' for section 0
+[263] bibtex.pm:1187> INFO - Decoding LaTeX character macros into UTF-8
+[274] bibtex.pm:1048> INFO - Found BibTeX data source '../src/BIB.bib'
+[275] Utils.pm:149> WARN - Duplicate entry key: 'Blei+2016:VI' in file '../src/BIB.bib', skipping ...
+[315] Utils.pm:149> WARN - I didn't find a database entry for 'Baydin+2015:AD' (section 0)
+[315] Utils.pm:149> WARN - I didn't find a database entry for 'Miao+16:LLVAE' (section 0)
+[336] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[336] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[336] Biber.pm:3306> INFO - Sorting list 'nyt/global/' of type 'entry' with scheme 'nyt' and locale 'en-US'
+[336] Biber.pm:3310> INFO - No sort tailoring available for locale 'en-US'
+[348] bbl.pm:526> INFO - Writing 'thesis.bbl' with encoding 'UTF-8'
+[350] bbl.pm:619> INFO - Output to thesis.bbl
+[350] Biber.pm:108> INFO - WARNINGS: 3
