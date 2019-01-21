@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  18 JAN 2019 18:01
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  18 JAN 2019 18:15
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1230,14 +1230,14 @@ Package biblatex Info: ... file 'thesis.bbl' found.
 
 Package biblatex Warning: The following entry could not be found
 (biblatex)                in the database:
-(biblatex)                Miao+16:LLVAE
+(biblatex)                Baydin+2015:AD
 (biblatex)                Please verify the spelling and rerun
 (biblatex)                LaTeX afterwards.
 
 
 Package biblatex Warning: The following entry could not be found
 (biblatex)                in the database:
-(biblatex)                Baydin+2015:AD
+(biblatex)                Miao+16:LLVAE
 (biblatex)                Please verify the spelling and rerun
 (biblatex)                LaTeX afterwards.
 
@@ -1390,6 +1390,10 @@ Chapter 2.
 
 ]
 Chapter 3.
+(../03-rnng/rnng.tex) [4
+
+]
+Chapter 4.
 (../04-crf-parser/crf-parser.tex
 Package microtype Info: Character `029' is missing
 (microtype)             in font `T1/lmr/m/sc/10.95'.
@@ -1397,7 +1401,7 @@ Package microtype Info: Character `029' is missing
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [4
+ [5
 
 ]
 LaTeX Font Info:    External font `lmex10' loaded for size
@@ -1405,37 +1409,37 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 34.
 
-[5] [6]
+[6] [7]
 Overfull \hbox (1.36162pt too wide) in paragraph at lines 96--96
 [] 
  []
 
-[7]
+[8]
 Overfull \hbox (26.56099pt too wide) in paragraph at lines 130--130
 [] 
  []
 
-[8pdfTeX warning (ext4): destination with the same identifier (name{equation.3.
+[9pdfTeX warning (ext4): destination with the same identifier (name{equation.4.
 2.1}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
 l.130 \end{align*}
                   pdfTeX warning (ext4): destination with the same identifier (
-name{equation.3.2.2}) has been already used, duplicate ignored
+name{equation.4.2.2}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
 l.130 \end{align*}
                   pdfTeX warning (ext4): destination with the same identifier (
-name{equation.3.2.3}) has been already used, duplicate ignored
+name{equation.4.2.3}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
 l.130 \end{align*}
-                  ]) [9]
-Chapter 4.
-(../05-semisupervised/semisupervised.tex [10
+                  ]) [10]
+Chapter 5.
+(../05-semisupervised/semisupervised.tex [11
 
 ]
 Overfull \hbox (48.79774pt too wide) in paragraph at lines 20--22
@@ -1444,156 +1448,160 @@ Overfull \hbox (48.79774pt too wide) in paragraph at lines 20--22
  )$ \T1/lmr/m/n/10.95 (-20) we rely on au-to-matic dif-fer-en-ti-a-tion ([]). 
  []
 
-[11pdfTeX warning (ext4): destination with the same identifier (name{equation.4
+[12pdfTeX warning (ext4): destination with the same identifier (name{equation.5
 .2.1}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
 l.50 T
       he lower bound $\mathcal{L}(\theta, \lambda)$ will be optimized by gra...
-pdfTeX warning (ext4): destination with the same identifier (name{equation.4.2.
+pdfTeX warning (ext4): destination with the same identifier (name{equation.5.2.
 2}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
 l.50 T
       he lower bound $\mathcal{L}(\theta, \lambda)$ will be optimized by gra...
-]pdfTeX warning (ext4): destination with the same identifier (name{equation.4.2
+]pdfTeX warning (ext4): destination with the same identifier (name{equation.5.2
 .1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.60 \end{align}
                 pdfTeX warning (ext4): destination with the same identifier (na
-me{equation.4.2.2}) has been already used, duplicate ignored
+me{equation.5.2.2}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.60 \end{align}
                 pdfTeX warning (ext4): destination with the same identifier (na
-me{equation.4.2.3}) has been already used, duplicate ignored
+me{equation.5.2.3}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.60 \end{align}
                 pdfTeX warning (ext4): destination with the same identifier (na
-me{equation.4.2.4}) has been already used, duplicate ignored
+me{equation.5.2.4}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.60 \end{align}
                 pdfTeX warning (ext4): destination with the same identifier (na
-me{equation.4.2.1}) has been already used, duplicate ignored
+me{equation.5.2.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.79 \end{align}
                 pdfTeX warning (ext4): destination with the same identifier (na
-me{equation.4.2.2}) has been already used, duplicate ignored
+me{equation.5.2.2}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.79 \end{align}
                 pdfTeX warning (ext4): destination with the same identifier (na
-me{equation.4.2.3}) has been already used, duplicate ignored
+me{equation.5.2.3}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.79 \end{align}
                 pdfTeX warning (ext4): destination with the same identifier (na
-me{equation.4.2.4}) has been already used, duplicate ignored
+me{equation.5.2.4}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.79 \end{align}
                 pdfTeX warning (ext4): destination with the same identifier (na
-me{equation.4.2.6}) has been already used, duplicate ignored
+me{equation.5.2.6}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.79 \end{align}
                 pdfTeX warning (ext4): destination with the same identifier (na
-me{equation.4.2.7}) has been already used, duplicate ignored
+me{equation.5.2.7}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.79 \end{align}
                 pdfTeX warning (ext4): destination with the same identifier (na
-me{equation.4.2.8}) has been already used, duplicate ignored
+me{equation.5.2.8}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.79 \end{align}
                 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [12]pdfTeX warning (ext4): destination with the same identifier (name{equation
-.4.2.1}) has been already used, duplicate ignored
+ [13]pdfTeX warning (ext4): destination with the same identifier (name{equation
+.5.2.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.100 \end{align}
                  pdfTeX warning (ext4): destination with the same identifier (n
-ame{equation.4.2.2}) has been already used, duplicate ignored
+ame{equation.5.2.2}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.100 \end{align}
                  pdfTeX warning (ext4): destination with the same identifier (n
-ame{equation.4.2.3}) has been already used, duplicate ignored
+ame{equation.5.2.3}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.100 \end{align}
                  pdfTeX warning (ext4): destination with the same identifier (n
-ame{equation.4.2.4}) has been already used, duplicate ignored
+ame{equation.5.2.4}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.100 \end{align}
                  pdfTeX warning (ext4): destination with the same identifier (n
-ame{equation.4.2.6}) has been already used, duplicate ignored
+ame{equation.5.2.6}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.100 \end{align}
                  
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [13pdfTeX warning (ext4): destination with the same identifier (name{equation.
-4.2.9}) has been already used, duplicate ignored
+ [14pdfTeX warning (ext4): destination with the same identifier (name{equation.
+5.2.9}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
 l.100 \end{align}
                  pdfTeX warning (ext4): destination with the same identifier (n
-ame{equation.4.2.10}) has been already used, duplicate ignored
+ame{equation.5.2.10}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
 l.100 \end{align}
-                 ] [14pdfTeX warning (ext4): destination with the same identifi
-er (name{equation.4.2.5}) has been already used, duplicate ignored
+                 ] [15pdfTeX warning (ext4): destination with the same identifi
+er (name{equation.5.2.5}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
 l.128 \end{align}
-                 ] [15]
+                 ] [16]
 Overfull \hbox (44.38998pt too wide) in paragraph at lines 186--186
 [] 
  []
 
-[16] [17]) [18]
-Chapter 5.
-(../06-syneval/syneval.tex) [19
+[17] [18]) [19]
+Chapter 6.
+(../06-multitask/multitask.tex) [20
 
 ]
-Chapter 6.
-(../07-conclusion/conclusion.tex) [20
+Chapter 7.
+(../07-syneval/syneval.tex) [21
 
-] [21
+]
+Chapter 8.
+(../08-conclusion/conclusion.tex) [22
 
-] [22
+] [23
+
+] [24
 
 ]
 Appendix A.
-[23
+[25
 
-] [24
+] [26
 
 
 ] 
 AED: lastpage setting LastPage
-[25]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 98.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 98.
+[27]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 108.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 108.
  (./thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 98.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 98.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 108.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 108.
 
 
 LaTeX Font Warning: Size substitutions with differences
@@ -1607,10 +1615,10 @@ Package logreq Info: Writing requests to 'thesis.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 18550 strings out of 493014
- 301022 string characters out of 6133351
- 808484 words of memory out of 5000000
- 21490 multiletter control sequences out of 15000+600000
+ 18566 strings out of 493014
+ 301225 string characters out of 6133351
+ 808553 words of memory out of 5000000
+ 21494 multiletter control sequences out of 15000+600000
  109030 words of font info for 135 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  50i,13n,51p,772b,1124s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1637,10 +1645,10 @@ lm/lmsso10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy10
 local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></usr/local/texli
 ve/2016/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/t
 exlive/2016/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on thesis.pdf (28 pages, 369834 bytes).
+Output written on thesis.pdf (30 pages, 370842 bytes).
 PDF statistics:
- 464 PDF objects out of 1000 (max. 8388607)
- 408 compressed objects within 5 object streams
- 141 named destinations out of 1000 (max. 500000)
- 28297 words of extra memory for PDF output out of 29859 (max. 10000000)
+ 484 PDF objects out of 1000 (max. 8388607)
+ 426 compressed objects within 5 object streams
+ 145 named destinations out of 1000 (max. 500000)
+ 28313 words of extra memory for PDF output out of 29859 (max. 10000000)
 

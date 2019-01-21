@@ -6,44 +6,48 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {chapter}{\numberline {2}Background}{3}{chapter.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {3}CRF parser}{4}{chapter.3}
+\contentsline {chapter}{\numberline {3}RNNG}{4}{chapter.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {3.1}Semiring formulation}{4}{section.3.1}
+\contentsline {chapter}{\numberline {4}CRF parser}{5}{chapter.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {3.2}Alternative formulation}{5}{section.3.2}
+\contentsline {section}{\numberline {4.1}Semiring formulation}{5}{section.4.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {3.3}Outside}{9}{section.3.3}
+\contentsline {section}{\numberline {4.2}Alternative formulation}{6}{section.4.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {4}Semisupervised learning of RNNG}{10}{chapter.4}
+\contentsline {section}{\numberline {4.3}Outside}{10}{section.4.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {4.1}Supervised objective}{10}{section.4.1}
+\contentsline {chapter}{\numberline {5}Semisupervised learning of RNNG}{11}{chapter.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {4.2}Unsupervised objective}{11}{section.4.2}
+\contentsline {section}{\numberline {5.1}Supervised objective}{11}{section.5.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Variational approximation}{11}{paragraph*.2}
+\contentsline {section}{\numberline {5.2}Unsupervised objective}{12}{section.5.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Gradients of joint parameters}{12}{paragraph*.3}
+\contentsline {paragraph}{Variational approximation}{12}{paragraph*.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Gradients of posterior parameters}{13}{paragraph*.4}
+\contentsline {paragraph}{Gradients of joint parameters}{13}{paragraph*.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {4.3}Optimization}{14}{section.4.3}
+\contentsline {paragraph}{Gradients of posterior parameters}{14}{paragraph*.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {4.4}Variance reduction}{15}{section.4.4}
+\contentsline {section}{\numberline {5.3}Optimization}{15}{section.5.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Variance of estimator}{15}{paragraph*.5}
+\contentsline {section}{\numberline {5.4}Variance reduction}{16}{section.5.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Control variates}{16}{paragraph*.6}
+\contentsline {paragraph}{Variance of estimator}{16}{paragraph*.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Example}{17}{paragraph*.7}
+\contentsline {paragraph}{Control variates}{17}{paragraph*.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {5}Targeted syntactic evaluation}{19}{chapter.5}
+\contentsline {paragraph}{Example}{18}{paragraph*.7}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {6}Conclusion}{20}{chapter.6}
+\contentsline {chapter}{\numberline {6}Multitask learning}{20}{chapter.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{Acknowledgements}{21}{chapter*.8}
+\contentsline {chapter}{\numberline {7}Targeted syntactic evaluation}{21}{chapter.7}
 \defcounter {refsection}{0}\relax 
-\contentsline {part}{Appendices}{22}{chapter*.8}
+\contentsline {chapter}{\numberline {8}Conclusion}{22}{chapter.8}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {A}Figures}{23}{appendix.A}
+\contentsline {chapter}{Acknowledgements}{23}{chapter*.8}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{References}{24}{appendix*.9}
+\contentsline {part}{Appendices}{24}{chapter*.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {A}Figures}{25}{appendix.A}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{References}{26}{appendix*.9}

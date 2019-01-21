@@ -1,4 +1,4 @@
-PWD /Users/daan/Documents/logic/thesis/doc/thesis/thesis/00-complete
+PWD /Users/daan/Documents/logic/thesis/doc/thesis/00-complete
 INPUT /usr/local/texlive/2016/texmf.cnf
 INPUT /usr/local/texlive/2016/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt
@@ -303,6 +303,8 @@ INPUT ../01-introduction/introduction.tex
 INPUT ../01-introduction/introduction.tex
 INPUT ../02-background/background.tex
 INPUT ../02-background/background.tex
+INPUT ../03-rnng/rnng.tex
+INPUT ../03-rnng/rnng.tex
 INPUT ../04-crf-parser/crf-parser.tex
 INPUT ../04-crf-parser/crf-parser.tex
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmcsc10.tfm
@@ -326,10 +328,12 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmsso10.tfm
 INPUT ../05-semisupervised/semisupervised.tex
 INPUT ../05-semisupervised/semisupervised.tex
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
-INPUT ../06-syneval/syneval.tex
-INPUT ../06-syneval/syneval.tex
-INPUT ../07-conclusion/conclusion.tex
-INPUT ../07-conclusion/conclusion.tex
+INPUT ../06-multitask/multitask.tex
+INPUT ../06-multitask/multitask.tex
+INPUT ../07-syneval/syneval.tex
+INPUT ../07-syneval/syneval.tex
+INPUT ../08-conclusion/conclusion.tex
+INPUT ../08-conclusion/conclusion.tex
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmss17.tfm
 INPUT thesis.aux
 INPUT thesis.run.xml
