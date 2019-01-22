@@ -1,0 +1,232 @@
+\documentclass[ignorenonframetext,]{beamer}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\beamertemplatenavigationsymbolsempty
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\newif\ifbibliography
+\hypersetup{
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+
+% Prevent slide breaks in the middle of a paragraph:
+\widowpenalties 1 10000
+\raggedbottom
+
+\AtBeginPart{
+  \let\insertpartnumber\relax
+  \let\partname\relax
+  \frame{\partpage}
+}
+\AtBeginSection{
+  \ifbibliography
+  \else
+    \let\insertsectionnumber\relax
+    \let\sectionname\relax
+    \frame{\sectionpage}
+  \fi
+}
+\AtBeginSubsection{
+  \let\insertsubsectionnumber\relax
+  \let\subsectionname\relax
+  \frame{\subsectionpage}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+
+\date{}
+
+\begin{document}
+
+\begin{frame}{Cover letter Unbabel - Summer AI Research Internship}
+
+{[}Opening statement{]}
+
+\begin{block}{1. Why I want to work at Unbabel}
+
+This internship was brought to my attention by my supervisor Wilker
+Aziz, who was so very kind to introduce me to his collaborator Andre
+Martins.
+
+\end{block}
+
+\begin{block}{2. What I work on now}
+
+Currently I am writing a master's thesis under supervision of
+Prof.~Wilker Aziz. I investigate the question: What are effective ways
+of incorporating syntactic structure into neural language models?
+
+Central in this research is a class of neural language models that
+explicitly model the hierarchical syntactic structure in addition to the
+sequence of words. These models merges algorithms from transition-based
+parsing adapted for joint (generative) modeling, with (recurrent) neural
+networks to parametrize the transition model. Although these are
+fundamentally joint models, they can be evaluated as regular language
+models, modeling only words, by marginalizing over the latent syntactic
+structure. I focus on one model in particular: Recurrent Neural Network
+Grammars (RNNG) as proposed by {[}Dyer et al. 2016{]}. Although exact
+marginalization is intractable for the RNNG, due to the rich
+parametrization of the statistical model, importance sampling provides
+an effective approximate method.
+
+In my thesis I consider the RNNG and investigate:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  The impact of the proposal samples on the approximate marginalization.
+\end{enumerate}
+
+I propose a new discriminative chart-based neural parser that is trained
+with a global, Conditional Random Field (CRF), objective. I hypothesize
+that a globally trained model makes a more suitable proposal
+distribution than a locally trained transition based model. A global
+model has ready access to competing analyses that can be structurally
+very dissimilar but nonetheless close in probability, whereas we
+hypothesize that a locally trained model is more prone to produce
+locally corrupted structures that are nearby in transition-space.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  Semi-supervised training by including unlabeled data.
+\end{enumerate}
+
+To make these joint models competitive language models they need to make
+use of the vast amounts of unlabeled data that exists. I extend the
+training to unlabeled data by optimizing a variational lower bound on
+the marginal probability, which jointly optimizes the parameters of
+proposal model (also named the `posterior' in this framework) and the
+joint model. Gradients for this objective are obtained using the score
+function estimator {[}Fu 2006{]}, also known as REINFORCE {[}Williams
+1992{]}, and we introduce an effective baseline based on argmax decoding
+{[}Rennie et al. 2017{]}, which significantly reduces the variance in
+this optimization procedure.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  Alternative, simpler, models.
+\end{enumerate}
+
+I investigate the added value of syntax as a discrete latent variable by
+comparing the model with a robust and competitive alternative: multitask
+learning of a regular neural language model with a syntactic side
+objective. I propose a novel, minimal syntactic side objective inspired
+by the CRF parser's feature function, that is surprisingly successful.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  Targeted syntactic evaluation.
+\end{enumerate}
+
+I believe that to answer a subtle question we need subtle metrics.
+Perplexity, the usual performance metric language models, conflates
+multiple sources for success in a language model, and syntactically
+challenging sentences are relatively infrequent. Instead we probe the
+syntactic abilities of language models by their grammatical
+acceptability judgements, a line of evaluation recently proposed by
+Linzen et al. Given two minimally differing sentences, the task is to
+assign a higher probability to the grammatical one. The dataset is
+consists of constructions generated by manually designed context free
+grammars and cover a range of syntactic phenomena.
+
+\end{block}
+
+\begin{block}{3. What I have worked on before}
+
+{[}Briefly mention relevant courses{]}
+
+I learned a lot from working on individual projects:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Graph-based and transition-based dependency parsing with different
+  learning algorithms (neural network features, and a structured
+  perceptron on manually defined features).
+\item
+  Latent Dirichlet Allocation with different inference methods:
+  collapsed Gibbs sampling; (stochastic) Variational Inference; and
+  amortized Varitional Inference (using a neural network).
+\item
+  A number of didactic projects, implemented with teaching in mind: CKY
+  parsing with rules and probabilities estimated from a treebank; ngram
+  language models with smoothing; neural ngram lanuage models; word
+  embeddings in various ways (GloVe, SVD on a (weighted) cooccurence
+  matrix).
+\end{enumerate}
+
+In my projects I make regular use of the great libraries that the Python
+ecosystem has to offer: Dynet and PyTorch, and earlier some Tensorflow,
+wherever I need neural networks; Cython and Numpy for speed and general
+numerical computation; multiprocessing and joblib whenever I see the
+opportunity for parallel computation; matplotlib, seaborn, and pandas
+wherever I want to inspect, manipulate and visualize data.
+
+I strive to make these projects well-organized, well-documented and
+self-contained and I increasingly learn to appreciate the role of bash
+scripts in this: to obtain and process data in transparent ways, to
+standardize training and evaluation, and to promote transparency and
+reproducibility in the process. I believe that the code for my thesis is
+the culmination of this learning process.
+
+Lastly, I have experience teaching students from the MSc in Artificial
+Intelligence. In the first year master's course Natural Language
+Processing 1, I supervised student projects in which they implemented a
+neural network graph-based dependency parser from scratch in Python
+using PyTorch. This was a semester-long project with 30 students that
+met twice per week. I prepared and presented mini-lectures on deep
+learning and dependency parsing, prepared code examples to teach
+PyTorch, and co-graded the final reports. Besides the projects I
+contributed to the course materials by designing programming practicals
+which where handed out in Jupyter Notebook. In teaching I was supported
+by Joost Bastings and the course was taught by Tejaswini Deoskar (see
+academic references in CV).
+
+\end{block}
+
+\begin{block}{4. What future work interests me}
+
+{[}Closing statement{]}
+
+\end{block}
+
+\end{frame}
+
+\end{document}

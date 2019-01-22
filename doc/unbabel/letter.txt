@@ -1,0 +1,109 @@
+Cover letter Unbabel - Summer AI Research Internship
+====================================================
+
+1. Why I want to work at Unbabel
+--------------------------------
+
+Unbabel is precisely the company I want to work for. \[Describe why...\]
+I have been following your company for some months now, and was
+delighted to learn of the internship opportunity offered by you this
+summer. The internship was brought to my attention by my thesis
+supervisor Wilker Aziz, who was so very kind to mention me to his
+academic collaborator Andre Martins. I am convinced that I provide just
+the right skills to make this internship a success and hope that by the
+end of this letter you will think so too.
+
+2. What I work on now
+---------------------
+
+I am a master's student at the Institute for Logic Language and
+Computation at the University of Amsterdam. I am writing a master's
+thesis under supervision of Prof. Wilker Aziz, in which I investigate
+the question: What are effective ways of incorporating syntactic
+structure into neural language models?
+
+I study a class of neural language models that explicitly model the
+hierarchical syntactic structure in addition to the sequence of words.
+The model merges generative transition-based parsing with (recurrent)
+neural networks to parametrize the transition model. These are
+fundamentally joint models, but can be evaluated as regular language
+models, modeling only words, by marginalizing over the latent syntactic
+structure. I focus on one model in particular: Recurrent Neural Network
+Grammars (RNNG) as proposed by \[Dyer et al. 2016\]. For this model,
+exact marginalization is intractable due to its rich statistical model,
+but importance sampling, using an external discriminative proposal
+model, provides an effective approximate method.
+
+In my thesis I consider the RNNG and investigate:
+
+1.  The impact of an alternative proposal distribution in the
+    approximate marginalization, by introducing a new chart-based neural
+    parser that is trained with a global, Conditional Random Field
+    (CRF), objective.
+
+2.  Semi-supervised learning, by including unlabeled data on which we
+    optimizing a variational lower bound of the marginal probability.
+
+3.  The added value of making syntax a discrete latent variable, by
+    comparing the model with a robust and competitive alternative:
+    multitask learning of a regular neural language model with a
+    syntactic side objective.
+
+4.  Targeted syntactic evaluation, by probing the syntactic abilities of
+    language models by their grammatical acceptability judgements, a
+    line of evaluation recently proposed by Linzen et al.
+
+3. What I have worked on before
+-------------------------------
+
+\[I have a diverse background\]
+
+\[Moving between these programs I learned how to adapt quickly and learn
+fast\]
+
+\[Briefly mention relevant courses\]
+
+I learned a lot from working on individual projects:
+
+-   Graph-based and transition-based dependency parsing with different
+    learning algorithms (with neural network features, and a structured
+    perceptron on manually defined features).
+
+-   Latent Dirichlet Allocation with different inference methods.
+-   collapsed Gibbs sampling
+-   (Stochastic) Variational Inference
+-   Amortized Variational Inference, using a inference network
+
+-   A number of didactic projects, implemented with teaching in mind
+-   CKY parsing with rules and probabilities estimated from a treebank
+-   ngram language models with smoothing
+-   neural ngram lanuage models
+-   word embeddings: GloVe, SVD on a (weighted) cooccurence matrix
+
+In my projects I make regular use of the great libraries that the Python
+ecosystem has to offer: Dynet and PyTorch, and earlier some Tensorflow,
+wherever I need neural networks; Cython and Numpy for speed and general
+numerical computation; multiprocessing and joblib whenever I see the
+opportunity for parallel computation; matplotlib, seaborn, and pandas
+wherever I want to inspect, manipulate and visualize data.
+
+I strive to make these projects well-organized, well-documented and
+self-contained and I increasingly learn to appreciate the role of bash
+scripts in this: to obtain and process data in transparent ways, to
+standardize training and evaluation, and to promote transparency and
+reproducibility in the process. I believe that the code for my thesis is
+the culmination of this learning process.
+
+I have had the amazing opportunity to teach a large group of students at
+the master level in a course-long research project. The project had them
+implement state of the art NLP techniques from scratch, and write a
+report on their experimental findings - an experience that was a first
+for plenty of students. I supervised and taught almost entirely by
+myself; a bold initiative from my side that was rewarded with great
+satisfaction and immense experience. The student's appreciation of my
+efforts was evident in their consistent attendance to the weekly,
+non-compulsory, meetings, their impressive results, and the enthusiastic
+(anonymous) feedback I received afterwards. This experience has taught
+me that I have it in me to be a great teacher.
+
+\[Closing statement\]
