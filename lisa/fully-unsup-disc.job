@@ -1,11 +1,9 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J disc-adam
-#SBATCH -o lisa/out/disc-adam.out
-#SBATCH -t 2-00:00:00
-
-module load Python/3.6.3-foss-2017b
+#SBATCH -J fully-unsup-disc
+#SBATCH -o lisa/out/fully-unsup-disc.out
+#SBATCH -t 3-00:00:00
 
 # send an e-mail when the job starts
 echo "Job $SLURM_JOB_NAME started at `date`" | mail $USER -s "Started job $SLURM_JOB_NAME"
@@ -17,6 +15,11 @@ mkdir -p ${OUTPUT_DIR}
 # always run from the main directory
 cd ${HOME}/thesis
 
+source lisa/lisa-setup.sh
+
+# create supervised vocab
+python src/main.py build @src/configs/vocab/supervised.txt
+
 # we can run training runs in parallel, each on a different processor (16 in total)
 # with a different seed, and we tell each script which seed
 # all other arguments are passed to the parser
@@ -26,15 +29,21 @@ for seed in {1..10}; do
   sleep 5
 
   lisa/train.sh ${seed} ${OUTPUT_DIR} \
-      --model-path-base models/disc-rnng_optim=adam \
-      --max-time $((2 * 22 * 3600)) \
-      --max-epochs 100 \
       --dynet-autobatch 1 \
+      --dynet-mem 4000 \
+      --max-time $((3 * 23 * 3600)) \
+      --model-path-base models/fully-unsup-disc \
+      --model-type fully-unsup-disc \
+      @src/configs/vocab/supervised.txt \
       @src/configs/data/supervised.txt \
-      @src/configs/model/disc-rnng.txt \
       @src/configs/training/adam.txt \
+      @src/configs/baseline/mlp.txt \
+      --num-samples 1 \
+      --batch-size 1 \
+      --num-dev-samples 50 \
+      --num-test-samples 100 \
       &
-      
+
 done
 
 # this waits until all sub-jobs finish
