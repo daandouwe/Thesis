@@ -31,11 +31,11 @@ def main():
         dynet.add_argument(arg)
 
     data = parser.add_argument_group('Data')
-    data.add_argument('--train-path', default='data/ptb/train.trees',
+    data.add_argument('--train-path', default='data/ptb/02-21.10way.clean',
                         help='training trees')
-    data.add_argument('--dev-path', default='data/ptb/dev.trees',
+    data.add_argument('--dev-path', default='22.auto.clean',
                         help='development trees')
-    data.add_argument('--test-path', default='data/ptb/test.trees',
+    data.add_argument('--test-path', default='23.auto.clean',
                         help='test trees')
     data.add_argument('--unlabeled-path', default='data/unlabeled/news.en-00001-of-00100.processed',
                         help='unlabeled data for semi-supervised training')
@@ -94,8 +94,10 @@ def main():
                         help='dimension of all scoring feedforwards')
 
     lm = parser.add_argument_group('Model (LM)')
-    lm.add_argument('--multitask', action='store_true',
+    lm.add_argument('--multitask', choices=['none', 'spans', 'ccg'], default='none',
                     help='predict labeled spans as side objective')
+    # lm.add_argument('--multitask', action='store_true',
+    #                 help='predict labeled spans as side objective')
     lm.add_argument('--all-spans', action='store_true',
                     help='also predict null spans')
 

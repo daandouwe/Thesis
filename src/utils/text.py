@@ -1,8 +1,8 @@
 
 BRACKETS = [
-    'LRB', 'RRB',
-    'LSB', 'RSB',
-    'RCB', 'RCB'
+    '-LRB-', '-RRB-',
+    '-LSB-', '-RSB-',
+    '-RCB-', '-RCB-'
 ]
 
 
@@ -41,17 +41,17 @@ def replace_brackets(words):
     replaced = []
     for word in words:
         if word == '(':
-            replaced.append('LRB')
+            replaced.append('-LRB-')
         elif word == '{':
-            replaced.append('LCB')
+            replaced.append('-LCB-')
         elif word == '[':
-            replaced.append('LSB')
+            replaced.append('-LSB-')
         elif word == ')':
-            replaced.append('RRB')
+            replaced.append('-RRB-')
         elif word == '}':
-            replaced.append('RCB')
+            replaced.append('-RCB-')
         elif word == ']':
-            replaced.append('RSB')
+            replaced.append('-RSB-')
         else:
             replaced.append(word)
     return replaced

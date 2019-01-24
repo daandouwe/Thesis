@@ -276,7 +276,7 @@ class LeafSpanNode(SpanNode):
         return False
 
 
-def fromstring(tree, strip_top=False):
+def fromstring(tree, strip_top=True):
     """Return a tree from a string."""
     assert isinstance(tree, str), tree
     assert len(tree) > 0, tree

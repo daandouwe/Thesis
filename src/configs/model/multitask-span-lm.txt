@@ -1,7 +1,7 @@
 --model-type=rnn-lm
---multitask
+--multitask=spans
 --word-emb-dim=100
---lstm-dim=300
+--lstm-dim=330
 --lstm-layer=2
 --label-hidden-dim=250
 --dropout=0.2

@@ -1,6 +1,6 @@
 --sample-proposals
---parser-type=disc-rnng
+--model-type=disc-rnng
 --num-samples=100
 --alpha=0.8
---infile=data/ptb/test.trees
+--infile=data/ptb/23.auto.clean
 --outfile=data/proposals/rnng-test.props

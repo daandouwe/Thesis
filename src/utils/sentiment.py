@@ -1,5 +1,5 @@
 """
-Evaluate tagging accuracy on the sentiment treebank.
+Evaluate tagging accuracy on the stanford sentiment treebank.
 """
 
 import sys

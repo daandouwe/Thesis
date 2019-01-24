@@ -9,11 +9,12 @@ import dynet as dy
 from tqdm import tqdm
 from tensorboardX import SummaryWriter
 
-from lm.model import LanguageModel, MultitaskLanguageModel, START, STOP
+from lm.model import LanguageModel, SpanMultitaskLanguageModel, SupertagMultitaskLanguageModel, START, STOP
 from utils.vocabulary import Vocabulary, UNK
 from utils.trees import fromstring, DUMMY
 from utils.text import replace_quotes, replace_brackets
 from utils.general import Timer, get_folders, write_args, ceil_div, move_to_final_folder
+import utils.ccg as ccg
 
 
 class LanguageModelTrainer:
@@ -123,8 +124,11 @@ class LanguageModelTrainer:
 
     def build_corpus(self):
         print(f'Loading training trees from `{self.train_path}`...')
-        with open(self.train_path) as f:
-            train_treebank = [fromstring(line.strip()) for line in f]
+        if self.multitask == 'ccg':
+            train_treebank = ccg.fromfile(self.train_path)
+        else:
+            with open(self.train_path) as f:
+                train_treebank = [fromstring(line.strip()) for line in f]
 
         print(f'Loading development trees from `{self.dev_path}`...')
         with open(self.dev_path) as f:
@@ -134,7 +138,7 @@ class LanguageModelTrainer:
         with open(self.test_path) as f:
             test_treebank = [fromstring(line.strip()) for line in f]
 
-        if self.multitask:
+        if self.multitask == 'spans':
             # need trees with span-information
             train_treebank = [tree.convert() for tree in train_treebank]
             dev_treebank = [tree.convert() for tree in dev_treebank]
@@ -149,15 +153,15 @@ class LanguageModelTrainer:
         else:
             words = [word for tree in train_treebank for word in tree.words()]
 
-        if self.multitask:
-            labels = [label for tree in train_treebank for label in tree.labels()]
-        else:
+        if self.multitask == 'none':
             labels = []
-
-        if self.multitask:
-            words = [UNK, START, STOP] + words
         else:
+            labels = [label for tree in train_treebank for label in tree.labels()]
+
+        if self.multitask == 'none':
             words = [UNK, START] + words
+        else:
+            words = [UNK, START, STOP] + words
 
         word_vocab = Vocabulary.fromlist(words, unk_value=UNK)
         label_vocab = Vocabulary.fromlist(labels)
@@ -182,8 +186,8 @@ class LanguageModelTrainer:
         print('Initializing model...')
         self.model = dy.ParameterCollection()
 
-        if self.multitask:
-            lm = MultitaskLanguageModel(
+        if self.multitask == 'spans':
+            lm = SpanMultitaskLanguageModel(
                 model=self.model,
                 word_vocab=self.word_vocab,
                 label_vocab=self.label_vocab,
@@ -193,6 +197,17 @@ class LanguageModelTrainer:
                 label_hidden_dim=self.label_hidden_dim,
                 dropout=self.dropout,
                 predict_all_spans=self.predict_all_spans
+            )
+        elif self.multitask == 'ccg':
+            lm = SupertagMultitaskLanguageModel(
+                model=self.model,
+                word_vocab=self.word_vocab,
+                label_vocab=self.label_vocab,
+                word_embedding_dim=self.emb_dim,
+                lstm_dim=self.lstm_dim,
+                lstm_layers=self.lstm_layers,
+                label_hidden_dim=self.label_hidden_dim,
+                dropout=self.dropout,
             )
         else:
             lm = LanguageModel(
@@ -295,8 +310,10 @@ class LanguageModelTrainer:
 
             # Compute loss on minibatch
             dy.renew_cg()
-            if self.multitask:
+            if self.multitask == 'spans':
                 losses = [self.lm.forward(tree.words(), spans=tree.spans()) for tree in minibatch]
+            elif self.multitask == 'ccg':
+                losses = [self.lm.forward(tree.words(), labels=tree.labels()) for tree in minibatch]
             else:
                 losses = [self.lm.forward(tree.words()) for tree in minibatch]
             loss = dy.esum(losses)
@@ -334,7 +351,7 @@ class LanguageModelTrainer:
                 if self.fine_tune_embeddings:
                     self.tensorboard_writer.add_scalar(
                         'train/embedding-l2', delta_penalty.value(), self.num_updates)
-                if self.multitask:
+                if self.multitask != 'none':
                     self.tensorboard_writer.add_scalar(
                         'train/scaffold-accuracy', self.lm.correct / self.lm.predicted, self.num_updates)
 
