@@ -639,18 +639,16 @@ publisher = {Curran Associates, Inc.},
   url = 	"http://aclweb.org/anthology/N18-1091"
 }
 
-@InProceedings{Stern+2017:minimal,
-  author = 	"Stern, Mitchell
-		and Andreas, Jacob
-		and Klein, Dan",
-  title = 	"A Minimal Span-Based Neural Constituency Parser",
-  booktitle = 	"Proceedings of the 55th Annual Meeting of the Association for      Computational Linguistics (Volume 1: Long Papers)    ",
-  year = 	"2017",
-  publisher = 	"Association for Computational Linguistics",
-  pages = 	"818--827",
-  location = 	"Vancouver, Canada",
-  doi = 	"10.18653/v1/P17-1076",
-  url = 	"http://aclweb.org/anthology/P17-1076"
+@InProceedings{Stern+2017:Minimal,
+  author    = {Stern, Mitchell and Andreas, Jacob and Klein, Dan},
+  title     = {A Minimal Span-Based Neural Constituency Parser},
+  booktitle = {Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
+  month     = {July},
+  year      = {2017},
+  address   = {Vancouver, Canada},
+  publisher = {Association for Computational Linguistics},
+  pages     = {818--827},
+  url       = {http://aclweb.org/anthology/P17-1076}
 }
 
 @InProceedings{Klein+2018:reinforce,
@@ -782,4 +780,96 @@ publisher = {Curran Associates, Inc.},
   url={https://books.google.st/books?id=nmOyQQAACAAJ},
   year={2010},
   publisher={Oxford University Press}
+}
+
+@article{Goldberg+2013:dynamic,
+  title = {Training Deterministic Parsers with Non-Deterministic Oracles},
+  journal = {Transactions of the Association for Computational Linguistics},
+  year = {2013},
+  volume = {1},
+  number = {Oct},
+  pages = {403--414},
+  author = {Goldberg, Yoav and Nivre, Joakim},
+  url = {https://transacl.org/ojs/index.php/tacl/article/download/145/27},
+  note = {}
+}
+
+@InProceedings{Ballesteros+2016:exploration,
+  author = 	"Ballesteros, Miguel
+		and Goldberg, Yoav
+		and Dyer, Chris
+		and Smith, Noah A.",
+  title = 	"Training with Exploration Improves a Greedy Stack LSTM Parser",
+  booktitle = 	"Proceedings of the 2016 Conference on Empirical Methods in Natural      Language Processing    ",
+  year = 	"2016",
+  publisher = 	"Association for Computational Linguistics",
+  pages = 	"2005--2010",
+  location = 	"Austin, Texas",
+  doi = 	"10.18653/v1/D16-1211",
+  url = 	"http://aclweb.org/anthology/D16-1211"
+}
+
+
+@article{Collins2003,
+ author = {Collins, Michael},
+ title = {Head-Driven Statistical Models for Natural Language Parsing},
+ journal = {Comput. Linguist.},
+ issue_date = {December 2003},
+ volume = {29},
+ number = {4},
+ month = dec,
+ year = {2003},
+ issn = {0891-2017},
+ pages = {589--637},
+ numpages = {49},
+ url = {http://dx.doi.org/10.1162/089120103322753356},
+ doi = {10.1162/089120103322753356},
+ acmid = {1105706},
+ publisher = {MIT Press},
+ address = {Cambridge, MA, USA},
+}
+
+
+@inproceedings{Klein+2003,
+ author = {Klein, Dan and Manning, Christopher D.},
+ title = {Accurate Unlexicalized Parsing},
+ booktitle = {Proceedings of the 41st Annual Meeting on Association for Computational Linguistics - Volume 1},
+ series = {ACL '03},
+ year = {2003},
+ location = {Sapporo, Japan},
+ pages = {423--430},
+ numpages = {8},
+ url = {https://doi.org/10.3115/1075096.1075150},
+ doi = {10.3115/1075096.1075150},
+ acmid = {1075150},
+ publisher = {Association for Computational Linguistics},
+ address = {Stroudsburg, PA, USA},
+}
+
+@incollection{Eisner+2012:imitation,
+title = {Imitation Learning by Coaching},
+author = {He, He and Jason Eisner and Hal Daume},
+booktitle = {Advances in Neural Information Processing Systems 25},
+editor = {F. Pereira and C. J. C. Burges and L. Bottou and K. Q. Weinberger},
+pages = {3149--3157},
+year = {2012},
+publisher = {Curran Associates, Inc.},
+url = {http://papers.nips.cc/paper/4545-imitation-learning-by-coaching.pdf}
+}
+
+@InProceedings{Vlachos2012:imitation,
+  title = 	 {An investigation of imitation learning algorithms for structured prediction},
+  author = 	 {Andreas Vlachos},
+  booktitle = 	 {Proceedings of the Tenth European Workshop on Reinforcement Learning},
+  pages = 	 {143--154},
+  year = 	 {2013},
+  editor = 	 {Marc Peter Deisenroth and Csaba Szepesvári and Jan Peters},
+  volume = 	 {24},
+  series = 	 {Proceedings of Machine Learning Research},
+  address = 	 {Edinburgh, Scotland},
+  month = 	 {30 Jun--01 Jul},
+  publisher = 	 {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v24/vlachos12a/vlachos12a.pdf},
+  url = 	 {http://proceedings.mlr.press/v24/vlachos12a.html},
+  abstract = 	 {In the imitation learning paradigm algorithms learn from expert demonstrations in order to become able to accomplish a particular task. DaumÃ© III et al. [2009] framed structured prediction in this paradigm and developed the search-based structured prediction algorithm (Searn) which has been applied successfully to various natural language processing tasks with state-of-the-art performance. Recently, Ross et al. [2011] proposed the dataset aggre- gation algorithm (DAgger) and compared it with Searn in sequential prediction tasks. In this paper, we compare these two algorithms in the context of a more complex structured prediction task, namely biomedical event extraction. We demonstrate that DAgger has more stable performance and faster learning than Searn, and that these advantages are more pronounced in the parameter-free versions of the algorithms.}
 }

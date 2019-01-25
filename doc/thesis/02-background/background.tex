@@ -1,0 +1,37 @@
+\bibliography{../src/bibliography.bib}
+
+\section{Syntax}
+\begin{itemize}
+  \item Some generic stuff on syntax and constituency in natural language
+  \item Reference \cite{Carnie2010:constituent,Everaert+2015:structures} or something?
+\end{itemize}
+
+\section{Parsing}
+\begin{itemize}
+  \item treebanks
+  \item CFGs, and CNF form (show graph of binarizing CFG)
+  \item parsing methods: global chart based, local transition based
+  \item dynamic programming inference vc search heuristics
+  \item modelling types: generative, discriminative, log-linear, count-based, feature-based, neural network features
+\end{itemize}
+
+\section{Neural networks}
+Introduce all the neural network business used
+\begin{itemize}
+  \item Feedfoward
+  \item RNN and LSTM etc.
+  \item SGD optimization
+\end{itemize}
+
+\section{Language models}
+\begin{itemize}
+  \item n-grams, (recurrent) neural network language models
+  \item
+\end{itemize}
+
+\section{Multitask learning}
+\begin{itemize}
+  \item Give formal description of multitask learning
+  \item Name some examples of multitask learning \cite{Zhang+2016:multitask,Goldberg+2016:multitask,Swayamdipta+2018:scaffold}
+  \item In our case of language modelling with syntactic side-objective: $\mathcal{L}(x, y) = \log p_{\theta}(x) + \log q_{\lambda}(y|x)$
+\end{itemize}

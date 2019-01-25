@@ -1,35 +1,54 @@
+\bibliography{../src/bibliography.bib}
 
-\section{Semiring formulation}
-So yeah, the highlights are: an edge connects three nodes, a parent and two \textsc{children}, each node is a labelled \textsc{span}; you need to identify the scoring function for an edge, let’s call it $w(e)$,  in this case we have
-\begin{align}
-    w(e) = f(\textsc{head}(e)) \bigotimes_{c \in \textsc{children}(e)} g(\textsc{span}(c))
-\end{align}
-where $f$ and $g$ are parametric functions; then you can compute the Inside recursion for a node v
-\begin{align}
-    I(v) = \bigoplus_{e \in BS(v)} w(e) \otimes \bigotimes_{c \in \textsc{children}(e)} I(c)
-\end{align}
-where I’m using $BS(v)$ to denote the set of edges incoming to $v$; note that BS here basically enumerates the different ways to segment the string under $(i,j)$ into two adjacent parts and the different labels of each child \textsc{span} (let’s call these $a$ and $b$, each an element in the labelset $L$), thus we can write
-\begin{align}
-I(v=[i,j,l]) = \bigoplus_{ \substack{ e=[i,j,l,k,a,b]: \\ a \in L, \\ b \in L, \\ k \in \{i+1,...,j-1\} } } w(e) \otimes I([i,k,a]) \otimes I([k+1,j,b])
-\end{align}
-Now the key is to realise that $w(e)$ factorises and therefore we can rewrite this as
-\begin{align}
-    I(v=[i,j,l]) = f(i,j,l) &\otimes \bigoplus_{k=i+1}^{j-1} g(i,k) \otimes g(k+1,j) \\
-        &\otimes \bigoplus_{a \in L}  I([i,k,a]) \\
-        &\otimes \bigoplus_{b\in L} I([k+1,j,b])
-\end{align}
-and this finally motivates having an inside table for the \textsc{span}s (with labels summed out), let’s call that
-\begin{align}
-    S(i,j) = \bigoplus_{l \in L} I(i,j,l)
-\end{align}
-and then we have the result
-\begin{align}
-\label{eq:inside-semiring}
-    I(i,j,l) = f(i,j,l)\otimes \bigoplus_{k=i+1}^{j-1} g(i,k)\otimes g(k+1,j) \otimes S(i,k) \otimes S(k+1,j).
-\end{align}
+% Introduction
+
+In this chapter I introduce a novel chart-based neural parser that is trained with a global, Conditional Random Field (CRF). This parser provides an alternative proposal model for the apprimate marginalization in the generative RNNG.
+
+The parser is discriminative, chart-based neural parser that is trained with a global, Conditional Random Field (CRF), objective. The parser is an adaptation of the chart-based parser proposed in \cite{Stern+2017:Minimal}, which is trained with a margin-based objective.
+
+This contrast with the typical choice for a transition-based parser as proposal (a discrminatively trained RNNG). The rationale in this research is that we posit that a globally trained model is a better proposal distribution than a locally trained transition based model.
+
+A global model has ready access to competing analyses that can be structurally dissimilar but close in probability, whereas we hypothesize that a locally trained model is prone to produce locally corrupted structures that are nearby in transition-space.
+
+To promote more diverse samples, the transition distributions are flattened, causing as a downside for the model to visit .
+
+This is a general challenge for greedy transition based models that is typically answered to train dynamic oracles \citep{Goldberg+2013:dynamic} (also called 'exploration' (\citep{Ballesteros+2016:exploration} \citep{Stern+2017:Minimal}), instances of imitation learning (Vlachos 2012; Eisner et al. 2012)), a direction which we do not consider in this research.
 
 
-\section{Alternative formulation}
+\section{Model}
+In this section I describe the probabilistic model of the parser.
+\begin{enumerate}
+  \item Introduce probabilistic model, reference CRF background in apendix
+  \item Desribe how this is a generalization from \citep{Stern+2017:Minimal}
+\end{enumerate}'
+
+\subsection{Motivation}
+\begin{itemize}
+  \item Key point to make: this model regards a constituency tree as a collection of \textit{labeled spans} over a sentence.
+  \item Earlier models (log-linear and neural) regard a constituency tree as a collection of \textit{context-free grammar rules} over a sentence \citep{Klein+2003}.
+  \item A model over \textit{rules} needs to put more expressiveness in the output space: lexicalize the rules \cite{Collins2003}; break the grammar's independence assumptions by annotating the rule with parent and sibling labels \citep{Klein+2003}; )
+  \item This  rich feature representations to parameterize local potentials that interact with a comparatively unconstrained structured decoder.
+\end{itemize}
+
+\subsection{Features}
+In this section I describe how the scores are computed with bidirectional LSTM features.
+\begin{itemize}
+  \item Mention: LSTM features
+  \item Give formal expression for LSTM minus features + Feedforward scoring function
+\end{itemize}
+
+\section{Inference}
+In this section we describe the solution to three related problems:
+\begin{itemize}
+  \item Find the best parse $\mathbf{y}^{*} = \arg \max_{\mathbf{y}} p(\mathbf{y} | \mathbf{x})$
+  \item Compute the normalizer $Z(\mathbf{x}) = \sum_{\mathbb{y}\in \mathcal{Y}(\mathbf{x})} \Psi(x, y)$
+  \item Compute the entropy conditioned on $\mathbf{x}$, $H(\mathbf{y} | \mathbf{x})$
+\end{itemize}
+All three problems can be solved with a different instance of the same two algorithm: the inside algorithm and the outside algorithm.
+
+
+
+\subsection{Inside recursion}
 
 In this derivation we follow Michael Collins notes on the Inside-Outside Algorithm.\footnote{\url{http://www.cs.columbia.edu/~mcollins/io.pdf}}
 
@@ -118,7 +137,7 @@ where we put explicit brackets to emphasize that independence of the subproblems
 The recursions are the same; the semirings are different. The viterbi recursion given above is in the \textsc{ViterbiSemiring}, which uses the $\max$ operator as $\oplus$; the inside recursion given in \ref{eq:final-inside} has standard addition (+) instead.
 
 
-\section{Outside}
+\subsection{Outside recursion}
 \begin{align*}
     \beta(A, i, j) &= \sum_{B \to C A \in R} \sum_{k=1}^{i-1} \psi(B \to C A, k, i-1, j) \cdot \alpha(C, k, i-1) \cdot \beta(B, k, j) \\
             &\qquad + \sum_{B \to A C \in R} \sum_{k=j+1}^{n} \psi(B \to A, C, i, j, k) \cdot \alpha(C, j+1, k) \cdot \beta(B, i, k) \\
@@ -133,3 +152,34 @@ where
     S(i, j) &= \sum_{A \in N} \alpha(A, i, j) \\
     S'(i, j) &= \sum_{A \in N} \psi(A, i, j) \beta(A, i, j)
 \end{align*}
+
+
+
+% \section{Semiring formulation}
+% So yeah, the highlights are: an edge connects three nodes, a parent and two \textsc{children}, each node is a labelled \textsc{span}; you need to identify the scoring function for an edge, let’s call it $w(e)$,  in this case we have
+% \begin{align}
+%     w(e) = f(\textsc{head}(e)) \bigotimes_{c \in \textsc{children}(e)} g(\textsc{span}(c))
+% \end{align}
+% where $f$ and $g$ are parametric functions; then you can compute the Inside recursion for a node v
+% \begin{align}
+%     I(v) = \bigoplus_{e \in BS(v)} w(e) \otimes \bigotimes_{c \in \textsc{children}(e)} I(c)
+% \end{align}
+% where I’m using $BS(v)$ to denote the set of edges incoming to $v$; note that BS here basically enumerates the different ways to segment the string under $(i,j)$ into two adjacent parts and the different labels of each child \textsc{span} (let’s call these $a$ and $b$, each an element in the labelset $L$), thus we can write
+% \begin{align}
+% I(v=[i,j,l]) = \bigoplus_{ \substack{ e=[i,j,l,k,a,b]: \\ a \in L, \\ b \in L, \\ k \in \{i+1,...,j-1\} } } w(e) \otimes I([i,k,a]) \otimes I([k+1,j,b])
+% \end{align}
+% Now the key is to realise that $w(e)$ factorises and therefore we can rewrite this as
+% \begin{align}
+%     I(v=[i,j,l]) = f(i,j,l) &\otimes \bigoplus_{k=i+1}^{j-1} g(i,k) \otimes g(k+1,j) \\
+%         &\otimes \bigoplus_{a \in L}  I([i,k,a]) \\
+%         &\otimes \bigoplus_{b\in L} I([k+1,j,b])
+% \end{align}
+% and this finally motivates having an inside table for the \textsc{span}s (with labels summed out), let’s call that
+% \begin{align}
+%     S(i,j) = \bigoplus_{l \in L} I(i,j,l)
+% \end{align}
+% and then we have the result
+% \begin{align}
+% \label{eq:inside-semiring}
+%     I(i,j,l) = f(i,j,l)\otimes \bigoplus_{k=i+1}^{j-1} g(i,k)\otimes g(k+1,j) \otimes S(i,k) \otimes S(k+1,j).
+% \end{align}

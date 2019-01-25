@@ -1,13 +1,16 @@
 # Fdb version 3
-["pdflatex"] 1548087869 "introduction.tex" "introduction.pdf" "introduction" 1548087869
-  "../src/thesis.tex" 0 -1 0 ""
-  "/usr/local/texlive/2016/texmf-dist/tex/latex/subfiles/subfiles.cls" 1337903397 1668 72b0756be37b3cb3f28b12a13569c109 ""
-  "/usr/local/texlive/2016/texmf-dist/tex/latex/tools/verbatim.sty" 1454284088 7264 cf839ee7f0c2bfc711b0b88970764569 ""
+["bibtex introduction"] 0 "introduction.aux" "introduction.bbl" "introduction" 0
+  "introduction.aux" 1548086837 8 a94a2480d3289e625eea47cd1b285758 ""
+  "introduction.bcf" 0 -1 0 ""
+  (generated)
+  "introduction.bbl"
+["pdflatex"] 1548428872 "introduction.tex" "introduction.pdf" "introduction" 1548428872
   "/usr/local/texlive/2016/texmf-dist/web2c/texmf.cnf" 1463093894 31953 b9489e6e586f798610c60aec1f5ec548 ""
   "/usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt" 1485894833 3873397 68ff021935db8719c30e28db2297c232 ""
   "/usr/local/texlive/2016/texmf.cnf" 1463979140 577 2938757e76f31531e65cc647e3507693 ""
   "introduction.aux" 1548086837 8 a94a2480d3289e625eea47cd1b285758 ""
-  "introduction.tex" 1548087868 5192 880530481d5037f27ecab37991bd979e ""
+  "introduction.bbl" 0 -1 0 "bibtex introduction"
+  "introduction.tex" 1548428871 5104 1b46bbd7a5c8ff8ce99df0072f83eda4 ""
   (generated)
   "introduction.pdf"
   "introduction.log"
