@@ -10,6 +10,11 @@
 
 \usepackage{amsmath,amssymb,amsfonts,latexsym,dsfont,xspace}
 
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{todonotes}
+
 % a few definitions that are *not* needed in general:
 \newcommand{\ie}{\emph{i.e.}}
 \newcommand{\eg}{\emph{e.g.}}
@@ -19,11 +24,11 @@
 
 
 %ARTICLE TITLE
-\title{My First Thesis}
+\title{Neural language models with syntax}
 
 
 %ARTICLE SUB-TITLE
-\subtitle{Smart Things as Said by Me}
+% \subtitle{Smart Things as Said by Me}
 
 
 %AUTHORS FOR COVER PAGE
@@ -41,14 +46,29 @@ Institute for Logic, Language and Computation (ILLC) \\
 
 %BIBLIOGRAPHY FILE
 \addbibresource{../src/bibliography.bib}
+% \usepackage[authoryear]{natbib}
+% \bibliographystyle{apa}
+% \bibliography{../src/bibliography}
 
 \begin{document}
 
 \makeabstracttitle
 
 \begin{abstract}
-This is the best thesis. I have all the best words. Also, do check out my code. You will be blown away. Such wow. Much amazings.
+In this thesis I investigate the question: \textit{What are effective ways of incorporating syntactic structure into neural language models?}
 
+In this thesis I:
+\begin{itemize}
+  \item study a class of neural language models that merges generative transition-based parsing with recurrent neural networks in order to model sentences together with their latent syntactic structure;
+  \item propose a new globally trained chart-based parser as an alternative proposal distribution used in the approximate marginalization;
+  \item propose effective methods for semisupervised learning, making the syntactic structure a latent variable;
+  \item perform targeted syntactic evaluation and compare the model's performance with that of alternative models that are based on multitask learning.
+\end{itemize}
+I find that:
+\begin{itemize}
+  \item ...
+  \item ...
+\end{itemize}
 \end{abstract}
 
 
@@ -62,17 +82,17 @@ This is the best thesis. I have all the best words. Also, do check out my code. 
 \input{../02-background/background}
 
 
-\chapter{RNNG}
+\chapter{Recurrent Neural Network Grammars}
 \label{03-rnng}
 \input{../03-rnng/rnng}
 
 
-\chapter{CRF parser}
+\chapter{Conditional Random Field parser}
 \label{04-crf}
 \input{../04-crf-parser/crf-parser}
 
 
-\chapter{Semisupervised learning of RNNG}
+\chapter{Semisupervised learning}
 \label{05-semisupervised}
 \input{../05-semisupervised/semisupervised}
 
@@ -82,7 +102,7 @@ This is the best thesis. I have all the best words. Also, do check out my code. 
 \input{../06-multitask/multitask}
 
 
-\chapter{Targeted syntactic evaluation}
+\chapter{Syntactic evaluation}
 \label{07-syneval}
 \input{../07-syneval/syneval}
 
@@ -94,7 +114,7 @@ This is the best thesis. I have all the best words. Also, do check out my code. 
 
 % end of main matter
 \begin{acknowledgements}
-The author is grateful to the author, for he is his own eternal flame of inspiration.
+
 \end{acknowledgements}
 
 \appendix

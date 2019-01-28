@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  25 JAN 2019 16:44
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  28 JAN 2019 18:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1122,14 +1122,312 @@ Package: dsfont 1995/08/01 v0.1 Double stroke roman fonts
 (/usr/local/texlive/2016/texmf-dist/tex/latex/tools/xspace.sty
 Package: xspace 2014/10/28 v1.13 Space after command names (DPC,MH)
 )
+(/usr/local/texlive/2016/texmf-dist/tex/latex/caption/subcaption.sty
+Package: subcaption 2016/02/20 v1.1-142 Sub-captions (AR)
+\c@subfigure=\count329
+\c@subtable=\count330
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/todonotes/todonotes.sty
+Package: todonotes 2015/07/09 .dtx Todonotes source and documentation.
+Package: todonotes 2012/07/25
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+Package: xkeyval 2014/12/03 v2.7a package option processing (HA)
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/local/texlive/2016/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+\XKV@toks=\toks35
+\XKV@tempa@toks=\toks36
+)
+\XKV@depth=\count331
+File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
+))
+(/usr/local/texlive/2016/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
+(/usr/local/texlive/2016/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
+(/usr/local/texlive/2016/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.te
+x
+\pgfutil@everybye=\toks37
+\pgfutil@tempdima=\dimen155
+\pgfutil@tempdimb=\dimen156
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/utilities/pgfutil-common-li
+sts.tex))
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.def
+\pgfutil@abb=\box59
+(/usr/local/texlive/2016/texmf-dist/tex/latex/ms/everyshi.sty
+Package: everyshi 2001/05/15 v3.00 EveryShipout Package (MS)
+))
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
+Package: pgfrcs 2015/08/07 v3.0.1a (rcs-revision 1.31)
+))
+Package: pgf 2015/08/07 v3.0.1a (rcs-revision 1.15)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty
+(/usr/local/texlive/2016/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+Package: pgfsys 2014/07/09 v3.0.1a (rcs-revision 1.48)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+\pgfkeys@pathtoks=\toks38
+\pgfkeys@temptoks=\toks39
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/utilities/pgfkeysfiltered.c
+ode.tex
+\pgfkeys@tmptoks=\toks40
+))
+\pgf@x=\dimen157
+\pgf@y=\dimen158
+\pgf@xa=\dimen159
+\pgf@ya=\dimen160
+\pgf@xb=\dimen161
+\pgf@yb=\dimen162
+\pgf@xc=\dimen163
+\pgf@yc=\dimen164
+\w@pgf@writea=\write6
+\r@pgf@reada=\read2
+\c@pgf@counta=\count332
+\c@pgf@countb=\count333
+\c@pgf@countc=\count334
+\c@pgf@countd=\count335
+\t@pgf@toka=\toks41
+\t@pgf@tokb=\toks42
+\t@pgf@tokc=\toks43
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg
+File: pgf.cfg 2008/05/14  (rcs-revision 1.7)
+)
+Driver file for pgf: pgfsys-pdftex.def
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-pdftex.d
+ef
+File: pgfsys-pdftex.def 2014/10/11  (rcs-revision 1.35)
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-common-p
+df.def
+File: pgfsys-common-pdf.def 2013/10/10  (rcs-revision 1.13)
+)))
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath.
+code.tex
+File: pgfsyssoftpath.code.tex 2013/09/09  (rcs-revision 1.9)
+\pgfsyssoftpath@smallbuffer@items=\count336
+\pgfsyssoftpath@bigbuffer@items=\count337
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.
+code.tex
+File: pgfsysprotocol.code.tex 2006/10/16  (rcs-revision 1.4)
+))
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.tex
+Package: pgfcore 2010/04/11 v3.0.1a (rcs-revision 1.7)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmathcalc.code.tex
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmathparser.code.tex
+\pgfmath@dimen=\dimen165
+\pgfmath@count=\count338
+\pgfmath@box=\box60
+\pgfmath@toks=\toks44
+\pgfmath@stack@operand=\toks45
+\pgfmath@stack@operation=\toks46
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.code.
+tex
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.basic
+.code.tex)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.trigo
+nometric.code.tex)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.rando
+m.code.tex)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.compa
+rison.code.tex)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.base.
+code.tex)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.round
+.code.tex)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.misc.
+code.tex)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.integ
+erarithmetics.code.tex)))
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmathfloat.code.tex
+\c@pgfmathroundto@lastzeros=\count339
+))
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.co
+de.tex
+File: pgfcorepoints.code.tex 2013/10/07  (rcs-revision 1.27)
+\pgf@picminx=\dimen166
+\pgf@picmaxx=\dimen167
+\pgf@picminy=\dimen168
+\pgf@picmaxy=\dimen169
+\pgf@pathminx=\dimen170
+\pgf@pathmaxx=\dimen171
+\pgf@pathminy=\dimen172
+\pgf@pathmaxy=\dimen173
+\pgf@xx=\dimen174
+\pgf@xy=\dimen175
+\pgf@yx=\dimen176
+\pgf@yy=\dimen177
+\pgf@zx=\dimen178
+\pgf@zy=\dimen179
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathconst
+ruct.code.tex
+File: pgfcorepathconstruct.code.tex 2013/10/07  (rcs-revision 1.29)
+\pgf@path@lastx=\dimen180
+\pgf@path@lasty=\dimen181
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathusage
+.code.tex
+File: pgfcorepathusage.code.tex 2014/11/02  (rcs-revision 1.24)
+\pgf@shorten@end@additional=\dimen182
+\pgf@shorten@start@additional=\dimen183
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescopes.co
+de.tex
+File: pgfcorescopes.code.tex 2015/05/08  (rcs-revision 1.46)
+\pgfpic=\box61
+\pgf@hbox=\box62
+\pgf@layerbox@main=\box63
+\pgf@picture@serial@count=\count340
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphicst
+ate.code.tex
+File: pgfcoregraphicstate.code.tex 2014/11/02  (rcs-revision 1.12)
+\pgflinewidth=\dimen184
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransform
+ations.code.tex
+File: pgfcoretransformations.code.tex 2015/08/07  (rcs-revision 1.20)
+\pgf@pt@x=\dimen185
+\pgf@pt@y=\dimen186
+\pgf@pt@temp=\dimen187
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcorequick.cod
+e.tex
+File: pgfcorequick.code.tex 2008/10/09  (rcs-revision 1.3)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreobjects.c
+ode.tex
+File: pgfcoreobjects.code.tex 2006/10/11  (rcs-revision 1.2)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathproce
+ssing.code.tex
+File: pgfcorepathprocessing.code.tex 2013/09/09  (rcs-revision 1.9)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearrows.co
+de.tex
+File: pgfcorearrows.code.tex 2015/05/14  (rcs-revision 1.43)
+\pgfarrowsep=\dimen188
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.cod
+e.tex
+File: pgfcoreshade.code.tex 2013/07/15  (rcs-revision 1.15)
+\pgf@max=\dimen189
+\pgf@sys@shading@range@num=\count341
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreimage.cod
+e.tex
+File: pgfcoreimage.code.tex 2013/07/15  (rcs-revision 1.18)
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreexternal.
+code.tex
+File: pgfcoreexternal.code.tex 2014/07/09  (rcs-revision 1.21)
+\pgfexternal@startupbox=\box64
+))
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcorelayers.co
+de.tex
+File: pgfcorelayers.code.tex 2013/07/18  (rcs-revision 1.7)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretranspare
+ncy.code.tex
+File: pgfcoretransparency.code.tex 2013/09/30  (rcs-revision 1.5)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepatterns.
+code.tex
+File: pgfcorepatterns.code.tex 2013/11/07  (rcs-revision 1.5)
+)))
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.cod
+e.tex
+File: pgfmoduleshapes.code.tex 2014/03/21  (rcs-revision 1.35)
+\pgfnodeparttextbox=\box65
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code.
+tex
+File: pgfmoduleplot.code.tex 2015/08/03  (rcs-revision 1.13)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-0-65.sty
+Package: pgfcomp-version-0-65 2007/07/03 v3.0.1a (rcs-revision 1.7)
+\pgf@nodesepstart=\dimen190
+\pgf@nodesepend=\dimen191
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-1-18.sty
+Package: pgfcomp-version-1-18 2007/07/23 v3.0.1a (rcs-revision 1.1)
+))
+(/usr/local/texlive/2016/texmf-dist/tex/latex/pgf/utilities/pgffor.sty
+(/usr/local/texlive/2016/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex)
+) (/usr/local/texlive/2016/texmf-dist/tex/latex/pgf/math/pgfmath.sty
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex))
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
+Package: pgffor 2013/12/13 v3.0.1a (rcs-revision 1.25)
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex)
+\pgffor@iter=\dimen192
+\pgffor@skip=\dimen193
+\pgffor@stack=\toks47
+\pgffor@toks=\toks48
+))
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.cod
+e.tex
+Package: tikz 2015/08/07 v3.0.1a (rcs-revision 1.151)
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/libraries/pgflibraryplothan
+dlers.code.tex
+File: pgflibraryplothandlers.code.tex 2013/08/31 v3.0.1a (rcs-revision 1.20)
+\pgf@plot@mark@count=\count342
+\pgfplotmarksize=\dimen194
+)
+\tikz@lastx=\dimen195
+\tikz@lasty=\dimen196
+\tikz@lastxsaved=\dimen197
+\tikz@lastysaved=\dimen198
+\tikzleveldistance=\dimen199
+\tikzsiblingdistance=\dimen256
+\tikz@figbox=\box66
+\tikz@figbox@bg=\box67
+\tikz@tempbox=\box68
+\tikz@tempbox@bg=\box69
+\tikztreelevel=\count343
+\tikznumberofchildren=\count344
+\tikznumberofcurrentchild=\count345
+\tikz@fig@count=\count346
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.cod
+e.tex
+File: pgfmodulematrix.code.tex 2013/09/17  (rcs-revision 1.8)
+\pgfmatrixcurrentrow=\count347
+\pgfmatrixcurrentcolumn=\count348
+\pgf@matrix@numberofcolumns=\count349
+)
+\tikz@expandcount=\count350
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2008/06/17 v3.0.1a (rcs-revision 1.2)
+)))
+(/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarypositioning.code.tex
+File: tikzlibrarypositioning.code.tex 2008/10/06 v3.0.1a (rcs-revision 1.7)
+)
+\c@@todonotes@numberoftodonotes=\count351
+)
 Package biblatex Info: Trying to load language 'english'...
 Package biblatex Info: ... file 'english.lbx' found.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/biblatex/lbx/english.lbx
 File: english.lbx 2016/05/14 v3.4 biblatex localization (PK/JW/AB)
 )
-\@quotelevel=\count329
-\@quotereset=\count330
+\@quotelevel=\count352
+\@quotereset=\count353
 
 (./thesis.aux
 
@@ -1141,42 +1439,42 @@ LaTeX Warning: Label `eq:collins-inside' multiply defined.
 )
 \openout1 = `thesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Try loading font information for T1+lmr on input line 45.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Try loading font information for T1+lmr on input line 53.
  (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/t1lmr.fd
 File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
-(lastpage)             ! on input line 45.
-\AtBeginShipoutBox=\box59
+(lastpage)             ! on input line 53.
+\AtBeginShipoutBox=\box70
 
 (/usr/local/texlive/2016/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count331
-\scratchdimen=\dimen155
-\scratchbox=\box60
-\nofMPsegments=\count332
-\nofMParguments=\count333
-\everyMPshowfont=\toks35
-\MPscratchCnt=\count334
-\MPscratchDim=\dimen156
-\MPnumerator=\count335
-\makeMPintoPDFobject=\count336
-\everyMPtoPDFconversion=\toks36
+\scratchcounter=\count354
+\scratchdimen=\dimen257
+\scratchbox=\box71
+\nofMPsegments=\count355
+\nofMParguments=\count356
+\everyMPshowfont=\toks49
+\MPscratchCnt=\count357
+\MPscratchDim=\dimen258
+\MPnumerator=\count358
+\makeMPintoPDFobject=\count359
+\everyMPtoPDFconversion=\toks50
 ) (/usr/local/texlive/2016/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
 
@@ -1200,7 +1498,7 @@ Package: lscape 2000/10/22 v3.01 Landscape Pages (DPC)
 )
 Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
 )
-LaTeX Info: Redefining \microtypecontext on input line 45.
+LaTeX Info: Redefining \microtypecontext on input line 53.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
@@ -1242,8 +1540,8 @@ Package biblatex Warning: The following entry could not be found
 (biblatex)                LaTeX afterwards.
 
 )
-Package biblatex Info: Reference section=0 on input line 45.
-Package biblatex Info: Reference segment=0 on input line 45.
+Package biblatex Info: Reference section=0 on input line 53.
+Package biblatex Info: Reference segment=0 on input line 53.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -1281,19 +1579,19 @@ Package biblatex Info: Reference segment=0 on input line 45.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring ON on input line 45.
+Package hyperref Info: Link coloring ON on input line 53.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 
 (/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
-\c@section@level=\count337
+\c@section@level=\count360
 )
-LaTeX Info: Redefining \ref on input line 45.
-LaTeX Info: Redefining \pageref on input line 45.
-LaTeX Info: Redefining \nameref on input line 45.
-LaTeX Font Info:    Try loading font information for T1+lmss on input line 45.
+LaTeX Info: Redefining \ref on input line 53.
+LaTeX Info: Redefining \pageref on input line 53.
+LaTeX Info: Redefining \nameref on input line 53.
+LaTeX Font Info:    Try loading font information for T1+lmss on input line 53.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/t1lmss.fd
 File: t1lmss.fd 2009/10/30 v1.6 Font defs for Latin Modern
@@ -1302,36 +1600,36 @@ Package microtype Info: Loading generic settings for font family
 (microtype)             `lmss' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-LaTeX Font Info:    Calculating math sizes for size <13> on input line 45.
-LaTeX Font Info:    Try loading font information for OT1+lmr on input line 45.
+LaTeX Font Info:    Calculating math sizes for size <13> on input line 53.
+LaTeX Font Info:    Try loading font information for OT1+lmr on input line 53.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OML+lmm on input line 45.
+LaTeX Font Info:    Try loading font information for OML+lmm on input line 53.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 45.
+LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 53.
 
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMX+lmex on input line 45.
+LaTeX Font Info:    Try loading font information for OMX+lmex on input line 53.
 
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <13> on input line 45.
+(Font)              <13> on input line 53.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <9.09996> on input line 45.
+(Font)              <9.09996> on input line 53.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6.5> on input line 45.
-LaTeX Font Info:    Try loading font information for U+msa on input line 45.
+(Font)              <6.5> on input line 53.
+LaTeX Font Info:    Try loading font information for U+msa on input line 53.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
@@ -1339,7 +1637,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (/usr/local/texlive/2016/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 45.
+LaTeX Font Info:    Try loading font information for U+msb on input line 53.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -1347,38 +1645,46 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 (/usr/local/texlive/2016/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
-LaTeX Font Info:    Try loading font information for U+lasy on input line 45.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 53.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/base/ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
 
 LaTeX Font Warning: Font shape `U/lasy/m/n' in size <13> not available
-(Font)              size <12> substituted on input line 45.
+(Font)              size <12> substituted on input line 53.
 
 
 LaTeX Font Warning: Font shape `U/lasy/m/n' in size <6.5> not available
-(Font)              size <6> substituted on input line 45.
+(Font)              size <6> substituted on input line 53.
 
 [1
 
 
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 45.
+(Font)              <10.95> on input line 53.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 45.
+(Font)              <8> on input line 53.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 45.
+(Font)              <6> on input line 53.
 
 (./thesis.toc [2
 
 
 ])
-\tf@toc=\write6
-\openout6 = `thesis.toc'.
+\tf@toc=\write7
+\openout7 = `thesis.toc'.
 
- [3] [1
+ [3] ABD: EveryShipout initializing macros
+LaTeX Font Info:    Try loading font information for OMS+lmr on input line 62.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/lm/omslmr.fd
+File: omslmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    Font shape `OMS/lmr/m/n' in size <10.95> not available
+(Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 62.
+ [1
 
 ]
 Chapter 1.
@@ -1391,7 +1697,7 @@ LaTeX Warning: Citation 'Buys+2015:neural-gen-dep' on page 2 undefined on input
 LaTeX Warning: Citation 'Buys+2018' on page 2 undefined on input line 5.
 
 
-LaTeX Warning: Citation 'Buys+2018' on page 2 undefined on input line 7.
+LaTeX Warning: Citation 'Buys+2018' on page 2 undefined on input line 5.
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
@@ -1401,217 +1707,341 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 ]
 
 LaTeX Warning: Citation 'Stern+2017:Minimal' on page 3 undefined on input line 
-12.
+11.
 
 
 LaTeX Warning: Citation 'Goldberg+2013:dynamic' on page 3 undefined on input li
-ne 12.
+ne 15.
 
 
 LaTeX Warning: Citation 'Ballesteros+2016:exploration' on page 3 undefined on i
-nput line 12.
+nput line 15.
 
 
 LaTeX Warning: Citation 'Stern+2017:Minimal' on page 3 undefined on input line 
-12.
+15.
 
 
-LaTeX Warning: Citation 'Vlachos' on page 3 undefined on input line 12.
+LaTeX Warning: Citation 'Vlachos' on page 3 undefined on input line 15.
 
-[3]) [4]
+
+LaTeX Warning: Citation 'Eisner+2012:imitation' on page 3 undefined on input li
+ne 15.
+
+
+Overfull \hbox (121.46915pt too wide) in paragraph at lines 15--16
+\T1/lmr/m/n/10.95 (-20) ([]), also called `ex-plo-ration' (([];
+ []
+
+
+Overfull \hbox (4.65619pt too wide) in paragraph at lines 15--16
+\T1/lmr/m/n/10.95 (-20) stances of im-i-ta-tion learn-ing ([]; []). 
+ []
+
+
+LaTeX Warning: Citation 'Klein+2018:reinforce' on page 3 undefined on input lin
+e 16.
+
+[3]
+
+LaTeX Warning: Citation 'Swayamdipta+2018:scaffold' on page 4 undefined on inpu
+t line 32.
+
+[4]) [5]
 Chapter 2.
 (../02-background/background.tex
 
-! LaTeX Error: Can be used only in preamble.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.1 \bibliography
-                 {../src/bibliography.bib}
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-LaTeX Font Info:    Try loading font information for OMS+lmr on input line 5.
-(/usr/local/texlive/2016/texmf-dist/tex/latex/lm/omslmr.fd
-File: omslmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
-)
-LaTeX Font Info:    Font shape `OMS/lmr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 5.
+LaTeX Warning: Citation 'Carnie2010:constituent' on page 6 undefined on input l
+ine 8.
 
 
-LaTeX Warning: Citation 'Carnie2010:constituent' on page 5 undefined on input l
-ine 6.
+LaTeX Warning: Citation 'Everaert+2015:structures' on page 6 undefined on input
+ line 8.
 
 
-LaTeX Warning: Citation 'Everaert+2015:structures' on page 5 undefined on input
- line 6.
+Overfull \hbox (19.98698pt too wide) in paragraph at lines 8--9
+[]\T1/lmr/m/n/10.95 (-20) Reference ([]; [])
+ []
+
+[6
+
+] <../figures/trees/original.pdf, id=120, 517.935pt x 201.75375pt>
+File: ../figures/trees/original.pdf Graphic file (type pdf)
+
+<use ../figures/trees/original.pdf>
+Package pdftex.def Info: ../figures/trees/original.pdf used on input line 26.
+(pdftex.def)             Requested size: 241.735pt x 94.16547pt.
+
+<../figures/trees/simplified.pdf, id=121, 427.5975pt x 201.75375pt>
+File: ../figures/trees/simplified.pdf Graphic file (type pdf)
+
+<use ../figures/trees/simplified.pdf>
+Package pdftex.def Info: ../figures/trees/simplified.pdf used on input line 31.
+
+(pdftex.def)             Requested size: 208.1587pt x 98.2137pt.
+
+<../figures/trees/binary.pdf, id=122, 435.6275pt x 246.9225pt>
+File: ../figures/trees/binary.pdf Graphic file (type pdf)
+
+<use ../figures/trees/binary.pdf>
+Package pdftex.def Info: ../figures/trees/binary.pdf used on input line 36.
+(pdftex.def)             Requested size: 208.1587pt x 117.98642pt.
+
+<../figures/trees/spans.pdf, id=123, 604.2575pt x 246.9225pt>
+File: ../figures/trees/spans.pdf Graphic file (type pdf)
+
+<use ../figures/trees/spans.pdf>
+Package pdftex.def Info: ../figures/trees/spans.pdf used on input line 41.
+(pdftex.def)             Requested size: 302.1662pt x 123.476pt.
 
 
-Overfull \hbox (12.92157pt too wide) in paragraph at lines 6--7
-[]\T1/lmr/m/n/10.95 (-20) Reference []; []
+LaTeX Warning: Float too large for page by 14.8418pt on input line 47.
+
+
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 49.
+
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <9> on input line 51.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 51.
+! Extra alignment tab has been changed to \cr.
+<recently read> \endtemplate 
+                             
+l.52     Labeled spans & Anchored rules &
+                                          \hline  \\
+You have given more \span or & marks than there were
+in the preamble to the \halign or \valign now in progress.
+So I'll assume that you meant to type \cr instead.
+
+! Extra alignment tab has been changed to \cr.
+<recently read> \endtemplate 
+                             
+l.53 ... 0, 10)     & (S $\to$ SBAR @, 0, 3, 10) &
+                                                    \\
+You have given more \span or & marks than there were
+in the preamble to the \halign or \valign now in progress.
+So I'll assume that you meant to type \cr instead.
+
+! Extra alignment tab has been changed to \cr.
+<recently read> \endtemplate 
+                             
+l.54 ..., 3)   & (SBAR $\to$ WHNP S+VP, 0, 1, 3) &
+                                                    \\
+You have given more \span or & marks than there were
+in the preamble to the \halign or \valign now in progress.
+So I'll assume that you meant to type \cr instead.
+
+! Extra alignment tab has been changed to \cr.
+<recently read> \endtemplate 
+                             
+l.55 ..., 1, 3)     & (S+VP $\to$ @ NP, 1, 2, 3) &
+                                                    \\
+You have given more \span or & marks than there were
+in the preamble to the \halign or \valign now in progress.
+So I'll assume that you meant to type \cr instead.
+
+! Extra alignment tab has been changed to \cr.
+<recently read> \endtemplate 
+                             
+l.56     $\qquad\vdots$ & $\qquad\vdots$ &
+                                            \\
+You have given more \span or & marks than there were
+in the preamble to the \halign or \valign now in progress.
+So I'll assume that you meant to type \cr instead.
+
+! Extra alignment tab has been changed to \cr.
+<recently read> \endtemplate 
+                             
+l.57 ...(NP, 7, 9)     & (NP $\to$ @ @, 7, 8, 9) &
+                                                    \\
+You have given more \span or & marks than there were
+in the preamble to the \halign or \valign now in progress.
+So I'll assume that you meant to type \cr instead.
+
+Package microtype Info: Character `029' is missing
+(microtype)             in font `T1/lmr/m/sc/10.95'.
+(microtype)             Ignoring protrusion settings for this character.
+[7] [8 <../figures/trees/original.pdf> <../figures/trees/simplified.pdf> <../fi
+gures/trees/binary.pdf> <../figures/trees/spans.pdf>]
+
+LaTeX Warning: Citation 'Goodman+1996' on page 9 undefined on input line 82.
+
+
+LaTeX Warning: Citation 'Kneser+1995' on page 9 undefined on input line 82.
+
+
+LaTeX Warning: Citation 'Bengio+2003' on page 9 undefined on input line 82.
+
+
+LaTeX Warning: Citation 'Mikolov+2010' on page 9 undefined on input line 82.
+
+
+LaTeX Warning: Citation 'Chelba2000' on page 9 undefined on input line 82.
+
+
+LaTeX Warning: Citation 'Klein:2012:treelets' on page 9 undefined on input line
+ 82.
+
+
+LaTeX Warning: Citation 'Emami+2005' on page 9 undefined on input line 82.
+
+
+LaTeX Warning: Citation 'Roark2001' on page 9 undefined on input line 82.
+
+
+Overfull \hbox (17.05682pt too wide) in paragraph at lines 82--83
+\T1/lmr/m/n/10.95 (-20) tac-tic ap-proaches: count-based ([]; []),
  []
 
 
-Overfull \hbox (0.32559pt too wide) in paragraph at lines 15--16
-[]\T1/lmr/m/n/10.95 (-20) modelling types: gen-er-a-tive, dis-crim-i-na-tive, l
-og-linear, count-based,
+Overfull \hbox (16.13889pt too wide) in paragraph at lines 82--83
+\T1/lmr/m/n/10.95 (-20) neu-ral ([]), and top-down pars-ing re-lated ([]). 
  []
 
-[5
 
-]
-
-LaTeX Warning: Citation 'Zhang+2016:multitask' on page 6 undefined on input lin
-e 35.
+LaTeX Warning: Citation 'Smith2012:adversarial' on page 9 undefined on input li
+ne 86.
 
 
-LaTeX Warning: Citation 'Goldberg+2016:multitask' on page 6 undefined on input 
-line 35.
+LaTeX Warning: Citation 'Linzen+2016:LSTM-syntax' on page 9 undefined on input 
+line 86.
 
 
-LaTeX Warning: Citation 'Swayamdipta+2018:scaffold' on page 6 undefined on inpu
-t line 35.
+LaTeX Warning: Citation 'Linzen+2018:targeted' on page 9 undefined on input lin
+e 86.
+
+[9]
+
+LaTeX Warning: Citation 'Zhang+2016:multitask' on page 10 undefined on input li
+ne 100.
 
 
-Overfull \hbox (15.45885pt too wide) in paragraph at lines 35--36
-[]\T1/lmr/m/n/10.95 (-20) Name some ex-am-ples of mul-ti-task learn-ing [];
+LaTeX Warning: Citation 'Goldberg+2016:multitask' on page 10 undefined on input
+ line 100.
+
+
+LaTeX Warning: Citation 'Swayamdipta+2018:scaffold' on page 10 undefined on inp
+ut line 100.
+
+
+Overfull \hbox (85.08199pt too wide) in paragraph at lines 100--101
+[]\T1/lmr/m/n/10.95 (-20) Name some re-cent ex-am-ples of mul-ti-task learn-ing
+ in NLP: [];
  []
 
-) [6]
+) [10]
 Chapter 3.
-(../03-rnng/rnng.tex) [7
+(../03-rnng/rnng.tex) [11
 
 ]
 Chapter 4.
 (../04-crf-parser/crf-parser.tex
 
-! LaTeX Error: Can be used only in preamble.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.1 \bibliography
-                 {../src/bibliography.bib}
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
+LaTeX Warning: Citation 'Stern+2017:Minimal' on page 12 undefined on input line
+ 3.
 
 
-LaTeX Warning: Citation 'Stern+2017:Minimal' on page 8 undefined on input line 
-7.
-
-
-Underfull \vbox (badness 1112) has occurred while \output is active []
-
- [8
-
-]
-
-LaTeX Warning: Citation 'Goldberg+2013:dynamic' on page 9 undefined on input li
-ne 15.
-
-
-LaTeX Warning: Citation 'Ballesteros+2016:exploration' on page 9 undefined on i
-nput line 15.
-
-
-LaTeX Warning: Citation 'Stern+2017:Minimal' on page 9 undefined on input line 
-15.
-
-
-Overfull \hbox (8.53593pt too wide) in paragraph at lines 15--16
-\T1/lmr/m/n/10.95 (-20) typ-i-cally an-swered to train dy-namic or-a-cles ([])
- []
-
-
-Overfull \hbox (81.89658pt too wide) in paragraph at lines 15--16
-\T1/lmr/m/n/10.95 (-20) (also called 'ex-plo-ration' (([]) ([])),
- []
-
-
-Overfull \hbox (6.97655pt too wide) in paragraph at lines 21--22
+Overfull \hbox (6.97655pt too wide) in paragraph at lines 12--13
 []\T1/lmr/m/n/10.95 (-20) Introduce prob-a-bilis-tic model, ref-er-ence CRF bac
 k-ground in apendix 
  []
 
 
-LaTeX Warning: Citation 'Stern+2017:Minimal' on page 9 undefined on input line 
-22.
+LaTeX Warning: Citation 'Stern+2017:Minimal' on page 12 undefined on input line
+ 13.
+
+[12
+
+]
+
+LaTeX Warning: Citation 'Finkel+2008' on page 13 undefined on input line 18.
 
 
-Overfull \hbox (1.03316pt too wide) in paragraph at lines 22--23
-[]\T1/lmr/m/n/10.95 (-20) Desribe how this is a gen-er-al-iza-tion from ([]) 
+LaTeX Warning: Citation 'Klein+2015' on page 13 undefined on input line 18.
+
+
+LaTeX Warning: Citation 'Stern+2017:Minimal' on page 13 undefined on input line
+ 19.
+
+
+LaTeX Warning: Citation 'Collins2003' on page 13 undefined on input line 20.
+
+
+LaTeX Warning: Citation 'Klein+2003' on page 13 undefined on input line 20.
+
+
+Overfull \hbox (1.29987pt too wide) in paragraph at lines 20--22
+[]\T1/lmr/m/n/10.95 (-20) Earlier ap-proaches went ev-ern fur-ther by en-rich-i
+ng en-riched meanse
  []
 
+[13]
+Overfull \hbox (3.4487pt too wide) in paragraph at lines 41--42
+\T1/lmr/m/n/10.95 (-20) semir-ing for-mu-la-tion, and con-nect it with the beli
+ef-propagation/message-
+ []
 
-LaTeX Warning: Citation 'Klein+2003' on page 9 undefined on input line 28.
-
-
-LaTeX Warning: Citation 'Collins2003' on page 9 undefined on input line 29.
-
-
-LaTeX Warning: Citation 'Klein+2003' on page 9 undefined on input line 29.
-
-[9]
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <9> on input line 53.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 53.
- [10] [11]pdfTeX warning (ext4): destination with the same identifier (name{equ
-ation.4.2.1}) has been already used, duplicate ignored
+[14]pdfTeX warning (ext4): destination with the same identifier (name{equation.
+4.2.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.115 \end{align}
+l.105 \end{align}
                  pdfTeX warning (ext4): destination with the same identifier (n
 ame{equation.4.2.2}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.115 \end{align}
+l.105 \end{align}
                  pdfTeX warning (ext4): destination with the same identifier (n
 ame{equation.4.2.3}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.115 \end{align}
+l.105 \end{align}
                  
-Overfull \hbox (1.36162pt too wide) in paragraph at lines 115--115
+Overfull \hbox (1.36162pt too wide) in paragraph at lines 105--105
 [] 
  []
 
+[15]
 
-LaTeX Warning: Reference `eq:inside-semiring' on page 12 undefined on input lin
-e 123.
+LaTeX Warning: Reference `eq:inside-semiring' on page 16 undefined on input lin
+e 113.
 
 pdfTeX warning (ext4): destination with the same identifier (name{equation.4.2.
 1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.131 \end{align}
+l.121 \end{align}
                  pdfTeX warning (ext4): destination with the same identifier (n
 ame{equation.4.2.2}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.131 \end{align}
+l.121 \end{align}
                  pdfTeX warning (ext4): destination with the same identifier (n
 ame{equation.4.2.3}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.131 \end{align}
-                  [12]
-Package microtype Info: Character `029' is missing
-(microtype)             in font `T1/lmr/m/sc/10.95'.
-(microtype)             Ignoring protrusion settings for this character.
-
-Overfull \hbox (26.56099pt too wide) in paragraph at lines 149--149
+l.121 \end{align}
+                  [16]
+Overfull \hbox (26.56099pt too wide) in paragraph at lines 139--139
 [] 
  []
 
-[13]) [14]
+[17]
+
+LaTeX Warning: Citation 'Sutton+2012:CRF' on page 18 undefined on input line 14
+9.
+
+
+LaTeX Warning: Citation 'Finkel+2008' on page 18 undefined on input line 150.
+
+
+LaTeX Warning: Citation 'Klein+2015:neural-crf' on page 18 undefined on input l
+ine 150.
+
+) [18]
 Chapter 5.
-(../05-semisupervised/semisupervised.tex [15
+(../05-semisupervised/semisupervised.tex [19
 
 ]
 Overfull \hbox (48.79774pt too wide) in paragraph at lines 20--22
@@ -1620,7 +2050,7 @@ Overfull \hbox (48.79774pt too wide) in paragraph at lines 20--22
  )$ \T1/lmr/m/n/10.95 (-20) we rely on au-to-matic dif-fer-en-ti-a-tion ([]). 
  []
 
-[16pdfTeX warning (ext4): destination with the same identifier (name{equation.5
+[20pdfTeX warning (ext4): destination with the same identifier (name{equation.5
 .2.1}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
@@ -1692,7 +2122,7 @@ l.79 \end{align}
                 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [17]pdfTeX warning (ext4): destination with the same identifier (name{equation
+ [21]pdfTeX warning (ext4): destination with the same identifier (name{equation
 .5.2.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
@@ -1720,7 +2150,7 @@ l.100 \end{align}
                  
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [18pdfTeX warning (ext4): destination with the same identifier (name{equation.
+ [22pdfTeX warning (ext4): destination with the same identifier (name{equation.
 5.2.9}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
@@ -1732,48 +2162,48 @@ ame{equation.5.2.10}) has been already used, duplicate ignored
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
 l.100 \end{align}
-                 ] [19pdfTeX warning (ext4): destination with the same identifi
+                 ] [23pdfTeX warning (ext4): destination with the same identifi
 er (name{equation.5.2.5}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
 l.128 \end{align}
-                 ] [20]
+                 ] [24]
 Overfull \hbox (44.38998pt too wide) in paragraph at lines 186--186
 [] 
  []
 
-[21] [22]) [23]
+[25] [26]) [27]
 Chapter 6.
-(../06-multitask/multitask.tex) [24
+(../06-multitask/multitask.tex) [28
 
 ]
 Chapter 7.
-(../07-syneval/syneval.tex) [25
+(../07-syneval/syneval.tex) [29
 
 ]
 Chapter 8.
-(../08-conclusion/conclusion.tex) [26
+(../08-conclusion/conclusion.tex) [30
 
-] [27
+] [31
 
-] [28
+] [32
 
 ]
 Appendix A.
-(../09-app-data/data.tex) [29
+(../09-app-data/data.tex) [33
 
-] [30
+] [34
 
 
 ] 
 AED: lastpage setting LastPage
-[31]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 110.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 110.
+[35]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 130.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 130.
  (./thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 110.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 110.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 130.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 130.
 
 
 LaTeX Font Warning: Size substitutions with differences
@@ -1795,41 +2225,43 @@ Package logreq Info: Writing requests to 'thesis.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 18644 strings out of 493014
- 302283 string characters out of 6133351
- 809207 words of memory out of 5000000
- 21531 multiletter control sequences out of 15000+600000
- 124677 words of font info for 151 fonts, out of 8000000 for 9000
+ 28567 strings out of 493014
+ 519167 string characters out of 6133351
+ 996137 words of memory out of 5000000
+ 31213 multiletter control sequences out of 15000+600000
+ 131009 words of font info for 155 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 50i,13n,51p,1393b,1124s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 62i,13n,77p,1304b,1154s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/
 texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/20
-16/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/texlive/2016/texmf-dist/
-fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/2016/texmf-dist/fonts/enc/
+16/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/2016/texmf-d
+ist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/texlive/2016/texmf-dist/fonts/enc/
 dvips/lm/lm-mathex.enc}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/l
 m/lmbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx8.pf
-b></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb></usr/l
-ocal/texlive/2016/texmf-dist/fonts/type1/public/lm/lmex10.pfb></usr/local/texli
-ve/2016/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2016/te
-xmf-dist/fonts/type1/public/lm/lmmi6.pfb></usr/local/texlive/2016/texmf-dist/fo
-nts/type1/public/lm/lmmi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/p
-ublic/lm/lmmi9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lm
-r10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr6.pfb></us
-r/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr8.pfb></usr/local/texl
-ive/2016/texmf-dist/fonts/type1/public/lm/lmr9.pfb></usr/local/texlive/2016/tex
-mf-dist/fonts/type1/public/lm/lmri10.pfb></usr/local/texlive/2016/texmf-dist/fo
-nts/type1/public/lm/lmss10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/
-public/lm/lmss12.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/
-lmssbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsso10.
-pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/
-local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy6.pfb></usr/local/texli
-ve/2016/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></usr/local/texlive/2016/tex
-mf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016
-/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on thesis.pdf (34 pages, 398142 bytes).
+b></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx9.pfb></usr/loc
+al/texlive/2016/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb></usr/local/texliv
+e/2016/texmf-dist/fonts/type1/public/lm/lmex10.pfb></usr/local/texlive/2016/tex
+mf-dist/fonts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2016/texmf-dist/fo
+nts/type1/public/lm/lmmi6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/p
+ublic/lm/lmmi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lm
+mi9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr10.pfb></u
+sr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr6.pfb></usr/local/tex
+live/2016/texmf-dist/fonts/type1/public/lm/lmr8.pfb></usr/local/texlive/2016/te
+xmf-dist/fonts/type1/public/lm/lmr9.pfb></usr/local/texlive/2016/texmf-dist/fon
+ts/type1/public/lm/lmri10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/p
+ublic/lm/lmss10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/l
+mss12.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmssbx10.pf
+b></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsso10.pfb></usr/l
+ocal/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/local/texli
+ve/2016/texmf-dist/fonts/type1/public/lm/lmsy6.pfb></usr/local/texlive/2016/tex
+mf-dist/fonts/type1/public/lm/lmsy8.pfb></usr/local/texlive/2016/texmf-dist/fon
+ts/type1/public/lm/lmsy9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/pu
+blic/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type
+1/public/amsfonts/symbols/msbm10.pfb>
+Output written on thesis.pdf (38 pages, 505293 bytes).
 PDF statistics:
- 528 PDF objects out of 1000 (max. 8388607)
- 465 compressed objects within 5 object streams
- 152 named destinations out of 1000 (max. 500000)
- 30905 words of extra memory for PDF output out of 35830 (max. 10000000)
+ 639 PDF objects out of 1000 (max. 8388607)
+ 556 compressed objects within 6 object streams
+ 163 named destinations out of 1000 (max. 500000)
+ 33521 words of extra memory for PDF output out of 35830 (max. 10000000)
 

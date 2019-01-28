@@ -1,54 +1,44 @@
-\bibliography{../src/bibliography.bib}
+% \bibliography{../src/bibliography}
 
-% Introduction
+In this chapter I introduce an alternative parser to act as proposal model in the approximate marginalization. The parser is a neural Conditional Random Field (CRF) parser that parser combines exact dynamic programming of chart-based parsing with the rich nonlinear featurization of neural networks.  The parser is an adaptation of the chart-based parser introduced in \citet{Stern+2017:Minimal}, where it is trained with a margin-based objective.
 
-In this chapter I introduce a novel chart-based neural parser that is trained with a global, Conditional Random Field (CRF). This parser provides an alternative proposal model for the apprimate marginalization in the generative RNNG.
-
-The parser is discriminative, chart-based neural parser that is trained with a global, Conditional Random Field (CRF), objective. The parser is an adaptation of the chart-based parser proposed in \cite{Stern+2017:Minimal}, which is trained with a margin-based objective.
-
-This contrast with the typical choice for a transition-based parser as proposal (a discrminatively trained RNNG). The rationale in this research is that we posit that a globally trained model is a better proposal distribution than a locally trained transition based model.
-
-A global model has ready access to competing analyses that can be structurally dissimilar but close in probability, whereas we hypothesize that a locally trained model is prone to produce locally corrupted structures that are nearby in transition-space.
-
-To promote more diverse samples, the transition distributions are flattened, causing as a downside for the model to visit .
-
-This is a general challenge for greedy transition based models that is typically answered to train dynamic oracles \citep{Goldberg+2013:dynamic} (also called 'exploration' (\citep{Ballesteros+2016:exploration} \citep{Stern+2017:Minimal}), instances of imitation learning (Vlachos 2012; Eisner et al. 2012)), a direction which we do not consider in this research.
-
+\begin{itemize}
+  \item The chart-based approach allows efficient exact inference. The neural network is used exclusively to learn good representation from which to predict local scores; the global structured interactions are
+\end{itemize}
 
 \section{Model}
 In this section I describe the probabilistic model of the parser.
 \begin{enumerate}
   \item Introduce probabilistic model, reference CRF background in apendix
-  \item Desribe how this is a generalization from \citep{Stern+2017:Minimal}
+  \item Desribe how this is an adaptation from \citet{Stern+2017:Minimal} to probabilistic training.
 \end{enumerate}'
 
 \subsection{Motivation}
 \begin{itemize}
-  \item Key point to make: this model regards a constituency tree as a collection of \textit{labeled spans} over a sentence.
-  \item Earlier models (log-linear and neural) regard a constituency tree as a collection of \textit{context-free grammar rules} over a sentence \citep{Klein+2003}.
-  \item A model over \textit{rules} needs to put more expressiveness in the output space: lexicalize the rules \cite{Collins2003}; break the grammar's independence assumptions by annotating the rule with parent and sibling labels \citep{Klein+2003}; )
-  \item This  rich feature representations to parameterize local potentials that interact with a comparatively unconstrained structured decoder.
+  \item Key point to make: this model regards a constituency tree as a collection of \textit{labeled spans} over a sentence. Earlier models, both log-linear and neural, regard a constituency tree as a collection of \textit{anchored rules} over a sentence \citep{Finkel+2008,Klein+2015}.
+  \item A model over spanned rules puts more expressiveness in the state space of the dynamic program, since rules The model in \cite{Stern+2017:Minimal} instead puts the expressiveness in the input space by using rich neural feature representations and a very unconstrained output space.
+  \item Earlier approaches went evern further by enriching enriched meanse to lexicalize the rules \cite{Collins2003}; break the grammar's independence assumptions by annotating the rule with parent and sibling labels \citep{Klein+2003}.
+  \item
 \end{itemize}
 
 \subsection{Features}
-In this section I describe how the scores are computed with bidirectional LSTM features.
+In this section I describe how the scores are computed from the bidirectional LSTM features.
 \begin{itemize}
-  \item Mention: LSTM features
-  \item Give formal expression for LSTM minus features + Feedforward scoring function
+  \item Give formal expression for `LSTM minus features` with Feedforward scoring function
 \end{itemize}
 
 \section{Inference}
-In this section we describe the solution to three related problems:
+Due to the parametrization, the model allows efficient inference. In this section we describe efficient solutions to three related problems:
 \begin{itemize}
   \item Find the best parse $\mathbf{y}^{*} = \arg \max_{\mathbf{y}} p(\mathbf{y} | \mathbf{x})$
-  \item Compute the normalizer $Z(\mathbf{x}) = \sum_{\mathbb{y}\in \mathcal{Y}(\mathbf{x})} \Psi(x, y)$
-  \item Compute the entropy conditioned on $\mathbf{x}$, $H(\mathbf{y} | \mathbf{x})$
+  \item Compute the normalizer $Z(\mathbf{x}) = \sum_{ \mathbf{y} } \prod_{ a=1 }^{ A } \Psi( \mathbf{x}, \mathbf{y}_a )$, where $F = \{ \Psi_a \}_{a=1}^{A}$ is the set of factors in the graph.
+  \item Compute the entropy conditioned on $\mathbf{x}$, $H(\mathbf{y} | \mathbf{x})$.
 \end{itemize}
 All three problems can be solved with a different instance of the same two algorithm: the inside algorithm and the outside algorithm.
 
 
-
 \subsection{Inside recursion}
+NOTE: This is a complete draft section, just for me to get the correct derivation for the implementation. In the actual section I will follow the semiring formulation, and connect it with the belief-propagation/message-passing/sum-product algorithm.
 
 In this derivation we follow Michael Collins notes on the Inside-Outside Algorithm.\footnote{\url{http://www.cs.columbia.edu/~mcollins/io.pdf}}
 
@@ -152,6 +142,13 @@ where
     S(i, j) &= \sum_{A \in N} \alpha(A, i, j) \\
     S'(i, j) &= \sum_{A \in N} \psi(A, i, j) \beta(A, i, j)
 \end{align*}
+
+
+\section{Related work}
+\begin{enumerate}
+  \item Conditional Random Fields \citep{Sutton+2012:CRF}
+  \item Conditional Random Field parsing with linear \citep{Finkel+2008} and nonlinear features \citep{Klein+2015:neural-crf}
+\end{enumerate}
 
 
 

@@ -4,74 +4,80 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {chapter}{\numberline {1}Introduction}{2}{chapter.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{The impact of the proposal samples on the approximate marginalization}{3}{paragraph*.2}
+\contentsline {paragraph}{The approximate marginalization}{3}{paragraph*.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Semi-supervised training by including unlabeled data}{3}{paragraph*.3}
+\contentsline {paragraph}{Semi-supervised training by including unlabeled data}{4}{paragraph*.3}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{Alternative, simpler, models}{4}{paragraph*.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Targeted syntactic evaluation}{4}{paragraph*.5}
+\contentsline {paragraph}{Targeted syntactic evaluation}{5}{paragraph*.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {2}Background}{5}{chapter.2}
+\contentsline {chapter}{\numberline {2}Background}{6}{chapter.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {2.1}Syntax}{5}{section.2.1}
+\contentsline {section}{\numberline {2.1}Syntax}{6}{section.2.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {2.2}Parsing}{5}{section.2.2}
+\contentsline {section}{\numberline {2.2}Parsing}{6}{section.2.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {2.3}Neural networks}{6}{section.2.3}
+\contentsline {section}{\numberline {2.3}Neural networks}{7}{section.2.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {2.4}Language models}{6}{section.2.4}
+\contentsline {section}{\numberline {2.4}Language models}{9}{section.2.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {2.5}Multitask learning}{6}{section.2.5}
+\contentsline {section}{\numberline {2.5}Multitask learning}{9}{section.2.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {3}RNNG}{7}{chapter.3}
+\contentsline {chapter}{\numberline {3}Recurrent Neural Network Grammars}{11}{chapter.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {4}CRF parser}{8}{chapter.4}
+\contentsline {chapter}{\numberline {4}Conditional Random Field parser}{12}{chapter.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {4.1}Model}{9}{section.4.1}
+\contentsline {section}{\numberline {4.1}Model}{12}{section.4.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.1.1}Motivation}{9}{subsection.4.1.1}
+\contentsline {subsection}{\numberline {4.1.1}Motivation}{13}{subsection.4.1.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.1.2}Features}{9}{subsection.4.1.2}
+\contentsline {subsection}{\numberline {4.1.2}Features}{13}{subsection.4.1.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {4.2}Inference}{10}{section.4.2}
+\contentsline {section}{\numberline {4.2}Inference}{13}{section.4.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.2.1}Inside recursion}{10}{subsection.4.2.1}
+\contentsline {subsection}{\numberline {4.2.1}Inside recursion}{14}{subsection.4.2.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.2.2}Outside recursion}{13}{subsection.4.2.2}
+\contentsline {subsection}{\numberline {4.2.2}Outside recursion}{17}{subsection.4.2.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {5}Semisupervised learning of RNNG}{15}{chapter.5}
+\contentsline {section}{\numberline {4.3}Related work}{18}{section.4.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {5.1}Supervised objective}{15}{section.5.1}
+\contentsline {chapter}{\numberline {5}Semisupervised learning}{19}{chapter.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {5.2}Unsupervised objective}{16}{section.5.2}
+\contentsline {section}{\numberline {5.1}Supervised objective}{19}{section.5.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Variational approximation}{16}{paragraph*.6}
+\contentsline {section}{\numberline {5.2}Unsupervised objective}{20}{section.5.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Gradients of joint parameters}{17}{paragraph*.7}
+\contentsline {paragraph}{Variational approximation}{20}{paragraph*.8}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Gradients of posterior parameters}{18}{paragraph*.8}
+\contentsline {paragraph}{Gradients of joint parameters}{21}{paragraph*.9}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {5.3}Optimization}{19}{section.5.3}
+\contentsline {paragraph}{Gradients of posterior parameters}{22}{paragraph*.10}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {5.4}Variance reduction}{20}{section.5.4}
+\contentsline {section}{\numberline {5.3}Optimization}{23}{section.5.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Variance of estimator}{20}{paragraph*.9}
+\contentsline {section}{\numberline {5.4}Variance reduction}{24}{section.5.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Control variates}{21}{paragraph*.10}
+\contentsline {paragraph}{Variance of estimator}{24}{paragraph*.11}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Example}{22}{paragraph*.11}
+\contentsline {paragraph}{Control variates}{25}{paragraph*.12}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {6}Multitask learning}{24}{chapter.6}
+\contentsline {paragraph}{Example}{26}{paragraph*.13}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {7}Targeted syntactic evaluation}{25}{chapter.7}
+\contentsline {chapter}{\numberline {6}Multitask learning}{28}{chapter.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {8}Conclusion}{26}{chapter.8}
+\contentsline {chapter}{\numberline {7}Syntactic evaluation}{29}{chapter.7}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{Acknowledgements}{27}{chapter*.12}
+\contentsline {chapter}{\numberline {8}Conclusion}{30}{chapter.8}
 \defcounter {refsection}{0}\relax 
-\contentsline {part}{Appendices}{28}{chapter*.12}
+\contentsline {section}{\numberline {8.1}Main contributions}{30}{section.8.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {A}Figures}{29}{appendix.A}
+\contentsline {section}{\numberline {8.2}Future work}{30}{section.8.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{References}{30}{appendix*.13}
+\contentsline {chapter}{Acknowledgements}{31}{chapter*.14}
+\defcounter {refsection}{0}\relax 
+\contentsline {part}{Appendices}{32}{chapter*.14}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {A}Figures}{33}{appendix.A}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{References}{34}{appendix*.15}
