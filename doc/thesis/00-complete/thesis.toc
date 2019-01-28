@@ -80,4 +80,8 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {chapter}{\numberline {A}Figures}{33}{appendix.A}
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{References}{34}{appendix*.15}
+\contentsline {chapter}{\numberline {B}Data}{34}{appendix.B}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {C}Data}{35}{appendix.C}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{References}{36}{appendix*.15}

@@ -453,8 +453,12 @@ INPUT ../07-syneval/syneval.tex
 INPUT ../08-conclusion/conclusion.tex
 INPUT ../08-conclusion/conclusion.tex
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmss17.tfm
-INPUT ../09-app-data/data.tex
-INPUT ../09-app-data/data.tex
+INPUT ../09-app-figures/figures.tex
+INPUT ../09-app-figures/figures.tex
+INPUT ../10-app-data/data.tex
+INPUT ../10-app-data/data.tex
+INPUT ../11-app-crf/crf.tex
+INPUT ../11-app-crf/crf.tex
 INPUT thesis.aux
 INPUT thesis.run.xml
 OUTPUT thesis.run.xml

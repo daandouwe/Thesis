@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  28 JAN 2019 18:58
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  28 JAN 2019 19:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1862,8 +1862,245 @@ So I'll assume that you meant to type \cr instead.
 Package microtype Info: Character `029' is missing
 (microtype)             in font `T1/lmr/m/sc/10.95'.
 (microtype)             Ignoring protrusion settings for this character.
+
+! LaTeX Error: Bad math environment delimiter.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.71 ...kes a sequence of vectors $\mathbf{x} = \[
+                                                   \mathbf{x}_1, \dots, \mat...
+
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Missing \endgroup inserted.
+<inserted text> 
+                \endgroup 
+l.71 ... = \[ \mathbf{x}_1, \dots, \mathbf{x}_n \]
+                                                  $  and produces a series o...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+
+! LaTeX Error: \begin{itemize} on input line 65 ended by \end{equation*}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.71 ... = \[ \mathbf{x}_1, \dots, \mathbf{x}_n \]
+                                                  $  and produces a series o...
+
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.71 ... = \[ \mathbf{x}_1, \dots, \mathbf{x}_n \]
+                                                  $  and produces a series o...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+
+! LaTeX Error: Bad math environment delimiter.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.72   \begin{equation*}
+                        
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: Bad math environment delimiter.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.73     \textsc{rnn}_{\theta}( \mathbf{x} ) = \[
+                                                  \mathbf{y}_1, \dots, \math...
+
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Missing \endgroup inserted.
+<inserted text> 
+                \endgroup 
+l.73 ... = \[ \mathbf{y}_1, \dots, \mathbf{y}_n \]
+                                                  .
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing \endgroup inserted.
+<inserted text> 
+                \endgroup 
+l.73 ... = \[ \mathbf{y}_1, \dots, \mathbf{y}_n \]
+                                                  .
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+
+! LaTeX Error: \begin{document} ended by \end{equation*}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.73 ... = \[ \mathbf{y}_1, \dots, \mathbf{y}_n \]
+                                                  .
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.73 ... = \[ \mathbf{y}_1, \dots, \mathbf{y}_n \]
+                                                  .
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Extra \endgroup.
+<recently read> \endgroup 
+                          
+l.73 ... = \[ \mathbf{y}_1, \dots, \mathbf{y}_n \]
+                                                  .
+Things are pretty mixed up, but I think the worst is over.
+
+
+! LaTeX Error: Bad math environment delimiter.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.74   \end{equation*}
+                      
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: \begin{document} ended by \end{equation*}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.74   \end{equation*}
+                      
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.74   \end{equation*}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Display math should end with $$.
+<to be read again> 
+                   \endgroup 
+l.74   \end{equation*}
+                      
+The `$' that I just saw supposedly matches a previous `$$'.
+So I shall assume that you typed `$$' both times.
+
 [7] [8 <../figures/trees/original.pdf> <../figures/trees/simplified.pdf> <../fi
 gures/trees/binary.pdf> <../figures/trees/spans.pdf>]
+! Extra \endgroup.
+<recently read> \endgroup 
+                          
+l.74   \end{equation*}
+                      
+Things are pretty mixed up, but I think the worst is over.
+
+
+! LaTeX Error: Lonely \item--perhaps a missing list environment.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.76   \item M
+              aybe, maybe write down the equations for the Feedforward and t...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Underfull \hbox (badness 10000) detected at line 76
+[][]
+ []
+
+
+! LaTeX Error: Lonely \item--perhaps a missing list environment.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.77   \item (
+              Minibatch) SGD optimization.
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Underfull \hbox (badness 10000) detected at line 77
+[][]
+ []
+
+
+! LaTeX Error: \begin{document} ended by \end{itemize}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.78 \end{itemize}
+                  
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Extra \endgroup.
+<recently read> \endgroup 
+                          
+l.78 \end{itemize}
+                  
+Things are pretty mixed up, but I think the worst is over.
+
 
 LaTeX Warning: Citation 'Goodman+1996' on page 9 undefined on input line 82.
 
@@ -1977,7 +2214,7 @@ ng en-riched meanse
  []
 
 [13]
-Overfull \hbox (3.4487pt too wide) in paragraph at lines 41--42
+Overfull \hbox (3.4487pt too wide) in paragraph at lines 40--41
 \T1/lmr/m/n/10.95 (-20) semir-ing for-mu-la-tion, and con-nect it with the beli
 ef-propagation/message-
  []
@@ -1986,58 +2223,58 @@ ef-propagation/message-
 4.2.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.105 \end{align}
+l.104 \end{align}
                  pdfTeX warning (ext4): destination with the same identifier (n
 ame{equation.4.2.2}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.105 \end{align}
+l.104 \end{align}
                  pdfTeX warning (ext4): destination with the same identifier (n
 ame{equation.4.2.3}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.105 \end{align}
+l.104 \end{align}
                  
-Overfull \hbox (1.36162pt too wide) in paragraph at lines 105--105
+Overfull \hbox (1.36162pt too wide) in paragraph at lines 104--104
 [] 
  []
 
 [15]
 
 LaTeX Warning: Reference `eq:inside-semiring' on page 16 undefined on input lin
-e 113.
+e 112.
 
 pdfTeX warning (ext4): destination with the same identifier (name{equation.4.2.
 1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.121 \end{align}
+l.120 \end{align}
                  pdfTeX warning (ext4): destination with the same identifier (n
 ame{equation.4.2.2}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.121 \end{align}
+l.120 \end{align}
                  pdfTeX warning (ext4): destination with the same identifier (n
 ame{equation.4.2.3}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.121 \end{align}
+l.120 \end{align}
                   [16]
-Overfull \hbox (26.56099pt too wide) in paragraph at lines 139--139
+Overfull \hbox (26.56099pt too wide) in paragraph at lines 138--138
 [] 
  []
 
 [17]
 
 LaTeX Warning: Citation 'Sutton+2012:CRF' on page 18 undefined on input line 14
-9.
+8.
 
 
-LaTeX Warning: Citation 'Finkel+2008' on page 18 undefined on input line 150.
+LaTeX Warning: Citation 'Finkel+2008' on page 18 undefined on input line 149.
 
 
 LaTeX Warning: Citation 'Klein+2015:neural-crf' on page 18 undefined on input l
-ine 150.
+ine 149.
 
 ) [18]
 Chapter 5.
@@ -2191,19 +2428,27 @@ Chapter 8.
 
 ]
 Appendix A.
-(../09-app-data/data.tex) [33
+(../09-app-figures/figures.tex) [33
 
-] [34
+]
+Appendix B.
+(../10-app-data/data.tex) [34
+
+]
+Appendix C.
+(../11-app-crf/crf.tex) [35
+
+] [36
 
 
 ] 
 AED: lastpage setting LastPage
-[35]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 130.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 130.
+[37]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 139.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 139.
  (./thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 130.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 130.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 139.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 139.
 
 
 LaTeX Font Warning: Size substitutions with differences
@@ -2225,11 +2470,11 @@ Package logreq Info: Writing requests to 'thesis.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 28567 strings out of 493014
- 519167 string characters out of 6133351
+ 28581 strings out of 493014
+ 519353 string characters out of 6133351
  996137 words of memory out of 5000000
- 31213 multiletter control sequences out of 15000+600000
- 131009 words of font info for 155 fonts, out of 8000000 for 9000
+ 31217 multiletter control sequences out of 15000+600000
+ 130926 words of font info for 154 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  62i,13n,77p,1304b,1154s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/
@@ -2258,10 +2503,10 @@ mf-dist/fonts/type1/public/lm/lmsy8.pfb></usr/local/texlive/2016/texmf-dist/fon
 ts/type1/public/lm/lmsy9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/pu
 blic/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type
 1/public/amsfonts/symbols/msbm10.pfb>
-Output written on thesis.pdf (38 pages, 505293 bytes).
+Output written on thesis.pdf (40 pages, 507586 bytes).
 PDF statistics:
- 639 PDF objects out of 1000 (max. 8388607)
- 556 compressed objects within 6 object streams
- 163 named destinations out of 1000 (max. 500000)
- 33521 words of extra memory for PDF output out of 35830 (max. 10000000)
+ 655 PDF objects out of 1000 (max. 8388607)
+ 570 compressed objects within 6 object streams
+ 167 named destinations out of 1000 (max. 500000)
+ 33537 words of extra memory for PDF output out of 35830 (max. 10000000)
 
