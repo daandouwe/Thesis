@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J disc
-#SBATCH -o lisa/out/disc.out
+#SBATCH -J crf
+#SBATCH -o lisa/out/crf.out
 #SBATCH -t 3-00:00:00
 
 # send an e-mail when the job starts
@@ -15,7 +15,7 @@ mkdir -p ${OUTPUT_DIR}
 # always run from the main directory
 cd ${HOME}/thesis
 
-source lisa/lisa-setup.sh
+source lisa/lisa-cpu.sh
 
 # we can run training runs in parallel, each on a different processor (16 in total)
 # with a different seed, and we tell each script which seed
@@ -26,12 +26,13 @@ for seed in {1..10}; do
   sleep 5
 
   lisa/train.sh ${seed} ${OUTPUT_DIR} \
-      --model-path-base models/disc-rnng \
+      --dynet-mem 2500 \
+      --model-path-base models/crf \
       --max-time $((3 * 22 * 3600)) \
       --max-epochs 100 \
       --dynet-autobatch 1 \
       @src/configs/data/supervised.txt \
-      @src/configs/model/disc-rnng.txt \
+      @src/configs/model/crf.txt \
       @src/configs/training/sgd.txt \
       &
 done
