@@ -2,10 +2,10 @@
 """
 Process a section of the one-billion-word dataset (http://www.statmt.org/lm-benchmark/)
 to make the tokenization consistent with the Penn Treebank, and control the size:
-    1) Replace brackets with their PTB-style escapes: ( -> LRB etc.
+    1) Replace brackets with their PTB-style escapes: '(' -> '-LRB-' etc.
     2) Replace quotation marks with their PTB equivalents: " -> `` etc.
     3) Select only sentences shorter than MAX_LEN words.
-    4) Select only MAX_LINES number of words.
+    4) Select only MAX_LINES number of sentence.
 """
 
 import sys
@@ -16,9 +16,9 @@ MAX_LEN = 40
 MAX_LINES = 100000
 
 BRACKETS = [
-    'LRB', 'RRB',
-    'LSB', 'RSB',
-    'RCB', 'RCB'
+    '-LRB-', '-RRB-',
+    '-LSB-', '-RSB-',
+    '-RCB-', '-RCB-'
 ]
 
 
@@ -57,17 +57,17 @@ def replace_brackets(words):
     replaced = []
     for word in words:
         if word == '(':
-            replaced.append('LRB')
+            replaced.append('-LRB-')
         elif word == '{':
-            replaced.append('LCB')
+            replaced.append('-LCB-')
         elif word == '[':
-            replaced.append('LSB')
+            replaced.append('-LSB-')
         elif word == ')':
-            replaced.append('RRB')
+            replaced.append('-RRB-')
         elif word == '}':
-            replaced.append('RCB')
+            replaced.append('-RCB-')
         elif word == ']':
-            replaced.append('RSB')
+            replaced.append('-RSB-')
         else:
             replaced.append(word)
     return replaced
