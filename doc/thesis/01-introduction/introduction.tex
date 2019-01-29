@@ -8,11 +8,11 @@ In this thesis I study the RNNG \citep{Dyer+2016:RNNG} and investigate:
 
 \paragraph{The approximate marginalization} I propose an alternative proposal distribution and investigate the impact.
 \begin{itemize}
-  \item I propose a new discriminative chart-based neural parser that is trained with a global, Conditional Random Field (CRF), objective. The parser is an adaptation of the minimal neural parser proposed in \citet{Stern+2017:Minimal}, which is trained with a margin-based objective.
-  \item This contrast with the typical choice for a transition-based parser as proposal (a discrminatively trained RNNG) \citep{Dyer+2016:RNNG}.
+  \item I propose a new discriminative chart-based neural parser that is trained with a global, Conditional Random Field (CRF), objective. The parser is an adaptation of the minimal neural parser proposed in \citet{stern2017minimal}, which is trained with a margin-based objective.
+  \item This contrast with the choise of \citet{Dyer+2016:RNNG} for a transition-based parser as proposal, a discrminatively trained RNNG.
   \item We posit that a globally trained model is a better proposal distribution than a locally trained transition based model: a global model has ready access to competing analyses that can be structurally dissimilar but close in probability, whereas we hypothesize that a locally trained model is prone to produce locally corrupted structures that are nearby in transition-space.
   \item In a transition based parser more diverse samples can be obtained by flattening the transition distributions. This causes the model to be less confident in its predictions. A downside is that this approach causes the model to explore parts of the probability space which it has not encountered during training.
-  \item The above is a general challenge for greedy transition based models that can be answered to by training with dynamic oracles \citep{Goldberg+2013:dynamic}, also called `exploration' (\citep{Ballesteros+2016:exploration,Stern+2017:Minimal}. These approaches can be considered instances of imitation learning \citep{Vlachos,Eisner+2012:imitation}.
+  \item The above is a general challenge for greedy transition based models that can be answered to by training with dynamic oracles \citep{Goldberg+2013:dynamic}, also called `exploration' (\citep{Ballesteros+2016:exploration,stern2017minimal}. These approaches can be considered instances of imitation learning \citep{Vlachos2012:imitation,Eisner+2012:imitation}.
   \item We do not consider these directions in this thesic. Dynamic oracles can produce substantial improvements in constituency parsing performance, but they must be custom designed for each transition system \citep{Klein+2018:reinforce}.
 \end{itemize}
 
@@ -21,14 +21,14 @@ In this thesis I study the RNNG \citep{Dyer+2016:RNNG} and investigate:
 \begin{itemize}
   \item A major drawback of these syntactic language models is that they require annotated data to be trained, and preciously little of such data exists.
   \item We extend the training to the unsupervised domain by optimizing a variational lower bound on the marginal probabilities that jointly optimizes the parameters of proposal model ('posterior' in this framework) with the joint model.
-  \item We obtain gradients for this objective using the score function estimator (Fu 2006), also known as REINFORCE (Williams 1992), which is widely used in the field of deep reinforcement learning, and we introduce an effective baseline based on argmax decoding (Rennie et al. 2017), which significantly reduces the variance in this optimization procedure.
+  \item We obtain gradients for this objective using the score function estimator \citep{Fu2006}, also known as REINFORCE \citep{Williams1992:REINFORCE}, which is widely used in the field of deep reinforcement learning, and we introduce an effective baseline based on argmax decoding \citep{Rennie+2017:argmax-baseline}, which significantly reduces the variance in this optimization procedure.
   \item Our CRF parser particularly excels in the role of posterior thanks the independence assumptions that allow for efficient exact computation of key quantities: the entropy term in the lower bound can be computed exactly using Inside-Outside algorithm, removing one source of variance from the gradient estimation, and the argmax decoding can be performed exactly thanks to Viterbi, making the argmax baseline even more effective.
 \end{itemize}
 
 \paragraph{Alternative, simpler, models} There are alternatives to the methods that this thesis investigates.
 \begin{itemize}
   \item Multitask learning of a neural language model with a syntactic side objective is a competitive and robust alternative method to infuse neural language models with syntactic knowledge.
-  \item Training the syntactic model on data that mixes gold trees with predicted 'silver' trees for unlabeled data is a competitive and robust alternative to fully principled semi-supervised learning.
+  \item Training the syntactic model on data that mixes gold trees with predicted `silver' trees for unlabeled data is a competitive and robust alternative to fully principled semi-supervised learning.
   \item We propose a simple multitask neural language model that predicts labeled spans from the RNN hidden states, using a feature function identical identical to that used in the CRF parser. A similar strategy has recently proposed in work on semantic parsing and is called a `syntactic scaffold' \citep{Swayamdipta+2018:scaffold}.
   \item We consider these alternatives in order to quantify significance of the latent structure, and the semisupervised training on the other hand, as measured by some external performance metric.
 \end{itemize}

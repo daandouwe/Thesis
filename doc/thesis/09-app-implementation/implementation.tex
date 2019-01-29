@@ -1,0 +1,23 @@
+% \bibliography{../src/bibliography}
+
+\section{Data}
+I describe in detail the data used in the experiments:
+\begin{itemize}
+  \item Data preprocessing for the PTB and unlabeled data.
+  \item Vocabulary and UNKing for all models.
+\end{itemize}
+
+\section{Optimization}
+I describe the choices made with regards to optimization.
+\begin{itemize}
+  \item Optimization by automatic differentiation \citep{Blei+2016:VI}
+  \item SGD and not Adam or other adaptive methods \citep{stern2017minimal} and choices of hyperparameters.
+  \item Learning rate schedule based on development scores.
+  \item Surrogate objective and gradient blocking \cite{schulman2015gradient}.
+\end{itemize}
+
+\section{Implementation}
+\begin{itemize}
+  \item We use Dynet.
+  \item Other specifics for optimization such as how to obtain blocked gradients.
+\end{itemize}

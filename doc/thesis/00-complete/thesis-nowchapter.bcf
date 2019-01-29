@@ -2283,11 +2283,11 @@
     <bcf:citekey order="2">Dyer+2016:RNNG</bcf:citekey>
     <bcf:citekey order="3">Buys+2018</bcf:citekey>
     <bcf:citekey order="4">Dyer+2016:RNNG</bcf:citekey>
-    <bcf:citekey order="5">stern2017minimal</bcf:citekey>
+    <bcf:citekey order="5">Stern+2017:Minimal</bcf:citekey>
     <bcf:citekey order="6">Dyer+2016:RNNG</bcf:citekey>
     <bcf:citekey order="7">Goldberg+2013:dynamic</bcf:citekey>
     <bcf:citekey order="8">Ballesteros+2016:exploration</bcf:citekey>
-    <bcf:citekey order="8">stern2017minimal</bcf:citekey>
+    <bcf:citekey order="8">Stern+2017:Minimal</bcf:citekey>
     <bcf:citekey order="9">Vlachos2012:imitation</bcf:citekey>
     <bcf:citekey order="9">Eisner+2012:imitation</bcf:citekey>
     <bcf:citekey order="10">Klein+2018:reinforce</bcf:citekey>
@@ -2297,99 +2297,44 @@
     <bcf:citekey order="14">Swayamdipta+2018:scaffold</bcf:citekey>
     <bcf:citekey order="15">Carnie2010:constituent</bcf:citekey>
     <bcf:citekey order="15">Everaert+2015:structures</bcf:citekey>
-    <bcf:citekey order="16">chen1999empirical</bcf:citekey>
-    <bcf:citekey order="16">kneser1995improved</bcf:citekey>
-    <bcf:citekey order="17">bengio2003neural</bcf:citekey>
-    <bcf:citekey order="18">mikolov2010recurrent</bcf:citekey>
-    <bcf:citekey order="19">chelba2000structured</bcf:citekey>
-    <bcf:citekey order="19">pauls2012treelets</bcf:citekey>
-    <bcf:citekey order="20">emami2005neural</bcf:citekey>
+    <bcf:citekey order="16">Goodman+1996</bcf:citekey>
+    <bcf:citekey order="16">Kneser+1995</bcf:citekey>
+    <bcf:citekey order="17">Bengio+2003</bcf:citekey>
+    <bcf:citekey order="18">Mikolov+2010</bcf:citekey>
+    <bcf:citekey order="19">Chelba2000</bcf:citekey>
+    <bcf:citekey order="19">Klein+2012:treelets</bcf:citekey>
+    <bcf:citekey order="20">Emami+2005</bcf:citekey>
     <bcf:citekey order="21">Roark2001</bcf:citekey>
     <bcf:citekey order="22">Smith2012:adversarial</bcf:citekey>
     <bcf:citekey order="23">Linzen+2016:LSTM-syntax</bcf:citekey>
     <bcf:citekey order="24">Linzen+2018:targeted</bcf:citekey>
-    <bcf:citekey order="25">Brennan+2016</bcf:citekey>
-    <bcf:citekey order="26">Hale+2018:beam</bcf:citekey>
-    <bcf:citekey order="27">Stern+2017:beam</bcf:citekey>
-    <bcf:citekey order="28">Kuncoro+2017:RNNG-syntax</bcf:citekey>
-    <bcf:citekey order="29">Linzen+2016:LSTM-syntax</bcf:citekey>
-    <bcf:citekey order="29">Kuncoro+2018:RNNG-deps</bcf:citekey>
-    <bcf:citekey order="30">Dyer+2016:RNNG</bcf:citekey>
-    <bcf:citekey order="31">Buys+2018</bcf:citekey>
-    <bcf:citekey order="32">Buys+2015:bayes-gen-dep</bcf:citekey>
-    <bcf:citekey order="32">Buys+2015:neural-gen-dep</bcf:citekey>
-    <bcf:citekey order="32">Buys+2018</bcf:citekey>
-    <bcf:citekey order="33">Roark2001</bcf:citekey>
-    <bcf:citekey order="34">Hale+2018:beam</bcf:citekey>
-    <bcf:citekey order="34">Brennan+2016</bcf:citekey>
-    <bcf:citekey order="35">stern2017minimal</bcf:citekey>
-    <bcf:citekey order="36">stern2017minimal</bcf:citekey>
-    <bcf:citekey order="37">Finkel+2008</bcf:citekey>
-    <bcf:citekey order="37">Klein+2015:neural-crf</bcf:citekey>
-    <bcf:citekey order="38">stern2017minimal</bcf:citekey>
-    <bcf:citekey order="39">Collins2003</bcf:citekey>
-    <bcf:citekey order="40">Klein+2003</bcf:citekey>
-    <bcf:citekey order="41">stern2017minimal</bcf:citekey>
-    <bcf:citekey order="42">Buys+2018</bcf:citekey>
-    <bcf:citekey order="43">stern2017minimal</bcf:citekey>
-    <bcf:citekey order="44">Sutton+2012:CRF</bcf:citekey>
-    <bcf:citekey order="45">Finkel+2008</bcf:citekey>
-    <bcf:citekey order="45">Klein+2015:neural-crf</bcf:citekey>
-    <bcf:citekey order="46">hall2014less</bcf:citekey>
-    <bcf:citekey order="47">stern2017minimal</bcf:citekey>
-    <bcf:citekey order="48">kitaev2018attentive</bcf:citekey>
-    <bcf:citekey order="49">Dyer+2016:RNNG</bcf:citekey>
-    <bcf:citekey order="50">Baydin+2017:AD</bcf:citekey>
-    <bcf:citekey order="51">Blei+2016:VI</bcf:citekey>
-    <bcf:citekey order="52">Williams1992:REINFORCE</bcf:citekey>
-    <bcf:citekey order="53">Paisley+2012:VISS</bcf:citekey>
-    <bcf:citekey order="54">Mnih+2014:NVIL</bcf:citekey>
-    <bcf:citekey order="55">Ranganath+2014:BBVI</bcf:citekey>
-    <bcf:citekey order="56">Miao+2016</bcf:citekey>
-    <bcf:citekey order="57">Williams1992:REINFORCE</bcf:citekey>
-    <bcf:citekey order="58">Fu2006</bcf:citekey>
-    <bcf:citekey order="59">Baydin+2017:AD</bcf:citekey>
-    <bcf:citekey order="60">Schulman+2015:surrogate</bcf:citekey>
-    <bcf:citekey order="61">Paisley+2012:VISS</bcf:citekey>
-    <bcf:citekey order="62">Ross:2006:SIM</bcf:citekey>
-    <bcf:citekey order="63">Ross:2006:SIM</bcf:citekey>
-    <bcf:citekey order="64">Enguehard+2017:RNN-multitask</bcf:citekey>
-    <bcf:citekey order="65">Enguehard+2017:RNN-multitask</bcf:citekey>
-    <bcf:citekey order="66">Zhang+2016:multitask</bcf:citekey>
-    <bcf:citekey order="66">Goldberg+2016:multitask</bcf:citekey>
-    <bcf:citekey order="67">Swayamdipta+2018:scaffold</bcf:citekey>
-    <bcf:citekey order="68">Blei+2016:VI</bcf:citekey>
-    <bcf:citekey order="69">stern2017minimal</bcf:citekey>
-    <bcf:citekey order="70">schulman2015gradient</bcf:citekey>
-  </bcf:section>
-  <bcf:sortlist section="0" name="nyt/global/" type="entry" sortscheme="nyt" sortnamekeyscheme="global" labelprefix="">
-  <bcf:sorting>
-    <bcf:sort order="1">
-      <bcf:sortitem order="1">presort</bcf:sortitem>
-    </bcf:sort>
-    <bcf:sort order="2" final="1">
-      <bcf:sortitem order="1">sortkey</bcf:sortitem>
-    </bcf:sort>
-    <bcf:sort order="3">
-      <bcf:sortitem order="1">sortname</bcf:sortitem>
-      <bcf:sortitem order="2">author</bcf:sortitem>
-      <bcf:sortitem order="3">editor</bcf:sortitem>
-      <bcf:sortitem order="4">translator</bcf:sortitem>
-      <bcf:sortitem order="5">sorttitle</bcf:sortitem>
-      <bcf:sortitem order="6">title</bcf:sortitem>
-    </bcf:sort>
-    <bcf:sort order="4">
-      <bcf:sortitem order="1">sortyear</bcf:sortitem>
-      <bcf:sortitem order="2">year</bcf:sortitem>
-    </bcf:sort>
-    <bcf:sort order="5">
-      <bcf:sortitem order="1">sorttitle</bcf:sortitem>
-      <bcf:sortitem order="2">title</bcf:sortitem>
-    </bcf:sort>
-    <bcf:sort order="6">
-      <bcf:sortitem order="1" pad_side="left" pad_width="4" pad_char="0">volume</bcf:sortitem>
-      <bcf:sortitem order="2">0000</bcf:sortitem>
-    </bcf:sort>
-  </bcf:sorting>
-  </bcf:sortlist>
-</bcf:controlfile>
+    <bcf:citekey order="25">Zhang+2016:multitask</bcf:citekey>
+    <bcf:citekey order="25">Goldberg+2016:multitask</bcf:citekey>
+    <bcf:citekey order="25">Swayamdipta+2018:scaffold</bcf:citekey>
+    <bcf:citekey order="26">Stern+2017:Minimal</bcf:citekey>
+    <bcf:citekey order="27">Stern+2017:Minimal</bcf:citekey>
+    <bcf:citekey order="28">Finkel+2008</bcf:citekey>
+    <bcf:citekey order="28">Klein+2015:neural-crf</bcf:citekey>
+    <bcf:citekey order="29">Stern+2017:Minimal</bcf:citekey>
+    <bcf:citekey order="30">Collins2003</bcf:citekey>
+    <bcf:citekey order="31">Klein+2003</bcf:citekey>
+    <bcf:citekey order="32">Stern+2017:Minimal</bcf:citekey>
+    <bcf:citekey order="33">Buys+2018</bcf:citekey>
+    <bcf:citekey order="34">Sutton+2012:CRF</bcf:citekey>
+    <bcf:citekey order="35">Finkel+2008</bcf:citekey>
+    <bcf:citekey order="36">Klein+2015:neural-crf</bcf:citekey>
+    <bcf:citekey order="37">Dyer+2016:RNNG</bcf:citekey>
+    <bcf:citekey order="38">Baydin+2017:AD</bcf:citekey>
+    <bcf:citekey order="39">Blei+2016:VI</bcf:citekey>
+    <bcf:citekey order="40">Williams1992:REINFORCE</bcf:citekey>
+    <bcf:citekey order="41">Paisley+2012:VISS</bcf:citekey>
+    <bcf:citekey order="42">Mnih+2014:NVIL</bcf:citekey>
+    <bcf:citekey order="43">Ranganath+2014:BBVI</bcf:citekey>
+    <bcf:citekey order="44">Miao+16</bcf:citekey>
+    <bcf:citekey order="45">Williams1992:REINFORCE</bcf:citekey>
+    <bcf:citekey order="46">Fu2006</bcf:citekey>
+    <bcf:citekey order="47">Baydin+2017:AD</bcf:citekey>
+    <bcf:citekey order="48">Schulman+2015:surrogate</bcf:citekey>
+    <bcf:citekey order="49">Paisley+2012:VISS</bcf:citekey>
+    <bcf:citekey order="50">Ross:2006:SIM</bcf:citekey>
+    <bcf:citekey order="51">Ross:2006:SIM</bcf:citekey>

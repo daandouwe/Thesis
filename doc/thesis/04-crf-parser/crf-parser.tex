@@ -1,45 +1,20 @@
 % \bibliography{../src/bibliography}
 
-In this chapter I introduce an alternative parser to act as proposal model in the approximate marginalization. The parser is a neural Conditional Random Field (CRF) parser that parser combines exact dynamic programming of chart-based parsing with the rich nonlinear featurization of neural networks.  The parser is an adaptation of the chart-based parser introduced in \citet{Stern+2017:Minimal}, where it is trained with a margin-based objective.
+In this chapter I introduce an alternative parser to act as proposal model in the approximate marginalization.
 
 \begin{itemize}
-  \item The chart-based approach allows efficient exact inference. The neural network is used exclusively to learn good representation from which to predict local scores; the global structured interactions are
+  \item The parser is a neural Conditional Random Field (CRF) parser that combines the efficient exact inference of chart-based parsing with the rich nonlinear features of neural networks.
+  \item The chart-based approach allows efficient exact inference, while the neural features can be relatively rich and can condition on the entire sentence.
+  \item The neural network is used exclusively to learn good representation from which to predict local scores, while the global structured interactions are
+  \item The parser is an adaptation of the chart-based parser introduced in \citet{stern2017minimal}, where it is trained with a margin-based objective.
 \end{itemize}
 
 \section{Model}
-In this section I describe the probabilistic model of the parser.
+I describe the probabilistic model of the parser.
 \begin{enumerate}
-  \item Introduce probabilistic model, reference CRF background in apendix
-  \item Desribe how this is an adaptation from \citet{Stern+2017:Minimal} to probabilistic training.
-\end{enumerate}'
-
-\subsection{Motivation}
-\begin{itemize}
-  \item Key point to make: this model regards a constituency tree as a collection of \textit{labeled spans} over a sentence. Earlier models, both log-linear and neural, regard a constituency tree as a collection of \textit{anchored rules} over a sentence \citep{Finkel+2008,Klein+2015}.
-  \item A model over spanned rules puts more expressiveness in the state space of the dynamic program, since rules The model in \cite{Stern+2017:Minimal} instead puts the expressiveness in the input space by using rich neural feature representations and a very unconstrained output space.
-  \item Earlier approaches went evern further by enriching enriched meanse to lexicalize the rules \cite{Collins2003}; break the grammar's independence assumptions by annotating the rule with parent and sibling labels \citep{Klein+2003}.
-  \item
-\end{itemize}
-
-\subsection{Features}
-In this section I describe how the scores are computed from the bidirectional LSTM features.
-\begin{itemize}
-  \item Give formal expression for `LSTM minus features` with Feedforward scoring function
-\end{itemize}
-
-\section{Inference}
-Due to the parametrization, the model allows efficient inference. In this section we describe efficient solutions to three related problems:
-\begin{itemize}
-  \item Find the best parse $\mathbf{y}^{*} = \arg \max_{\mathbf{y}} p(\mathbf{y} | \mathbf{x})$
-  \item Compute the normalizer $Z(\mathbf{x}) = \sum_{ \mathbf{y} } \prod_{ a=1 }^{ A } \Psi( \mathbf{x}, \mathbf{y}_a )$, where $F = \{ \Psi_a \}_{a=1}^{A}$ is the set of factors in the graph.
-  \item Compute the entropy conditioned on $\mathbf{x}$, $H(\mathbf{y} | \mathbf{x})$.
-\end{itemize}
-All three problems can be solved with a different instance of the same two algorithm: the inside algorithm and the outside algorithm.
-
-\subsection{Inside recursion}
-NOTE: This is a complete draft section, just for me to get the correct derivation for the implementation. In the actual section I will follow the semiring formulation, and connect it with the belief-propagation/message-passing/sum-product algorithm.
-
-In this derivation we follow Michael Collins notes on the Inside-Outside Algorithm.\footnote{\url{http://www.cs.columbia.edu/~mcollins/io.pdf}}
+  \item Introduce probabilistic model, reference the appendix on CRFs \ref{A3-crf}.
+  \item Desribe how this is an adaptation from \citet{stern2017minimal} to probabilistic training.
+\end{enumerate}
 
 Let a sentence be $x_1,\dots,x_n$, where each $x_i$
 is a word. We are given a CFG $(N, \Sigma, R, S)$ in Chomsky normal
@@ -48,21 +23,21 @@ form. Let $\psi$ be a function that maps any rule production $r \in R$ of the fo
 Following the minimal span parser we define $\psi$ as
 \begin{align}
 \label{eq:rule-score}
-    \log\psi(A \to B \;C, i, k, j) &\triangleq s_{label}(i, j, A) + s_{span}(i, j) \\
+    \log\psi(A \to B \;C, i, k, j) &\triangleq s_{label}(i, j, A)\\
     &\text{and} \\
-    \log\psi(A, i, i+1) &\triangleq s_{label}(i, i+1, A) + s_{span}(i, i+1),
+    \log\psi(A, i, i+1) &\triangleq s_{label}(i, i+1, A),
 \end{align}
 and thus the potential of a tree as
 \begin{align}
 \label{eq:tree-score}
     \log\Psi(T) &= \sum_{r \in T} \log\psi(r) \\
-        &= \sum_{\langle A, i, j \rangle \in T} s_{label}(i, j, A) + s_{span}(i, j), \\
+      &= \sum_{\langle A, i, j \rangle \in T} s_{label}(i, j, A), \\
 \end{align}
 Note that the potential function as defined in \ref{eq:rule-score} disregards most of the information in a binary rule. In particular we see that $B$, $C$ and $k$, the labels and split-point of the children, are discarded.
 
-Now note that equation \label{eq:tree-score} corresponds exactly to the second formula in section 3 of the minimal span-based parser paper
+Now note that equation \ref{eq:tree-score} corresponds exactly to the second formula in section 3 of the minimal span-based parser paper
 \begin{align}
-s_{tree}(T) = \sum_{(\ell(i,j))\in T}[s_{label}(i, j, \ell) + s_{span}(i, j)] .
+s_{tree}(T) = \sum_{(\ell(i,j))\in T}[s_{label}(i, j, \ell)] .
 \end{align}
 which is how I derived that \ref{eq:rule-score} is the correct formula for the rule score.
 
@@ -77,14 +52,41 @@ or equivalently
     \log P(T) &= \sum_{r \in T} \log \psi(r) - \log \sum_{T \in \mathcal{T}} \prod_{r \in T} \psi(r) \\
 \end{align}
 
-From the aforementioned notes we get the following general result for the inside value $\alpha$. For all $A \in N$, for all $0 \leq i < n$
+
+\subsection{Features}
+I describe how the local scores are computed using neural networks.
+\begin{itemize}
+  \item Give formal expression for feature function: `LSTM minus features' with Feedforward scoring function.
+\end{itemize}
+
+\subsection{Motivation}
+\begin{itemize}
+  \item Key point to make: this model regards a constituency tree as a collection of \textit{labeled spans} over a sentence. Earlier models, both log-linear and neural, regard a constituency tree as a collection of \textit{anchored rules} over a sentence \citep{Finkel+2008,Klein+2015:neural-crf}.
+  \item A model over spanned rules puts more expressiveness in the state space of the dynamic program, because the correlations between subparts of the trees are modeled through the rich rules. The model in \citet{stern2017minimal} instead puts the expressiveness in the input space by using rich neural feature representations. The state space in contrast is less structured, because the score-function is agnostic to the composition of it's children.
+  \item Earlier approaches went even farther. These approaches enriched the grammar by lexicalizing the rules \citep{Collins2003} or by breaking the grammar's independence assumptions by annotating the rule with parent and sibling labels \citep{Klein+2003}.
+  \item The choice to model labeled spans makes dramatically improves the speed of this model. In the section on inference we will show precisely how.
+\end{itemize}
+
+\section{Inference}
+Due to the parametrization, the model allows efficient inference. In this section we describe efficient solutions to three related problems:
+\begin{itemize}
+  \item Find the best parse $\mathbf{y}^{*} = \arg \max_{\mathbf{y}} p(\mathbf{y} | \mathbf{x})$
+  \item Compute the normalizer $Z(\mathbf{x}) = \sum_{ \mathbf{y} } \prod_{ a=1 }^{ A } \Psi( \mathbf{x}, \mathbf{y}_a )$, where $F = \{ \Psi_a \}_{a=1}^{A}$ is the set of factors in the graph.
+  \item Compute the entropy conditioned on $\mathbf{x}$, $H(\mathbf{y} | \mathbf{x})$.
+\end{itemize}
+All three problems can be solved with a different instance of the same two algorithm: the inside algorithm and the outside algorithm.
+
+\subsection{Inside recursion}
+% NOTE: This is a complete draft section, just for me to get the correct derivation for the implementation. In the actual section I will follow the semiring formulation, and connect it with the belief-propagation/message-passing/sum-product algorithm.
+%
+In this derivation we follow Michael Collins notes on the Inside-Outside Algorithm.\footnote{\url{http://www.cs.columbia.edu/~mcollins/io.pdf}} We have the following general result for the inside value $\alpha$. For all $A \in N$, for all $0 \leq i < n$
 \begin{align}
-    \label{eq:collins-inside}
+    \label{eq:collins-inside-base}
     \alpha(A,i,i+1) = \psi(A, i, i+1)
 \end{align}
 and for all $(i, j)$ such that $1 \leq i < j \leq n$:
 \begin{align}
-    \label{eq:collins-inside}
+    \label{eq:collins-inside-general}
     \alpha(A,i,j) = \sum_{A \to B C} \sum_{k=i+1}^{j-1} \psi(A \to B \;C, i, k, j) \cdot \alpha(B,i,k) \cdot \alpha(C,k,j)
 \end{align}
 % \begin{align}
@@ -95,29 +97,29 @@ Note that we are considering a CFG in which the rule set is complete, i.e.
 \begin{align}
     \langle A \to B \;C \rangle \in R \text{ for each } (A, B, C) \in N^3,
 \end{align}
-and recall that the labels $B$ and $C$ do not appear in the scoring functions in \ref{eq:rule-score}. These facts will allow us to simplify the expression in formula \ref{eq:collins-inside} as
+and recall that the labels $B$ and $C$ do not appear in the scoring functions in \ref{eq:rule-score}. These facts will allow us to simplify the expression in formula \ref{eq:collins-inside-general} as
 \begin{subequations}
-\begin{align}
+\begin{align*}
     \alpha(A,i,j) &= \sum_{B \in N} \sum_{C \in N} \sum_{k=i+1}^{j-1} \tilde{s}_{label}(i, j, A) \cdot \tilde{s}_{span}(i, j) \alpha(B,i,k) \cdot \alpha(C,k,j) \\
         &= \tilde{s}_{label}(i, j, A) \cdot \tilde{s}_{span}(i, j) \sum_{k=i+1}^{j-1} \sum_{B \in N} \alpha(B,i,k) \cdot \sum_{C \in N} \alpha(C,k,j) \\
         &= \tilde{s}_{label}(i, j, A) \cdot \tilde{s}_{span}(i, j) \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \label{eq:final-inside}
-\end{align}
+\end{align*}
 \end{subequations}
 where we've introduced a number of notational abbreviations
-\begin{align}
+\begin{align*}
     \tilde{s}_{label}(i, j, A) &= \exp( s_{label}(i, j, A) ) \\
     \tilde{s}_{span}(i, j) &= \exp( s_{span}(i, j) ) \\
     S(i,j) &= \sum_{A \in N} \alpha(A,i,j)
-\end{align}
+\end{align*}
 Note that this is the exact same formula as \ref{eq:inside-semiring}.
 
 From equation \ref{eq:final-inside} we can deduce that we in fact do even need to store the values $\alpha(i, j, A)$ but that it suffices to only store the marginalized values $S(i, j)$. In this case, the recursion simplifies even further:
 \begin{subequations}
-\begin{align}
+\begin{align*}
     S(i, j) &= \sum_{A \in N} \alpha(A,i,j) \\
         &=  \sum_{A \in N} \tilde{s}_{label}(i, j, A) \cdot \tilde{s}_{span}(i, j) \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \\
         &= \Bigg[ \sum_{A \in N} \tilde{s}_{label}(i, j, A) \cdot \tilde{s}_{span}(i, j) \Bigg] \Bigg[\sum_{k=i+1}^{j-1} S(i,k) \cdot  S(k,j) \Bigg]
-\end{align}
+\end{align*}
 \end{subequations}
 where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting. We can now recognize this as the `inside' equivalent of the expression from the paper\footnote{I believe there is actually an error in this equation: it should read  $s_{label}(i, j, \ell) + s_{span}(i, j)$ instead of just $s_{label}(i, j, \ell)$. This is implied by the score for a single node, which is given by equation \ref{eq:rule-score}, taken directly from the paper.}
 \begin{align}
@@ -142,11 +144,50 @@ where
     S'(i, j) &= \sum_{A \in N} \psi(A, i, j) \beta(A, i, j)
 \end{align*}
 
+\section{Experiments}
+We perform three types of experiments with the CRF parser:
+\begin{itemize}
+  \item We show that the model is a good supervised parser. We train the model supervised on the PTB and show the f-score on the PTB test set.
+  \item We evaluate the joint RNNG with samples from the CRF parser. We compare the perplexity and fscore with RNNG case.
+  \item We evauluate `how good the model is' as a sampler.
+\end{itemize}
+
+\paragraph{Supervised model} We investigate the following.
+\begin{itemize}
+  \item We have some optimization and hyperparameter choices here. The original paper uses Adam with 0.001 and a LSTM of dimension 250, which gives the model around 2.5 million parameters. For the discriminative RRNG we use SGD with 0.1, and hidden sizes of 128 gives the model around 800,000 parameters.
+  \item I suggest two experiments: (1) use the default setting from \citep{stern2017minimal} and (2) use the settings for the RNNG with a hidden size to match the 800,000 parameters.
+\end{itemize}
+
+\paragraph{Proposal model} We investigate the following:
+\begin{itemize}
+  \item We evaluate validation F-score and perplexity.
+  \item We evaluate F-score with 100 samples (as many proposal trees as possible).
+  \item We evaluate perplexity with varying number of samples: 1 (argmax), 10, 20, 50, 100 (default). The peplexity evaluation with the argmax prediction gives an impression of the uncertaty in the model \citep{Buys+2018}.
+  \item  We perform learning rate decay and model selection based on a development score computed with the samples from the discriminative RNNG. Undecided: should we train a separate joint RNNG with CRF samples?
+\end{itemize}
+
+\paragraph{Sampler} We investigate the following:
+\begin{itemize}
+  \item We asses the conditional entropy of the model. This is most quantitative. Recall that conditional entropy is defined as
+  \begin{equation}
+    \text{H}(Y|X) = \sum_{x \in \mathcal{X}} p_X(x)\text{H}(Y|X = x),
+  \end{equation}
+  where
+  \begin{equation}
+    \text{H}(Y|X = x) = - \sum_{y \in \mathcal{Y}} p_{Y|X}(y|x) \log p_{Y|X}(y|x).
+  \end{equation}
+  The quantity $\text{H}(Y|X = x)$ can computed exactly with the CRF parser. We estimate the quantity $\text{H}(Y|X)$ by a sum over the development dataset. For the probabilities $p_X(x)$ we use the marginalized probabilities of the joint RNNG (with samples from the CRF parser $p_{Y|X}$).
+  \item We asses for some cherry picked sentences. This is more qualitative. These sentences should be difficult or ambiguous. Or they can be ungramatical when taken from the syneval dataset. We can evaluate their entropy, and the diversity of samples, for example to see if there are clear modes. We can make violinplots of the probabilities of the samples. We can compute the f-scores of the samples compared with the argmax tree.
+\end{itemize}
 
 \section{Related work}
+Here I describe related work, and in particular earlier approaches to (neural) CRF-parsing.
 \begin{enumerate}
-  \item Conditional Random Fields \citep{Sutton+2012:CRF}
-  \item Conditional Random Field parsing with linear \citep{Finkel+2008} and nonlinear features \citep{Klein+2015:neural-crf}
+  \item Of course \citep{stern2017minimal}
+  \item CRFs \citep{Sutton+2012:CRF}
+  \item CRF parsing with linear and nonlinear features \citep{Finkel+2008,Klein+2015:neural-crf}
+  \item Attempts to simplify the grammar and thus the state-space of the dynamic program \citep{hall2014less}.
+  \item Recent extension of \citet{stern2017minimal}, with same model but different encoder \citep{kitaev2018attentive}.
 \end{enumerate}
 
 

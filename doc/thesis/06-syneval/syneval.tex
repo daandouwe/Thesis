@@ -1,0 +1,29 @@
+\bibliography{../src/bibliography.bib}
+
+In this section I describe the syntactic evaluation that I perform.
+
+
+\section{Multitask learning}
+I describe the baselines that is based on multitask learning: language modelling with a syntactic side objective. We have two side objectives:
+\begin{itemize}
+  \item From the language model's RNN states predict CCG supertags  \citep{Enguehard+2017:RNN-multitask}
+  \item From the language model's RNN states predict labeled spans. Use features and function identical to what is used in the the scoring function of the CRF parser: `LSTM minus' features followed by a feedforward model. This is (minor) original contribution.
+  \item We hypothesize a bit about their comparative (dis)advantages.
+  \item We compare the effect of these two multitask objectives in the syneval setting.
+  \item We compare the two methods wrt to perplexity. \cite{Enguehard+2017:RNN-multitask} showed that the CCG side objective helped the model perform much better on the syntactic task, but also helped the model reach much lower perplexity. Preliminary experiments with the labeld span side-objective showed that it also makes the model perform much better on the syntactic task, but that the perplexity is worse.
+\end{itemize}
+
+\subsection{Background}
+\begin{itemize}
+  \item Give formal description of multitask learning. In our case of language modelling with syntactic side-objective, the learning objective is to maximize
+  \begin{equation*}
+    \mathcal{L}(\theta, \lambda, \zeta) = \sum_{ (\mathbf{x}, \mathbf{y}) \in \mathcal{D} }\log p_{\theta, \lambda}(\mathbf{x}) + \log q_{\theta,\zeta}(\mathbf{y} | \mathbf{x})
+  \end{equation*}
+  with respect to the parameters $\theta$, $\lambda$ and $\zeta$, where $p$ is our model of interest, optimized for the main objective, and $q$ is our model optimized for the side objective, which we discard after optimization.
+  \item The key point of multitask learning is that the the two models $p$ and $q$ share the set of parameters $\theta$. This means that $\theta$ will be optimized to fit both objectives well.
+  \item The parameters in $\lambda$ and $\zeta$, in turn, are optimized to the each objective separately.
+  \item The proportion and the nature of the parameters that belong to $\theta$ is a choice of the modeller and the objective.
+  \item Name some generic examples of multitask learning in NLP \citep{Zhang+2016:multitask,Goldberg+2016:multitask} and the recent work on `syntactic scaffolds' \citep{Swayamdipta+2018:scaffold}.
+\end{itemize}
+
+\subsection{CCG}

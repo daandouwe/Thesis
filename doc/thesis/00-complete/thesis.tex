@@ -13,7 +13,11 @@
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption}
-\usepackage{todonotes}
+
+\usepackage{qtree}
+\usepackage{tikz}
+
+\graphicspath{{../figures/}}
 
 % a few definitions that are *not* needed in general:
 \newcommand{\ie}{\emph{i.e.}}
@@ -28,7 +32,7 @@
 
 
 %ARTICLE SUB-TITLE
-% \subtitle{Smart Things as Said by Me}
+% \subtitle{}
 
 
 %AUTHORS FOR COVER PAGE
@@ -71,6 +75,17 @@ I find that:
 \end{itemize}
 \end{abstract}
 
+\chapter{Notes}
+This is the plan for next week:
+\begin{itemize}
+  \item Get rid of chapter 6 on multitask learning. Make this a subsection of the chapter on syntactic evaluation.
+  \item Remove multitask learning from the background. Move this to a subsection of the chapter on syntactic evaluation.
+  \item Do not describe the CRF parser or inside-outside algorithm (`value recursion`) in the exact framework of graphical models! These are hard to reconcile!
+  \item Use the general value recursion formulation and derive from there.
+  \item Move formula derivations for the VI gradient to VI appendix.
+  \item Move variance reduction and control variates to VI appendix.
+  \item Move gradient blocking and surrogate objective to implementation appendix.
+\end{itemize}
 
 \chapter{Introduction}
 \label{01-introduction}
@@ -97,19 +112,14 @@ I find that:
 \input{../05-semisupervised/semisupervised}
 
 
-\chapter{Multitask learning}
-\label{06-multitask}
-\input{../06-multitask/multitask}
-
-
 \chapter{Syntactic evaluation}
-\label{07-syneval}
-\input{../07-syneval/syneval}
+\label{06-syneval}
+\input{../06-syneval/syneval}
 
 
 \chapter{Conclusion}
-\label{08-conclusion}
-\input{../08-conclusion/conclusion}
+\label{07-conclusion}
+\input{../07-conclusion/conclusion}
 
 
 % end of main matter
@@ -120,15 +130,19 @@ I find that:
 \appendix
 \chapter{Figures}
 \label{A1-figures}
-\input{../09-app-figures/figures.tex}
+\input{../08-app-figures/figures.tex}
 
-\chapter{Data}
-\label{A2-data}
-\input{../10-app-data/data.tex}
+\chapter{Implementation}
+\label{A2-implementation}
+\input{../09-app-implementation/implementation.tex}
 
-\chapter{Data}
-\label{A3-data}
-\input{../11-app-crf/crf.tex}
+\chapter{Conditional Random Fields}
+\label{A3-crf}
+\input{../10-app-crf/crf.tex}
+
+\chapter{Variational Inference}
+\label{A4-vi}
+\input{../11-app-vi/vi.tex}
 
 
 %BACKMATTER SEE DOCUMENTATION

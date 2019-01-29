@@ -1,12 +1,12 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  29 JAN 2019 21:09
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  29 JAN 2019 19:00
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**thesis.tex
-(./thesis.tex
+**thesis-nowchapter.tex
+(./thesis-nowchapter.tex
 LaTeX2e <2016/03/31>
 Babel <3.9r> and hyphenation patterns for 83 language(s) loaded.
-(../src/nowfnt.cls
+(./thesis.tex (../src/nowfnt.cls
 
 LaTeX Warning: You have requested document class `../src/nowfnt',
                but the document class provides `nowfnt'.
@@ -722,6 +722,18 @@ Package: bookmark 2016/05/16 v1.25 PDF bookmarks (HO)
 File: bkm-pdftex.def 2016/05/16 v1.25 bookmark driver for pdfTeX (HO)
 \BKM@id=\count314
 ))
+\openout0 = `thesis-nowchapter-nowbook.tex'.
+
+\openout0 = `thesis-nowchapter-nowebook.tex'.
+
+\openout0 = `thesis-nowchapter-nowsample.tex'.
+
+\openout0 = `thesis-nowchapter-nowchapter.tex'.
+
+\openout0 = `thesis-nowchapter-nowechapter.tex'.
+
+\openout0 = `thesis-nowchapter-nowplain.tex'.
+
 \c@nowfnt@nowinclude=\count315
 \c@nowfnt@article@cnt=\count316
 \nowfnt@write=\write5
@@ -1533,8 +1545,8 @@ File: english.lbx 2016/05/14 v3.4 biblatex localization (PK/JW/AB)
 \@quotelevel=\count355
 \@quotereset=\count356
 
-(./thesis.aux)
-\openout1 = `thesis.aux'.
+(./thesis-nowchapter.aux)
+\openout1 = `thesis-nowchapter.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 57.
 LaTeX Font Info:    ... okay on input line 57.
@@ -1551,7 +1563,8 @@ LaTeX Font Info:    ... okay on input line 57.
 LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 57.
 LaTeX Font Info:    ... okay on input line 57.
 LaTeX Font Info:    Try loading font information for T1+lmr on input line 57.
- (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/t1lmr.fd
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/lm/t1lmr.fd
 File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 Package lastpage Info: Please have a look at the pageslts package at
@@ -1616,15 +1629,14 @@ Package caption Info: End \AtBeginDocument code.
 Package biblatex Info: Input encoding 'utf8' detected.
 Package biblatex Info: Automatic encoding selection.
 (biblatex)             Assuming data encoding 'utf8'.
-\openout4 = `thesis.bcf'.
+\openout4 = `thesis-nowchapter.bcf'.
 
 Package biblatex Info: Trying to load bibliographic data...
-Package biblatex Info: ... file 'thesis.bbl' found.
+Package biblatex Info: ... file 'thesis-nowchapter.bbl' not found.
 
-(./thesis.bbl)
+No file thesis-nowchapter.bbl.
 Package biblatex Info: Reference section=0 on input line 57.
 Package biblatex Info: Reference segment=0 on input line 57.
-
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -1750,15 +1762,14 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <8> on input line 57.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <6> on input line 57.
-
-(./thesis.toc [2
-
-
-])
 \tf@toc=\write7
-\openout7 = `thesis.toc'.
+\openout7 = `thesis-nowchapter.toc'.
 
- [3] ABD: EveryShipout initializing macros
+
+[2
+
+
+] ABD: EveryShipout initializing macros
 LaTeX Font Info:    Try loading font information for OMS+lmr on input line 66.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/omslmr.fd
@@ -1775,24 +1786,137 @@ Chapter 1.
 ]
 Chapter 2.
 (../01-introduction/introduction.tex
+
+LaTeX Warning: Citation 'Dyer+2016:RNNG' on page 3 undefined on input line 5.
+
+
+LaTeX Warning: Citation 'Buys+2015:neural-gen-dep' on page 3 undefined on input
+ line 5.
+
+
+LaTeX Warning: Citation 'Buys+2018' on page 3 undefined on input line 5.
+
+
+LaTeX Warning: Citation 'Dyer+2016:RNNG' on page 3 undefined on input line 5.
+
+
+LaTeX Warning: Citation 'Buys+2018' on page 3 undefined on input line 5.
+
+
+LaTeX Warning: Citation 'Dyer+2016:RNNG' on page 3 undefined on input line 7.
+
+
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [3
 
 ]
-[4] [5]) [6]
+
+LaTeX Warning: Citation 'Stern+2017:Minimal' on page 4 undefined on input line 
+11.
+
+
+LaTeX Warning: Citation 'Dyer+2016:RNNG' on page 4 undefined on input line 12.
+
+
+Overfull \hbox (14.38936pt too wide) in paragraph at lines 12--13
+[]\T1/lmr/m/n/10.95 (-20) This con-trast with the choise of [] for a transition
+-
+ []
+
+
+LaTeX Warning: Citation 'Goldberg+2013:dynamic' on page 4 undefined on input li
+ne 15.
+
+
+LaTeX Warning: Citation 'Ballesteros+2016:exploration' on page 4 undefined on i
+nput line 15.
+
+
+LaTeX Warning: Citation 'Stern+2017:Minimal' on page 4 undefined on input line 
+15.
+
+
+LaTeX Warning: Citation 'Vlachos2012:imitation' on page 4 undefined on input li
+ne 15.
+
+
+LaTeX Warning: Citation 'Eisner+2012:imitation' on page 4 undefined on input li
+ne 15.
+
+
+Overfull \hbox (121.46915pt too wide) in paragraph at lines 15--16
+\T1/lmr/m/n/10.95 (-20) ([]), also called `ex-plo-ration' (([];
+ []
+
+
+Overfull \hbox (83.5333pt too wide) in paragraph at lines 15--16
+\T1/lmr/m/n/10.95 (-20) stances of im-i-ta-tion learn-ing ([]; []). 
+ []
+
+
+LaTeX Warning: Citation 'Klein+2018:reinforce' on page 4 undefined on input lin
+e 16.
+
+[4]
+
+LaTeX Warning: Citation 'Fu2006' on page 5 undefined on input line 24.
+
+
+LaTeX Warning: Citation 'Williams1992:REINFORCE' on page 5 undefined on input l
+ine 24.
+
+
+LaTeX Warning: Citation 'Rennie+2017:argmax-baseline' on page 5 undefined on in
+put line 24.
+
+
+Overfull \hbox (70.35236pt too wide) in paragraph at lines 24--25
+\T1/lmr/m/n/10.95 (-20) ma-tor ([]), also known as RE-IN-FORCE ([]),
+ []
+
+
+LaTeX Warning: Citation 'Swayamdipta+2018:scaffold' on page 5 undefined on inpu
+t line 32.
+
+[5]) [6]
 Chapter 3.
-(../02-background/background.tex [7
+(../02-background/background.tex
+
+LaTeX Warning: Citation 'Carnie2010:constituent' on page 7 undefined on input l
+ine 8.
+
+
+LaTeX Warning: Citation 'Everaert+2015:structures' on page 7 undefined on input
+ line 8.
+
+
+Overfull \hbox (19.98698pt too wide) in paragraph at lines 8--9
+[]\T1/lmr/m/n/10.95 (-20) Reference ([]; [])
+ []
+
+
+LaTeX Warning: Reference `fig:trees' on page 7 undefined on input line 13.
+
+[7
 
 ]
-<../figures/trees/original.pdf, id=175, 517.935pt x 201.75375pt>
+
+LaTeX Warning: Reference `fig:tree-cnf-spans' on page 8 undefined on input line
+ 17.
+
+
+LaTeX Warning: Reference `tab:spans-rules' on page 8 undefined on input line 17
+.
+
+<../figures/trees/original.pdf, id=65, 517.935pt x 201.75375pt>
 File: ../figures/trees/original.pdf Graphic file (type pdf)
 
 <use ../figures/trees/original.pdf>
 Package pdftex.def Info: ../figures/trees/original.pdf used on input line 26.
 (pdftex.def)             Requested size: 241.735pt x 94.16547pt.
 
-<../figures/trees/simplified.pdf, id=176, 427.5975pt x 201.75375pt>
+<../figures/trees/simplified.pdf, id=66, 427.5975pt x 201.75375pt>
 File: ../figures/trees/simplified.pdf Graphic file (type pdf)
 
 <use ../figures/trees/simplified.pdf>
@@ -1800,14 +1924,14 @@ Package pdftex.def Info: ../figures/trees/simplified.pdf used on input line 31.
 
 (pdftex.def)             Requested size: 208.1587pt x 98.2137pt.
 
-<../figures/trees/binary.pdf, id=177, 435.6275pt x 246.9225pt>
+<../figures/trees/binary.pdf, id=67, 435.6275pt x 246.9225pt>
 File: ../figures/trees/binary.pdf Graphic file (type pdf)
 
 <use ../figures/trees/binary.pdf>
 Package pdftex.def Info: ../figures/trees/binary.pdf used on input line 36.
 (pdftex.def)             Requested size: 208.1587pt x 117.98642pt.
 
-<../figures/trees/spans.pdf, id=178, 604.2575pt x 246.9225pt>
+<../figures/trees/spans.pdf, id=68, 604.2575pt x 246.9225pt>
 File: ../figures/trees/spans.pdf Graphic file (type pdf)
 
 <use ../figures/trees/spans.pdf>
@@ -1827,86 +1951,326 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <7> on input line 88.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 88.
+
+LaTeX Warning: Reference `fig:tree-cnf-spans' on page 8 undefined on input line
+ 97.
+
+
+LaTeX Warning: Reference `fig:tree-cnf-spans' on page 8 undefined on input line
+ 97.
+
 Package microtype Info: Character `029' is missing
 (microtype)             in font `T1/lmr/m/sc/10.95'.
 (microtype)             Ignoring protrusion settings for this character.
 [8] [9 <../figures/trees/original.pdf> <../figures/trees/simplified.pdf> <../fi
-gures/trees/binary.pdf> <../figures/trees/spans.pdf>] [10]) [11]
-Chapter 4.
-(../03-rnng/rnng.tex
+gures/trees/binary.pdf> <../figures/trees/spans.pdf>]
 
-! LaTeX Error: Can be used only in preamble.
+LaTeX Warning: Citation 'Goodman+1996' on page 10 undefined on input line 134.
 
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.1 \bibliography
-                 {../src/bibliography}
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
 
-[12
+LaTeX Warning: Citation 'Kneser+1995' on page 10 undefined on input line 134.
 
-] [13]
-Overfull \hbox (3.13356pt too wide) in paragraph at lines 49--50
-[]\T1/lmr/m/n/10.95 (-20) We eval-u-ate per-plex-ity with vary-ing num-ber of s
-am-ples: 1 (argmax),
+
+LaTeX Warning: Citation 'Bengio+2003' on page 10 undefined on input line 134.
+
+
+LaTeX Warning: Citation 'Mikolov+2010' on page 10 undefined on input line 134.
+
+
+LaTeX Warning: Citation 'Chelba2000' on page 10 undefined on input line 134.
+
+
+LaTeX Warning: Citation 'Klein+2012:treelets' on page 10 undefined on input lin
+e 134.
+
+
+LaTeX Warning: Citation 'Emami+2005' on page 10 undefined on input line 134.
+
+
+LaTeX Warning: Citation 'Roark2001' on page 10 undefined on input line 134.
+
+
+Overfull \hbox (23.35252pt too wide) in paragraph at lines 134--135
+\T1/lmr/m/n/10.95 (-20) tac-tic ap-proaches: count-based ([]; []),
  []
 
-[14]) [15]
+
+Overfull \hbox (16.13889pt too wide) in paragraph at lines 134--135
+\T1/lmr/m/n/10.95 (-20) neu-ral ([]), and top-down pars-ing re-lated ([]). 
+ []
+
+[10]
+
+LaTeX Warning: Citation 'Smith2012:adversarial' on page 11 undefined on input l
+ine 138.
+
+
+LaTeX Warning: Citation 'Linzen+2016:LSTM-syntax' on page 11 undefined on input
+ line 138.
+
+
+LaTeX Warning: Citation 'Linzen+2018:targeted' on page 11 undefined on input li
+ne 138.
+
+
+LaTeX Warning: Citation 'Zhang+2016:multitask' on page 11 undefined on input li
+ne 152.
+
+
+LaTeX Warning: Citation 'Goldberg+2016:multitask' on page 11 undefined on input
+ line 152.
+
+
+LaTeX Warning: Citation 'Swayamdipta+2018:scaffold' on page 11 undefined on inp
+ut line 152.
+
+
+Overfull \hbox (85.08199pt too wide) in paragraph at lines 152--153
+[]\T1/lmr/m/n/10.95 (-20) Name some re-cent ex-am-ples of mul-ti-task learn-ing
+ in NLP: [];
+ []
+
+) [11]
+Chapter 4.
+(../03-rnng/rnng.tex) [12
+
+]
 Chapter 5.
-(../04-crf-parser/crf-parser.tex [16
+(../04-crf-parser/crf-parser.tex
 
-] [17] [18]
+LaTeX Warning: Citation 'Stern+2017:Minimal' on page 13 undefined on input line
+ 9.
+
+
+LaTeX Warning: Reference `A3-crf' on page 13 undefined on input line 15.
+
+[13
+
+]
+
+LaTeX Warning: Citation 'Stern+2017:Minimal' on page 14 undefined on input line
+ 16.
+
+
+LaTeX Warning: Citation 'Finkel+2008' on page 14 undefined on input line 27.
+
+
+LaTeX Warning: Citation 'Klein+2015:neural-crf' on page 14 undefined on input l
+ine 27.
+
+
+Overfull \hbox (24.74115pt too wide) in paragraph at lines 27--28
+\T1/lmr/m/it/10.95 (-20) chored rules \T1/lmr/m/n/10.95 (-20) over a sen-tence 
+([]; []). 
+ []
+
+
+LaTeX Warning: Citation 'Stern+2017:Minimal' on page 14 undefined on input line
+ 28.
+
+
+LaTeX Warning: Citation 'Collins2003' on page 14 undefined on input line 29.
+
+
+LaTeX Warning: Citation 'Klein+2003' on page 14 undefined on input line 29.
+
+[14]
+Overfull \hbox (3.4487pt too wide) in paragraph at lines 43--44
+\T1/lmr/m/n/10.95 (-20) semir-ing for-mu-la-tion, and con-nect it with the beli
+ef-propagation/message-
+ []
+
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <9> on input line 82.
+(Font)              <9> on input line 45.
+[15]
 
-Overfull \hbox (1.36162pt too wide) in paragraph at lines 106--106
+LaTeX Warning: Reference `eq:rule-score' on page 16 undefined on input line 64.
+
+
+
+LaTeX Warning: Reference `eq:tree-score' on page 16 undefined on input line 66.
+
+
+
+LaTeX Warning: Reference `eq:rule-score' on page 16 undefined on input line 70.
+
+
+
+LaTeX Warning: Reference `eq:rule-score' on page 16 undefined on input line 101
+.
+
+
+LaTeX Warning: Reference `eq:collins-inside-general' on page 16 undefined on in
+put line 101.
+
+[16]
+Overfull \hbox (1.36162pt too wide) in paragraph at lines 107--107
 [] 
+ []
+
+
+LaTeX Warning: Reference `eq:inside-semiring' on page 17 undefined on input lin
+e 115.
+
+
+LaTeX Warning: Reference `eq:final-inside' on page 17 undefined on input line 1
+17.
+
+
+LaTeX Warning: Reference `eq:rule-score' on page 17 undefined on input line 125
+.
+
+[17]
+
+LaTeX Warning: Reference `eq:final-inside' on page 18 undefined on input line 1
+29.
+
+
+Overfull \hbox (26.56099pt too wide) in paragraph at lines 141--141
+[] 
+ []
+
+[18]
+
+LaTeX Warning: Citation 'Stern+2017:Minimal' on page 19 undefined on input line
+ 159.
+
+
+Overfull \hbox (41.12357pt too wide) in paragraph at lines 159--160
+[]\T1/lmr/m/n/10.95 (-20) Two ex-per-i-ments: (1) use the de-fault set-ting fro
+m ([])
+ []
+
+
+LaTeX Warning: Citation 'Buys+2018' on page 19 undefined on input line 166.
+
+
+Overfull \hbox (3.13356pt too wide) in paragraph at lines 166--167
+[]\T1/lmr/m/n/10.95 (-20) We eval-u-ate per-plex-ity with vary-ing num-ber of s
+am-ples: 1 (argmax),
  []
 
 [19]
 
-LaTeX Warning: Reference `eq:inside-semiring' on page 20 undefined on input lin
-e 114.
+LaTeX Warning: Citation 'Sutton+2012:CRF' on page 20 undefined on input line 17
+9.
 
-[20]
-Overfull \hbox (26.56099pt too wide) in paragraph at lines 140--140
-[] 
- []
 
-[21]
-Overfull \hbox (3.13356pt too wide) in paragraph at lines 165--166
-[]\T1/lmr/m/n/10.95 (-20) We eval-u-ate per-plex-ity with vary-ing num-ber of s
-am-ples: 1 (argmax),
- []
+LaTeX Warning: Citation 'Finkel+2008' on page 20 undefined on input line 180.
 
-[22] [23]) [24]
+
+LaTeX Warning: Citation 'Klein+2015:neural-crf' on page 20 undefined on input l
+ine 180.
+
+) [20]
 Chapter 6.
-(../05-semisupervised/semisupervised.tex [25
+(../05-semisupervised/semisupervised.tex
 
-] [26]
-Underfull \vbox (badness 10000) has occurred while \output is active []
+LaTeX Warning: Citation 'Dyer+2016:RNNG' on page 21 undefined on input line 12.
 
- [27]
-Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [28]
-[29] [30]
+
+Overfull \hbox (20.83682pt too wide) in paragraph at lines 12--13
+\T1/lmr/m/n/10.95 (-20) Let $\OML/lmm/m/it/10.95 p[]\OT1/lmr/m/n/10.95 (-20) (\
+OML/lmm/m/it/10.95 x; y\OT1/lmr/m/n/10.95 (-20) )$ \T1/lmr/m/n/10.95 (-20) be p
+arametrized by a Gen-er-a-tive RNNG ([]).
+ []
+
+[21
+
+]
+
+LaTeX Warning: Citation 'Baydin+2017:AD' on page 22 undefined on input line 22.
+
+
+
+Overfull \hbox (48.79774pt too wide) in paragraph at lines 21--23
+\T1/lmr/m/n/10.95 (-20) pute $\OMS/lmsy/m/n/10.95 r[] [] \OML/lmm/m/it/10.95 p[
+]\OT1/lmr/m/n/10.95 (-20) (\OML/lmm/m/it/10.95 x[]; y[]\OT1/lmr/m/n/10.95 (-20)
+ )$ \T1/lmr/m/n/10.95 (-20) we rely on au-to-matic dif-fer-en-ti-a-tion ([]). 
+ []
+
+
+LaTeX Warning: Citation 'Blei+2016:VI' on page 22 undefined on input line 35.
+
+[22] [23]
+
+LaTeX Warning: Citation 'Williams1992:REINFORCE' on page 24 undefined on input 
+line 112.
+
+
+LaTeX Warning: Citation 'Paisley+2012:VISS' on page 24 undefined on input line 
+112.
+
+
+LaTeX Warning: Citation 'Mnih+2014:NVIL' on page 24 undefined on input line 112
+.
+
+
+LaTeX Warning: Citation 'Ranganath+2014:BBVI' on page 24 undefined on input lin
+e 112.
+
+
+LaTeX Warning: Citation 'Miao+16' on page 24 undefined on input line 112.
+
+
+LaTeX Warning: Citation 'Williams1992:REINFORCE' on page 24 undefined on input 
+line 112.
+
+
+LaTeX Warning: Citation 'Fu2006' on page 24 undefined on input line 112.
+
+
+Overfull \hbox (91.01726pt too wide) in paragraph at lines 112--113
+\T1/lmr/m/n/10.95 (-20) oth-ers ([]), ([]), ([]),
+ []
+
+
+LaTeX Warning: Citation 'Baydin+2017:AD' on page 24 undefined on input line 115
+.
+
+
+LaTeX Warning: Reference `eq:score-function-estimator' on page 24 undefined on 
+input line 117.
+
+
+LaTeX Warning: Citation 'Schulman+2015:surrogate' on page 24 undefined on input
+ line 117.
+
+[24]
+
+LaTeX Warning: Citation 'Paisley+2012:VISS' on page 25 undefined on input line 
+136.
+
+
+LaTeX Warning: Citation 'Ross:2006:SIM' on page 25 undefined on input line 136.
+
+
+[25]
 Overfull \hbox (44.38998pt too wide) in paragraph at lines 187--187
 [] 
  []
 
-[31] [32] <../figures/control-variate.pdf, id=516, 344.73216pt x 173.3124pt>
+[26]
+
+LaTeX Warning: Citation 'Ross:2006:SIM' on page 27 undefined on input line 225.
+
+
+[27]
+
+LaTeX Warning: Reference `eq:cv-scale' on page 28 undefined on input line 247.
+
+
+LaTeX Warning: Reference `eq:var-red' on page 28 undefined on input line 247.
+
+<../figures/control-variate.pdf, id=285, 344.73216pt x 173.3124pt>
 File: ../figures/control-variate.pdf Graphic file (type pdf)
 
 <use ../figures/control-variate.pdf>
 Package pdftex.def Info: ../figures/control-variate.pdf used on input line 255.
 
 (pdftex.def)             Requested size: 235.01872pt x 118.15762pt.
-) [33] [34 <../figures/control-variate.pdf>]
+) [28] [29 <../figures/control-variate.pdf>]
 Chapter 7.
 (../06-syneval/syneval.tex
 
@@ -1922,138 +2286,43 @@ Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
+) [30
 
-LaTeX Warning: Citation 'Enguehard+2017:RNN-multitask' on page 35 undefined on 
-input line 9.
-
-
-LaTeX Warning: Citation 'Enguehard+2017:RNN-multitask' on page 35 undefined on 
-input line 13.
-
-
-Overfull \hbox (94.32112pt too wide) in paragraph at lines 13--14
-[]\T1/lmr/m/n/10.95 (-20) We com-pare the two meth-ods wrt to per-plex-ity. []
- []
-
-[35
-
-]) [36]
+]
 Chapter 8.
-(../07-conclusion/conclusion.tex) [37
+(../07-conclusion/conclusion.tex) [31
 
-] [38
+] [32
 
-] [39
+] [33
 
 ]
 Appendix A.
-(../08-app-figures/figures.tex) [40
+(../08-app-figures/figures.tex) [34
 
 ]
 Appendix B.
-(../09-app-implementation/implementation.tex [41
 
-]) [42]
-Appendix C.
-(../10-app-crf/crf.tex) [43
+! LaTeX Error: File `../9-app-implementation/implementation.tex' not found.
 
-]
-Appendix D.
-(../11-app-vi/vi.tex) [44
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: tex)
 
-] [45
+Enter file name: 
+! Emergency stop.
+<read *> 
+         
+l.137 .../9-app-implementation/implementation.tex}
+                                                  ^^M
+*** (cannot \read from terminal in nonstop modes)
 
-
-] [46] [47] [48]
-
-! Package inputenc Error: Unicode char ỳ (U+1EF3)
-(inputenc)                not set up for use with LaTeX.
-
-See the inputenc package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.152 
-      
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-[49] [50] 
-AED: lastpage setting LastPage
-[51]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 153.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 153.
- (./thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 153.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 153.
-
-
-LaTeX Font Warning: Size substitutions with differences
-(Font)              up to 1.0pt have occurred.
-
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package biblatex Warning: Please (re)run Biber on the file:
-(biblatex)                thesis
-(biblatex)                and rerun LaTeX afterwards.
-
-Package logreq Info: Writing requests to 'thesis.run.xml'.
-\openout1 = `thesis.run.xml'.
-
- ) 
+ 
 Here is how much of TeX's memory you used:
- 28827 strings out of 493014
- 521715 string characters out of 6133351
- 995667 words of memory out of 5000000
- 31328 multiletter control sequences out of 15000+600000
- 144401 words of font info for 212 fonts, out of 8000000 for 9000
+ 28365 strings out of 493014
+ 512530 string characters out of 6133351
+ 989447 words of memory out of 5000000
+ 31058 multiletter control sequences out of 15000+600000
+ 142380 words of font info for 171 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,13n,54p,1304b,1238s stack positions out of 5000i,500n,10000p,200000b,80000s
-pdfTeX warning (dest): name{section.3.5} has been referenced but does not exi
-st, replaced by a fixed one
-
-{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/te
-xlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2016
-/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/texlive/2016/texmf-dist/fo
-nts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/2016/texmf-dist/fonts/enc/dv
-ips/lm/lm-mathex.enc}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmss10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfo
-nts/cm/cmss9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmssbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfon
-ts/cm/cmssi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfon
-ts/cm/cmssi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmsy10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx1
-0.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx8.pfb></usr
-/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx9.pfb></usr/local/texl
-ive/2016/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb></usr/local/texlive/2016/
-texmf-dist/fonts/type1/public/lm/lmex10.pfb></usr/local/texlive/2016/texmf-dist
-/fonts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/typ
-e1/public/lm/lmmi6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/l
-m/lmmi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi9.pfb
-></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/loca
-l/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr6.pfb></usr/local/texlive/20
-16/texmf-dist/fonts/type1/public/lm/lmr8.pfb></usr/local/texlive/2016/texmf-dis
-t/fonts/type1/public/lm/lmr9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type
-1/public/lm/lmri10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/l
-m/lmss10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmss12.p
-fb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmssbx10.pfb></usr
-/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsso10.pfb></usr/local/te
-xlive/2016/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/local/texlive/2016
-/texmf-dist/fonts/type1/public/lm/lmsy6.pfb></usr/local/texlive/2016/texmf-dist
-/fonts/type1/public/lm/lmsy8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type
-1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/texmf-dist/fonts/
-type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on thesis.pdf (54 pages, 782053 bytes).
-PDF statistics:
- 965 PDF objects out of 1000 (max. 8388607)
- 851 compressed objects within 9 object streams
- 210 named destinations out of 1000 (max. 500000)
- 36174 words of extra memory for PDF output out of 42996 (max. 10000000)
-
+ 57i,13n,54p,1331b,1020s stack positions out of 5000i,500n,10000p,200000b,80000s
+!  ==> Fatal error occurred, no output PDF file produced!

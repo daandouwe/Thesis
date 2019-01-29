@@ -1,0 +1,72 @@
+\bibliography{../src/bibliography}
+
+\section{Model}
+I describe the model.
+\begin{itemize}
+  \item Specify the transition-system.
+  \item The probabilistic model is given by
+  \begin{equation}
+    p(\mathbf{x}, \mathbf{y}) = \prod_{t=1}^A p(a_t | \mathbf{a}_{<t}) p(w_{W(t)} | \mathbf{a}_{<t} )^{ \mathbb{I}[a = \textsc{gen}] } p(n_{N(t)} | \mathbf{a}_{<t} )^{ \mathbb{I}[a = \textsc{open}] },
+  \end{equation}
+  where $\dots$
+\end{itemize}
+
+\subsection{Features}
+The features from which the transition probabilities are predicted are computed from the entire transition history (no markov assumption) and in a syntax dependent way.
+\begin{itemize}
+  \item The StackLSTM computes incremental features for the sequences on the three datastructures of the transition-system, with unbounded history.
+  \item A composition function computes representations of closed constituents.
+  \item There are two options for the composition function: simple BiRNN and attention-based. The attention-based composition performed best in earlier research, so we focus on this composition.
+  \item There is evidence that the stack- is all that is needed. We focus on the models that compute representations of all the datastructures.
+\end{itemize}
+
+\section{Syntax and cognition}
+Here I describe the research into syntax and cognition using the RNNG.
+
+\paragraph{Cognition} RNNGs can tell us something about our brains.
+\begin{itemize}
+  \item Psycholinguistic research that indicates that top-down parsing is a cognitively plausible parsing strategy \citep{Brennan+2016}.
+  \item RNNGs are good statistical predictors in psycholinguistic research \citep{Hale+2018:beam}. More precise: the sequential word-probabilities that are derived from a generative RNNG with word-synchronous beam-search \citep{Stern+2017:beam} provide complexity metrics that predict human reading difficulty well.
+\end{itemize}
+
+\paragraph{Syntax} What do RNNGs learn about syntax?
+\begin{itemize}
+  \item RNNGs learn a number of syntactic phenomena as a side product of the main objective. The attention mechanism in the composition function learns a type of `soft' head-rules, and when trained on trees without syntactic labels the RNNG still learns representations for constituents that cluster according to their withheld gold label \citep{Kuncoro+2017:RNNG-syntax}.
+  \item RNNGs are better at a long-distance verb-argument agreement task than LSTMS \cite{Linzen+2016:LSTM-syntax,Kuncoro+2018:RNNG-deps}.
+\end{itemize}
+
+\section{Experiments}
+We perform three types of experiments with the RNNG:
+\begin{itemize}
+  \item We reproduce the parsing f-scores and perplexities from \citep{Dyer+2016:RNNG}, and some more.
+  \item We evauluate `how good the model is' as a sampler.
+\end{itemize}
+
+\paragraph{Supervised model} We investigate the following.
+\begin{itemize}
+  \item We train with standard hyperparameter settings and optimizer, and replicate the original results. We will get a little lower with the discriminative model because we do not use tags.
+  \item We evaluate F-score with 100 samples (as many proposal trees as possible).
+  \item We evaluate perplexity with varying number of samples: 1 (argmax), 10, 20, 50, 100 (default). The peplexity evaluation with the argmax prediction gives an impression of the uncertaty in the model \citep{Buys+2018}.
+\end{itemize}
+
+\paragraph{Sampler} We investigate the following:
+\begin{itemize}
+  \item We asses the conditional entropy of the model. This is most quantitative. Recall that conditional entropy is defined as
+  \begin{equation}
+    \text{H}(Y|X) = \sum_{x \in \mathcal{X}} p_X(x)\text{H}(Y|X = x),
+  \end{equation}
+  where
+  \begin{equation}
+    \text{H}(Y|X = x) = - \sum_{y \in \mathcal{Y}} p_{Y|X}(y|x) \log p_{Y|X}(y|x).
+  \end{equation}
+  We estimate the quantity $\text{H}(Y|X = x)$ with the model samples. We estimate the quantity $\text{H}(Y|X)$ by a sum over the development dataset. For the probabilities $p_X(x)$ we use the marginalized probabilities of the joint RNNG (with samples from the discrminative parser $p_{Y|X}$).
+  \item We asses for some cherry picked sentences. This is more qualitative. These sentences should be difficult or ambiguous. Or they can be ungramatical when taken from the syneval dataset. We can evaluate their entropy, and the diversity of samples, for example to see if there are clear modes. We can make violinplots of the probabilities of the samples. We can compute the f-scores of the samples compared with the argmax tree.
+\end{itemize}
+
+
+\section{Related work}
+\begin{itemize}
+  \item Generative dependency parsing and language modelling \citep{Buys+2015:bayes-gen-dep,Buys+2015:neural-gen-dep,Buys+2018}
+  \item Top-down parsing and language modelling \citep{Roark2001}.
+  \item Brains research with top-down parsing \citep{Hale+2018:beam,Brennan+2016}.
+\end{itemize}

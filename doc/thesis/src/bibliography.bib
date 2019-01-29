@@ -138,7 +138,7 @@
 	Year = {1951}
 }
 
-@article{Blei+2016:VI,
+@article{Baydin+2017:AD,
  author = {Baydin, At\il\im G\"{u}nes and Pearlmutter, Barak A. and Radul, Alexey Andreyevich and Siskind, Jeffrey Mark},
  title = {Automatic Differentiation in Machine Learning: A Survey},
  journal = {J. Mach. Learn. Res.},
@@ -214,22 +214,21 @@ publisher = {Curran Associates, Inc.},
   chapter = {19},
 }
 
-@article{Dyer+2016:RNNG,
-  author    = {Chris Dyer and
-               Adhiguna Kuncoro and
-               Miguel Ballesteros and
-               Noah A. Smith},
-  title     = {Recurrent Neural Network Grammars},
-  journal   = {CoRR},
-  volume    = {abs/1602.07776},
-  year      = {2016},
-  url       = {http://arxiv.org/abs/1602.07776},
-  archivePrefix = {arXiv},
-  eprint    = {1602.07776},
-  timestamp = {Mon, 13 Aug 2018 16:47:11 +0200},
-  biburl    = {https://dblp.org/rec/bib/journals/corr/DyerKBS16},
-  bibsource = {dblp computer science bibliography, https://dblp.org}
+@InProceedings{Dyer+2016:RNNG,
+  author = 	"Dyer, Chris
+		and Kuncoro, Adhiguna
+		and Ballesteros, Miguel
+		and Smith, Noah A.",
+  title = 	"Recurrent Neural Network Grammars",
+  booktitle = 	"Proceedings of the 2016 Conference of the North American Chapter of the      Association for Computational Linguistics: Human Language Technologies    ",
+  year = 	"2016",
+  publisher = 	"Association for Computational Linguistics",
+  pages = 	"199--209",
+  location = 	"San Diego, California",
+  doi = 	"10.18653/v1/N16-1024",
+  url = 	"http://aclweb.org/anthology/N16-1024"
 }
+
 
 @InProceedings{Eisner2009:semirings,
   author = 	"Li, Zhifei
@@ -639,7 +638,7 @@ publisher = {Curran Associates, Inc.},
   url = 	"http://aclweb.org/anthology/N18-1091"
 }
 
-@InProceedings{Stern+2017:Minimal,
+@InProceedings{stern2017minimal,
   author    = {Stern, Mitchell and Andreas, Jacob and Klein, Dan},
   title     = {A Minimal Span-Based Neural Constituency Parser},
   booktitle = {Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
@@ -648,7 +647,6 @@ publisher = {Curran Associates, Inc.},
   address   = {Vancouver, Canada},
   publisher = {Association for Computational Linguistics},
   pages     = {818--827},
-  url       = {http://aclweb.org/anthology/P17-1076}
 }
 
 @InProceedings{Klein+2018:reinforce,
@@ -913,126 +911,72 @@ url = {http://papers.nips.cc/paper/4545-imitation-learning-by-coaching.pdf}
  address = {Cambridge, MA, USA},
 }
 
-@InProceedings{Klein+2012:treelets,
- author = 	"Pauls, Adam
-		and Klein, Dan",
- title = 	"Large-Scale Syntactic Language Modeling with Treelets",
- booktitle = 	"Proceedings of the 50th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
- year = 	"2012",
- publisher = 	"Association for Computational Linguistics",
- pages = 	"959--968",
- location = 	"Jeju Island, Korea",
- url = 	"http://aclweb.org/anthology/P12-1101"
+@inproceedings{pauls2012treelets,
+  title={Large-scale syntactic language modeling with treelets},
+  author={Pauls, Adam and Klein, Dan},
+  booktitle={Proceedings of the 50th Annual Meeting of the Association for Computational Linguistics: Long Papers-Volume 1},
+  pages={959--968},
+  year={2012},
+  organization={Association for Computational Linguistics}
 }
 
-@article{Chelba2000,
- author = {Chelba, Ciprian and Jelinek, Frederick},
- title = {Structured Language Modeling},
- journal = {Comput. Speech Lang.},
- issue_date = {October 2000},
- volume = {14},
- number = {4},
- month = oct,
- year = {2000},
- issn = {0885-2308},
- pages = {283--332},
- numpages = {50},
- url = {http://dx.doi.org/10.1006/csla.2000.0147},
- doi = {10.1006/csla.2000.0147},
- acmid = {2792040},
- publisher = {Academic Press Ltd.},
- address = {London, UK, UK},
+@article{chelba2000structured,
+  title={Structured language modeling},
+  author={Chelba, Ciprian and Jelinek, Frederick},
+  journal={Computer Speech \& Language},
+  volume={14},
+  number={4},
+  pages={283--332},
+  year={2000},
+  publisher={Elsevier}
 }
-
-@article{Emami+2005,
-	author="Emami, Ahmad
-	and Jelinek, Frederick",
-	title="A Neural Syntactic Language Model",
-	journal="Machine Learning",
-	year="2005",
-	month="Sep",
-	day="01",
-	volume="60",
-	number="1",
-	pages="195--227",
-	abstract="This paper presents a study of using neural probabilistic models in a syntactic based language model. The neural probabilistic model makes use of a distributed representation of the items in the conditioning history, and is powerful in capturing long dependencies. Employing neural network based models in the syntactic based language model enables it to use efficiently the large amount of information available in a syntactic parse in estimating the next word in a string. Several scenarios of integrating neural networks in the syntactic based language model are presented, accompanied by the derivation of the training procedures involved. Experiments on the UPenn Treebank and the Wall Street Journal corpus show significant improvements in perplexity and word error rate over the baseline SLM. Furthermore, comparisons with the standard and neural net based N-gram models with arbitrarily long contexts show that the syntactic information is in fact very helpful in estimating the word string probability. Overall, our neural syntactic based model achieves the best published results in perplexity and WER for the given data sets.",
-	issn="1573-0565",
-	doi="10.1007/s10994-005-0916-y",
-	url="https://doi.org/10.1007/s10994-005-0916-y"
+@article{emami2005neural,
+  title={A neural syntactic language model},
+  author={Emami, Ahmad and Jelinek, Frederick},
+  journal={Machine learning},
+  volume={60},
+  number={1-3},
+  pages={195--227},
+  year={2005},
+  publisher={Springer}
 }
 
 
-@article{Bengio+2003,
-  added-at = {2004-02-05T00:00:00.000+0100},
-  author = {Bengio, Yoshua and Ducharme, Réjean and Vincent, Pascal and Janvin, Christian},
-  biburl = {https://www.bibsonomy.org/bibtex/2706d7bfb5e0e3550226ae35ca3ba4e99/dblp},
-  date = {2004-02-05},
-  description = {dblp},
-  ee = {http://www.jmlr.org/papers/v3/bengio03a.html},
-  interhash = {99a471df7eb1ed9d39f9e7cb08859ec9},
-  intrahash = {706d7bfb5e0e3550226ae35ca3ba4e99},
-  journal = {Journal of Machine Learning Research},
-  keywords = {dblp},
-  pages = {1137-1155},
-  timestamp = {2004-02-05T00:00:00.000+0100},
-  title = {A Neural Probabilistic Language Model.},
-  url = {http://dblp.uni-trier.de/db/journals/jmlr/jmlr3.html#BengioDVJ03},
-  volume = 3,
-  year = 2003
+@article{bengio2003neural,
+  title={A neural probabilistic language model},
+  author={Bengio, Yoshua and Ducharme, R{\'e}jean and Vincent, Pascal and Jauvin, Christian},
+  journal={Journal of machine learning research},
+  volume={3},
+  number={Feb},
+  pages={1137--1155},
+  year={2003}
 }
 
-@inproceedings{Mikolov+2010,
-  added-at = {2015-04-09T00:00:00.000+0200},
-  author = {Mikolov, Tomas and Karafiát, Martin and Burget, Lukás and Cernocký, Jan and Khudanpur, Sanjeev},
-  biburl = {https://www.bibsonomy.org/bibtex/2aee1e280d06e82474b17c4996aaea076/dblp},
-  booktitle = {INTERSPEECH},
-  crossref = {conf/interspeech/2010},
-  editor = {Kobayashi, Takao and Hirose, Keikichi and Nakamura, Satoshi},
-  ee = {http://www.isca-speech.org/archive/interspeech_2010/i10_1045.html},
-  interhash = {9cabdcef2ed097906bff2cb7a327e61e},
-  intrahash = {aee1e280d06e82474b17c4996aaea076},
-  keywords = {dblp},
-  pages = {1045-1048},
-  publisher = {ISCA},
-  timestamp = {2015-06-21T06:10:05.000+0200},
-  title = {Recurrent neural network based language model.},
-  url = {http://dblp.uni-trier.de/db/conf/interspeech/interspeech2010.html#MikolovKBCK10},
-  year = 2010
+@inproceedings{mikolov2010recurrent,
+  title={Recurrent neural network based language model},
+  author={Mikolov, Tom{\'a}{\v{s}} and Karafi{\'a}t, Martin and Burget, Luk{\'a}{\v{s}} and {\v{C}}ernock{\`y}, Jan and Khudanpur, Sanjeev},
+  booktitle={Eleventh Annual Conference of the International Speech Communication Association},
+  year={2010}
 }
 
-@inproceedings{Goodman+1996,
- author = {Chen, Stanley F. and Goodman, Joshua},
- title = {An Empirical Study of Smoothing Techniques for Language Modeling},
- booktitle = {Proceedings of the 34th Annual Meeting on Association for Computational Linguistics},
- series = {ACL '96},
- year = {1996},
- location = {Santa Cruz, California},
- pages = {310--318},
- numpages = {9},
- url = {https://doi.org/10.3115/981863.981904},
- doi = {10.3115/981863.981904},
- acmid = {981904},
- publisher = {Association for Computational Linguistics},
- address = {Stroudsburg, PA, USA},
+@article{chen1999empirical,
+  title={An empirical study of smoothing techniques for language modeling},
+  author={Chen, Stanley F and Goodman, Joshua},
+  journal={Computer Speech \& Language},
+  volume={13},
+  number={4},
+  pages={359--394},
+  year={1999},
+  publisher={Elsevier}
 }
 
-@inproceedings{Kneser+1995,
-  added-at = {2015-01-05T00:00:00.000+0100},
-  author = {Kneser, Reinhard and Ney, Hermann},
-  biburl = {https://www.bibsonomy.org/bibtex/269bba9f2cd2f8f77d7fef7c63876ad45/dblp},
-  booktitle = {ICASSP},
-  crossref = {conf/icassp/1995},
-  ee = {http://doi.ieeecomputersociety.org/10.1109/ICASSP.1995.479394},
-  interhash = {5b729987232ec6ae887aed45d257e5de},
-  intrahash = {69bba9f2cd2f8f77d7fef7c63876ad45},
-  isbn = {0-7803-2431-5},
-  keywords = {dblp},
-  pages = {181-184},
-  publisher = {IEEE Computer Society},
-  timestamp = {2015-06-19T19:09:50.000+0200},
-  title = {Improved backing-off for M-gram language modeling.},
-  url = {http://dblp.uni-trier.de/db/conf/icassp/icassp1995.html#KneserN95},
-  year = 1995
+@inproceedings{kneser1995improved,
+  title={Improved backing-off for m-gram language modeling},
+  author={Kneser, Reinhard and Ney, Hermann},
+  booktitle={icassp},
+  volume={1},
+  pages={181e4},
+  year={1995}
 }
 
 @InProceedings{Klein+2015:neural-crf,
@@ -1059,4 +1003,31 @@ url = {http://papers.nips.cc/paper/4545-imitation-learning-by-coaching.pdf}
   pages = 	"959--967",
   location = 	"Columbus, Ohio",
   url = 	"http://aclweb.org/anthology/P08-1109"
+}
+
+@inproceedings{hall2014less,
+  title={Less grammar, more features},
+  author={Hall, David and Durrett, Greg and Klein, Dan},
+  booktitle={Proceedings of the 52nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
+  volume={1},
+  pages={228--237},
+  year={2014}
+}
+
+@InProceedings{kitaev2018attentive,
+  author = 	"Kitaev, Nikita
+		and Klein, Dan",
+  title = 	"Constituency Parsing with a Self-Attentive Encoder",
+  booktitle = 	"Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+  year = 	"2018",
+  publisher = 	"Association for Computational Linguistics",
+  pages = 	"2676--2686",
+}
+
+@inproceedings{schulman2015gradient,
+  title={Gradient estimation using stochastic computation graphs},
+  author={Schulman, John and Heess, Nicolas and Weber, Theophane and Abbeel, Pieter},
+  booktitle={Advances in Neural Information Processing Systems},
+  pages={3528--3536},
+  year={2015}
 }
