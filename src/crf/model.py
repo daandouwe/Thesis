@@ -4,6 +4,7 @@ import math
 
 import dynet as dy
 import numpy as np
+import scipy.special as special
 from joblib import Parallel, delayed
 
 import utils.trees as trees
@@ -270,7 +271,7 @@ class ChartParser(object):
 
         return entropy
 
-    def forward(self, tree, is_train=True, max_margin=False, return_entropy=True):
+    def forward(self, tree, is_train=True, max_margin=False, return_entropy=False):
         assert isinstance(tree, trees.SpanNode)
 
         words = tree.words()
@@ -338,7 +339,7 @@ class ChartParser(object):
         return tree.un_cnf(), nll
 
     def sample(self, words, num_samples=1):
-        semiring = ProbSemiring
+        semiring = LogProbSemiring
 
         @functools.lru_cache(maxsize=None)
         def get_child_probs(left, right, label):
@@ -349,10 +350,10 @@ class ChartParser(object):
                         left_node = (left, split, left_label)
                         right_node = (split, right, right_label)
                         score = semiring.product(
-                            exp_chart_np[left_node], exp_chart_np[right_node])
+                            chart_np[left_node], chart_np[right_node])
                         splits.append((left_node, right_node))
                         scores.append(score)
-            probs = np.array(scores) / np.sum(scores)
+            probs = special.softmax(scores)
             return splits, probs
 
         def helper(node):
@@ -374,12 +375,12 @@ class ChartParser(object):
         label_scores = self.get_node_scores(unked_words)
         chart_dy, _, lognormalizer = self.inside(words, label_scores)
 
-        exp_chart_np = {node: np.exp(score.value())
+        chart_np = {node: score.value()
             for node, score in chart_dy.items()}
 
-        top_label_scores = [exp_chart_np[0, len(words), label]
+        top_label_logscores = [chart_np[0, len(words), label]
             for label in self.label_vocab.values[1:]]  # dummy label is excluded from top
-        top_label_probs = np.array(top_label_scores) / np.sum(top_label_scores)
+        top_label_probs = special.softmax(top_label_logscores)
 
         samples = []
         for _ in range(num_samples):
@@ -482,7 +483,7 @@ class ChartParser(object):
     #         return tree, nll
     #     else:
     #         return samples
-
+    #
     # def sample(self, words, num_samples=1):
     #     semiring = ProbSemiring
     #
