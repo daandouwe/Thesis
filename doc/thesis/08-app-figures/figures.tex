@@ -4,3 +4,30 @@ In this appendix I will put figures, for cases where there are just too many. Fo
   \item The training losses for the various models
   \item The valuation perplexity and f-score during training.
 \end{itemize}
+
+
+\section{Training plots}
+We show training plots that are means with standard deviation bands over 10 runs. We have two types of plots: losses and development scores.
+
+\paragraph{Development scores} Plots with development scores.
+\begin{itemize}
+  \item DiscRNNG + GenRNNG-disc + GenRNNG-crf + CRF (small) development fscores.
+  \item CRF parser lossses: our (128d + SGD) and original (250d + Adam).
+  \item GenRNNG-disc + GenRNNG-crf development perplexity
+  \item Language models: lstm + lstm-ccg + lstm-span development perplexity
+  \item GenRNNG + LSTM development perplexity.
+\end{itemize}
+
+\paragraph{Training losses} Plots with training losses.
+
+
+\section{Test scores}
+Here we show violin plots that show the distribution of the test scores.
+
+
+\section{Samples}
+Here we put figures to illustrate the samples.
+
+
+\section{Syntactic evaluation}
+Here we put more bar-charts for the syntactic evaluation.

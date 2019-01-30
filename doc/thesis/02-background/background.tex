@@ -4,8 +4,8 @@ In this chapter I give the background.
 
 \section{Syntax}
 \begin{itemize}
-  \item Some generic stuff on syntax and constituency in natural language
-  \item Reference \citep{Carnie2010:constituent,Everaert+2015:structures} or something?
+  \item Some generic stuff on syntax, hierarchical structure in language, and constituency in natural language referencing \citet{Carnie2010:constituent,Everaert+2015:structures}.
+  \item Introduce the concept of \textit{acceptability judgements}, with the final chapter on syntactic evaluation in mind.
 \end{itemize}
 
 \section{Parsing}
@@ -99,6 +99,17 @@ In this chapter I give the background.
   \egroup  % increase vertical space
 \end{table}
 
+
+\section{Language models}
+\begin{itemize}
+  \item Briefly mention some typical approaches for langugage modelling: count based n-gram with smoothing \citep{chen1999empirical,kneser1995improved}, neural n-gram \citep{bengio2003neural} and recurrent neural network \citep{mikolov2010recurrent}. Also mention some (early) syntactic approaches: count-based \citep{chelba2000structured,pauls2012treelets}, neural \citep{emami2005neural}, and top-down parsing related \citep{Roark2001}.
+  \item Explain the metric perplexity.
+  \item Briefly mentions some typical datasets and some benchmarks (dataset, perplexity, number of parameters, training time).
+  \item Mention some downsides of the perplexity metric: conflating different sources of succes in next-word prediction (simple collocations, semantics, syntax).
+  \item Note that there exists some alternatives to perplexity: adversarial evaluation \citep{Smith2012:adversarial}, subject-verb agreement \citep{Linzen+2016:LSTM-syntax} and grammatical acceptability judgments \citep{Linzen+2018:targeted}.
+\end{itemize}
+
+
 \section{Neural networks}
 Introduce all the neural networks.
 \begin{itemize}
@@ -127,13 +138,4 @@ Introduce all the neural networks.
   An \textsc{lstm} is a particular way to construct the \textsc{rnn} function.
   \item Write down the equations for the Feedforward network, and maybe, maybe, maybe write down the equations for the LSTM.
   \item (Minibatch) SGD optimization.
-\end{itemize}
-
-\section{Language models}
-\begin{itemize}
-  \item Briefly mention some typical approaches for langugage modelling: count based n-gram with smoothing \citep{chen1999empirical,kneser1995improved}, neural n-gram \citep{bengio2003neural} and recurrent neural network \citep{mikolov2010recurrent}. Also mention some (early) syntactic approaches: count-based \citep{chelba2000structured,pauls2012treelets}, neural \citep{emami2005neural}, and top-down parsing related \citep{Roark2001}.
-  \item Explain the metric perplexity.
-  \item Briefly mentions some typical datasets and some benchmarks (dataset, perplexity, number of parameters, training time).
-  \item Mention some downsides of the perplexity metric: conflating different sources of succes in next-word prediction (simple collocations, semantics, syntax).
-  \item Note that there exists some alternatives to perplexity: adversarial evaluation \citep{Smith2012:adversarial}, subject-verb agreement \citep{Linzen+2016:LSTM-syntax} and grammatical acceptability judgments \citep{Linzen+2018:targeted}.
 \end{itemize}

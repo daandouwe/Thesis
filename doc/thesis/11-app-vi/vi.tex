@@ -4,3 +4,148 @@ Describe variational inference in general. In particular for discrete latent var
   \item Derive score function gradient.
   \item Variance reduction.
 \end{itemize}
+
+
+\section{Optimization}
+We use automatic differentiation \citep{Baydin+2017:AD} to obtain all our gradient estimates.
+
+To get the gradients in formula \ref{eq:score-function-estimator} we rewrite it in the form of a surrogate objective \citep{Schulman+2015:surrogate}
+\begin{align*}
+    L(\lambda) &= \frac{1}{n}\sum_{i=1}^n \log q_{\lambda}(x|y^{(i)}) \textsc{blockgrad}(l(x,y^{(i)}))
+\end{align*}
+where \textsc{blockgrad} is function that `detaches' a parametrized function from the computation graph effectively turning it into a scalar. That is, loosely speaking
+\begin{align*}
+    \textsc{blockgrad}(f_{\theta}(x)) &= f(x)
+\end{align*}
+such that
+\begin{align*}
+    \nabla_{\theta}\textsc{blockgrad}(f_{\theta}(x)) &= \nabla_{\theta} f(x) \\
+        &= 0
+\end{align*}
+Then differentiation of $L$ gives us the unbiased estimator
+\begin{align*}
+    \nabla_{\lambda} L(\lambda) &= \frac{1}{n}\sum_{i=1}^n l(x,y^{(i)}) \nabla_{\lambda} \log q_{\lambda}(x|y^{(i)})
+\end{align*}
+
+\section{Variance reduction}
+We have derived an estimator for the gradient of the posterior parameters in the unsupervised objective. This estimator is unbiased, but is known to have high variance, often too much to be useful \citep{Paisley+2012:VISS}. Two effective methods to counter this are control variates and baselines \citep{Ross:2006:SIM}.
+
+\paragraph{Variance of estimator} First, let's analyze the variance of our estimator. Note that our expectation is of the general form
+\begin{align*}
+    \mu \triangleq \mathbb{E}\big[f(X)\big]
+\end{align*}
+and that we estimate this quantity by generating $n$ independent samples $X_1,\dots,X_n \sim P(X)$ and computing
+\begin{align*}
+    \hat{\mu} \triangleq \frac{1}{n} \sum_{i=1}^n f(X_i).
+\end{align*}
+This is an unbiased estimator for $\mu$ with error
+\begin{align*}
+    \text{MSE} = \mathbb{E}\big[(\mu - \hat{\mu})^2\big] &= \text{Var}[ \hat{\mu} ] = \frac{\text{Var}[ \hat{\mu} ]}{n},
+\end{align*}
+which means that the error is of the order
+\begin{align*}
+    \mu - \hat{\mu} \sim \sqrt{\frac{\text{Var}[ \hat{\mu} ]}{n}}
+\end{align*}
+and reducing it linearly requires a quadratic number of samples.
+
+In our particular case, the function $f$ is
+\begin{align*}
+    f_{X=x}(Y) &\triangleq l(X,Y) \nabla_{\lambda} \log q_{\lambda}(Y|X=x)
+\end{align*}
+where we have made explicit that $y$ is the random variable, and $x$ is given.
+
+\paragraph{Control variates} Consider a function $\phi(X)$ with known expectation
+\begin{align*}
+    \mu_{\phi} \triangleq \mathbb{E} [ \phi(X) ]
+\end{align*}
+Then we can define a new function $\hat{f}$ such that
+\begin{align*}
+    \hat{f}(X) \triangleq f(X) - \phi(X) + \mu_{\phi}.
+\end{align*}
+This function is also an estimator for $\mu$, since
+\begin{align*}
+    \mathbb{E}[ \hat{f}(X) ] &= \mathbb{E}[ f(X) ] - \mu_{\phi} + \mu_{\phi} \\
+        &= \mathbb{E}[ f(X) ],
+\end{align*}
+and a computation shows that the variance of the new function is
+\begin{align*}
+    \text{Var}[ \hat{f}(X) ] &= \mathbb{E}[ (f(X) - \phi(X) + \mu_{\phi}) - \mu)^2 ] \\
+    &= \mathbb{E}[ (f(X) - \phi(X) + \mu_{\phi})^2 ] - 2\mathbb{E}[ (f(X) - \phi(X) + \mu_{\phi})\mu ] + \mathbb{E}[ \mu^2 ] \\
+    &= \mathbb{E}[ (f(X) - \phi(X) + \mu_{\phi})^2 ] - 2\mathbb{E}[ (f(X) - \phi(X) + \mu_{\phi})]\mu + \mu^2 \\
+    &= \mathbb{E}[ (f(X) - \phi(X) + \mu_{\phi})^2 ] - 2\mu^2  + \mu^2 \\
+    &= \mathbb{E}[ f(X)^2 + \phi(X)^2 + \mu_{\phi}^2 - 2f(X)\phi(X) + 2f(X)\mu_{\phi} - 2\phi(X)\mu_{\phi} ] - \mu^2\\
+    % &= \mathbb{E}[ f(X)^2 + \phi(X)^2 + \mathbb{E}[ \phi(x) ] ^2 - 2f(X)\phi(X) + 2f(X)\mathbb{E}[ \phi(x) ] - 2\phi(X)\mathbb{E}[ \phi(x) ] ] - \mathbb{E}[ f(X) ]^2\\
+    &= \mathbb{E}[ f(X)^2 ] - \mathbb{E}[ f(X) ]^2 \\
+    &\quad - 2(\mathbb{E}[ f(X)\phi(X) ] - \mathbb{E}[ f(X) ]\mathbb{E}[ \phi(X) ]) \\
+    &\quad+ \mathbb{E}[ \phi(X)^2 ] - \mathbb{E}[ \phi(X) ]^2 \\
+    &= \text{Var}[ f(X) ] - 2 \text{ Cov}[ f(X), \phi(X) ] + \text{Var}[ \phi(X) ]
+\end{align*}
+This means we can get a reduction in variance whenever
+\begin{align*}
+    \text{Cov}[ f(X), \phi(X) ] > \frac{1}{2}\text{ Var}[ \phi(X) ].
+\end{align*}
+The function $\phi$ is called a \textit{control variate}---it allows us to control the variance of $f$.
+
+From the equality above we can see that this will be the case whenever $f(X)$ and $\phi(X)$ are strongly correlated. Our choice of control variate will be made with the that in mind. Furthermore, $\mathbb{E}[ \phi(X) ]$ must be known. What is an optimal control variate? Typically a control variate of the form $a\phi$ is chosen with fixed, and $a$ is optimized to maximize the correlation. This brings us to the generic formulation of a control variate:
+\begin{align*}
+    \hat{f}(X) \triangleq f(X) - a(\phi(X) - \mathbb{E}[ \phi(X) ])
+\end{align*}
+with variance
+\begin{align*}
+    \text{Var}[ \hat{f}(X) ] &= \text{Var}[ f(X) ] - 2a \text{ Cov}[ f(X), \phi(X) ] + a^2\text{ Var}[ \phi(X) ] \\
+\end{align*}
+We take a derivative of this with respect to $a$
+\begin{align*}
+    \frac{\partial}{\partial a}\text{Var}[ \hat{f}(X) ] &= - 2 \text{ Cov}[ f(X), \phi(X) ] + 2a\text{ Var}[ \phi(X) ]
+\end{align*}
+Setting this to zero and solving for $a$ we obtain the optimal choice for $a$
+\begin{align}
+\label{eq:cv-scale}
+    a &= \frac{\text{ Cov}[ f(X), \phi(X) ]}{\text{ Var}[ \phi(X) ]}.
+\end{align}
+
+Plugging in this solution into the expression for $\text{Var}[ \hat{f}(X) ]$ and dividing by $\text{Var}[ f(X) ]$ we get
+\begin{align}
+\label{eq:var-red}
+    \frac{\text{Var}[ \hat{f}(X) ]}{\text{Var}[ f(X) ]} &= 1 - \frac{\text{Cov}[ f(X), \phi(X) ]}{\text{ Var}[ f(X) ] \text{ Var}[ \phi(X) ]} \\
+        &= 1 - \text{corr}^2[ f(X), \phi(X) ],
+\end{align}
+which shows that given this choice of $a$ the reduction in variance is directly determined by the correlation between $f(X)$ and $\phi(X)$.
+
+Bringing this all together, we let our new estimator be
+\begin{align*}
+    \mathbb{E}[ f(X) ] &= \mathbb{E}[ \hat{f}(X) ] \approx \frac{1}{n} \sum_{i=1}^n [ f(X_i) - a\phi(X_i) ] - \mu_{\phi}
+\end{align*}
+
+\paragraph{Example} \citep{Ross:2006:SIM} Suppose we want to use simulation to determine
+\begin{align*}
+    \mathbb{E}[f(X)] &= \mathbb{E}[e^X] = \int_0^1 e^x dx = e - 1
+\end{align*}
+with $X \sim \mathcal{U}(0,1)$. A natural control variate to use in this case is the random variable $X$ itself: $\phi(X) \triangleq X$. We thus define the new estimator
+\begin{align*}
+    \hat{f}(X) &= f(X) - \phi(X) + \mathbb{E}[ \phi(X) ] \\
+        &= e^X - X + \frac{1}{2}.
+\end{align*}
+
+To compute the decrease in variance with this new estimator, we first note that
+\begin{align*}
+    \text{Cov}(e^X, X) &= \mathbb{E}[ Xe^X ] - \mathbb{E}[ X ]\mathbb{E}[ e^X ] \\
+        &= \int_0^1 xe^x dx - \frac{e-1}{2} \\
+        &= 1 - \frac{e-1}{2} \approx 0.14086 \\
+    \text{Var}[e^X] &= \mathbb{E}[e^{2X}] - (\mathbb{E}[e^X])^2 \\
+        &= \int_0^1 e^{2x} dx - (1 - e^x)^2 \\
+        &= \frac{e^2 - 1}{2}  - (1 - e^x)^2 \approx 0.2420 \\
+    \text{Var}[X] &= \mathbb{E}[X^2] - (\mathbb{E}[X])^2 \\
+        &= \int_0^1 x^2 dx - \frac{1}{4} \\
+        &= \frac{1}{3} - \frac{1}{4} = \frac{1}{12}.
+\end{align*}
+When we choose $a$ as in formula \ref{eq:cv-scale} we can use formula \ref{eq:var-red} to compute that
+\begin{align*}
+    \frac{\text{Var}[ \hat{f}(X) ]}{\text{Var}[ f(X) ]} &= 1 - \frac{(0.14086)^2}{\frac{0.2420}{12}} \\
+        &\approx 0.0161.
+\end{align*}
+This is a reduction of 98.4 percent! A simulation illustrates what this looks like in practice with \dots samples:
+\begin{figure}
+  \center
+  \includegraphics[width=0.7\textwidth]{control-variate.pdf}
+\end{figure}

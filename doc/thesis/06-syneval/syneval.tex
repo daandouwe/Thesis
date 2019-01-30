@@ -1,13 +1,39 @@
-\bibliography{../src/bibliography.bib}
+% \bibliography{../src/bibliography.bib}
 
 In this section I describe the syntactic evaluation that I perform.
 
+\section{Syntactic evaluation of language models}
+In this section we evaluate language models on a recently proposed syntactic task: to distinguish a grammatical sentence from a minimally differing ungrammatical couterpart \citep{Linzen+2018:targeted}.
+\begin{itemize}
+  \item The task is as follows. Let $(w, w^*)$ be a minimal pair with a grammatical sentence $w$ and an ungrammatical sentence $w^*$. Then the language model $p$ makes a correct prediction if $p(w) > p(w^*)$.
+  \item The classification is based on the probability that the model assigns to the entire sentence. This means that the task can be applied to grammatical phenomena that are not local, e.g. that depend on a single word, or that are not sequential, like \textit{negative polarity items}, unlike the word-prediction task in \cite{Linzen+2016:LSTM-syntax}.
+  \item This task can be thought of as soliciting grammatical acceptability judgements from the model, a key concept in linguistics.
+\end{itemize}
+
+\subsection{Dataset}
+I describe the dataset from \citep{Linzen+2018:targeted}.
+
+\subsection{Related work}
+I review the literature on related syntactic evaluations and show
+\begin{itemize}
+  \item Long distance subject-verb agreement with natural sentences \citep{Linzen+2016:LSTM-syntax,Kuncoro+2018:RNNG-deps,} and nonsensical (but grammatical) sentences \citep{Gulordava+2018:colorless-green}. Both datasets extracted automatically from a wikipedia corpus based on their predicted dependency structure. To make them nonsensical, \citet{Gulordava+2018:colorless-green} randomly substitute words from the same grammatical category.
+  \item Finetuning neural models to immitate grammatical acceptability judgments gathered from linguistics textbooks \citet{DBLP:journals/corr/abs-1805-12471}.
+  \item Training a neural machine translation model to learn question formation from their declarative counterpart\cite{McCoy+2018:RNN-pos}. Linguist argue that the transformations required to generate one from the other provide strong evidence for the existence of hierarchical structure in language \cite{Everaert+2015:structures}. These pairs play a central role as empirical evidence in the argument, known as the \textit{argument from the poverty of the stimulus}, that humans have an innate predisposition for generalizations that rely on hierarchical structure rather than linear order \citep{chomsky1980rules}. Sequence-to-sequence neural machine translation, on the other hand, is a fully sequential model that involves no hierarchical structure or transformations.
+  \item Adversarial evaluation \citep{Smith2012:adversarial} (figure out what this is). One task that the paper seems to suggest is to distinguish data from the true distribution from fake data looks like the task in \citet{Linzen+2018:targeted}.
+\end{itemize}
+
 
 \section{Multitask learning}
-I describe the baselines that is based on multitask learning: language modelling with a syntactic side objective. We have two side objectives:
+One method to improve language models for the task in \citet{Linzen+2016:LSTM-syntax} is to make use of multitask learning \citep{Enguehard+2017:RNN-multitask}. This has also been applied in the task of \citet{}
+
+I describe the baselines based on multitask learning: language modelling with a syntactic side objective. We have two different side objectives, which gives two baseline models.
 \begin{itemize}
   \item From the language model's RNN states predict CCG supertags  \citep{Enguehard+2017:RNN-multitask}
   \item From the language model's RNN states predict labeled spans. Use features and function identical to what is used in the the scoring function of the CRF parser: `LSTM minus' features followed by a feedforward model. This is (minor) original contribution.
+\end{itemize}
+
+We discuss these a bit.
+\begin{itemize}
   \item We hypothesize a bit about their comparative (dis)advantages.
   \item We compare the effect of these two multitask objectives in the syneval setting.
   \item We compare the two methods wrt to perplexity. \cite{Enguehard+2017:RNN-multitask} showed that the CCG side objective helped the model perform much better on the syntactic task, but also helped the model reach much lower perplexity. Preliminary experiments with the labeld span side-objective showed that it also makes the model perform much better on the syntactic task, but that the perplexity is worse.
@@ -26,4 +52,13 @@ I describe the baselines that is based on multitask learning: language modelling
   \item Name some generic examples of multitask learning in NLP \citep{Zhang+2016:multitask,Goldberg+2016:multitask} and the recent work on `syntactic scaffolds' \citep{Swayamdipta+2018:scaffold}.
 \end{itemize}
 
-\subsection{CCG}
+\paragraph{Span labeling}
+We describe the span label prediction.
+
+\paragraph{Word labeling}
+We describe the CCG model tagging.
+
+
+\section{Experiments}
+
+\subsection{Setup}

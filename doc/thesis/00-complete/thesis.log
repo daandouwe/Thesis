@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  29 JAN 2019 21:09
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  30 JAN 2019 19:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1754,11 +1754,11 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (./thesis.toc [2
 
 
-])
+] [3])
 \tf@toc=\write7
 \openout7 = `thesis.toc'.
 
- [3] ABD: EveryShipout initializing macros
+ [4] ABD: EveryShipout initializing macros
 LaTeX Font Info:    Try loading font information for OMS+lmr on input line 66.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/omslmr.fd
@@ -1785,14 +1785,14 @@ Chapter 3.
 (../02-background/background.tex [7
 
 ]
-<../figures/trees/original.pdf, id=175, 517.935pt x 201.75375pt>
+<../figures/trees/original.pdf, id=201, 517.935pt x 201.75375pt>
 File: ../figures/trees/original.pdf Graphic file (type pdf)
 
 <use ../figures/trees/original.pdf>
 Package pdftex.def Info: ../figures/trees/original.pdf used on input line 26.
 (pdftex.def)             Requested size: 241.735pt x 94.16547pt.
 
-<../figures/trees/simplified.pdf, id=176, 427.5975pt x 201.75375pt>
+<../figures/trees/simplified.pdf, id=202, 427.5975pt x 201.75375pt>
 File: ../figures/trees/simplified.pdf Graphic file (type pdf)
 
 <use ../figures/trees/simplified.pdf>
@@ -1800,14 +1800,14 @@ Package pdftex.def Info: ../figures/trees/simplified.pdf used on input line 31.
 
 (pdftex.def)             Requested size: 208.1587pt x 98.2137pt.
 
-<../figures/trees/binary.pdf, id=177, 435.6275pt x 246.9225pt>
+<../figures/trees/binary.pdf, id=203, 435.6275pt x 246.9225pt>
 File: ../figures/trees/binary.pdf Graphic file (type pdf)
 
 <use ../figures/trees/binary.pdf>
 Package pdftex.def Info: ../figures/trees/binary.pdf used on input line 36.
 (pdftex.def)             Requested size: 208.1587pt x 117.98642pt.
 
-<../figures/trees/spans.pdf, id=178, 604.2575pt x 246.9225pt>
+<../figures/trees/spans.pdf, id=204, 604.2575pt x 246.9225pt>
 File: ../figures/trees/spans.pdf Graphic file (type pdf)
 
 <use ../figures/trees/spans.pdf>
@@ -1827,27 +1827,14 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <7> on input line 88.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 88.
+[8] [9 <../figures/trees/original.pdf> <../figures/trees/simplified.pdf> <../fi
+gures/trees/binary.pdf> <../figures/trees/spans.pdf>]
 Package microtype Info: Character `029' is missing
 (microtype)             in font `T1/lmr/m/sc/10.95'.
 (microtype)             Ignoring protrusion settings for this character.
-[8] [9 <../figures/trees/original.pdf> <../figures/trees/simplified.pdf> <../fi
-gures/trees/binary.pdf> <../figures/trees/spans.pdf>] [10]) [11]
+ [10]) [11]
 Chapter 4.
-(../03-rnng/rnng.tex
-
-! LaTeX Error: Can be used only in preamble.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.1 \bibliography
-                 {../src/bibliography}
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-[12
+(../03-rnng/rnng.tex [12
 
 ] [13]
 Overfull \hbox (3.13356pt too wide) in paragraph at lines 49--50
@@ -1885,30 +1872,7 @@ am-ples: 1 (argmax),
 
 [22] [23]) [24]
 Chapter 6.
-(../05-semisupervised/semisupervised.tex [25
-
-] [26]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [27]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [28]
-[29] [30]
-Overfull \hbox (44.38998pt too wide) in paragraph at lines 187--187
-[] 
- []
-
-[31] [32] <../figures/control-variate.pdf, id=516, 344.73216pt x 173.3124pt>
-File: ../figures/control-variate.pdf Graphic file (type pdf)
-
-<use ../figures/control-variate.pdf>
-Package pdftex.def Info: ../figures/control-variate.pdf used on input line 255.
-
-(pdftex.def)             Requested size: 235.01872pt x 118.15762pt.
-) [33] [34 <../figures/control-variate.pdf>]
-Chapter 7.
-(../06-syneval/syneval.tex
+(../05-semisupervised/semisupervised.tex
 
 ! LaTeX Error: Can be used only in preamble.
 
@@ -1922,34 +1886,32 @@ Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
+[25
 
-LaTeX Warning: Citation 'Enguehard+2017:RNN-multitask' on page 35 undefined on 
-input line 9.
+] [26] [27]
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
+ [28]
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-LaTeX Warning: Citation 'Enguehard+2017:RNN-multitask' on page 35 undefined on 
-input line 13.
+ [29]
+[30]) [31]
+Chapter 7.
+(../06-syneval/syneval.tex [32
 
-
-Overfull \hbox (94.32112pt too wide) in paragraph at lines 13--14
-[]\T1/lmr/m/n/10.95 (-20) We com-pare the two meth-ods wrt to per-plex-ity. []
- []
-
-[35
-
-]) [36]
+] [33] [34]) [35]
 Chapter 8.
-(../07-conclusion/conclusion.tex) [37
+(../07-conclusion/conclusion.tex) [36
+
+] [37
 
 ] [38
 
-] [39
-
 ]
 Appendix A.
-(../08-app-figures/figures.tex) [40
+(../08-app-figures/figures.tex [39
 
-]
+]) [40]
 Appendix B.
 (../09-app-implementation/implementation.tex [41
 
@@ -1959,12 +1921,24 @@ Appendix C.
 
 ]
 Appendix D.
-(../11-app-vi/vi.tex) [44
+(../11-app-vi/vi.tex [44
 
-] [45
+] [45]
+Overfull \hbox (44.38998pt too wide) in paragraph at lines 82--82
+[] 
+ []
+
+[46] [47] <../figures/control-variate.pdf, id=665, 344.73216pt x 173.3124pt>
+File: ../figures/control-variate.pdf Graphic file (type pdf)
+
+<use ../figures/control-variate.pdf>
+Package pdftex.def Info: ../figures/control-variate.pdf used on input line 150.
+
+(pdftex.def)             Requested size: 235.01872pt x 118.15762pt.
+) [48] [49 <../figures/control-variate.pdf>] [50
 
 
-] [46] [47] [48]
+] [51] [52] [53]
 
 ! Package inputenc Error: Unicode char ỳ (U+1EF3)
 (inputenc)                not set up for use with LaTeX.
@@ -1973,20 +1947,20 @@ See the inputenc package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.152 
+l.155 
       
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-[49] [50] 
+[54] [55] [56] 
 AED: lastpage setting LastPage
-[51]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 153.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 153.
+[57]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 156.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 156.
  (./thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 153.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 153.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 156.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 156.
 
 
 LaTeX Font Warning: Size substitutions with differences
@@ -1996,27 +1970,26 @@ LaTeX Font Warning: Size substitutions with differences
 LaTeX Warning: There were undefined references.
 
 
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package biblatex Warning: Please (re)run Biber on the file:
-(biblatex)                thesis
-(biblatex)                and rerun LaTeX afterwards.
+Package biblatex Warning: Please rerun LaTeX.
+(biblatex)                Page breaks have changed.
 
 Package logreq Info: Writing requests to 'thesis.run.xml'.
 \openout1 = `thesis.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 28827 strings out of 493014
- 521715 string characters out of 6133351
- 995667 words of memory out of 5000000
- 31328 multiletter control sequences out of 15000+600000
- 144401 words of font info for 212 fonts, out of 8000000 for 9000
+ 28945 strings out of 493014
+ 523612 string characters out of 6133351
+ 996785 words of memory out of 5000000
+ 31393 multiletter control sequences out of 15000+600000
+ 144863 words of font info for 217 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,13n,54p,1304b,1238s stack positions out of 5000i,500n,10000p,200000b,80000s
-pdfTeX warning (dest): name{section.3.5} has been referenced but does not exi
-st, replaced by a fixed one
+ 55i,12n,54p,1304b,1238s stack positions out of 5000i,500n,10000p,200000b,80000s
+pdfTeX warning (dest): name{appendix*.30} has been referenced but does not ex
+ist, replaced by a fixed one
+
+pdfTeX warning (dest): name{chapter*.23} has been referenced but does not exist
+, replaced by a fixed one
 
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/te
 xlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2016
@@ -2050,10 +2023,10 @@ xlive/2016/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/local/texlive/2016
 /fonts/type1/public/lm/lmsy8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type
 1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/texmf-dist/fonts/
 type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on thesis.pdf (54 pages, 782053 bytes).
+Output written on thesis.pdf (61 pages, 795599 bytes).
 PDF statistics:
- 965 PDF objects out of 1000 (max. 8388607)
- 851 compressed objects within 9 object streams
- 210 named destinations out of 1000 (max. 500000)
- 36174 words of extra memory for PDF output out of 42996 (max. 10000000)
+ 1113 PDF objects out of 1200 (max. 8388607)
+ 991 compressed objects within 10 object streams
+ 253 named destinations out of 1000 (max. 500000)
+ 36254 words of extra memory for PDF output out of 42996 (max. 10000000)
 

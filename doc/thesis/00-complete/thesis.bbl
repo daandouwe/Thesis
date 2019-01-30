@@ -414,6 +414,33 @@
       \field{pages}{359\bibrangedash 394}
       \range{pages}{36}
     \endentry
+    \entry{chomsky1980rules}{article}{}
+      \name{author}{1}{}{%
+        {{hash=28167c0b3800bc5cfb686676277005b0}{%
+           family={Chomsky},
+           family_i={C\bibinitperiod},
+           given={Noam},
+           given_i={N\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Cambridge University Press}%
+      }
+      \strng{namehash}{28167c0b3800bc5cfb686676277005b0}
+      \strng{fullhash}{28167c0b3800bc5cfb686676277005b0}
+      \field{sortinit}{C}
+      \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
+      \field{labelyear}{1980}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Behavioral and brain sciences}
+      \field{number}{1}
+      \field{title}{Rules and representations}
+      \field{volume}{3}
+      \field{year}{1980}
+      \field{pages}{1\bibrangedash 15}
+      \range{pages}{15}
+    \endentry
     \entry{Collins2003}{article}{}
       \name{author}{1}{}{%
         {{hash=b8bbd832353d6b8ffa73123369d39d55}{%
@@ -572,6 +599,50 @@
       \field{year}{2005}
       \field{pages}{195\bibrangedash 227}
       \range{pages}{33}
+    \endentry
+    \entry{Enguehard+2017:RNN-multitask}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{hash=00667ed58a544bd8e9aaf3676816390a}{%
+           family={Enguehard},
+           family_i={E\bibinitperiod},
+           given={Émile},
+           given_i={É\bibinitperiod}}}%
+        {{hash=33b00f3e2f4f1bb310f1cf8d4a4c500a}{%
+           family={Goldberg},
+           family_i={G\bibinitperiod},
+           given={Yoav},
+           given_i={Y\bibinitperiod}}}%
+        {{hash=11e9c967573c1c8a0604dda20cf8a914}{%
+           family={Linzen},
+           family_i={L\bibinitperiod},
+           given={Tal},
+           given_i={T\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Vancouver, Canada}%
+      }
+      \list{publisher}{1}{%
+        {Association for Computational Linguistics}%
+      }
+      \strng{namehash}{5a07eba2fc9f9aa273971a216623bb59}
+      \strng{fullhash}{7ceb8cf3940a62ef511918b2bab2fb1d}
+      \field{sortinit}{E}
+      \field{sortinithash}{fefc5210ef4721525b2a478df41efcd4}
+      \field{labelyear}{2017}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 21st Conference on Computational Natural Language Learning (CoNLL 2017)}
+      \field{title}{Exploring the Syntactic Abilities of RNNs with Multi-task Learning}
+      \field{year}{2017}
+      \field{pages}{3\bibrangedash 14}
+      \range{pages}{12}
+      \verb{doi}
+      \verb 10.18653/v1/K17-1003
+      \endverb
+      \verb{url}
+      \verb http://aclweb.org/anthology/K17-1003
+      \endverb
     \endentry
     \entry{Everaert+2015:structures}{article}{}
       \name{author}{5}{}{%
@@ -756,6 +827,60 @@
       \range{pages}{12}
       \verb{url}
       \verb https://transacl.org/ojs/index.php/tacl/article/download/145/27
+      \endverb
+    \endentry
+    \entry{Gulordava+2018:colorless-green}{inproceedings}{}
+      \name{author}{5}{}{%
+        {{hash=e422444437802b2371f67d73e26a624b}{%
+           family={Gulordava},
+           family_i={G\bibinitperiod},
+           given={Kristina},
+           given_i={K\bibinitperiod}}}%
+        {{hash=dfd2b635b41689b48c4b81ce769b940b}{%
+           family={Bojanowski},
+           family_i={B\bibinitperiod},
+           given={Piotr},
+           given_i={P\bibinitperiod}}}%
+        {{hash=ebdea2c3aa9f759075733b20dce6b873}{%
+           family={Grave},
+           family_i={G\bibinitperiod},
+           given={Edouard},
+           given_i={E\bibinitperiod}}}%
+        {{hash=11e9c967573c1c8a0604dda20cf8a914}{%
+           family={Linzen},
+           family_i={L\bibinitperiod},
+           given={Tal},
+           given_i={T\bibinitperiod}}}%
+        {{hash=06fd48b6938d182f11c5bf4e2da76f87}{%
+           family={Baroni},
+           family_i={B\bibinitperiod},
+           given={Marco},
+           given_i={M\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {New Orleans, Louisiana}%
+      }
+      \list{publisher}{1}{%
+        {Association for Computational Linguistics}%
+      }
+      \strng{namehash}{e8d2cb1ad9c1434e2eba46fcc127ede4}
+      \strng{fullhash}{6359646cc8d95dcc8d56f4335ff0a7f2}
+      \field{sortinit}{G}
+      \field{sortinithash}{1c854ef9177a91bf894e66485bdbd3ed}
+      \field{labelyear}{2018}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 2018 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long Papers)}
+      \field{title}{Colorless Green Recurrent Networks Dream Hierarchically}
+      \field{year}{2018}
+      \field{pages}{1195\bibrangedash 1205}
+      \range{pages}{11}
+      \verb{doi}
+      \verb 10.18653/v1/N18-1108
+      \endverb
+      \verb{url}
+      \verb http://aclweb.org/anthology/N18-1108
       \endverb
     \endentry
     \entry{Hale+2018:beam}{inproceedings}{}
@@ -1178,6 +1303,37 @@
       \verb{url}
       \verb http://aclweb.org/anthology/D18-1151
       \endverb
+    \endentry
+    \entry{McCoy+2018:RNN-pos}{article}{}
+      \name{author}{3}{}{%
+        {{hash=710eef800fffb602ff06dfdc5fab9914}{%
+           family={McCoy},
+           family_i={M\bibinitperiod},
+           given={R.\bibnamedelimi Thomas},
+           given_i={R\bibinitperiod\bibinitdelim T\bibinitperiod}}}%
+        {{hash=bc48ba7882116577e14f8e11c446d086}{%
+           family={Frank},
+           family_i={F\bibinitperiod},
+           given={Robert},
+           given_i={R\bibinitperiod}}}%
+        {{hash=11e9c967573c1c8a0604dda20cf8a914}{%
+           family={Linzen},
+           family_i={L\bibinitperiod},
+           given={Tal},
+           given_i={T\bibinitperiod}}}%
+      }
+      \strng{namehash}{a09e8c90913bca89563b247186781092}
+      \strng{fullhash}{0a3a9a440b352d55337ade6fd71612f1}
+      \field{sortinit}{M}
+      \field{sortinithash}{2684bec41e9697b92699b46491061da2}
+      \field{labelyear}{2018}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{CoRR}
+      \field{title}{Revisiting the poverty of the stimulus: hierarchical generalization without a hierarchical bias in recurrent neural networks}
+      \field{volume}{abs/1802.09091}
+      \field{year}{2018}
     \endentry
     \entry{Miao+2016}{inproceedings}{}
       \name{author}{2}{}{%
@@ -1911,6 +2067,37 @@
       \verb http://proceedings.mlr.press/v24/vlachos12a.html
       \endverb
     \endentry
+    \entry{DBLP:journals/corr/abs-1805-12471}{article}{}
+      \name{author}{3}{}{%
+        {{hash=d97b53c2cf0e9705139aa82b343c3d1d}{%
+           family={Warstadt},
+           family_i={W\bibinitperiod},
+           given={Alex},
+           given_i={A\bibinitperiod}}}%
+        {{hash=521e70c5902413a086400bdd5e4fe60c}{%
+           family={Singh},
+           family_i={S\bibinitperiod},
+           given={Amanpreet},
+           given_i={A\bibinitperiod}}}%
+        {{hash=26aed0a9226e745a0177ac2fc49f4cfd}{%
+           family={Bowman},
+           family_i={B\bibinitperiod},
+           given={Samuel\bibnamedelima R.},
+           given_i={S\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+      }
+      \strng{namehash}{5f7b3e09c6ed56e256c02fe2385f44df}
+      \strng{fullhash}{92e60773563d275af5b415245fed06bd}
+      \field{sortinit}{W}
+      \field{sortinithash}{99e3ba1b3f78bb6f073e7fa7ac11636b}
+      \field{labelyear}{2018}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{CoRR}
+      \field{title}{Neural Network Acceptability Judgments}
+      \field{volume}{abs/1805.12471}
+      \field{year}{2018}
+    \endentry
     \entry{Williams1992:REINFORCE}{article}{}
       \name{author}{1}{}{%
         {{hash=68500db67576d4d0a65080bb1c0f9b9b}{%
@@ -1936,6 +2123,41 @@
       \field{year}{1992}
       \field{pages}{229\bibrangedash 256}
       \range{pages}{28}
+    \endentry
+    \entry{yin2018structvae}{article}{}
+      \name{author}{4}{}{%
+        {{hash=2996beb75be77b26db18b01e40ad65fc}{%
+           family={Yin},
+           family_i={Y\bibinitperiod},
+           given={Pengcheng},
+           given_i={P\bibinitperiod}}}%
+        {{hash=067dd1a8f452ca3d84eded64a0e71ff4}{%
+           family={Zhou},
+           family_i={Z\bibinitperiod},
+           given={Chunting},
+           given_i={C\bibinitperiod}}}%
+        {{hash=2883148bd3351a45d72c69b1a91dbd79}{%
+           family={He},
+           family_i={H\bibinitperiod},
+           given={Junxian},
+           given_i={J\bibinitperiod}}}%
+        {{hash=fcd2ecb2a6a4a3db4c9e66dddf4660b1}{%
+           family={Neubig},
+           family_i={N\bibinitperiod},
+           given={Graham},
+           given_i={G\bibinitperiod}}}%
+      }
+      \strng{namehash}{b9a68bbee7bdd7e4be8fa992ef5dae2b}
+      \strng{fullhash}{55a35ec04b44e1279babb20b77db6d26}
+      \field{sortinit}{Y}
+      \field{sortinithash}{3cbc1e3d286284cedb5e5218a3248f94}
+      \field{labelyear}{2018}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:1806.07832}
+      \field{title}{StructVAE: Tree-structured Latent Variable Models for Semi-supervised Semantic Parsing}
+      \field{year}{2018}
     \endentry
     \entry{Zhang+2016:multitask}{inproceedings}{}
       \name{author}{2}{}{%

@@ -397,6 +397,7 @@ INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/lm/omslmr.fd
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/lm/omslmr.fd
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmss17.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmssbx10.tfm
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
 INPUT ../01-introduction/introduction.tex
 INPUT ../01-introduction/introduction.tex
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmsso10.tfm
@@ -455,12 +456,8 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/rm-lmbx9.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/rm-lmbx5.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
 INPUT ../05-semisupervised/semisupervised.tex
 INPUT ../05-semisupervised/semisupervised.tex
-INPUT ../figures/control-variate.pdf
-INPUT ../figures/control-variate.pdf
-INPUT ../figures/control-variate.pdf
 INPUT ../06-syneval/syneval.tex
 INPUT ../06-syneval/syneval.tex
 INPUT ../07-conclusion/conclusion.tex
@@ -474,6 +471,9 @@ INPUT ../10-app-crf/crf.tex
 INPUT ../10-app-crf/crf.tex
 INPUT ../11-app-vi/vi.tex
 INPUT ../11-app-vi/vi.tex
+INPUT ../figures/control-variate.pdf
+INPUT ../figures/control-variate.pdf
+INPUT ../figures/control-variate.pdf
 INPUT thesis.aux
 INPUT thesis.run.xml
 OUTPUT thesis.run.xml
