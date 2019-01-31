@@ -1,20 +1,20 @@
 [0] Config.pm:343> INFO - This is Biber 2.5
 [0] Config.pm:346> INFO - Logfile is 'thesis.blg'
-[46] biber-darwin:290> INFO - === Wed Jan 30, 2019, 19:17:42
-[77] Biber.pm:351> INFO - Reading 'thesis.bcf'
-[185] Biber.pm:776> INFO - Found 56 citekeys in bib section 0
-[199] Biber.pm:3493> INFO - Processing section 0
-[214] Biber.pm:3657> INFO - Looking for bibtex format file '../src/bibliography.bib' for section 0
-[223] bibtex.pm:1187> INFO - Decoding LaTeX character macros into UTF-8
-[235] bibtex.pm:1048> INFO - Found BibTeX data source '../src/bibliography.bib'
-[322] Utils.pm:149> WARN - I didn't find a database entry for crossref 'DBLP:conf/acl/2015-2' in entry 'Buys+2015:neural-gen-dep' - ignoring (section 0)
-[322] Utils.pm:149> WARN - I didn't find a database entry for crossref 'DBLP:conf/naacl/2018-1' in entry 'Buys+2018' - ignoring (section 0)
-[322] Utils.pm:149> WARN - I didn't find a database entry for crossref 'DBLP:conf/depling/2015' in entry 'Buys+2015:bayes-gen-dep' - ignoring (section 0)
-[324] Utils.pm:149> WARN - The field 'note' in entry 'Goldberg+2013:dynamic' cannot be null, deleting it
-[403] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[403] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[403] Biber.pm:3306> INFO - Sorting list 'nyt/global/' of type 'entry' with scheme 'nyt' and locale 'en-US'
-[403] Biber.pm:3310> INFO - No sort tailoring available for locale 'en-US'
-[493] bbl.pm:526> INFO - Writing 'thesis.bbl' with encoding 'UTF-8'
-[503] bbl.pm:619> INFO - Output to thesis.bbl
-[503] Biber.pm:108> INFO - WARNINGS: 4
+[49] biber-darwin:290> INFO - === Thu Jan 31, 2019, 18:37:33
+[81] Biber.pm:351> INFO - Reading 'thesis.bcf'
+[186] Biber.pm:776> INFO - Found 64 citekeys in bib section 0
+[198] Biber.pm:3493> INFO - Processing section 0
+[228] Biber.pm:3657> INFO - Looking for bibtex format file '../src/bibliography.bib' for section 0
+[238] bibtex.pm:1187> INFO - Decoding LaTeX character macros into UTF-8
+[249] bibtex.pm:1048> INFO - Found BibTeX data source '../src/bibliography.bib'
+[359] Utils.pm:149> WARN - I didn't find a database entry for crossref 'DBLP:conf/acl/2015-2' in entry 'Buys+2015:neural-gen-dep' - ignoring (section 0)
+[359] Utils.pm:149> WARN - I didn't find a database entry for crossref 'DBLP:conf/naacl/2018-1' in entry 'Buys+2018' - ignoring (section 0)
+[359] Utils.pm:149> WARN - I didn't find a database entry for crossref 'DBLP:conf/depling/2015' in entry 'Buys+2015:bayes-gen-dep' - ignoring (section 0)
+[361] Utils.pm:149> WARN - The field 'note' in entry 'Goldberg+2013:dynamic' cannot be null, deleting it
+[446] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[446] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[446] Biber.pm:3306> INFO - Sorting list 'nyt/global/' of type 'entry' with scheme 'nyt' and locale 'en-US'
+[446] Biber.pm:3310> INFO - No sort tailoring available for locale 'en-US'
+[535] bbl.pm:526> INFO - Writing 'thesis.bbl' with encoding 'UTF-8'
+[547] bbl.pm:619> INFO - Output to thesis.bbl
+[547] Biber.pm:108> INFO - WARNINGS: 4

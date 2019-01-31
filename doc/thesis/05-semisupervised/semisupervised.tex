@@ -7,7 +7,7 @@ In this chapter we show how the RNNG can be trained on unlabeled data. Together 
   \item I show how to obtain gradients for this lowerbound by rewrinting the gradient into a form that is called the score function estimator \citep{Williams1992:REINFORCE,Fu2006}.
 \end{itemize}
 
-\paragraph{Notation} In this chapter we write $x$ for a sentence, $y$ for a (latent) constituency tree, and $\mathcal{Y}(x)$ for the \textit{yield} of $x$, all trees that can be assigned to $x$. Furthermore, let $\mathcal{D}_L = \{ (\mathbf{x}_i, \mathbf{y}_i)\}_{i=1}^N$ be a labeled dataset of sentences $\mathbf{x}$ with gold trees $\mathbf{y}$, and let $\mathcal{D}_U = \{ \mathbf{x}_i \}_{i=1}^M$ be an unlabeled dataset consisting of just sentences $x$. We denote our generative RNNG with $p_{\theta}$ and when we write $q_{\lambda}$ we will mean either the discriminative RNNG or the CRF parser.
+\paragraph{Notation} In this chapter we write $\x$ for a sentence, $\y$ for a (latent) constituency tree, and $\yieldx$ for the \textit{yield} of $\x$, all trees that can be assigned to $\x$. Furthermore, let $\mathcal{D}_L = \{ (\x_i, \y_i)\}_{i=1}^N$ be a labeled dataset of sentences $\x$ with gold trees $\y$, and let $\mathcal{D}_U = \{ \x_i \}_{i=1}^M$ be an unlabeled dataset consisting of just sentences $\x$. We denote our generative RNNG with $\ptheta$ and when we write $\qlambda$ we will mean either the discriminative RNNG or the CRF parser.
 
 \section{Objective}
 We define the following general semi-supervised objective
@@ -20,124 +20,93 @@ The supervised objective $\mathcal{L}_{S}$ is optimized over $\mathcal{D}_L$ and
 We define the supervised objective $\mathcal{L}_{S}(\theta)$ as
 \begin{align*}
   \mathcal{L}_{S}(\theta)
-    &\triangleq \sum_{(\mathbf{x}, \mathbf{y}) \in \mathcal{D}_L} \log p_{\theta} (\mathbf{x}, \mathbf{y}) \\
+    &\triangleq \sum_{(\x, \y) \in \mathcal{D}_L} \log \ptheta (\x, \y) \\
 \end{align*}
 This objective is optimized as usual using stochastic gradient estimates:
 \begin{align*}
   \nabla_{\theta} \mathcal{L}_{S}(\theta)
-    &\approx \frac{N}{K} \sum_{(\mathbf{x}, \mathbf{y}) \in \mathcal{B}} \nabla_{\theta} \log p_{\theta} (\mathbf{x}, \mathbf{y}), \\
+    &\approx \frac{N}{K} \sum_{(\x, \y) \in \mathcal{B}} \nabla_{\theta} \log \ptheta (\x, \y), \\
 \end{align*}
-where $\mathcal{B} \subseteq \mathcal{D}_U$ is a mini-batch of size $K$ sampled uniformly from the dataset. We rely on automatic differentiation to compute $\nabla_{\theta} \log p_{\theta}(\mathbf{x}, \mathbf{y})$ \citep{Baydin+2017:AD}.
+where $\mathcal{B} \subseteq \mathcal{D}_U$ is a mini-batch of size $K$ sampled uniformly from the dataset. We rely on automatic differentiation to compute $\nabla_{\theta} \log \ptheta(\x, \y)$ \citep{Baydin+2017:AD}.
 
 \paragraph{Unsupervised objective}
 We define the unsupervised objective $\mathcal{L}_{U}(\theta, \lambda)$ as
-\begin{subequations}
 \begin{align*}
   \mathcal{L}_{U}(\theta, \lambda)
-    &\triangleq \sum_{\mathbf{x} \in \mathcal{D}_U} \log p (\mathbf{x}) \\
-    &= \sum_{\mathbf{x} \in \mathcal{D}_U} \log \sum_{ \mathbf{y} \in \mathcal{Y}(\mathbf{x})} p_{\theta}(\mathbf{x}, \mathbf{y})
+    &\triangleq \sum_{\x \in \mathcal{D}_U} \log p (\x) \\
+    &= \sum_{\x \in \mathcal{D}_U} \log \sum_{ \y \in \mathcal{Y}(\x)} \ptheta(\x, \y)
 \end{align*}
-\end{subequations}
-This is a language modelling objective, in which we treat $\mathbf{y}$ as latent. We have noted the a consequence the lack of independence assumptions of the RNNG is that the sum over trees $\mathbf{y}$ is not tractable. To optimize this objective we must thus fall back on approximate methods.
+This is a language modelling objective, in which we treat $\y$ as latent. We have noted the a consequence the lack of independence assumptions of the RNNG is that the sum over trees $\y$ is not tractable. To optimize this objective we must thus fall back on approximate methods.
 
-\section{Variational approximation} We optimize the objective using variational inference \citep{Blei+2016:VI}. We introduce a posterior $q_{\lambda}(\mathbf{y} | \mathbf{x})$ parametrised by $\lambda$ and use Jensen's inequality to derive a variational lower bound on the objective $\mathcal{L}_U(\theta, \lambda)$. First we bound the probability of one $\mathbf{x}$ in $\mathcal{D}_U$
-\begin{align}
-  \log p (\mathbf{x})
-    &= \log \sum_{\mathbf{y}  \in \mathcal{Y}(\mathbf{x})} q_{\lambda}(\mathbf{y} |\mathbf{x}) \frac{p_{\theta}(\mathbf{x},\mathbf{y} )}{q_{\lambda}(\mathbf{y} | \mathbf{x})} \\
-    &= \log \mathbb{E}_{q} \bigg[\frac{p_{\theta}(\mathbf{x},\mathbf{y} )}{ q_{\lambda}(\mathbf{y} | \mathbf{x})} \bigg] \\
-    &\geq \mathbb{E}_{q} \bigg[\log \frac{p_{\theta}(\mathbf{x},\mathbf{y} )}{q_{\lambda}(\mathbf{y} | \mathbf{x})} \bigg] \\
-    &= \mathbb{E}_{q} \big[\log p_{\theta}(\mathbf{x},\mathbf{y} )  - \log q_{\lambda}(\mathbf{y} | \mathbf{x}) \big]
-  \label{eq:lowerbound}
-\end{align}
-and write
+\section{Variational approximation} We optimize the unsupervised objective using variational inference \citep{Blei+2016:VI}. We introduce a posterior $\qlambda(\y | \x)$ parametrised by $\lambda$ and use Jensen's inequality to derive a variational lower bound on the objective $\mathcal{L}_U(\theta, \lambda)$. First we bound the likelihood of one $\x$ in $\mathcal{D}_U$
 \begin{align*}
-  \mathcal{E}(\theta, \lambda)
-   &\triangleq \sum_{\mathbf{x} \in \mathcal{D}_U} \mathbb{E}_{q} \big[\log p_{\theta}(\mathbf{x},\mathbf{y} )  - \log q_{\lambda}(\mathbf{y} | \mathbf{x}) \big] \\
-   &\leq \sum_{\mathbf{x} \in \mathcal{D}_U} \log p (\mathbf{x}) \\
-   &= \mathcal{L}_{U}(\theta, \lambda)
+  \log p (\x)
+    &= \log \sum_{\y  \in \mathcal{Y}(\x)} \qlambda(\y |\x) \frac{\ptheta(\x,\y )}{\qlambda(\y | \x)} \\
+    &= \log \expect_{q} \bigg[\frac{\ptheta(\x,\y )}{ \qlambda(\y | \x)} \bigg] \\
+    &\geq \expect_{q} \bigg[\log \frac{\ptheta(\x,\y )}{\qlambda(\y | \x)} \bigg] \\
+    &= \expect_{q} \Big[\log \ptheta(\x,\y )  - \log \qlambda(\y | \x) \Big]
+  \label{eq:lowerbound}
 \end{align*}
-as a lower bound on our true objective $\mathcal{L}_{U}$. This is a particular instance of the expectation lower bound (ELBO) \citep{Blei+2016:VI}. The quantity can be rewritten to reveal an entropy term H($q$)
+and write
 \begin{align}
-  \mathbb{E}_{q} \big[\log p_{\theta}(\mathbf{x},\mathbf{y} )  - \log  q_{\lambda}(\mathbf{y} | \mathbf{x}) \big]
-    &=\mathbb{E}_{q} \big[\log p_{\theta}(\mathbf{x},\mathbf{y} ) \big]  - \mathbb{E}_{q} \big[\log q_{\lambda}(\mathbf{y} | \mathbf{x}) \big] \\
-    &= \mathbb{E}_{q} \big[\log p_{\theta}(\mathbf{x},\mathbf{y} ) \big]  + \text{H}(q).
-  \label{eq:expectation}
+  \elbo(\theta, \lambda)
+   &\triangleq \sum_{\x \in \mathcal{D}_U} \expect_{q} \Big[\log \ptheta(\x,\y )  - \log \qlambda(\y | \x) \Big] \nonumber \\
+   &\leq \sum_{\x \in \mathcal{D}_U} \log p (\x) \nonumber \\
+   &= \mathcal{L}_{U}(\theta, \lambda)
 \end{align}
-This has an intuitive interpretation because $\cdots$
+as a lower bound on our true objective $\mathcal{L}_{U}$. This is a particular instance of the evidence lower bound (ELBO) \citep{Blei+2016:VI}. The quantity can be rewritten to reveal an entropy term H($q$)
+\begin{align*}
+  \expect_{q} \Big[\log \ptheta(\x,\y )  - \log  \qlambda(\y | \x) \Big]
+    &=\expect_{q} \Big[\log \ptheta(\x,\y ) \Big]  - \expect_{q} \Big[\log \qlambda(\y | \x) \Big] \\
+    &= \expect_{q} \Big[\log \ptheta(\x,\y ) \Big]  + \text{H}(q),
+  \label{eq:expectation}
+\end{align*}
+which gives this objective an intuitive interpretation. On the one hand, the objective aims to
 
 \paragraph{Posterior}
-The posterior $q$ can be any kind of models, with the only condition that
-\begin{equation}
-  p(\mathbf{x}, \mathbf{y}) > 0 \Rightarrow q( \mathbf{y}| \mathbf{x} ) > 0 \qquad \text{for all $ \mathbf{x} $ and $ \mathbf{y} \in \mathcal{Y}( \mathbf{x} )$}.
-\end{equation}
+The posterior $q$ can be any kind of models, with the only condition that for all $ \x $ and $ \y \in \yieldx$,
+\begin{equation*}
+  p(\x, \y) > 0 \Rightarrow q( \y| \x ) > 0.
+\end{equation*}
 This condition is fulfilled by any discriminatively trained parser with the same support as the joint RNNG $p$. We have two obvious choices at hand: the discriminatively trained RNNG, and the CRF parser that we introduced in chapter \ref{04-crf}.
 
-Their is an interesting advantage of CRF parser: in the case that $q$ is the CRF parser, we \textit{can} compute the entropy H$(q)$ exactly. This contrasts with the discriminative RNNG, where H$(q)$ can only be approximated.
+An interesting advantage of the CRF parser is that we \textit{can} compute the entropy H$(q)$ exactly. This contrasts with the discriminative RNNG, where H$(q)$ can only be approximated. To make this explicit we introduct separate ELBO objectives:
+\begin{align}
+  \elbo_{\textsc{rnng}}(\theta, \lambda) &\triangleq \sum_{\x \in \dataset_U}\expect_{q} \Big[\log \ptheta(\x,\y )  - \log  \qlambda(\y | \x) \Big] \\
+  \elbo_{\textsc{crf}}(\theta, \lambda) &\triangleq \sum_{\x \in \dataset_U} \expect_{q} \Big[\log \ptheta(\x,\y ) \Big]  + \text{H}(q).
+\end{align}
 
 
 \section{Optimization}
-Just like the supervised objective $\mathcal{L}_U$ we optimize the lower bound $\mathcal{E}$ by gradient optimization. This means that we need to compute the gradients $\nabla_{\theta} \mathcal{E}(\theta, \lambda)$ and $\nabla_{\lambda} \mathcal{E}(\theta, \lambda)$.
+Just like the supervised objective $\mathcal{L}_U$ we optimize the lower bound $\elbo$ by gradient optimization, which means that we need to compute the gradients $\nabla_{\theta} \elbo(\theta, \lambda)$ and $\nabla_{\lambda} \elbo(\theta, \lambda)$.
 
 \paragraph{Gradients of joint parameters} The first gradient is easy and permits a straightforward Monte-Carlo estimate:
-\begin{subequations}
 \begin{align*}
-    \nabla_{\theta} \mathcal{E}(\theta, \lambda)
-        &= \nabla_{\theta} \mathbb{E}_{q} \big[\log p_{\theta}(x,y)  - \log q_{\lambda}(y | x) \big] \\
-        &= \mathbb{E}_{q} \big[ \nabla_{\theta} \log p_{\theta}(x,y)  -  \nabla_{\theta} \log q_{\lambda}(y | x) \big] \\
-        &= \mathbb{E}_{q} \big[ \nabla_{\theta} \log p_{\theta}(x,y) \big] \\
-        &\approx \frac{1}{n}\sum_{i=1}^n  \nabla_{\theta} \log p_{\theta}(x,y^{(i)})
+  \nabla_{\theta} \elbo(\theta, \lambda)
+    &= \nabla_{\theta} \expect_{q} \Big[\log \ptheta(\x, \y)  - \log \qlambda(\y | \x) \Big] \\
+    &= \expect_{q} \Big[ \nabla_{\theta} \log \ptheta(\x, \y) \Big] \\
+    &\approx \frac{1}{K}\sum_{i=1}^K  \nabla_{\theta} \log \ptheta(\x, \y_{i})
 \end{align*}
-\end{subequations}
-where $y_i \sim q_{\lambda}(y | x)$ for $i=1,\dots,n$. We can move the gradient inside the expectation (second equality) because $q$ does not depend on $\theta$.
+where $y_i \sim \qlambda( \cdot | \x)$ for $i=1,\dots,K$ are samples from the approximate posterior. We can move the gradient inside the expectation because $q$ does not depend on $\theta$, and note that $\nabla_{\theta} \log \qlambda(\y | \x) = 0$.
 
 \paragraph{Gradients of posterior parameters}
-The second gradient is harder and requires us to rewrite the objective:
-\begin{subequations}
+The second gradient is not so straightforward and requires us to rewrite the objective into a form that is called the \textit{score function estimator} \citep{Fu2006}. Firstly we define a \textit{learning signal}
+\begin{equation}
+  L(\x, \y) \triangleq \log \ptheta(\x, \y) - \log \qlambda(\y | \x),
+\end{equation}
+and use the identity in equation \ref{eq:score-function-estimator} that we derive in the appendix
 \begin{align*}
-\nabla_{\lambda} \mathcal{E}(\theta, \lambda)
-        &= \nabla_{\lambda} \mathbb{E}_{q} \big[\log p_{\theta}(x,y)  - \log q_{\lambda}(y | x) \big] \\
-        &= \nabla_{\lambda} \sum_{y} \big\{ q_{\lambda}(y | x) \log p_{\theta}(x,y) - q_{\lambda}(y | x)\log q_{\lambda}(y | x) \big\} \\
-        &= \sum_{y} \big\{ \nabla_{\lambda} q_{\lambda}(y | x) \log p_{\theta}(x,y) \\
-        &\qquad\qquad - \nabla_{\lambda} q_{\lambda}(y | x)\log q_{\lambda}(y | x) \\
-        &\qquad\qquad -  q_{\lambda}(y | x)\nabla_{\lambda}\log q_{\lambda}(y | x) \big\} \\
-        &= \sum_{y} \big\{ \nabla_{\lambda} q_{\lambda}(y | x) \log p_{\theta}(x,y) - \nabla_{\lambda} q_{\lambda}(y | x)\log q_{\lambda}(y | x) \big\} \\
-        &= \sum_{y} \big\{(\log p_{\theta}(x,y) - \log q_{\lambda}(y | x))\nabla_{\lambda} q_{\lambda}(y | x) \big\} \\
-        &= \sum_{y} \big\{(\log p_{\theta}(x,y) - \log q_{\lambda}(y | x)) q_{\lambda}(y | x)\nabla_{\lambda} \log q_{\lambda}(y | x) \big\}   \\
-        &= \mathbb{E}_{q} \big[ (\log p_{\theta}(x,y) - \log q_{\lambda}(y | x))  \nabla_{\lambda} \log q_{\lambda}(y | x) \big\} \\
-        &= \mathbb{E}_{q} \big[ l(x,y) \nabla_{\lambda} \log q_{\lambda}(y | x) \big]
+  \nabla_{\lambda} \elbo(\theta, \lambda)
+    &= \nabla_{\lambda} \expect_{q} \Big[ L(\x, \y) \Big] \\
+    &= \expect_{q} \Big[ L(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) \Big].
 \end{align*}
-\end{subequations}
-Where we've defined a learning signal $l(x,y) \triangleq \log p_{\theta}(x,y) - \log q_{\lambda}(y | x)$.
-
-In this derivation we used the identity
-\begin{align*}
-    \nabla_{\lambda}\log q_{\lambda}(y | x) &= \frac{\nabla_{\lambda} q_{\lambda}(y | x)}{q_{\lambda}(y | x)}
-\end{align*}
-or equivalently
-\begin{align*}
-    \nabla_{\lambda} q_{\lambda}(y | x) &= q_{\lambda}(y | x)\nabla_{\lambda}\log q_{\lambda}(y | x)
-\end{align*}
-and the fact that
-\begin{subequations}
-\begin{align*}
-    \sum_{y} q_{\lambda}(y | x)\nabla_{\lambda}\log q_{\lambda}(y | x)
-        &= \sum_{y}  q_{\lambda}(y | x) \frac{\nabla_{\lambda} q_{\lambda}(y | x)}{q_{\lambda}(y | x)}  \\
-        &= \sum_{y} \nabla_{\lambda} q_{\lambda}(y | x) \\
-        &= \nabla_{\lambda} \sum_{y} q_{\lambda}(y | x)\\
-        &= \nabla_{\lambda} 1 \\
-        &= 0. \\
-\end{align*}
-\end{subequations}
-
-This rewritten objective permits a straightforward MC estimate:
+In this rewritten form the gradient is in the form of an expectation, and that does permit a straightforward MC estimate:
 \begin{align}
-\label{eq:score-function-estimator}
-    \mathbb{E}_{q} \big[ l(\mathbf{x}, \mathbf{y}) \nabla_{\lambda} \log q_{\lambda}(y | x) \big]
-        &\approx \frac{1}{n}\sum_{i=1}^n  l(\mathbf{x}, \mathbf{y}^{(i)})\nabla_{\lambda} \log q_{\lambda}(x|y^{(i)})
+    \expect_{q} \Big[ L(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) \Big]
+        &\approx \frac{1}{K}\sum_{i=1}^K  l(\x, \y_i)\nabla_{\lambda} \log \qlambda(\x | \y_i)
 \end{align}
-where $y_i \sim q_{\lambda}(y | x)$ for $i=1,\dots,n$.
+where again $y_i \sim \qlambda(\cdot | \x)$ for $i=1,\dots,K$ are independently sampled from the approximate posterior. This estimator has been derived in slightly different forms in \citet{Williams1992:REINFORCE,Paisley+2012:VISS,Mnih+2014:NVIL,Ranganath+2014:BBVI,Miao+2016} and is also known as the \textsc{reinforce} estimator \citep{Williams1992:REINFORCE}.
 
-This estimator has been derived (in slightly different forms) in among others \citep{Williams1992:REINFORCE}, \citep{Paisley+2012:VISS}, \citep{Mnih+2014:NVIL}, \citep{Ranganath+2014:BBVI}, and \citep{Miao+2016} and is known as the \textsc{reinforce} estimator \citep{Williams1992:REINFORCE}, or score function estimator (after the score function $\nabla_{\theta} \log p_{\theta}(x)$) \citep{Fu2006}.
 
 \section{Variance reduction}
 We introduce the two baselines:
@@ -146,6 +115,7 @@ We introduce the two baselines:
   \item Argmax baseline from \citet{Rennie+2017:argmax-baseline} which is exact in the CRF, and approximate in the RNNG.
   \item The CRF has no variance in estimating the entropy.
 \end{itemize}
+
 
 \section{Experiments}
 \begin{itemize}
@@ -158,4 +128,6 @@ We introduce the two baselines:
 \section{Related work}
 \begin{itemize}
   \item Discrete latent variables in neural models \citep{Miao+2016,yin2018structvae}.
+  \item Semisupervised training for the RNNG \citep{Cheng+2017:RNNG-VI}.
+  \item Argmax baseline \cite{Rennie+2017:argmax-baseline}.
 \end{itemize}

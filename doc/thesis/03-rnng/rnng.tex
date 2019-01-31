@@ -6,7 +6,7 @@ I describe the model.
   \item Specify the transition-system.
   \item The probabilistic model is given by
   \begin{equation}
-    p(\mathbf{x}, \mathbf{y}) = \prod_{t=1}^A p(a_t | \mathbf{a}_{<t}) p(w_{W(t)} | \mathbf{a}_{<t} )^{ \mathbb{I}[a = \textsc{gen}] } p(n_{N(t)} | \mathbf{a}_{<t} )^{ \mathbb{I}[a = \textsc{open}] },
+    p(\x, \y) = \prod_{t=1}^T p(a_t | \mathbf{a}_{<t}) p(w_{\nu(t)} | \mathbf{a}_{<t} )^{ \mathbb{I}[a_t = \textsc{gen}] } p(n_{\eta(t)} | \mathbf{a}_{<t} )^{ \mathbb{I}[a_t = \textsc{open}] },
   \end{equation}
   where $\dots$
 \end{itemize}
@@ -26,7 +26,7 @@ Here I describe the research into syntax and cognition using the RNNG.
 \paragraph{Cognition} RNNGs can tell us something about our brains.
 \begin{itemize}
   \item Psycholinguistic research that indicates that top-down parsing is a cognitively plausible parsing strategy \citep{Brennan+2016}.
-  \item RNNGs are good statistical predictors in psycholinguistic research \citep{Hale+2018:beam}. More precise: the sequential word-probabilities that are derived from a generative RNNG with word-synchronous beam-search \citep{Stern+2017:beam} provide complexity metrics that predict human reading difficulty well.
+  \item RNNGs are good statistical predictors in psycholinguistic research \citep{Hale+2018:beam}. More precisely: the sequential word-probabilities that are derived from a generative RNNG in combination with word-synchronous beam-search \citep{Stern+2017:beam} provide per-word complexity metrics that predict human reading difficulty well.
 \end{itemize}
 
 \paragraph{Syntax} What do RNNGs learn about syntax?

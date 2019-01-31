@@ -5,8 +5,14 @@ INPUT /usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt
 INPUT background.tex
 OUTPUT background.log
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/map/fontname/texfonts.map
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmbx7.tfm
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmbx5.tfm
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm
+INPUT ../figures/trees/original.tex
+INPUT ../figures/trees/original.tex
+INPUT ../figures/trees/simplified.tex
+INPUT ../figures/trees/simplified.tex
+INPUT ../figures/trees/binary.tex
+INPUT ../figures/trees/binary.tex
+INPUT ../figures/trees/spans.tex
+INPUT ../figures/trees/spans.tex
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmcsc10.tfm

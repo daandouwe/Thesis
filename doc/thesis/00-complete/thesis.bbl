@@ -414,6 +414,50 @@
       \field{pages}{359\bibrangedash 394}
       \range{pages}{36}
     \endentry
+    \entry{Cheng+2017:RNNG-VI}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{hash=ea420c999bde7b92905ea4ce7147ec31}{%
+           family={Cheng},
+           family_i={C\bibinitperiod},
+           given={Jianpeng},
+           given_i={J\bibinitperiod}}}%
+        {{hash=ad6fa488b436cdcaf6e5fae16941b766}{%
+           family={Lopez},
+           family_i={L\bibinitperiod},
+           given={Adam},
+           given_i={A\bibinitperiod}}}%
+        {{hash=35b5bc53ec3fa2640225354af6ca0e1d}{%
+           family={Lapata},
+           family_i={L\bibinitperiod},
+           given={Mirella},
+           given_i={M\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Vancouver, Canada}%
+      }
+      \list{publisher}{1}{%
+        {Association for Computational Linguistics}%
+      }
+      \strng{namehash}{a3ef746b7e051a362abe54e6d1bc6680}
+      \strng{fullhash}{ba583ce736d0a72fce91a0a65eea13e2}
+      \field{sortinit}{C}
+      \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
+      \field{labelyear}{2017}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers)}
+      \field{title}{A Generative Parser with a Discriminative Recognition Algorithm}
+      \field{year}{2017}
+      \field{pages}{118\bibrangedash 124}
+      \range{pages}{7}
+      \verb{doi}
+      \verb 10.18653/v1/P17-2019
+      \endverb
+      \verb{url}
+      \verb http://aclweb.org/anthology/P17-2019
+      \endverb
+    \endentry
     \entry{chomsky1980rules}{article}{}
       \name{author}{1}{}{%
         {{hash=28167c0b3800bc5cfb686676277005b0}{%
@@ -1022,6 +1066,100 @@
       \verb http://papers.nips.cc/paper/4545-imitation-learning-by-coaching.pdf
       \endverb
     \endentry
+    \entry{jang2017gumbel}{article}{}
+      \name{author}{3}{}{%
+        {{hash=3b21b8aef58f6e35446f2dbc679e5e6e}{%
+           family={Jang},
+           family_i={J\bibinitperiod},
+           given={Eric},
+           given_i={E\bibinitperiod}}}%
+        {{hash=0072cdac4f418553b46ec3ddc61cebad}{%
+           family={Gu},
+           family_i={G\bibinitperiod},
+           given={Shixiang},
+           given_i={S\bibinitperiod}}}%
+        {{hash=e528fda20644135dfae4f481a342148f}{%
+           family={Poole},
+           family_i={P\bibinitperiod},
+           given={Ben},
+           given_i={B\bibinitperiod}}}%
+      }
+      \strng{namehash}{aeabf30b39f8f0e737a9646de136a8a6}
+      \strng{fullhash}{56a47665bbe4612de2bb387bea75ea33}
+      \field{sortinit}{J}
+      \field{sortinithash}{ec3950a647c092421b9fcca6d819504a}
+      \field{labelyear}{2017}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{ICLR}
+      \field{title}{Categorical reparameterization with gumbel-softmax}
+      \field{year}{2017}
+    \endentry
+    \entry{Jordan+1999:VI}{article}{}
+      \name{author}{4}{}{%
+        {{hash=57976975ef8efe63daabdeed33b331fa}{%
+           family={Jordan},
+           family_i={J\bibinitperiod},
+           given={MichaelI.},
+           given_i={M\bibinitperiod}}}%
+        {{hash=bf5cf30deddddad00a6341ad7a414445}{%
+           family={Ghahramani},
+           family_i={G\bibinitperiod},
+           given={Zoubin},
+           given_i={Z\bibinitperiod}}}%
+        {{hash=d3804570c67b58b0bd1a897cc297f97b}{%
+           family={Jaakkola},
+           family_i={J\bibinitperiod},
+           given={TommiS.},
+           given_i={T\bibinitperiod}}}%
+        {{hash=3862d07d126ad270c6450e1404f7073f}{%
+           family={Saul},
+           family_i={S\bibinitperiod},
+           given={LawrenceK.},
+           given_i={L\bibinitperiod}}}%
+      }
+      \strng{namehash}{44f91d1b2a6d418a0a457558a14ef26a}
+      \strng{fullhash}{9cbed30f2c80079b9b6c8a6faf9ff5dd}
+      \field{sortinit}{J}
+      \field{sortinithash}{ec3950a647c092421b9fcca6d819504a}
+      \field{labelyear}{1999}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Machine Learning}
+      \field{number}{2}
+      \field{title}{An Introduction to Variational Methods for Graphical Models}
+      \field{volume}{37}
+      \field{year}{1999}
+      \field{pages}{183\bibrangedash 233}
+      \range{pages}{51}
+    \endentry
+    \entry{Kingma+2014:VAE}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{hash=1e072d74f4ac1094c9c26e1b592cea4a}{%
+           family={Kingma},
+           family_i={K\bibinitperiod},
+           given={Diederik\bibnamedelima P.},
+           given_i={D\bibinitperiod\bibinitdelim P\bibinitperiod}}}%
+        {{hash=53d2880ad8047b61cdae2c6b2803e763}{%
+           family={Welling},
+           family_i={W\bibinitperiod},
+           given={Max},
+           given_i={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{404dc8d938dc816ad1bd2d325fd84003}
+      \strng{fullhash}{404dc8d938dc816ad1bd2d325fd84003}
+      \field{sortinit}{K}
+      \field{sortinithash}{a7d5b3aec5a0890aae7baf85a209abfc}
+      \field{labelyear}{2014}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{International Conference on Learning Representations}
+      \field{title}{Auto-Encoding Variational Bayes}
+      \field{year}{2014}
+    \endentry
     \entry{kitaev2018attentive}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=84fcf20261b758feb2c1ca534214ea1e}{%
@@ -1119,6 +1257,53 @@
       \field{year}{1995}
       \field{pages}{181e4}
       \range{pages}{-1}
+    \endentry
+    \entry{kucukelbir2017automatic}{article}{}
+      \name{author}{5}{}{%
+        {{hash=9b4bd774638a5e11db087a94dc4950b1}{%
+           family={Kucukelbir},
+           family_i={K\bibinitperiod},
+           given={Alp},
+           given_i={A\bibinitperiod}}}%
+        {{hash=831126fd259babc16b5bd86bbc5f0098}{%
+           family={Tran},
+           family_i={T\bibinitperiod},
+           given={Dustin},
+           given_i={D\bibinitperiod}}}%
+        {{hash=bb5c273638bcd68f168fefeca29f69c1}{%
+           family={Ranganath},
+           family_i={R\bibinitperiod},
+           given={Rajesh},
+           given_i={R\bibinitperiod}}}%
+        {{hash=1e1eb60e3b6e222217bf8e9b24070b28}{%
+           family={Gelman},
+           family_i={G\bibinitperiod},
+           given={Andrew},
+           given_i={A\bibinitperiod}}}%
+        {{hash=0acd0349006f4ee348ffe16e1fe1fe21}{%
+           family={Blei},
+           family_i={B\bibinitperiod},
+           given={David\bibnamedelima M},
+           given_i={D\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {JMLR. org}%
+      }
+      \strng{namehash}{79e7ecd137446e05bb8377a30ad2d94a}
+      \strng{fullhash}{7d1e08c8c25b5fc577b75c04dfb27546}
+      \field{sortinit}{K}
+      \field{sortinithash}{a7d5b3aec5a0890aae7baf85a209abfc}
+      \field{labelyear}{2017}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{The Journal of Machine Learning Research}
+      \field{number}{1}
+      \field{title}{Automatic differentiation variational inference}
+      \field{volume}{18}
+      \field{year}{2017}
+      \field{pages}{430\bibrangedash 474}
+      \range{pages}{45}
     \endentry
     \entry{Kuncoro+2017:RNNG-syntax}{inproceedings}{}
       \name{author}{6}{}{%
@@ -1267,6 +1452,36 @@
       \verb{url}
       \verb http://aclweb.org/anthology/Q16-1037
       \endverb
+    \endentry
+    \entry{maddison2017concrete}{article}{}
+      \name{author}{3}{}{%
+        {{hash=d1aac4349b0e98ab02573718315ab432}{%
+           family={Maddison},
+           family_i={M\bibinitperiod},
+           given={Chris\bibnamedelima J},
+           given_i={C\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+        {{hash=effa745fe0078f9f6790f688512c5a53}{%
+           family={Mnih},
+           family_i={M\bibinitperiod},
+           given={Andriy},
+           given_i={A\bibinitperiod}}}%
+        {{hash=577af3eb832d26c33caa634a276d4d7e}{%
+           family={Teh},
+           family_i={T\bibinitperiod},
+           given={Yee\bibnamedelima Whye},
+           given_i={Y\bibinitperiod\bibinitdelim W\bibinitperiod}}}%
+      }
+      \strng{namehash}{e3f17fc260da126cfdaa08e95f54ceec}
+      \strng{fullhash}{3ad2309ff8367e057d9144fc94ea252b}
+      \field{sortinit}{M}
+      \field{sortinithash}{2684bec41e9697b92699b46491061da2}
+      \field{labelyear}{2017}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{ICLR}
+      \field{title}{The concrete distribution: A continuous relaxation of discrete random variables}
+      \field{year}{2017}
     \endentry
     \entry{Linzen+2018:targeted}{inproceedings}{}
       \name{author}{2}{}{%
@@ -1623,6 +1838,38 @@
       \field{year}{2017}
       \field{pages}{1179\bibrangedash 1195}
       \range{pages}{17}
+    \endentry
+    \entry{Rezende+14:DGM}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{hash=1cbae2618bca6e9640c2f6595a544a0b}{%
+           family={Rezende},
+           family_i={R\bibinitperiod},
+           given={Danilo\bibnamedelima Jimenez},
+           given_i={D\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+        {{hash=b520f2e46ec8803dd4c66bf1d6059482}{%
+           family={Mohamed},
+           family_i={M\bibinitperiod},
+           given={Shakir},
+           given_i={S\bibinitperiod}}}%
+        {{hash=d7805381550fb5f8360345f7f72c0b49}{%
+           family={Wierstra},
+           family_i={W\bibinitperiod},
+           given={Daan},
+           given_i={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{6301ff86ea76cc7a66c3c59862a23e47}
+      \strng{fullhash}{2cd8952bfc992e20d00109998d578edc}
+      \field{sortinit}{R}
+      \field{sortinithash}{c7387613477035a752d935acfc3e3ea2}
+      \field{labelyear}{2014}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 31th International Conference on Machine Learning, {ICML} 2014, Beijing, China, 21-26 June 2014}
+      \field{title}{Stochastic Backpropagation and Approximate Inference in Deep Generative Models}
+      \field{year}{2014}
+      \field{pages}{1278\bibrangedash 1286}
+      \range{pages}{9}
     \endentry
     \entry{Roark2001}{article}{}
       \name{author}{1}{}{%
@@ -2066,6 +2313,40 @@
       \verb{url}
       \verb http://proceedings.mlr.press/v24/vlachos12a.html
       \endverb
+    \endentry
+    \entry{Jordan+2008:GM}{article}{}
+      \name{author}{2}{}{%
+        {{hash=1d2a0377716f2184ea82600dce921433}{%
+           family={Wainwright},
+           family_i={W\bibinitperiod},
+           given={Martin\bibnamedelima J.},
+           given_i={M\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+        {{hash=f70df67fe1d13567b704ad143006af68}{%
+           family={Jordan},
+           family_i={J\bibinitperiod},
+           given={Michael\bibnamedelima I.},
+           given_i={M\bibinitperiod\bibinitdelim I\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Now Publishers Inc.}%
+      }
+      \strng{namehash}{32245f569e800d7ce58262f034fe9493}
+      \strng{fullhash}{32245f569e800d7ce58262f034fe9493}
+      \field{sortinit}{W}
+      \field{sortinithash}{99e3ba1b3f78bb6f073e7fa7ac11636b}
+      \field{labelyear}{2008}
+      \field{labelmonth}{01}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Found. Trends Mach. Learn.}
+      \field{month}{01}
+      \field{number}{1-2}
+      \field{title}{Graphical Models, Exponential Families, and Variational Inference}
+      \field{volume}{1}
+      \field{year}{2008}
+      \field{pages}{1\bibrangedash 305}
+      \range{pages}{305}
     \endentry
     \entry{DBLP:journals/corr/abs-1805-12471}{article}{}
       \name{author}{3}{}{%

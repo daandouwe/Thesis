@@ -13,9 +13,9 @@
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{tikz-qtree}
 
-\usepackage{qtree}
-\usepackage{tikz}
+
 
 \graphicspath{{../figures/}}
 
@@ -23,16 +23,53 @@
 \newcommand{\ie}{\emph{i.e.}}
 \newcommand{\eg}{\emph{e.g.}}
 \newcommand{\etc}{\emph{etc}}
-\newcommand{\now}{\textsc{now}}
 
+% neural network functions
+\newcommand{\ff}{\textsc{Ff}}
+\newcommand{\rnn}{\textsc{Rnn}}
+\newcommand{\lstm}{\textsc{Lstm}}
+\newcommand{\rnng}{\textsc{Rnng}}
+\newcommand{\birnn}{\textsc{BiRnn}}
+\newcommand{\bilstm}{\textsc{BiLstm}}
+
+% blocking gradient in computation graph
+\newcommand{\blockgrad}{\textsc{BlockGrad}}
+
+% probability models
+\newcommand{\ptheta}{p_{\theta}}  % sentence
+\newcommand{\qlambda}{q_{\lambda}}  % sentence
+
+%% math symbols
+\DeclareMathOperator{\reals}{\mathbf{R}}  % real numbers
+
+\DeclareMathOperator{\dataset}{\mathcal{D}}  % dataset
+
+\DeclareMathOperator{\x}{\mathbf{x}}  % sentence
+\DeclareMathOperator{\y}{\mathbf{y}}  % tree
+\DeclareMathOperator{\fw}{\mathbf{f}}  % forward lstm feature
+\DeclareMathOperator{\bw}{\mathbf{b}}  % backward lstm feature
+
+% \DeclareMathOperator{\expect}{E} % expectation
+% \DeclareMathOperator{\expect}{\rm I\kern-.3em E} % expectation (thicker letter)
+\DeclareMathOperator{\expect}{\mathbf{E}} % expectation
+\DeclareMathOperator{\var}{\mathbf{var}} % variance
+\DeclareMathOperator{\cov}{\mathbf{cov}} % covariance
+\DeclareMathOperator{\corr}{\mathbf{corr}} % covariance
+
+\DeclareMathOperator{\objective}{\mathcal{L}}  % objective function
+\DeclareMathOperator{\elbo}{\mathcal{E}}  % elbo objective
+\DeclareMathOperator{\yieldx}{\mathcal{Y}(\x)}  % yield of a sentence x
+
+\DeclareMathOperator{\rev}{\text{reverse}}  % reverse a sequeunce
+\DeclareMathOperator{\concat}{\circ}  % reverse a sequeunce
 
 
 %ARTICLE TITLE
-\title{Neural language models with syntax}
+\title{Latent structure in deep generative models of language}
 
 
 %ARTICLE SUB-TITLE
-% \subtitle{}
+% \subtitle{Language models with latent syntactic structure}
 
 
 %AUTHORS FOR COVER PAGE
@@ -44,15 +81,12 @@
 %if there are many author twocolumn mode can be activated.
 %\booltrue{authortwocolumn} %SEE DOCUMENTATION
 \maintitleauthorlist{
-Daan van Stigt \\
-Institute for Logic, Language and Computation (ILLC) \\
+  Daan van Stigt \\
+  Institute for Logic, Language and Computation \\
 }
 
 %BIBLIOGRAPHY FILE
 \addbibresource{../src/bibliography.bib}
-% \usepackage[authoryear]{natbib}
-% \bibliographystyle{apa}
-% \bibliography{../src/bibliography}
 
 \begin{document}
 
@@ -86,7 +120,7 @@ This is a todo list:
   \item Move gradient blocking and surrogate objective to implementation appendix.
   \item Outline the chapter on RNNGs. Expand on sections on brains and syntax.
   \item Outline the chapter on syntactic evaluation.
-  \item Start writing the multitask section.
+  \item Describe the multitask models.
 \end{itemize}
 
 

@@ -1,22 +1,21 @@
 # Fdb version 3
-["bibtex semisupervised"] 1548939772 "semisupervised.aux" "semisupervised.bbl" "semisupervised" 1548939772
-  "semisupervised.aux" 1548866322 8 a94a2480d3289e625eea47cd1b285758 ""
-  "semisupervised.bcf" 0 -1 0 ""
+["bibtex vi"] 1548955879 "vi.aux" "vi.bbl" "vi" 1548955906
+  "vi.aux" 1548943410 8 a94a2480d3289e625eea47cd1b285758 ""
+  "vi.bcf" 0 -1 0 ""
   (generated)
-  "semisupervised.bbl"
-  "semisupervised.blg"
-["pdflatex"] 1548936343 "semisupervised.tex" "semisupervised.pdf" "semisupervised" 1548936343
+  "vi.bbl"
+  "vi.blg"
+["pdflatex"] 1548955906 "vi.tex" "vi.pdf" "vi" 1548955906
   "/usr/local/texlive/2016/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmcsc10.tfm" 1136768653 1300 63a6111ee6274895728663cf4b4e7e81 ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmti10.tfm" 1136768653 1480 aa8e34af0eb6a2941b776984cf1dfdc4 ""
   "/usr/local/texlive/2016/texmf-dist/web2c/texmf.cnf" 1463093894 31953 b9489e6e586f798610c60aec1f5ec548 ""
-  "/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1485894775 1888048 f2c5faed5981a516f406b2ccc20bff71 ""
   "/usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt" 1485894833 3873397 68ff021935db8719c30e28db2297c232 ""
   "/usr/local/texlive/2016/texmf.cnf" 1463979140 577 2938757e76f31531e65cc647e3507693 ""
-  "semisupervised.aux" 1548866322 8 a94a2480d3289e625eea47cd1b285758 ""
-  "semisupervised.bbl" 0 -1 0 "bibtex semisupervised"
-  "semisupervised.tex" 1548936341 10094 e88490f3f89308f119ff02ec149ad7dd ""
+  "vi.aux" 1548943410 8 a94a2480d3289e625eea47cd1b285758 ""
+  "vi.bbl" 1548955879 0 d41d8cd98f00b204e9800998ecf8427e "bibtex vi"
+  "vi.tex" 1548955905 11669 e1114e9d98fc57a5f4ed8b28756e8381 ""
   (generated)
-  "semisupervised.pdf"
-  "semisupervised.log"
+  "vi.pdf"
+  "vi.log"

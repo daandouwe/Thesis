@@ -20,60 +20,25 @@ In this chapter I give the background.
   \item Modelling types: generative, discriminative, log-linear, count-based, feature-based, neural network features.
 \end{itemize}
 
-\begin{figure}
-	\centering
-  \begin{subfigure}{0.72\textwidth}
-		\includegraphics[width=\textwidth]{trees/original.pdf}
-    \caption{Original Penn Treebank tree.}
-		\label{fig:tree-original}
-	\end{subfigure}
-	\begin{subfigure}{0.62\textwidth}
-		\includegraphics[width=\textwidth]{trees/simplified.pdf}
-    \caption{Function tags and traces removed.}
-		\label{fig:tree-simplified}
-	\end{subfigure}
-	\begin{subfigure}{0.62\textwidth}
-		\includegraphics[width=\textwidth]{trees/binary.pdf}
-    \caption{Converted to normal form.}
-		\label{fig:tree-cnf}
-	\end{subfigure}
-	\begin{subfigure}{0.9\textwidth}
-		\includegraphics[width=\textwidth]{trees/spans.pdf}
-    \caption{In normal form with spans.}
-		\label{fig:tree-cnf-spans}
-	\end{subfigure}
-  \caption{Converting a treebank tree (withouth part-of-speech tags).}
-  \label{fig:trees}
-\end{figure}
-
 % \begin{figure}
 % 	\centering
-%   \small
 %   \begin{subfigure}{0.72\textwidth}
-%     \begin{tikzpicture}
-%       \input{../figures/trees/simplified.tex}
-%     \end{tikzpicture}
+% 		\includegraphics[width=\textwidth]{trees/original.pdf}
 %     \caption{Original Penn Treebank tree.}
 % 		\label{fig:tree-original}
 % 	\end{subfigure}
 % 	\begin{subfigure}{0.62\textwidth}
-%     \begin{tikzpicture}
-% 		  \input{../figures/trees/simplified.tex}
-%     \end{tikzpicture}
+% 		\includegraphics[width=\textwidth]{trees/simplified.pdf}
 %     \caption{Function tags and traces removed.}
 % 		\label{fig:tree-simplified}
 % 	\end{subfigure}
 % 	\begin{subfigure}{0.62\textwidth}
-%     \begin{tikzpicture}
-% 		  \input{../figures/trees/binary.tex}
-%     \end{tikzpicture}
+% 		\includegraphics[width=\textwidth]{trees/binary.pdf}
 %     \caption{Converted to normal form.}
 % 		\label{fig:tree-cnf}
 % 	\end{subfigure}
-% 	\begin{subfigure}{\textwidth}
-%     \begin{tikzpicture}
-% 		  \input{../figures/trees/spans.tex}
-%     \end{tikzpicture}
+% 	\begin{subfigure}{0.9\textwidth}
+% 		\includegraphics[width=\textwidth]{trees/spans.pdf}
 %     \caption{In normal form with spans.}
 % 		\label{fig:tree-cnf-spans}
 % 	\end{subfigure}
@@ -81,18 +46,65 @@ In this chapter I give the background.
 %   \label{fig:trees}
 % \end{figure}
 
+\begin{figure}
+
+  \begin{subfigure}[b]{\textwidth}
+    \center
+    \begin{tikzpicture}[scale=.6]
+      \input{../figures/trees/original.tex}
+    \end{tikzpicture}
+    \subcaption{Original Penn Treebank tree.}
+		\label{fig:tree-original}
+  \end{subfigure}
+
+  \begin{subfigure}[b]{\textwidth}
+    \center
+    \begin{tikzpicture}[scale=.6]
+		  \input{../figures/trees/simplified.tex}
+    \end{tikzpicture}
+    \tiny
+    \subcaption{Function tags and traces removed.}
+		\label{fig:tree-simplified}
+  \end{subfigure}
+
+  \begin{subfigure}[b]{\textwidth}
+    \center
+    \begin{tikzpicture}[scale=.6]
+		  \input{../figures/trees/binary.tex}
+    \end{tikzpicture}
+    \tiny
+    \subcaption{Converted to normal form.}
+		\label{fig:tree-cnf}
+  \end{subfigure}
+
+  \begin{subfigure}[b]{\textwidth}
+    \center
+    \begin{tikzpicture}[scale=.6]
+		  \input{../figures/trees/spans.tex}
+    \end{tikzpicture}
+    \tiny
+    \subcaption{In normal form with spans.}
+		\label{fig:tree-cnf-spans}
+  \end{subfigure}
+
+\caption{Converting a treebank tree (withouth part-of-speech tags).}
+\label{fig:trees}
+\end{figure}
+
+
 \begin{table}[]
+  \center
   \small
   \bgroup  % increase vertical space
   \def\arraystretch{1.5}  % increase vertical space
   \begin{tabular}{l|l}
     Labeled spans & Anchored rules \\
     \hline
-    (S, 0, 10)     & (S $\to$ SBAR @, 0, 3, 10)  \\
+    (S, 0, 10)     & (S $\to$ SBAR $\varnothing$, 0, 3, 10)  \\
     (SBAR, 0, 3)   & (SBAR $\to$ WHNP S+VP, 0, 1, 3)  \\
-    (VP, 1, 3)     & (S+VP $\to$ @ NP, 1, 2, 3)  \\
+    (VP, 1, 3)     & (S+VP $\to$ $\varnothing$ NP, 1, 2, 3)  \\
     $\qquad\vdots$ & $\qquad\vdots$  \\
-    (NP, 7, 9)     & (NP $\to$ @ @, 7, 8, 9)  \\
+    (NP, 7, 9)     & (NP $\to$ $\varnothing$ $\varnothing$, 7, 8, 9)  \\
   \end{tabular}
   \caption{Two conceptions of the tree in \ref{fig:tree-cnf-spans}.}
   \label{tab:spans-rules}
@@ -111,31 +123,50 @@ In this chapter I give the background.
 
 
 \section{Neural networks}
-Introduce all the neural networks.
+Introduce all the neural networks: \ff, \rnn, \lstm, etc.
 \begin{itemize}
-  \item Feedforward, RNN, LSTM etc.
-  \item We consider these as abstractions denoting certain parametrized functions. A Feedforward network is a function that a vector $\mathbf{x}$ produces an output vector
-  \begin{equation*}
-    \textsc{FeedForward}_{\theta}( \mathbf{x} ) = \mathbf{y}.
-  \end{equation*}
-  An $\textsc{RNN}$ is function parametrized by $\theta$ that takes a sequence of vectors $(\mathbf{x_i})_{i=1}^n = ( \mathbf{x}_1, \dots, \mathbf{x}_n )$  and produces a sequence of output vectors:
-  \begin{equation*}
-    \textsc{rnn}_{\theta}( (\mathbf{x_i})_{i=1}^n ) = ( \mathbf{y}_1, \dots, \mathbf{y}_n ).
-  \end{equation*}
-  We make use of the notion of a \textit{bidirectional} \textsc{rnn}. This involves applying the \textsc{rnn} function also on the reversed input sequence $rev((\mathbf{x}_1, \dots, \mathbf{x}_n)) \triangleq (\mathbf{x}_n, \dots, \mathbf{x}_1)$, \ie in \textit{backward} direction:
+  \item We consider the neural networks as abstractions denoting certain parametrized functions.
+  \item Let $\x$ and $\y$ be vectors in respectively $\reals^{n}$ and $\reals^{m}$.
+
+  A \textit{feedforward neural network} is a parametrized function $\ff: \reals^{n} \to \reals^{m}$.
+
+  A \textit{recurrent neural network} is a parametrized function \rnn that takes a sequence of vectors $(\x_i)_{i=1}^n = ( \x_1, \x_2, \dots, \x_n )$ in $\reals^{n}$ and produces a sequence of output vectors in $(\y_1,\y_2, \dots,\y_n )$ in $\reals^{m}$:
   \begin{align*}
-    \textsc{rnn}_{\theta}^B( (\mathbf{x_i})_{i=1}^n )
-      &= rev(\textsc{rnn}_{\theta}(rev((\mathbf{x_i})_{i=1}^n))) \\
-      &= rev(\textsc{rnn}_{\theta}(\mathbf{x}_n, \dots, \mathbf{x}_1) \\
-      &= rev( \mathbf{y}_n, \dots, \mathbf{y}_1 ) \\
-      &= ( \mathbf{y}_1, \dots, \mathbf{y}_n ) \\
+    \rnn( (\x_i)_{i=1}^n ) &= ( \y_1, \y_2, \dots, \y_n ).
   \end{align*}
-  For convenience we will refer to the regular, \textit{forward}, \textsc{rnn} as $\textsc{rnn}^F$. To stress the difference between the different outputs obtained from the two directions, we will denote the output vectors obtained in the regular, forward, direction with $\mathbf{f}_i$ and the vectors obtained in the backward direction with $\mathbf{b}_i$:
+  Internally, the \rnn recursively applies an internal function $f: \reals^{n} \times \reals^{m} \to \reals^{m}$, also called the recurrent \textit{cell}, to the combined input of the current input and the output ouput of the previous timestep  with the input at that timestep, like
   \begin{align*}
-    \textsc{rnn}_{\theta}^B( (\mathbf{x_i})_{i=1}^n ) &= ( \mathbf{b}_1, \dots, \mathbf{b}_n ) \\
-    \textsc{rnn}_{\theta}^F( (\mathbf{x_i})_{i=1}^n ) &= ( \mathbf{f}_1, \dots, \mathbf{f}_n ).
+    \y_{t} &= f(\x_t, \y_{t-1})  \\
+      &= f(\x_t, f(\x_{t-1}, \y_{t-2}))  \\
+      &\vdots \\
+      &= f(\x_t, f(\x_{t-1}, f(\dots f(\x_{1}, \y_{0})))),
   \end{align*}
-  An \textsc{lstm} is a particular way to construct the \textsc{rnn} function.
-  \item Write down the equations for the Feedforward network, and maybe, maybe, maybe write down the equations for the LSTM.
+  where $\y_{0}$ is an initial vector that is does not depend on input.
+
+  And \rnn can be applied to the inverse input sequence
+  \begin{equation}
+    \rev( (\x_i)_{i=1}^n ) \triangleq ( \x_n, \x_{n-1}, \dots, \x_1 ),
+  \end{equation}
+  that is, in \textit{backward} direction:
+  \begin{align*}
+    \rnn^B( (\x_i)_{i=1}^n )
+      &= \rev( \rnn( \rev( (\x_i)_{i=1}^n ) ) ) \\
+      &= \rev( \rnn( \x_n, \x_{n-1}, \dots, \x_1 ) \\
+      &= \rev( \y_n, \y_{n-1}, \dots, \y_1 ) \\
+      &= (\y_1,\y_2, \dots, \y_n ). \\
+  \end{align*}
+  For consistency we will refer to the \rnn in the regular, \textit{forward}, direction as $\rnn^F$. To stress the difference between the different outputs obtained from the two directions, we will denote the output vectors obtained in the regular, forward, direction with $\fw_i$ and the vectors obtained in the backward direction with $\bw_i$:
+  \begin{align*}
+    \rnn^B( (\x_i)_{i=1}^n ) &= ( \bw_1, \bw_2, \dots, \bw_n ) \\
+    \rnn^F( (\x_i)_{i=1}^n ) &= ( \fw_1, \fw_2, \dots, \fw_n ).
+  \end{align*}
+  We can use the two functions above to construct a \textit{bidirectional} \rnn by combining their output
+  \begin{equation}
+    \birnn( (\x_i)_{i=1}^n ) = ( \fw_1 \concat \bw_1, \fw_2 \concat \bw_2, \dots, \fw_n \concat \bw_n ),
+  \end{equation}
+  where we use $\concat$ to denote vector concatenation, \ie $\x \concat \y$ is a vector in $\reals^{n+m}$.
+  An \lstm is a particular way to construct the \rnn function, and similarly has a bidirectional equivalent \bilstm.
+  \item The function \ff is defined as follows:
+  \item The function \lstm is defined as follows
   \item (Minibatch) SGD optimization.
 \end{itemize}
