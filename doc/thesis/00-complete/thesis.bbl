@@ -19,6 +19,44 @@
 
 \refsection{0}
   \sortlist[entry]{nyt/global/}
+    \entry{Ballesteros+2017:StackLSTM}{article}{}
+      \name{author}{4}{}{%
+        {{hash=ef2e5cd61947a3ce7719b5ce1450d9f0}{%
+           family={Ballesteros},
+           family_i={B\bibinitperiod},
+           given={Miguel},
+           given_i={M\bibinitperiod}}}%
+        {{hash=dc0d6b065a6566cde5d6b93214be1b55}{%
+           family={Dyer},
+           family_i={D\bibinitperiod},
+           given={Chris},
+           given_i={C\bibinitperiod}}}%
+        {{hash=33b00f3e2f4f1bb310f1cf8d4a4c500a}{%
+           family={Goldberg},
+           family_i={G\bibinitperiod},
+           given={Yoav},
+           given_i={Y\bibinitperiod}}}%
+        {{hash=a0c460aba9a2d1a450d5df136652f4db}{%
+           family={Smith},
+           family_i={S\bibinitperiod},
+           given={Noah\bibnamedelima A.},
+           given_i={N\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+      }
+      \strng{namehash}{0f0c3f28ef8f6207770b07ffc4a6cc06}
+      \strng{fullhash}{7bde74694a99f13ef8d16ac22265e152}
+      \field{sortinit}{B}
+      \field{sortinithash}{4ecbea03efd0532989d3836d1a048c32}
+      \field{labelyear}{2017}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Computational Linguistics}
+      \field{title}{Greedy Transition-Based Dependency Parsing with Stack LSTMs}
+      \field{volume}{43}
+      \field{year}{2017}
+      \field{pages}{311\bibrangedash 347}
+      \range{pages}{37}
+    \endentry
     \entry{Ballesteros+2016:exploration}{inproceedings}{}
       \name{author}{4}{}{%
         {{hash=ef2e5cd61947a3ce7719b5ce1450d9f0}{%

@@ -5,7 +5,7 @@ In this section I describe the syntactic evaluation that I perform.
 \section{Syntactic evaluation of language models}
 In this section we evaluate language models on a recently proposed syntactic task: to distinguish a grammatical sentence from a minimally differing ungrammatical couterpart \citep{Linzen+2018:targeted}.
 \begin{itemize}
-  \item The task is as follows. Let $(w, w^*)$ be a minimal pair with a grammatical sentence $w$ and an ungrammatical sentence $w^*$. Then the language model $p$ makes a correct prediction if $p(w) > p(w^*)$.
+  \item The task is as follows. Let $(w, w^*)$ be a minimal pair, with a grammatical sentence $w$ and an ungrammatical sentence $w^*$ that differs from $w$ in just one word. Then the language model $p$ makes a correct prediction if $p(w) > p(w^*)$.
   \item The classification is based on the probability that the model assigns to the entire sentence. This means that the task can be applied to grammatical phenomena that are not local, e.g. that depend on a single word, or that are not sequential, like \textit{negative polarity items}, unlike the word-prediction task in \cite{Linzen+2016:LSTM-syntax}.
   \item This task can be thought of as soliciting grammatical acceptability judgements from the model, a key concept in linguistics.
 \end{itemize}
@@ -14,7 +14,7 @@ In this section we evaluate language models on a recently proposed syntactic tas
 I describe the dataset from \citep{Linzen+2018:targeted}.
 
 \subsection{Related work}
-I review the literature on related syntactic evaluations and show
+I review the literature on related syntactic evaluations. These are the most notable ones:
 \begin{itemize}
   \item Long distance subject-verb agreement with natural sentences \citep{Linzen+2016:LSTM-syntax,Kuncoro+2018:RNNG-deps,} and nonsensical (but grammatical) sentences \citep{Gulordava+2018:colorless-green}. Both datasets extracted automatically from a wikipedia corpus based on their predicted dependency structure. To make them nonsensical, \citet{Gulordava+2018:colorless-green} randomly substitute words from the same grammatical category.
   \item Finetuning neural models to immitate grammatical acceptability judgments gathered from linguistics textbooks \citet{DBLP:journals/corr/abs-1805-12471}.
@@ -28,8 +28,8 @@ One method to improve language models for the task in \citet{Linzen+2016:LSTM-sy
 
 I describe the baselines based on multitask learning: language modelling with a syntactic side objective. We have two different side objectives, which gives two baseline models.
 \begin{itemize}
-  \item From the language model's RNN states predict CCG supertags  \citep{Enguehard+2017:RNN-multitask}
-  \item From the language model's RNN states predict labeled spans. Use features and function identical to what is used in the the scoring function of the CRF parser: `LSTM minus' features followed by a feedforward model. This is (minor) original contribution.
+  \item From the language model's RNN features predict CCG supertags  \citep{Enguehard+2017:RNN-multitask}
+  \item From the language model's RNN features predict labeled spans. Use a function identical to what is used in the the scoring function of the CRF parser: `LSTM minus' features followed by a feedforward model. This is (minor) original contribution.
 \end{itemize}
 
 We discuss these a bit.

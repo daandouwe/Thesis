@@ -3,21 +3,94 @@
 \section{Model}
 I describe the model.
 \begin{itemize}
+  \item A discriminative RNNG is a discriminative transition based parser that uses regular RNNs to summarize the actions in the history and the words on the buffer into vectors, and uses a special RNN with a syntax-dependent recurrence---a StackLSTM \citep{Ballesteros+2017:StackLSTM} outfitted with a custom `composition' function---to obtain a vector representation of items on the the stack.
+  \item Depending on the perspective, the generative RNNG is either a structured model of language that predicts words together with their structure, or a generative version of the discriminative RNNG that jointly models the words in the instead of conditioning on them. From the view of parsing, it simply dispends with the buffer of the discriminative RNNG to instead predict the words that dscorate the tree. As a model of sentences, it can be understood as kind of structured RNN: it predicts words, but also compresses and labels them recursively whenever they form a complete constituents.
   \item Specify the transition-system.
-  \item The probabilistic model is given by
+  \item Fundamentally, the model is a probability distribution over action sequences $\veca = ( a_1, \dots, a_T )$ that generate trees $\y$ conditionally given a sequence of words $\x$ in the discriminative model, and jointly with $\x$ in the the generative model.
+
+  Put simply, the model is defined as
   \begin{equation}
-    p(\x, \y) = \prod_{t=1}^T p(a_t | \mathbf{a}_{<t}) p(w_{\nu(t)} | \mathbf{a}_{<t} )^{ \mathbb{I}[a_t = \textsc{gen}] } p(n_{\eta(t)} | \mathbf{a}_{<t} )^{ \mathbb{I}[a_t = \textsc{open}] },
+    \label{eq:naive-rnng-model}
+    p(\veca) = \prod_{t=1}^T p(a_t \mid \veca_{<t}).
   \end{equation}
-  where $\dots$
+  However, the exact model is slightly more complicated, a consequence of the difference between the discrminative and the generative actions, and a consequence of practical concerns regarding the implementation.
+
+  \item First we define a set of discriminative actions and a set of generative models,
+  \begin{align}
+    \discactions &= \{ \shift, \open, \reduce \},
+  \end{align}
+  and
+  \begin{align}
+    \genactions &= \{ \gen, \open, \reduce \}.
+  \end{align}
+  And we define a finite set of nonterminal symbols
+  \begin{align*}
+    N = \{ \text{S}, \text{NP}, \dots, \text{WHNP}\},
+  \end{align*}
+  and a finite alphabet
+  \begin{align*}
+    \Sigma = \{ \text{all}, \text{Friday}, \dots, \text{worst} \}.
+  \end{align*}
+  For the discriminative model $\veca$ is an element of $\discactions^T$, and for the generative model $\veca$ is an elemtnt of $\genactions^T$, both with the restriction that they form a valid tree $\y$. A sequence of nonterminals $\mathbf{n}$ in $N^K$ is the sequence of nonterminal nodes in $\y$ in pre-order. A sentence $\x$, finally, is an element of $\Sigma^N$.
+
+  \item Then let $\indicator_{ \{ a_t \, = \, \open \} }$ be the indicator function for the event that the action $a_t$ is to open a new nonterminal, and similarly let $\indicator_{ \{ a_t \, = \, \gen \} }$ be the indicator function for the event that the action $a_t$ is to generate a word. Furthermore we introduce two functions that translate between sets of indices:
+  \begin{align*}
+    \mu &: \{ 1, \dots, T \} \to \{ 1, \dots, M \}: \mu(t) = \sum_{i < t} \indicator_{ \{ a_i \, = \, \open \} }, \text{ and}  \\
+    \nu &: \{ 1, \dots, T \} \to \{ 1, \dots, N \}: \nu(t) = \sum_{i < t} \indicator_{ \{ a_i \, = \, \gen \} }.
+  \end{align*}
+
+  \item Let $\veca$ be a sequeunce from $\discactions^T$. Then the model for the discrminative RNNG is
+  \begin{align}
+    \label{eq:disc-model}
+    p(\veca \mid \x) = \prod_{t=1}^T p(a_t \mid \x, \veca_{<t}) p(n_{\mu(t)} \mid \x, \veca_{<t} )^{ \indicator_{ \{ a_t \, = \, \open \} } }.
+  \end{align}
+  \item Let $\veca$ be a sequeunce from $\genactions^T$, which include the actions that generate words\footnote{Note that under this action set $p(a_t \mid \veca_{<t}, \x_{<t}) = p(a_t \mid \veca_{<t})$, given the fact that the words in $\x_{<t}$ are contained in $\veca_{<t}$.}, then the model for the generative RNNG is
+  \begin{align}
+    \label{eq:gen-model}
+    p(\veca) = \prod_{t=1}^T p(a_t \mid \veca_{<t}) p(n_{\mu(t)} \mid   \veca_{<t})^{ \indicator_{ \{ a_t \, = \, \open \} } } p(x_{\nu(t)} \mid \veca_{<t})^{ \indicator_{ \{ a_t \, = \, \gen \} } }.
+  \end{align}
+
+  \item The probabilities are given by linear regression classifiers on a feature vector $\vecu_t$\footnote{For brevity we omit the conditioning on $\x$, which was redundant already in the case of the generative model.},
+  \begin{align}
+    \label{eq:action-regression}
+    p(a_t \mid \veca_{<t})
+      &= \frac{ \exp \vecw_{a_t}^{\top} \vecu_t + b_{a_t} }{ \sum_{a \in A} \exp \vecw_{a}^{\top} \vecu_t + b_{a} },  \\
+    p(n_{\mu(t)} \mid \veca_{<t})
+      &= \frac{ \exp \vecv_{n_{\mu(t)}}^{\top} \vecu_t + b_{n_{\mu(t)}} }{ \sum_{n \in N} \exp \vecv {n}^{\top} \vecu_t + b_{n} }, \\
+    p(x_{\nu(t)} \mid \veca_{<t})
+      &= \frac{ \exp \vecr_{x_{\nu(t)}}^{\top} \vecu_t + b_{x_{\nu(t)}} }{ \sum_{x \in \Sigma} \exp \vecr_{x}^{\top} \vecu_t + b_{x} },  \\
+  \end{align}
+  where $A$ can denote either $\discactions$ or $\genactions$, and $\vecw_i$, $\vecv_i$, $\vecr_i$, and $b_i$ are parameters.
+
+  % \begin{align*}
+  %   \vecW &= [ \vecw_1, \dots, \vecw_{|A|} ] \in \reals^{ D \times |A| } \\
+  %   \vecV &= [ \vecv_1, \dots, \vecv_{|N|} ] \in \reals^{ D \times |N| } \\
+  %   \vecR &= [ \vecr_1, \dots, \vecr_{|\Sigma|} ] \in \reals^{ D \times |\Sigma| }\}
+  % \end{align*}
+
+  are real valued parameters of appropriate dimension.
+
+  \item How the feature vector $\vecu_t$ is constructed is outlined in the next section.
+
+  \item Note that could have defined
+  \begin{align*}
+    \discactions &= \{ \reduce, \shift \} \cup \{ \open(n) \mid n \in N \},  \\
+  \end{align*}
+  and
+  \begin{align*}
+    \genactions &= \{ \reduce \} \cup \{ \open(n) \mid n \in N \} \cup \{ \gen(x) \mid x \in \Sigma \},
+  \end{align*}
+  and defined $p(\veca)$ as in \ref{eq:naive-rnng-model}. However, in the case of the generative model this is particularly inefficient from a computational perspective. Note that the set $\Sigma$ is generally very very large\footnote{On the order of tens of thousands.}, and observe that the normalization in \ref{eq:action-regression} requires a sum over all actions, while a large number of the actions do not generate words. For consistency we extend this modelling choice to the discriminative RNNG. Besides, the presentation in \ref{eq:disc-model} and \ref{eq:gen-model} is conceptually cleaner: first choose an action, then, if required, choose the details of that action. For these reasons combined we opt for the two-step prediction. And although it appears that \citet{Dyer+2016:RNNG} model the sequences according to \ref{eq:naive-rnng-model}, followup work takes our approach and models the actions of the generative RNNG as in \ref{eq:gen-model} \citep{Hale+2018:beam}.
+
 \end{itemize}
 
 \subsection{Features}
-The features from which the transition probabilities are predicted are computed from the entire transition history (no markov assumption) and in a syntax dependent way.
+The feature vector $\vecu_t$ from which the transition probabilities are computed are computed from the stack configuration's entire history, and in a syntax-dependent way.
 \begin{itemize}
   \item The StackLSTM computes incremental features for the sequences on the three datastructures of the transition-system, with unbounded history.
   \item A composition function computes representations of closed constituents.
-  \item There are two options for the composition function: simple BiRNN and attention-based. The attention-based composition performed best in earlier research, so we focus on this composition.
-  \item There is evidence that the stack- is all that is needed. We focus on the models that compute representations of all the datastructures.
+  \item There are two options for the composition function: simple BiRNN and attention-based. The attention-based composition performed best in earlier research, so we focus on this function.
+  \item There is evidence that the stack-datastructure is all that is needed. However, we focus on the models that compute representations of all the datastructures.
 \end{itemize}
 
 \section{Syntax and cognition}
@@ -32,7 +105,7 @@ Here I describe the research into syntax and cognition using the RNNG.
 \paragraph{Syntax} What do RNNGs learn about syntax?
 \begin{itemize}
   \item RNNGs learn a number of syntactic phenomena as a side product of the main objective. The attention mechanism in the composition function learns a type of `soft' head-rules, and when trained on trees without syntactic labels the RNNG still learns representations for constituents that cluster according to their withheld gold label \citep{Kuncoro+2017:RNNG-syntax}.
-  \item RNNGs are better at a long-distance verb-argument agreement task than LSTMS \cite{Linzen+2016:LSTM-syntax,Kuncoro+2018:RNNG-deps}.
+  \item RNNGs are better at a long-distance verb-argument agreement task than LSTMS \citep{Linzen+2016:LSTM-syntax,Kuncoro+2018:RNNG-deps}.
 \end{itemize}
 
 \section{Experiments}
@@ -53,13 +126,13 @@ We perform three types of experiments with the RNNG:
 \begin{itemize}
   \item We asses the conditional entropy of the model. This is most quantitative. Recall that conditional entropy is defined as
   \begin{equation}
-    \text{H}(Y|X) = \sum_{x \in \mathcal{X}} p_X(x)\text{H}(Y|X = x),
+    \text{H}(Y \mid X) = \sum_{x \in \mathcal{X}} p_X(x)\text{H}(Y \mid X = x),
   \end{equation}
   where
   \begin{equation}
-    \text{H}(Y|X = x) = - \sum_{y \in \mathcal{Y}} p_{Y|X}(y|x) \log p_{Y|X}(y|x).
+    \text{H}(Y \mid X = x) = - \sum_{y \in \mathcal{Y}} p_{Y \mid X}(y \mid x) \log p_{Y \mid X}(y \mid x).
   \end{equation}
-  We estimate the quantity $\text{H}(Y|X = x)$ with the model samples. We estimate the quantity $\text{H}(Y|X)$ by a sum over the development dataset. For the probabilities $p_X(x)$ we use the marginalized probabilities of the joint RNNG (with samples from the discrminative parser $p_{Y|X}$).
+  We estimate the quantity $\text{H}(Y \mid X = x)$ with the model samples. We estimate the quantity $\text{H}(Y \mid X)$ by a sum over the development dataset. For the probabilities $p_X(x)$ we use the marginalized probabilities of the joint RNNG (with samples from the discrminative parser $p_{Y \mid X}$).
   \item We asses for some cherry picked sentences. This is more qualitative. These sentences should be difficult or ambiguous. Or they can be ungramatical when taken from the syneval dataset. We can evaluate their entropy, and the diversity of samples, for example to see if there are clear modes. We can make violinplots of the probabilities of the samples. We can compute the f-scores of the samples compared with the argmax tree.
 \end{itemize}
 

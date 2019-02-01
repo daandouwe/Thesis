@@ -4,7 +4,7 @@ In this chapter I give the background.
 
 \section{Syntax}
 \begin{itemize}
-  \item Some generic stuff on syntax, hierarchical structure in language, and constituency in natural language referencing \citet{Carnie2010:constituent,Everaert+2015:structures}.
+  \item Some generic stuff on syntax: constituents and hierarchical structure in language \citet{Carnie2010:constituent,Everaert+2015:structures}.
   \item Introduce the concept of \textit{acceptability judgements}, with the final chapter on syntactic evaluation in mind.
 \end{itemize}
 
@@ -20,6 +20,7 @@ In this chapter I give the background.
   \item Modelling types: generative, discriminative, log-linear, count-based, feature-based, neural network features.
 \end{itemize}
 
+% As images.
 % \begin{figure}
 % 	\centering
 %   \begin{subfigure}{0.72\textwidth}
@@ -123,49 +124,54 @@ In this chapter I give the background.
 
 
 \section{Neural networks}
-Introduce all the neural networks: \ff, \rnn, \lstm, etc.
+Introduce all the neural networks.
 \begin{itemize}
-  \item We consider the neural networks as abstractions denoting certain parametrized functions.
+  \item We consider the neural networks as abstractions denoting certain parametrized functions \ff, \rnn, \lstm, etc.
   \item Let $\x$ and $\y$ be vectors in respectively $\reals^{n}$ and $\reals^{m}$.
 
-  A \textit{feedforward neural network} is a parametrized function $\ff: \reals^{n} \to \reals^{m}$.
+  A \textit{feedforward neural network} is a parametrized function $\ff$ from $\reals^{n}$ to $\reals^{m}$ such that
+  \begin{align*}
+    \ff( \x ) &= \y.
+  \end{align*}
 
-  A \textit{recurrent neural network} is a parametrized function \rnn that takes a sequence of vectors $(\x_i)_{i=1}^n = ( \x_1, \x_2, \dots, \x_n )$ in $\reals^{n}$ and produces a sequence of output vectors in $(\y_1,\y_2, \dots,\y_n )$ in $\reals^{m}$:
+  A \textit{recurrent neural network} is a parametrized function \rnn that takes a sequence of vectors $(\x_i)_{i=1}^n = ( \x_1, \x_2, \dots, \x_n )$ in $\reals^{n}$ and produces a sequence of output vectors in $( \y_1, \y_2, \dots,\y_n )$ in $\reals^{m}$:
   \begin{align*}
     \rnn( (\x_i)_{i=1}^n ) &= ( \y_1, \y_2, \dots, \y_n ).
   \end{align*}
-  Internally, the \rnn recursively applies an internal function $f: \reals^{n} \times \reals^{m} \to \reals^{m}$, also called the recurrent \textit{cell}, to the combined input of the current input and the output ouput of the previous timestep  with the input at that timestep, like
+  Internally, the \rnn recursively applies a function $f: \reals^{n} \times \reals^{m} \to \reals^{m}$ that is defined by the recursion
   \begin{align*}
     \y_{t} &= f(\x_t, \y_{t-1})  \\
       &= f(\x_t, f(\x_{t-1}, \y_{t-2}))  \\
-      &\vdots \\
+      &\;\vdots \\
       &= f(\x_t, f(\x_{t-1}, f(\dots f(\x_{1}, \y_{0})))),
   \end{align*}
-  where $\y_{0}$ is an initial vector that is does not depend on input.
+  which is how the vectors $\y_i$ are computed. That is, $f$ takes the input $\x$ of the current timestep $t$ and the output $\y$ of the previous timestep $t-1$ and returns a new ouput for timestep $t$. The initial vector $\y_{0}$ does not depend on the input, and can be fixed or part of the function's set of parameters.
 
-  And \rnn can be applied to the inverse input sequence
-  \begin{equation}
-    \rev( (\x_i)_{i=1}^n ) \triangleq ( \x_n, \x_{n-1}, \dots, \x_1 ),
-  \end{equation}
-  that is, in \textit{backward} direction:
+  An \rnn can be applied to the input sequence in reverse, that is, in the \textit{backward} direction:
   \begin{align*}
-    \rnn^B( (\x_i)_{i=1}^n )
+    \rnn_B( (\x_i)_{i=1}^n )
       &= \rev( \rnn( \rev( (\x_i)_{i=1}^n ) ) ) \\
       &= \rev( \rnn( \x_n, \x_{n-1}, \dots, \x_1 ) \\
       &= \rev( \y_n, \y_{n-1}, \dots, \y_1 ) \\
-      &= (\y_1,\y_2, \dots, \y_n ). \\
+      &= (\y_1,\y_2, \dots, \y_n ), \\
   \end{align*}
-  For consistency we will refer to the \rnn in the regular, \textit{forward}, direction as $\rnn^F$. To stress the difference between the different outputs obtained from the two directions, we will denote the output vectors obtained in the regular, forward, direction with $\fw_i$ and the vectors obtained in the backward direction with $\bw_i$:
+  where we defined a
+  \begin{equation}
+    \rev( (\x_i)_{i=1}^n ) \defeq ( \x_n, \x_{n-1}, \dots, \x_1 ),
+  \end{equation}
+
+  For consistency we will refer to the \rnn in the regular, \textit{forward}, direction as $\rnn_F$. To stress the difference between the different outputs obtained from the two directions, we will denote the output vectors obtained in the regular, forward, direction with $\fw_i$ and the vectors obtained in the backward direction with $\bw_i$:
   \begin{align*}
-    \rnn^B( (\x_i)_{i=1}^n ) &= ( \bw_1, \bw_2, \dots, \bw_n ) \\
-    \rnn^F( (\x_i)_{i=1}^n ) &= ( \fw_1, \fw_2, \dots, \fw_n ).
+    \rnn_F( (\x_i)_{i=1}^n ) &= ( \fw_1, \fw_2, \dots, \fw_n ) \\
+    \rnn_B( (\x_i)_{i=1}^n ) &= ( \bw_1, \bw_2, \dots, \bw_n )
   \end{align*}
-  We can use the two functions above to construct a \textit{bidirectional} \rnn by combining their output
+  The two functions above can used to construct a \textit{bidirectional} \rnn by combining the output of each as
   \begin{equation}
     \birnn( (\x_i)_{i=1}^n ) = ( \fw_1 \concat \bw_1, \fw_2 \concat \bw_2, \dots, \fw_n \concat \bw_n ),
   \end{equation}
   where we use $\concat$ to denote vector concatenation, \ie $\x \concat \y$ is a vector in $\reals^{n+m}$.
-  An \lstm is a particular way to construct the \rnn function, and similarly has a bidirectional equivalent \bilstm.
+
+  An \lstm is a particular way to construct the \rnn internal function $f$, and similarly has a bidirectional equivalent denoted \bilstm.
   \item The function \ff is defined as follows:
   \item The function \lstm is defined as follows
   \item (Minibatch) SGD optimization.

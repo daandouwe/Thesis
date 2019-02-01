@@ -9,6 +9,12 @@ In this chapter I introduce an alternative parser to act as proposal model in th
   \item The parser is an adaptation of the chart-based parser introduced in \citet{stern2017minimal}, where it is trained with a margin-based objective.
 \end{itemize}
 
+\paragraph{Notation}
+Let a sentence be $x_1,\dots,x_n$, where each $x_i$
+is a word. We are given a CFG $(N, \Sigma, R, S)$ in Chomsky normal
+form. Let $\psi$ be a function that maps any rule production $r \in R$ of the form $\langle A \to B \;C, i, k, j \rangle$ or $\langle A, i, i+1 \rangle$ to a value $\psi(r) \geq 0$. Let a tree $T$ be a set of such rules $r$ with the only constraint that these rules make up a tree.
+
+
 \section{Model}
 I describe the probabilistic model of the parser.
 \begin{enumerate}
@@ -16,28 +22,26 @@ I describe the probabilistic model of the parser.
   \item Desribe how this is an adaptation from \citet{stern2017minimal} to probabilistic training.
 \end{enumerate}
 
-Let a sentence be $x_1,\dots,x_n$, where each $x_i$
-is a word. We are given a CFG $(N, \Sigma, R, S)$ in Chomsky normal
-form. Let $\psi$ be a function that maps any rule production $r \in R$ of the form $\langle A \to B \;C, i, k, j \rangle$ or $\langle A, i, i+1 \rangle$ to a value $\psi(r) \geq 0$. Let a tree $T$ be a set of such rules $r$ with the only constraint that these rules make up a tree.
-
-Following the minimal span parser we define $\psi$ as
+Following the minimal span parser we a scoring function $\psi$ as defined on spans
 \begin{align}
-\label{eq:rule-score}
-    \log\psi(A \to B \;C, i, k, j) &\triangleq s_{label}(i, j, A)\\
-    &\text{and} \\
-    \log\psi(A, i, i+1) &\triangleq s_{label}(i, i+1, A),
+  \log\psi(A \to B \;C, i, k, j) = \log\psi(A, i, j)\\
+\end{align}
+discarding the rest of the span information. The function is then defined as
+\begin{align}
+  \label{eq:span-score}
+  \log\psi(A, i, j) &\defeq s(i, j, A),
 \end{align}
 and thus the potential of a tree as
 \begin{align}
 \label{eq:tree-score}
     \log\Psi(T) &= \sum_{r \in T} \log\psi(r) \\
-      &= \sum_{\langle A, i, j \rangle \in T} s_{label}(i, j, A), \\
+      &= \sum_{\langle A, i, j \rangle \in T} s(i, j, A), \\
 \end{align}
 Note that the potential function as defined in \ref{eq:rule-score} disregards most of the information in a binary rule. In particular we see that $B$, $C$ and $k$, the labels and split-point of the children, are discarded.
 
 Now note that equation \ref{eq:tree-score} corresponds exactly to the second formula in section 3 of the minimal span-based parser paper
 \begin{align}
-s_{tree}(T) = \sum_{(\ell(i,j))\in T}[s_{label}(i, j, \ell)] .
+s_{tree}(T) = \sum_{(\ell(i,j))\in T}[s(i, j, \ell)] .
 \end{align}
 which is how I derived that \ref{eq:rule-score} is the correct formula for the rule score.
 
@@ -91,24 +95,24 @@ and for all $(i, j)$ such that $1 \leq i < j \leq n$:
 \end{align}
 % \begin{align}
 % \label{eq:rule-score}
-%     \log\psi(A \to B \;C, i, k, j) \triangleq s_{label}(i, j, A) + s_{span}(i, k) + s_{span}(k, j),
+%     \log\psi(A \to B \;C, i, k, j) \defeq s(i, j, A) + s_{span}(i, k) + s_{span}(k, j),
 % \end{align}
 Note that we are considering a CFG in which the rule set is complete, i.e.
 \begin{align}
-    \langle A \to B \;C \rangle \in R \text{ for each } (A, B, C) \in N^3,
+  \langle A \to B \;C \rangle \in R \text{ for each } (A, B, C) \in N^3,
 \end{align}
 and recall that the labels $B$ and $C$ do not appear in the scoring functions in \ref{eq:rule-score}. These facts will allow us to simplify the expression in formula \ref{eq:collins-inside-general} as
 \begin{subequations}
 \begin{align*}
-    \alpha(A,i,j) &= \sum_{B \in N} \sum_{C \in N} \sum_{k=i+1}^{j-1} \tilde{s}_{label}(i, j, A) \cdot \tilde{s}_{span}(i, j) \alpha(B,i,k) \cdot \alpha(C,k,j) \\
-        &= \tilde{s}_{label}(i, j, A) \cdot \tilde{s}_{span}(i, j) \sum_{k=i+1}^{j-1} \sum_{B \in N} \alpha(B,i,k) \cdot \sum_{C \in N} \alpha(C,k,j) \\
-        &= \tilde{s}_{label}(i, j, A) \cdot \tilde{s}_{span}(i, j) \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \label{eq:final-inside}
+    \alpha(A,i,j) &= \sum_{B \in N} \sum_{C \in N} \sum_{k=i+1}^{j-1} \tilde{s}(i, j, A) \cdot \alpha(B,i,k) \cdot \alpha(C,k,j) \\
+        &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} \sum_{B \in N} \alpha(B,i,k) \cdot \sum_{C \in N} \alpha(C,k,j) \\
+        &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \label{eq:final-inside}
 \end{align*}
 \end{subequations}
 where we've introduced a number of notational abbreviations
 \begin{align*}
-    \tilde{s}_{label}(i, j, A) &= \exp( s_{label}(i, j, A) ) \\
-    \tilde{s}_{span}(i, j) &= \exp( s_{span}(i, j) ) \\
+  \tilde{s}(i, j, A)
+    &= \exp( s(i, j, A) ) \\
     S(i,j) &= \sum_{A \in N} \alpha(A,i,j)
 \end{align*}
 Note that this is the exact same formula as \ref{eq:inside-semiring}.
@@ -117,13 +121,13 @@ From equation \ref{eq:final-inside} we can deduce that we in fact do even need t
 \begin{subequations}
 \begin{align*}
     S(i, j) &= \sum_{A \in N} \alpha(A,i,j) \\
-        &=  \sum_{A \in N} \tilde{s}_{label}(i, j, A) \cdot \tilde{s}_{span}(i, j) \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \\
-        &= \Bigg[ \sum_{A \in N} \tilde{s}_{label}(i, j, A) \cdot \tilde{s}_{span}(i, j) \Bigg] \Bigg[\sum_{k=i+1}^{j-1} S(i,k) \cdot  S(k,j) \Bigg]
+        &=  \sum_{A \in N} \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \\
+        &= \Bigg[ \sum_{A \in N} \tilde{s}(i, j, A) \cdot \Bigg] \Bigg[\sum_{k=i+1}^{j-1} S(i,k) \cdot  S(k,j) \Bigg]
 \end{align*}
 \end{subequations}
-where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting. We can now recognize this as the `inside' equivalent of the expression from the paper\footnote{I believe there is actually an error in this equation: it should read  $s_{label}(i, j, \ell) + s_{span}(i, j)$ instead of just $s_{label}(i, j, \ell)$. This is implied by the score for a single node, which is given by equation \ref{eq:rule-score}, taken directly from the paper.}
+where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting. We can now recognize this as the `inside' equivalent of the expression from the paper\footnote{I believe there is actually an error in this equation: it should read  $s(i, j, \ell) + s_{span}(i, j)$ instead of just $s(i, j, \ell)$. This is implied by the score for a single node, which is given by equation \ref{eq:rule-score}, taken directly from the paper.}
 \begin{align}
-    s_{best}(i, j) = \max_{\ell} [s_{label}(i, j, \ell)] + \max_{k}[ s_{split}(i, k, j)].
+    s_{best}(i, j) = \max_{\ell} [s(i, j, \ell)] + \max_{k}[ s_{split}(i, k, j)].
 \end{align}
 The recursions are the same; the semirings are different. The viterbi recursion given above is in the \textsc{ViterbiSemiring}, which uses the $\max$ operator as $\oplus$; the inside recursion given in \ref{eq:final-inside} has standard addition (+) instead.
 
@@ -187,7 +191,7 @@ Here I describe related work, and in particular earlier approaches to (neural) C
   \item CRFs \citep{Sutton+2012:CRF}
   \item CRF parsing with linear and nonlinear features \citep{Finkel+2008,Klein+2015:neural-crf}
   \item Attempts to simplify the grammar and thus the state-space of the dynamic program \citep{hall2014less}.
-  \item Recent extension of \citet{stern2017minimal}, with same model but different encoder \citep{kitaev2018attentive}.
+  \item Recent extension of \citet{stern2017minimal}, with same model but different features \citep{kitaev2018attentive}.
 \end{enumerate}
 
 

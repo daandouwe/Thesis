@@ -16,7 +16,6 @@
 \usepackage{tikz-qtree}
 
 
-
 \graphicspath{{../figures/}}
 
 % a few definitions that are *not* needed in general:
@@ -25,12 +24,21 @@
 \newcommand{\etc}{\emph{etc}}
 
 % neural network functions
-\newcommand{\ff}{\textsc{Ff}}
+\newcommand{\ff}{\textsc{FeedForward}}
 \newcommand{\rnn}{\textsc{Rnn}}
 \newcommand{\lstm}{\textsc{Lstm}}
 \newcommand{\rnng}{\textsc{Rnng}}
 \newcommand{\birnn}{\textsc{BiRnn}}
 \newcommand{\bilstm}{\textsc{BiLstm}}
+
+% RNNG actions
+\newcommand{\reduce}{\textsc{reduce}}
+\newcommand{\open}{\textsc{open}}
+\newcommand{\shift}{\textsc{shift}}
+\newcommand{\gen}{\textsc{gen}}
+\newcommand{\discactions}{A_{\mathcal{D}}}
+\newcommand{\genactions}{A_{\mathcal{G}}}
+
 
 % blocking gradient in computation graph
 \newcommand{\blockgrad}{\textsc{BlockGrad}}
@@ -40,14 +48,32 @@
 \newcommand{\qlambda}{q_{\lambda}}  % sentence
 
 %% math symbols
-\DeclareMathOperator{\reals}{\mathbf{R}}  % real numbers
+\newcommand{\reals}{\ensuremath{\mathbf{R}}}  % real numbers
+\newcommand{\dataset}{\ensuremath{\mathcal{D}}}  % dataset
 
-\DeclareMathOperator{\dataset}{\mathcal{D}}  % dataset
+\newcommand{\defeq}{\ensuremath{\triangleq}}  % define something with an equation
 
-\DeclareMathOperator{\x}{\mathbf{x}}  % sentence
-\DeclareMathOperator{\y}{\mathbf{y}}  % tree
-\DeclareMathOperator{\fw}{\mathbf{f}}  % forward lstm feature
-\DeclareMathOperator{\bw}{\mathbf{b}}  % backward lstm feature
+\newcommand{\x}{\ensuremath{\mathbf{x}}}  % sentence
+\newcommand{\y}{\ensuremath{\mathbf{y}}}  % tree
+\newcommand{\h}{\ensuremath{\mathbf{h}}}  % hidden vector
+\newcommand{\fw}{\ensuremath{\mathbf{f}}}  % forward lstm feature
+\newcommand{\bw}{\ensuremath{\mathbf{b}}}  % backward lstm feature
+
+\newcommand{\veca}{\ensuremath{\mathbf{a}}}
+\newcommand{\vecb}{\ensuremath{\mathbf{b}}}
+\newcommand{\vecr}{\ensuremath{\mathbf{r}}}
+\newcommand{\vecs}{\ensuremath{\mathbf{s}}}
+\newcommand{\vecu}{\ensuremath{\mathbf{u}}}
+\newcommand{\vecv}{\ensuremath{\mathbf{v}}}
+\newcommand{\vecw}{\ensuremath{\mathbf{w}}}
+
+\newcommand{\vecR}{\ensuremath{\mathbf{R}}}
+\newcommand{\vecS}{\ensuremath{\mathbf{S}}}
+\newcommand{\vecV}{\ensuremath{\mathbf{V}}}
+\newcommand{\vecW}{\ensuremath{\mathbf{W}}}
+
+
+\DeclareMathOperator{\indicator}{\mathbf{1}}  % indicator function
 
 % \DeclareMathOperator{\expect}{E} % expectation
 % \DeclareMathOperator{\expect}{\rm I\kern-.3em E} % expectation (thicker letter)
@@ -61,11 +87,11 @@
 \DeclareMathOperator{\yieldx}{\mathcal{Y}(\x)}  % yield of a sentence x
 
 \DeclareMathOperator{\rev}{\text{reverse}}  % reverse a sequeunce
-\DeclareMathOperator{\concat}{\circ}  % reverse a sequeunce
+\DeclareMathOperator{\concat}{\circ}  % concatenate vectors
 
 
 %ARTICLE TITLE
-\title{Latent structure in deep generative models of language}
+\title{Latent syntax in a deep generative model of language}
 
 
 %ARTICLE SUB-TITLE
@@ -108,20 +134,6 @@ I find that:
   \item ...
 \end{itemize}
 \end{abstract}
-
-\chapter{Notes}
-The plan for next week: \textbf{hand in a fully outlines and bullet-pointed thesis}
-
-This is a todo list:
-\begin{itemize}
-  \item Do not describe the CRF parser or inside-outside algorithm (`value recursion`) in the exact framework of graphical models! These are hard to reconcile!
-  \item Use the general value recursion formulation and derive from there.
-  \item Move formula derivations for the VI gradient and variance reduction to VI appendix.
-  \item Move gradient blocking and surrogate objective to implementation appendix.
-  \item Outline the chapter on RNNGs. Expand on sections on brains and syntax.
-  \item Outline the chapter on syntactic evaluation.
-  \item Describe the multitask models.
-\end{itemize}
 
 
 \chapter{Introduction}
