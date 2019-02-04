@@ -4,7 +4,7 @@ Evaluate tagging accuracy on the stanford sentiment treebank.
 
 import sys
 
-from tree import fromstring
+from utils.trees import fromstring
 
 
 def main(gold, pred):

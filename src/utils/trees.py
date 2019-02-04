@@ -355,29 +355,3 @@ def add_dummy_tags(tree, tag='*'):
             i += 1
     assert i == max_idx, i
     return new_tree
-
-
-if __name__ == '__main__':
-
-    from nltk import Tree
-    from nltk.draw.tree import TreeView
-
-    with open('/Users/daan/data/ptb-benepar/22.auto.clean') as f:
-        lines = [line.strip() for line in f.readlines()]
-
-    tree = fromstring(lines[10], strip_top=True)
-    convert = tree.convert()
-    binary = convert.binarize()
-    unbinary = convert.binarize().unbinarize()
-
-    assert tree.cnf().un_cnf().linearize() == tree.linearize()
-
-    tree = Tree.fromstring(tree.linearize())
-    convert = Tree.fromstring(convert.linearize())
-    binary = Tree.fromstring(binary.linearize())
-    unbinary = Tree.fromstring(unbinary.linearize())
-
-    TreeView(tree)._cframe.print_to_file('images/tree.ps')
-    TreeView(convert)._cframe.print_to_file('images/convert.ps')
-    TreeView(binary)._cframe.print_to_file('images/binary.ps')
-    TreeView(unbinary)._cframe.print_to_file('images/unbinary.ps')
