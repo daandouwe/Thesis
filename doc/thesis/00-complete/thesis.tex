@@ -10,11 +10,14 @@
 
 \usepackage{amsmath,amssymb,amsfonts,latexsym,dsfont,xspace}
 
+\usepackage{dirtytalk}
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{tikz-qtree}
-
+% \usepackage{qtree}
+% \usepackage{linguex}
+% \newsavebox{\partbox}
 
 \graphicspath{{../figures/}}
 
@@ -135,6 +138,11 @@ I find that:
 \end{itemize}
 \end{abstract}
 
+% end of main matter
+\begin{acknowledgements}
+First and foremost I want to thank my mother, who paid for my studies and washed my black hoodie every once in a while. Next want to thank Adventure Time for fending off depression during the writing of this work. And thank you Wilker for keeping it real. Thank you, next.
+\end{acknowledgements}
+
 
 \chapter{Introduction}
 \label{01-introduction}
@@ -171,10 +179,8 @@ I find that:
 \input{../07-conclusion/conclusion}
 
 
-% end of main matter
-\begin{acknowledgements}
+\printbibliography
 
-\end{acknowledgements}
 
 \appendix
 \chapter{Figures}
@@ -197,6 +203,5 @@ I find that:
 %BACKMATTER SEE DOCUMENTATION
 \backmatter  % references, restarts sample
 
-\printbibliography
 
 \end{document}

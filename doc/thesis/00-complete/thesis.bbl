@@ -226,36 +226,39 @@
       \field{title}{Variational Inference: A Review for Statisticians}
       \field{year}{2016}
     \endentry
-    \entry{Brennan+2016}{article}{}
+    \entry{brennan2016abstract}{article}{}
       \name{author}{5}{}{%
-        {{hash=90da6dbe9ff5f8695da372205ec5e525}{%
+        {{hash=e05f173d0d44b492450d2e4bc046d9e3}{%
            family={Brennan},
            family_i={B\bibinitperiod},
-           given={Jonathan\bibnamedelima R.},
+           given={Jonathan\bibnamedelima R},
            given_i={J\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
-        {{hash=5ea39ef259f47f3d555a3b2fd8ba6e28}{%
+        {{hash=c69c44f05782d9e43740492181917a7d}{%
            family={Stabler},
            family_i={S\bibinitperiod},
-           given={Edward\bibnamedelima P.},
+           given={Edward\bibnamedelima P},
            given_i={E\bibinitperiod\bibinitdelim P\bibinitperiod}}}%
-        {{hash=f52adc050868f92e8ae64d4fd0dad176}{%
-           family={Wagenen},
-           family_i={W\bibinitperiod},
-           given={Sarah\bibnamedelimb E\bibnamedelima Van},
-           given_i={S\bibinitperiod\bibinitdelim E\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
+        {{hash=02eded82a182dee7e912d412bfc1143a}{%
+           family={Van\bibnamedelima Wagenen},
+           family_i={V\bibinitperiod\bibinitdelim W\bibinitperiod},
+           given={Sarah\bibnamedelima E},
+           given_i={S\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
         {{hash=a57b4007d9b3c8fa4f6a0393dbccc3eb}{%
            family={Luh},
            family_i={L\bibinitperiod},
            given={Wen-Ming},
            given_i={W\bibinithyphendelim M\bibinitperiod}}}%
-        {{hash=cf41632da03d0c19cda26ce238589af3}{%
+        {{hash=66d11585f47512b380b790c2a4a16f25}{%
            family={Hale},
            family_i={H\bibinitperiod},
-           given={John\bibnamedelima T.},
+           given={John\bibnamedelima T},
            given_i={J\bibinitperiod\bibinitdelim T\bibinitperiod}}}%
       }
-      \strng{namehash}{b38152424b50410761396cfceb095faf}
-      \strng{fullhash}{11792dc42b1c0d1f21547683a1e77194}
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{d16b01d4e2d1591066f4be7f0e8dda7d}
+      \strng{fullhash}{8b6ddbc7723b61471cdbc98e6c5a5d4e}
       \field{sortinit}{B}
       \field{sortinithash}{4ecbea03efd0532989d3836d1a048c32}
       \field{labelyear}{2016}
@@ -263,8 +266,8 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Brain and language}
-      \field{title}{Abstract linguistic structure correlates with temporal activity during naturalistic comprehension.}
-      \field{volume}{157-158}
+      \field{title}{Abstract linguistic structure correlates with temporal activity during naturalistic comprehension}
+      \field{volume}{157}
       \field{year}{2016}
       \field{pages}{81\bibrangedash 94}
       \range{pages}{14}
@@ -361,7 +364,7 @@
       \verb https://aclanthology.info/papers/N18-1086/n18-1086
       \endverb
     \endentry
-    \entry{Carnie2010:constituent}{book}{}
+    \entry{carnie2010constituent}{book}{}
       \name{author}{1}{}{%
         {{hash=975f160a45d76daf3ed30b1159ba06ea}{%
            family={Carnie},
@@ -879,6 +882,26 @@
       \field{pages}{575\bibrangedash 616}
       \range{pages}{42}
     \endentry
+    \entry{giannakidou2011npi}{article}{}
+      \name{author}{1}{}{%
+        {{hash=e823fd6d3b14f6f12175c8db9643251d}{%
+           family={Giannakidou},
+           family_i={G\bibinitperiod},
+           given={Anastasia},
+           given_i={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{e823fd6d3b14f6f12175c8db9643251d}
+      \strng{fullhash}{e823fd6d3b14f6f12175c8db9643251d}
+      \field{sortinit}{G}
+      \field{sortinithash}{1c854ef9177a91bf894e66485bdbd3ed}
+      \field{labelyear}{2011}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{The Handbook of Natural Language Meaning (second edition). Mouton de Gruyter, Berlin}
+      \field{title}{Negative and positive polarity items: Variation, licensing, and compositionality}
+      \field{year}{2011}
+    \endentry
     \entry{Goldberg+2013:dynamic}{article}{}
       \name{author}{2}{}{%
         {{hash=33b00f3e2f4f1bb310f1cf8d4a4c500a}{%
@@ -964,6 +987,31 @@
       \verb{url}
       \verb http://aclweb.org/anthology/N18-1108
       \endverb
+    \endentry
+    \entry{hale2001earley}{inproceedings}{}
+      \name{author}{1}{}{%
+        {{hash=5b8733e930a1a87a90806c69963c531a}{%
+           family={Hale},
+           family_i={H\bibinitperiod},
+           given={John},
+           given_i={J\bibinitperiod}}}%
+      }
+      \list{organization}{1}{%
+        {Association for Computational Linguistics}%
+      }
+      \strng{namehash}{5b8733e930a1a87a90806c69963c531a}
+      \strng{fullhash}{5b8733e930a1a87a90806c69963c531a}
+      \field{sortinit}{H}
+      \field{sortinithash}{82012198d5dfa657b8c4a168793268a6}
+      \field{labelyear}{2001}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the second meeting of the North American Chapter of the Association for Computational Linguistics on Language technologies}
+      \field{title}{A probabilistic Earley parser as a psycholinguistic model}
+      \field{year}{2001}
+      \field{pages}{1\bibrangedash 8}
+      \range{pages}{8}
     \endentry
     \entry{Hale+2018:beam}{inproceedings}{}
       \name{author}{4}{}{%
@@ -1103,6 +1151,35 @@
       \verb{url}
       \verb http://papers.nips.cc/paper/4545-imitation-learning-by-coaching.pdf
       \endverb
+    \endentry
+    \entry{huddleston2002grammar}{manual}{}
+      \name{author}{2}{}{%
+        {{hash=41a7d12d3921f73be64a4d2a0e5a9805}{%
+           family={Huddleston},
+           family_i={H\bibinitperiod},
+           given={Rodney\bibnamedelima D.},
+           given_i={R\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+        {{hash=ff7c9fb0a97351abf4d57558f77afb46}{%
+           family={Pullum},
+           family_i={P\bibinitperiod},
+           given={Geoffrey\bibnamedelima K.},
+           given_i={G\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Cambridge University Press}%
+      }
+      \strng{namehash}{2c3d04fe66b0d0a4ca0087c48b07ee4b}
+      \strng{fullhash}{2c3d04fe66b0d0a4ca0087c48b07ee4b}
+      \field{sortinit}{H}
+      \field{sortinithash}{82012198d5dfa657b8c4a168793268a6}
+      \field{labelyear}{2002}
+      \field{labelmonth}{04}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{month}{04}
+      \field{title}{The Cambridge Grammar of the English Language}
+      \field{year}{2002}
     \endentry
     \entry{jang2017gumbel}{article}{}
       \name{author}{3}{}{%
@@ -1454,6 +1531,33 @@
       \verb{url}
       \verb http://aclweb.org/anthology/P18-1132
       \endverb
+    \endentry
+    \entry{levy2008expectation}{article}{}
+      \name{author}{1}{}{%
+        {{hash=2e20881923b91d44e8f1ba7e0f38f42c}{%
+           family={Levy},
+           family_i={L\bibinitperiod},
+           given={Roger},
+           given_i={R\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{2e20881923b91d44e8f1ba7e0f38f42c}
+      \strng{fullhash}{2e20881923b91d44e8f1ba7e0f38f42c}
+      \field{sortinit}{L}
+      \field{sortinithash}{872351f18d0f736066eda0bf18bfa4f7}
+      \field{labelyear}{2008}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Cognition}
+      \field{number}{3}
+      \field{title}{Expectation-based syntactic comprehension}
+      \field{volume}{106}
+      \field{year}{2008}
+      \field{pages}{1126\bibrangedash 1177}
+      \range{pages}{52}
     \endentry
     \entry{Linzen+2016:LSTM-syntax}{article}{}
       \name{author}{3}{}{%

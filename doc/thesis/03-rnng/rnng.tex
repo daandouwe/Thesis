@@ -33,9 +33,9 @@ I describe the model.
   \end{align*}
   For the discriminative model $\veca$ is an element of $\discactions^T$, and for the generative model $\veca$ is an elemtnt of $\genactions^T$, both with the restriction that they form a valid tree $\y$. A sequence of nonterminals $\mathbf{n}$ in $N^K$ is the sequence of nonterminal nodes in $\y$ in pre-order. A sentence $\x$, finally, is an element of $\Sigma^N$.
 
-  \item Then let $\indicator_{ \{ a_t \, = \, \open \} }$ be the indicator function for the event that the action $a_t$ is to open a new nonterminal, and similarly let $\indicator_{ \{ a_t \, = \, \gen \} }$ be the indicator function for the event that the action $a_t$ is to generate a word. Furthermore we introduce two functions that translate between sets of indices:
+  \item Then let $\indicator_{ \{ a_t \, = \, \open \} }$ be the indicator function for the event that the action $a_t$ is to open a new nonterminal, and similarly let $\indicator_{ \{ a_t \, = \, \gen \} }$ be the indicator function for the event that the action $a_t$ is to generate a word. Furthermore we introduce two functions that maps between sets of indices to indicate the number of times a particular action has been taken at each time step:
   \begin{align*}
-    \mu &: \{ 1, \dots, T \} \to \{ 1, \dots, M \}: \mu(t) = \sum_{i < t} \indicator_{ \{ a_i \, = \, \open \} }, \text{ and}  \\
+    \mu &: \{ 1, \dots, T \} \to \{ 1, \dots, M \}: \mu(t) = \sum_{i < t} \indicator_{ \{ a_i \, = \, \open \} },
     \nu &: \{ 1, \dots, T \} \to \{ 1, \dots, N \}: \nu(t) = \sum_{i < t} \indicator_{ \{ a_i \, = \, \gen \} }.
   \end{align*}
 
@@ -74,13 +74,13 @@ I describe the model.
 
   \item Note that could have defined
   \begin{align*}
-    \discactions &= \{ \reduce, \shift \} \cup \{ \open(n) \mid n \in N \},  \\
+    \discactions &= \{ \reduce, \shift \} \cup \{ \open(n) \mid n \in N \},
   \end{align*}
   and
   \begin{align*}
     \genactions &= \{ \reduce \} \cup \{ \open(n) \mid n \in N \} \cup \{ \gen(x) \mid x \in \Sigma \},
   \end{align*}
-  and defined $p(\veca)$ as in \ref{eq:naive-rnng-model}. However, in the case of the generative model this is particularly inefficient from a computational perspective. Note that the set $\Sigma$ is generally very very large\footnote{On the order of tens of thousands.}, and observe that the normalization in \ref{eq:action-regression} requires a sum over all actions, while a large number of the actions do not generate words. For consistency we extend this modelling choice to the discriminative RNNG. Besides, the presentation in \ref{eq:disc-model} and \ref{eq:gen-model} is conceptually cleaner: first choose an action, then, if required, choose the details of that action. For these reasons combined we opt for the two-step prediction. And although it appears that \citet{Dyer+2016:RNNG} model the sequences according to \ref{eq:naive-rnng-model}, followup work takes our approach and models the actions of the generative RNNG as in \ref{eq:gen-model} \citep{Hale+2018:beam}.
+  and defined $p(\veca)$ as in \ref{eq:naive-rnng-model}. However, in the case of the generative model this is particularly inefficient from a computational perspective. Note that the set $\Sigma$ is generally very very large\footnote{On the order of tens of thousands.}, and observe that the normalization in \ref{eq:action-regression} requires a sum over all actions, while a large number of the actions do not generate words. For consistency we extend this modelling choice to the discriminative RNNG. Besides, the presentation in \ref{eq:disc-model} and \ref{eq:gen-model} is conceptually cleaner: first choose an action, then, if required, choose the details of that action. For these reasons combined we opt for the two-step prediction. And although it appears that \citet{Dyer+2016:RNNG} model the sequences according to \ref{eq:naive-rnng-model}, followup work takes our approach and models the actions of the generative RNNG as in equation \ref{eq:gen-model} \citep{Hale+2018:beam}.
 
 \end{itemize}
 
@@ -88,7 +88,7 @@ I describe the model.
 The feature vector $\vecu_t$ from which the transition probabilities are computed are computed from the stack configuration's entire history, and in a syntax-dependent way.
 \begin{itemize}
   \item The StackLSTM computes incremental features for the sequences on the three datastructures of the transition-system, with unbounded history.
-  \item A composition function computes representations of closed constituents.
+  \item A composition function computes representations of closed constituents on the stack.
   \item There are two options for the composition function: simple BiRNN and attention-based. The attention-based composition performed best in earlier research, so we focus on this function.
   \item There is evidence that the stack-datastructure is all that is needed. However, we focus on the models that compute representations of all the datastructures.
 \end{itemize}
@@ -98,7 +98,7 @@ Here I describe the research into syntax and cognition using the RNNG.
 
 \paragraph{Cognition} RNNGs can tell us something about our brains.
 \begin{itemize}
-  \item Psycholinguistic research that indicates that top-down parsing is a cognitively plausible parsing strategy \citep{Brennan+2016}.
+  \item Psycholinguistic research that indicates that top-down parsing is a cognitively plausible parsing strategy \citep{brennan2016abstract}.
   \item RNNGs are good statistical predictors in psycholinguistic research \citep{Hale+2018:beam}. More precisely: the sequential word-probabilities that are derived from a generative RNNG in combination with word-synchronous beam-search \citep{Stern+2017:beam} provide per-word complexity metrics that predict human reading difficulty well.
 \end{itemize}
 
@@ -141,5 +141,5 @@ We perform three types of experiments with the RNNG:
 \begin{itemize}
   \item Generative dependency parsing and language modelling \citep{Buys+2015:bayes-gen-dep,Buys+2015:neural-gen-dep,Buys+2018}
   \item Top-down parsing and language modelling \citep{Roark2001}.
-  \item Brains research with top-down parsing \citep{Hale+2018:beam,Brennan+2016}.
+  \item Brains research with top-down parsing \citep{Hale+2018:beam,brennan2016abstract}.
 \end{itemize}

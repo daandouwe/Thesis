@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1549018729 "background.tex" "background.pdf" "background" 1549018729
+["pdflatex"] 1549308752 "background.tex" "background.pdf" "background" 1549308752
   "../figures/trees/binary.tex" 1548932836 382 736d406323f3cde62871b5992a9d9902 ""
   "../figures/trees/original.tex" 1548932835 237 6471d3580ab6215efed6e8ea6f0048f7 ""
   "../figures/trees/simplified.tex" 1548932834 182 a01293ad9acf73e3e2d21381f1602c9f ""
@@ -8,10 +8,11 @@
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmti10.tfm" 1136768653 1480 aa8e34af0eb6a2941b776984cf1dfdc4 ""
   "/usr/local/texlive/2016/texmf-dist/web2c/texmf.cnf" 1463093894 31953 b9489e6e586f798610c60aec1f5ec548 ""
+  "/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1485894775 1888048 f2c5faed5981a516f406b2ccc20bff71 ""
   "/usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt" 1485894833 3873397 68ff021935db8719c30e28db2297c232 ""
   "/usr/local/texlive/2016/texmf.cnf" 1463979140 577 2938757e76f31531e65cc647e3507693 ""
   "background.aux" 1548674712 8 a94a2480d3289e625eea47cd1b285758 ""
-  "background.tex" 1549018707 8066 490f698d486b9eb62b755e7cc3d35767 ""
+  "background.tex" 1549308750 15374 10e4b2c9ac5bdd8c79b688898d75894b ""
   (generated)
-  "background.log"
   "background.pdf"
+  "background.log"
