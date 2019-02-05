@@ -526,6 +526,43 @@
       \field{pages}{1\bibrangedash 15}
       \range{pages}{15}
     \endentry
+    \entry{christiansen2012similar}{article}{}
+      \name{author}{3}{}{%
+        {{hash=f9e0a3817439f8ffc01ed0f6b9441c9d}{%
+           family={Christiansen},
+           family_i={C\bibinitperiod},
+           given={Morten\bibnamedelima H},
+           given_i={M\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
+        {{hash=7c41d7f3552d3b9a6a348d5c78a8122a}{%
+           family={Conway},
+           family_i={C\bibinitperiod},
+           given={Christopher\bibnamedelima M},
+           given_i={C\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+        {{hash=7d5c958bf19fce6f139f9fab1732dee1}{%
+           family={Onnis},
+           family_i={O\bibinitperiod},
+           given={Luca},
+           given_i={L\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Taylor \& Francis}%
+      }
+      \strng{namehash}{c449e31f7aecfdb7aeb5d49da9f7ca68}
+      \strng{fullhash}{ff47e8c51838f1949909946a60783346}
+      \field{sortinit}{C}
+      \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
+      \field{labelyear}{2012}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Language and cognitive processes}
+      \field{number}{2}
+      \field{title}{Similar neural correlates for language and sequential learning: evidence from event-related brain potentials}
+      \field{volume}{27}
+      \field{year}{2012}
+      \field{pages}{231\bibrangedash 256}
+      \range{pages}{26}
+    \endentry
     \entry{Collins2003}{article}{}
       \name{author}{1}{}{%
         {{hash=b8bbd832353d6b8ffa73123369d39d55}{%
@@ -564,6 +601,38 @@
       \verb{url}
       \verb http://dx.doi.org/10.1162/089120103322753356
       \endverb
+    \endentry
+    \entry{conway2008neurocognitive}{article}{}
+      \name{author}{2}{}{%
+        {{hash=7c41d7f3552d3b9a6a348d5c78a8122a}{%
+           family={Conway},
+           family_i={C\bibinitperiod},
+           given={Christopher\bibnamedelima M},
+           given_i={C\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+        {{hash=fe8b8dfbbe4a8d0942d8d6233a9df4d2}{%
+           family={Pisoni},
+           family_i={P\bibinitperiod},
+           given={David\bibnamedelima B},
+           given_i={D\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Wiley Online Library}%
+      }
+      \strng{namehash}{f139069d69d948694f343a44c88f4bcf}
+      \strng{fullhash}{f139069d69d948694f343a44c88f4bcf}
+      \field{sortinit}{C}
+      \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
+      \field{labelyear}{2008}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Annals of the New York Academy of Sciences}
+      \field{number}{1}
+      \field{title}{Neurocognitive basis of implicit learning of sequential structure and its relation to language processing}
+      \field{volume}{1145}
+      \field{year}{2008}
+      \field{pages}{113\bibrangedash 131}
+      \range{pages}{19}
     \endentry
     \entry{Klein+2015:neural-crf}{inproceedings}{}
       \name{author}{2}{}{%
@@ -813,6 +882,39 @@
       \verb http://aclweb.org/anthology/P08-1109
       \endverb
     \endentry
+    \entry{Frank+2012:hierarchical}{article}{}
+      \name{author}{3}{}{%
+        {{hash=15c03152f2d27d8797f226e8143b19a2}{%
+           family={Frank},
+           family_i={F\bibinitperiod},
+           given={Stefan\bibnamedelima L.},
+           given_i={S\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=cf6a4ffac9b65bcdddd3c4796403f524}{%
+           family={Bod},
+           family_i={B\bibinitperiod},
+           given={Rens},
+           given_i={R\bibinitperiod}}}%
+        {{hash=973a6d45fe0bbec002d53420ce891d06}{%
+           family={Christiansen},
+           family_i={C\bibinitperiod},
+           given={Morten\bibnamedelima H.},
+           given_i={M\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
+      }
+      \strng{namehash}{2ba338fb853316484cf755b512381dcd}
+      \strng{fullhash}{0ff1782557e81661de65cedd1b3f336a}
+      \field{sortinit}{F}
+      \field{sortinithash}{c6a7d9913bbd7b20ea954441c0460b78}
+      \field{labelyear}{2012}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Proceedings. Biological sciences}
+      \field{title}{How hierarchical is language use?}
+      \field{volume}{279 1747}
+      \field{year}{2012}
+      \field{pages}{4522\bibrangedash 31}
+      \range{pages}{10}
+    \endentry
     \entry{Klein+2018:reinforce}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=8c0d6317a5a127c222cb122f7818e15e}{%
@@ -901,6 +1003,70 @@
       \field{journaltitle}{The Handbook of Natural Language Meaning (second edition). Mouton de Gruyter, Berlin}
       \field{title}{Negative and positive polarity items: Variation, licensing, and compositionality}
       \field{year}{2011}
+    \endentry
+    \entry{gillespie2011hierarchy}{article}{}
+      \name{author}{2}{}{%
+        {{hash=0cacb1802dca880f9db8bc717609972b}{%
+           family={Gillespie},
+           family_i={G\bibinitperiod},
+           given={Maureen},
+           given_i={M\bibinitperiod}}}%
+        {{hash=172cdb45220f97a1d2297b2518029f7f}{%
+           family={Pearlmutter},
+           family_i={P\bibinitperiod},
+           given={Neal\bibnamedelima J},
+           given_i={N\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{36d08a53747bff83a8267b807c9a4644}
+      \strng{fullhash}{36d08a53747bff83a8267b807c9a4644}
+      \field{sortinit}{G}
+      \field{sortinithash}{1c854ef9177a91bf894e66485bdbd3ed}
+      \field{labelyear}{2011}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Cognition}
+      \field{number}{3}
+      \field{title}{Hierarchy and scope of planning in subject--verb agreement production}
+      \field{volume}{118}
+      \field{year}{2011}
+      \field{pages}{377\bibrangedash 397}
+      \range{pages}{21}
+    \endentry
+    \entry{gillespie2013against}{article}{}
+      \name{author}{2}{}{%
+        {{hash=0cacb1802dca880f9db8bc717609972b}{%
+           family={Gillespie},
+           family_i={G\bibinitperiod},
+           given={Maureen},
+           given_i={M\bibinitperiod}}}%
+        {{hash=172cdb45220f97a1d2297b2518029f7f}{%
+           family={Pearlmutter},
+           family_i={P\bibinitperiod},
+           given={Neal\bibnamedelima J},
+           given_i={N\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {American Psychological Association}%
+      }
+      \strng{namehash}{36d08a53747bff83a8267b807c9a4644}
+      \strng{fullhash}{36d08a53747bff83a8267b807c9a4644}
+      \field{sortinit}{G}
+      \field{sortinithash}{1c854ef9177a91bf894e66485bdbd3ed}
+      \field{labelyear}{2013}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Experimental Psychology: Learning, Memory, and Cognition}
+      \field{number}{2}
+      \field{title}{Against structural constraints in subject--verb agreement production.}
+      \field{volume}{39}
+      \field{year}{2013}
+      \field{pages}{515}
+      \range{pages}{1}
     \endentry
     \entry{Goldberg+2013:dynamic}{article}{}
       \name{author}{2}{}{%
@@ -1180,6 +1346,28 @@
       \field{month}{04}
       \field{title}{The Cambridge Grammar of the English Language}
       \field{year}{2002}
+    \endentry
+    \entry{hudson2010introduction}{book}{}
+      \name{author}{1}{}{%
+        {{hash=4f47c9baa8bc78d10c0ba245da1c2540}{%
+           family={Hudson},
+           family_i={H\bibinitperiod},
+           given={Richard},
+           given_i={R\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Cambridge University Press}%
+      }
+      \strng{namehash}{4f47c9baa8bc78d10c0ba245da1c2540}
+      \strng{fullhash}{4f47c9baa8bc78d10c0ba245da1c2540}
+      \field{sortinit}{H}
+      \field{sortinithash}{82012198d5dfa657b8c4a168793268a6}
+      \field{labelyear}{2010}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{An introduction to word grammar}
+      \field{year}{2010}
     \endentry
     \entry{jang2017gumbel}{article}{}
       \name{author}{3}{}{%
@@ -1796,6 +1984,30 @@
       \field{title}{Neural Variational Inference and Learning in Belief Networks}
       \field{year}{2014}
     \endentry
+    \entry{nivre2005dependency}{article}{}
+      \name{author}{1}{}{%
+        {{hash=c7682865373d09c3dcbd9422fbb74cc0}{%
+           family={Nivre},
+           family_i={N\bibinitperiod},
+           given={Joakim},
+           given_i={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{c7682865373d09c3dcbd9422fbb74cc0}
+      \strng{fullhash}{c7682865373d09c3dcbd9422fbb74cc0}
+      \field{sortinit}{N}
+      \field{sortinithash}{925374ca63e7594de7fafdb83e64d41d}
+      \field{labelyear}{2005}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{MSI report}
+      \field{number}{1959}
+      \field{title}{Dependency grammar and dependency parsing}
+      \field{volume}{5133}
+      \field{year}{2005}
+      \field{pages}{1\bibrangedash 32}
+      \range{pages}{32}
+    \endentry
     \entry{Paisley+2012:VISS}{inproceedings}{}
       \name{author}{3}{}{%
         {{hash=c8d689116a54128b56aa8f6997881eb6}{%
@@ -2399,6 +2611,28 @@
       \verb{url}
       \verb http://aclweb.org/anthology/D18-1412
       \endverb
+    \endentry
+    \entry{tesniere1959elements}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=0dbddb09fde7f7a79f578f72682fedfc}{%
+           family={Tesnière},
+           family_i={T\bibinitperiod},
+           given={Lucien},
+           given_i={L\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {John Benjamins, Amsterdam}%
+      }
+      \strng{namehash}{0dbddb09fde7f7a79f578f72682fedfc}
+      \strng{fullhash}{0dbddb09fde7f7a79f578f72682fedfc}
+      \field{sortinit}{T}
+      \field{sortinithash}{423d138a005a533b47e6475e39378bf2}
+      \field{labelyear}{1959}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Elements of structural syntax, translated by Timothy Osborne and Sylvain Kahane}
+      \field{year}{1959}
     \endentry
     \entry{Vlachos2012:imitation}{inproceedings}{}
       \name{author}{1}{}{%

@@ -35,7 +35,7 @@ I describe the model.
 
   \item Then let $\indicator_{ \{ a_t \, = \, \open \} }$ be the indicator function for the event that the action $a_t$ is to open a new nonterminal, and similarly let $\indicator_{ \{ a_t \, = \, \gen \} }$ be the indicator function for the event that the action $a_t$ is to generate a word. Furthermore we introduce two functions that maps between sets of indices to indicate the number of times a particular action has been taken at each time step:
   \begin{align*}
-    \mu &: \{ 1, \dots, T \} \to \{ 1, \dots, M \}: \mu(t) = \sum_{i < t} \indicator_{ \{ a_i \, = \, \open \} },
+    \mu &: \{ 1, \dots, T \} \to \{ 1, \dots, M \}: \mu(t) = \sum_{i < t} \indicator_{ \{ a_i \, = \, \open \} },  \\
     \nu &: \{ 1, \dots, T \} \to \{ 1, \dots, N \}: \nu(t) = \sum_{i < t} \indicator_{ \{ a_i \, = \, \gen \} }.
   \end{align*}
 
@@ -54,11 +54,11 @@ I describe the model.
   \begin{align}
     \label{eq:action-regression}
     p(a_t \mid \veca_{<t})
-      &= \frac{ \exp \vecw_{a_t}^{\top} \vecu_t + b_{a_t} }{ \sum_{a \in A} \exp \vecw_{a}^{\top} \vecu_t + b_{a} },  \\
+      &= \frac{ \exp ( \vecw_{a_t}^{\top} \vecu_t + b_{a_t} ) }{ \sum_{a \in A} \exp ( \vecw_{a}^{\top} \vecu_t + b_{a} ) },  \\
     p(n_{\mu(t)} \mid \veca_{<t})
-      &= \frac{ \exp \vecv_{n_{\mu(t)}}^{\top} \vecu_t + b_{n_{\mu(t)}} }{ \sum_{n \in N} \exp \vecv {n}^{\top} \vecu_t + b_{n} }, \\
+      &= \frac{ \exp ( \vecv_{n_{\mu(t)}}^{\top} \vecu_t + b_{n_{\mu(t)}} ) }{ \sum_{n \in N} \exp ( \vecv {n}^{\top} \vecu_t + b_{n} ) }, \\
     p(x_{\nu(t)} \mid \veca_{<t})
-      &= \frac{ \exp \vecr_{x_{\nu(t)}}^{\top} \vecu_t + b_{x_{\nu(t)}} }{ \sum_{x \in \Sigma} \exp \vecr_{x}^{\top} \vecu_t + b_{x} },  \\
+      &= \frac{ \exp ( \vecr_{x_{\nu(t)}}^{\top} \vecu_t + b_{x_{\nu(t)}} ) }{ \sum_{x \in \Sigma} \exp ( \vecr_{x}^{\top} \vecu_t + b_{x} ) },  \\
   \end{align}
   where $A$ can denote either $\discactions$ or $\genactions$, and $\vecw_i$, $\vecv_i$, $\vecr_i$, and $b_i$ are parameters.
 

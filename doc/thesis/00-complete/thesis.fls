@@ -195,6 +195,8 @@ INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/doublestroke/dsfont.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/doublestroke/dsfont.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/tools/xspace.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/tools/xspace.sty
+INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/enumitem/enumitem.sty
+INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/enumitem/enumitem.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/dirtytalk/dirtytalk.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/dirtytalk/dirtytalk.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/caption/subcaption.sty
@@ -408,9 +410,8 @@ INPUT ../01-introduction/introduction.tex
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmsso10.tfm
 INPUT ../02-background/background.tex
 INPUT ../02-background/background.tex
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmr9.tfm
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmbx9.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmr8.tfm
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmr9.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/rm-lmr9.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/rm-lmr5.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/lmmi9.tfm
@@ -423,6 +424,8 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm1
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm5.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/latex-fonts/lasy5.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmr6.tfm
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmri9.tfm
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmbx9.tfm
 INPUT ../figures/trees/npi-licensed.pdf
 INPUT ../figures/trees/npi-licensed.pdf
 INPUT ../figures/trees/npi-licensed.pdf
@@ -431,8 +434,6 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
 INPUT ../figures/trees/npi-unlicensed.pdf
 INPUT ../figures/trees/npi-unlicensed.pdf
 INPUT ../figures/trees/npi-unlicensed.pdf
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmri9.tfm
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
 INPUT ../figures/trees/original.tex
 INPUT ../figures/trees/original.tex
 INPUT ../figures/trees/simplified.tex
@@ -466,6 +467,7 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/rm-lmbx9.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/rm-lmbx5.tfm
 INPUT ../04-crf-parser/crf-parser.tex
 INPUT ../04-crf-parser/crf-parser.tex
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
 INPUT ../05-semisupervised/semisupervised.tex
 INPUT ../05-semisupervised/semisupervised.tex
 INPUT ../06-syneval/syneval.tex

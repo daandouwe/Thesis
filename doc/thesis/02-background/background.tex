@@ -1,10 +1,11 @@
-% \bibliography{../src/bibliography}
+\bibliography{../src/bibliography}
 
 In this chapter I give background required to read this thesis.
 
 \section{Syntax}
 Introduce the background on syntax relevant for the chapters on parsing, and the syntactic evaluation. My aim is to provide a succinct and compelling answer to the inevitable question: \textit{Why do we care about constituency structure?} In particular I want to firmly establish the concept of constituents, and secondly I want to set some of the ground for the syntactic evaluation that we perform in the final chapter.
 \begin{itemize}
+  \item Introduce the central question: what are sentences, strings or structures? Is a sentence a string of words in linear order, or are the words combined in a hierarchical structure? \citep{Everaert+2015:structures,Frank+2012:hierarchical}
   \item The notion of a constituent, and constituent tests \citet{carnie2010constituent,huddleston2002grammar}.
   \item Hierarchical structure (of these constituents) \citet{Everaert+2015:structures}.
   \item The lexical and phrasal categories of constituent analysis.
@@ -12,7 +13,14 @@ Introduce the background on syntax relevant for the chapters on parsing, and the
   \item Introduce the concept of \textit{acceptability judgements}, with the final chapter on syntactic evaluation in mind.
 \end{itemize}
 
-\paragraph{Constituents} Sentences consist of parts that may themselves have parts \citep{huddleston2002grammar}. The parts are groups of words that function as units, and they are called \textit{constituents}. In the following exposition we follow \citet{huddleston2002grammar}. Consider the simple sentence \textit{A bird hit the car.} The immediate constituents are \textit{a bird} (the subject) and \textit{hit the car} (the predicate). The phrase \textit{hit the car} can be further analyzed as containing the constituent \textit{the car}. The ultimate constituents of a sentence are the atomic words, and the entire analysis is called the constituent structure of the sentence. This structure can be indicated succinctly with the use of brackets
+In the following exposition we primarily follow \citet{huddleston2002grammar}, with some excursions into \citet{carnie2010constituent} and \citet{Everaert+2015:structures}. The first source is a well established reference grammar of the English language that is relatively agnostic with respect to theoretical framework, whereas the the later two sources are more firmly rooted in a particular framework\footnote{Broadly subsumable under the label \textit{generative grammar}.}. We take the following three pricinpiles (about English syntax!) from \citep{huddleston2002grammar} as guiding:
+\begin{enumerate}[label=(\roman*)]
+  \item Sentences consist of parts that may themselves have parts.
+  \item These parts belong to a limited range of types.
+  \item The constituents have specific roles in the larger parts they belong to.
+\end{enumerate}
+
+\paragraph{Constituents} Sentences consist of parts that may themselves have parts \citep{huddleston2002grammar}. The parts are groups of words that function as units, and they are called \textit{constituents}. Consider the simple sentence \textit{A bird hit the car.} The immediate constituents are \textit{a bird} (the subject) and \textit{hit the car} (the predicate). The phrase \textit{hit the car} can be further analyzed as containing the constituent \textit{the car}. The ultimate constituents of a sentence are the atomic words, and the entire analysis is called the constituent structure of the sentence. This structure can be indicated succinctly with the use of brackets
 \begin{center}
   [ [ A bird ] [ hit [ the car ] ] ]
   % \exig. [CP Heute [C$’$ scheint [TP [DP die Sonne ] [VP \I{t}V ]]\
@@ -22,7 +30,7 @@ or less succinctly as a tree as in figure \ref{fig:bird-tree}.
 \begin{figure}[h]{\textwidth}
   \center
   \begin{tikzpicture}[scale=.8]
-    \Tree [.x [.x A bird ] [.x hit [.x the car ] ] ]
+    \Tree [.$\cdot$ [.$\cdot$ A bird ] [.$\cdot$ hit [.$\cdot$ the car ] ] ]
   \end{tikzpicture}
   \caption{Sentence \ref{eq:bird-brackets} as a tree. (TODO: draw this without labels.)}
   \label{fig:bird-tree}
@@ -72,8 +80,19 @@ From this example we might formulate the hypothesis that the word \textit{not} m
 \begin{enumerate}
   \item *The book I did \textit{not} buy appealed to \textit{anybody}.
 \end{enumerate}
-refutes this linear hypothesis. Instead, linguists argue that the constraints that govern this particular pattern depend on hierarchical structure: the word \textit{not} must precede the word \textit{anybody} `structurally'. Figure \label{ref:trees-npi} shows the constituent structure of both sentences. The explanation goes as follows (put this in my own words).:
-\say{In sentence \ref{fig:tree-npi-licensed} the hierarchical structure dominating \textit{not} also immediately dominates the hierarchical structure containing \textit{anybody}. In sentence \ref{fig:tree-npi-unlicensed}, by contrast, \textit{not} sequentially precedes \textit{anybody}, but the triangle dominating \textit{not} fails to also dominate the structure containing \textit{anybody}' }
+refutes this linear hypothesis. Instead, the constraints that govern this particular pattern depend on hierarchical structure: the word \textit{not} must ``structurally precede'' the word \textit{anybody} \citep{Everaert+2015:structures}. Figure \label{ref:trees-npi} shows the constituent structure of both sentences. The explanation goes as follows (put this in my own words): \say{In sentence \ref{fig:trees-npi} (a) the hierarchical structure dominating \textit{not} also immediately dominates the hierarchical structure containing \textit{anybody}. In sentence \ref{fig:trees-npi} (b), by contrast, \textit{not} sequentially precedes \textit{anybody}, but the triangle dominating \textit{not} fails to also dominate the structure containing \textit{anybody}.}
+
+\paragraph{Cognitive reality} Does all this exist in the human brain? These people say `yes': \citep{hale2001earley,levy2008expectation,brennan2016abstract}.
+
+
+\paragraph{Controversy}
+Theoretical syntax is rife with controversy, and wildly differing viewpoints exist. In fact, for each point made in our short discussion, the exact opposite point has been made as well:
+\begin{itemize}
+  \item Constituents are fundamental \citep{huddleston2002grammar,carnie2010constituent} \textit{versus} word-word relations are all you need \citep{tesniere1959elements,nivre2005dependency,hudson2010introduction}.
+  \item Hierarchical structure is involved \citep{Everaert+2015:structures} \textit{versus} sequential sentence structure has enough explanatory power \cite{Frank+2012:hierarchical}.
+  \item Studies in cognitive neuroscience and psycholinguistics show that human sentence processing is hierachical \citep{hale2001earley,levy2008expectation,brennan2016abstract} \textit{and} they show that it is not \citep{conway2008neurocognitive,christiansen2012similar,gillespie2011hierarchy, gillespie2013against} (selected from the survey in \citet{Frank+2012:hierarchical}).
+\end{itemize}
+For this research I take a position of extreme pragmatism with respect to syntax: it is whatever our dataset says it is. Which means in our case, the Penn Treebank has the final word on the subject. And with respect to the opposition between hierachical and linear conceptions of language: that is exactly what we inted to ivestigate from a computational statistical viewpoint.
 
 % \begin{figure}
 %   \begin{subfigure}[b]{\textwidth}
