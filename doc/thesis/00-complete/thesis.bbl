@@ -19,7 +19,7 @@
 
 \refsection{0}
   \sortlist[entry]{nyt/global/}
-    \entry{Ballesteros+2017:StackLSTM}{article}{}
+    \entry{ballesteros2017greedy}{article}{}
       \name{author}{4}{}{%
         {{hash=ef2e5cd61947a3ce7719b5ce1450d9f0}{%
            family={Ballesteros},
@@ -57,7 +57,7 @@
       \field{pages}{311\bibrangedash 347}
       \range{pages}{37}
     \endentry
-    \entry{Ballesteros+2016:exploration}{inproceedings}{}
+    \entry{ballesteros2016exploration}{inproceedings}{}
       \name{author}{4}{}{%
         {{hash=ef2e5cd61947a3ce7719b5ce1450d9f0}{%
            family={Ballesteros},
@@ -99,24 +99,50 @@
       \field{year}{2016}
       \field{pages}{2005\bibrangedash 2010}
       \range{pages}{6}
-      \verb{doi}
-      \verb 10.18653/v1/D16-1211
-      \endverb
-      \verb{url}
-      \verb http://aclweb.org/anthology/D16-1211
-      \endverb
     \endentry
-    \entry{Baydin+2017:AD}{article}{}
+    \entry{bangalore1999supertagging}{article}{}
+      \name{author}{2}{}{%
+        {{hash=cddd8514756298e2bded1789e1caaf28}{%
+           family={Bangalore},
+           family_i={B\bibinitperiod},
+           given={Srinivas},
+           given_i={S\bibinitperiod}}}%
+        {{hash=75f5d0823305f84499a1fc47b9cb83d9}{%
+           family={Joshi},
+           family_i={J\bibinitperiod},
+           given={Aravind\bibnamedelima K},
+           given_i={A\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {MIT Press}%
+      }
+      \strng{namehash}{959e7185e2beee647b2c33560cb8b295}
+      \strng{fullhash}{959e7185e2beee647b2c33560cb8b295}
+      \field{sortinit}{B}
+      \field{sortinithash}{4ecbea03efd0532989d3836d1a048c32}
+      \field{labelyear}{1999}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Computational linguistics}
+      \field{number}{2}
+      \field{title}{Supertagging: An approach to almost parsing}
+      \field{volume}{25}
+      \field{year}{1999}
+      \field{pages}{237\bibrangedash 265}
+      \range{pages}{29}
+    \endentry
+    \entry{baydin2018automatic}{article}{}
       \name{author}{4}{}{%
-        {{hash=49b26175761dc126fbf83d3ba4199d32}{%
+        {{hash=1dbfe662e88b580bcb5dc017b5df0c5d}{%
            family={Baydin},
            family_i={B\bibinitperiod},
-           given={At\il\im\bibnamedelima Günes},
+           given={Atilim\bibnamedelima Gunes},
            given_i={A\bibinitperiod\bibinitdelim G\bibinitperiod}}}%
-        {{hash=38c46248d546ff47745f37d93aa0a046}{%
+        {{hash=c13243ba2cce0e3146c1c714750e63f7}{%
            family={Pearlmutter},
            family_i={P\bibinitperiod},
-           given={Barak\bibnamedelima A.},
+           given={Barak\bibnamedelima A},
            given_i={B\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
         {{hash=e9bf0888e39e5bc05b3f72f37b97406c}{%
            family={Radul},
@@ -130,30 +156,22 @@
            given_i={J\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
-        {JMLR.org}%
+        {Microtome Publishing}%
       }
-      \strng{namehash}{cad1d83117b61c4f8fc00f4084391c21}
-      \strng{fullhash}{af5d03192cba205977330f25914acf4d}
+      \strng{namehash}{cbbc8f274d4c7e34d33c1051fbd2fc24}
+      \strng{fullhash}{263cd4fd4153ed0e19d8b56fb34cdaf9}
       \field{sortinit}{B}
       \field{sortinithash}{4ecbea03efd0532989d3836d1a048c32}
-      \field{labelyear}{2017}
-      \field{labelmonth}{01}
+      \field{labelyear}{2018}
       \field{datelabelsource}{}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{issn}{1532-4435}
-      \field{journaltitle}{J. Mach. Learn. Res.}
-      \field{month}{01}
-      \field{number}{1}
-      \field{title}{Automatic Differentiation in Machine Learning: A Survey}
+      \field{journaltitle}{Journal of Marchine Learning Research}
+      \field{title}{Automatic differentiation in machine learning: a survey}
       \field{volume}{18}
-      \field{year}{2017}
-      \field{pages}{5595\bibrangedash 5637}
+      \field{year}{2018}
+      \field{pages}{1\bibrangedash 43}
       \range{pages}{43}
-      \verb{url}
-      \verb http://dl.acm.org/citation.cfm?id=3122009.3242010
-      \endverb
-      \keyw{backpropagation,differentiable programming}
     \endentry
     \entry{bengio2003neural}{article}{}
       \name{author}{4}{}{%
@@ -194,7 +212,7 @@
       \field{pages}{1137\bibrangedash 1155}
       \range{pages}{19}
     \endentry
-    \entry{Blei+2016:VI}{article}{}
+    \entry{blei2016vi}{article}{}
       \name{author}{3}{}{%
         {{hash=20a1c1436a7d566d2e05ddb6a33eaada}{%
            family={Blei},
@@ -272,7 +290,7 @@
       \field{pages}{81\bibrangedash 94}
       \range{pages}{14}
     \endentry
-    \entry{Buys+2015:bayes-gen-dep}{inproceedings}{}
+    \entry{buys2015bayesian}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=1533f1cf0dd23eb2455b7f4474f71c42}{%
            family={Buys},
@@ -299,11 +317,8 @@
       \field{year}{2015}
       \field{pages}{58\bibrangedash 67}
       \range{pages}{10}
-      \verb{url}
-      \verb http://aclweb.org/anthology/W/W15/W15-2108.pdf
-      \endverb
     \endentry
-    \entry{Buys+2015:neural-gen-dep}{inproceedings}{}
+    \entry{buys2015generative}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=1533f1cf0dd23eb2455b7f4474f71c42}{%
            family={Buys},
@@ -325,16 +340,14 @@
       \field{datelabelsource}{}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{booktitle}{Proceedings of the 53rd Annual Meeting of the Association for Computational Linguistics and the 7th International Joint Conference on Natural Language Processing of the Asian Federation of Natural Language Processing, {ACL} 2015, July 26-31, 2015, Beijing, China, Volume 2: Short Papers}
-      \field{title}{Generative Incremental Dependency Parsing with Neural Networks}
+      \field{booktitle}{Proceedings of the 53rd Annual Meeting of the Association for Computational Linguistics and the 7th International Joint Conference on Natural Language Processing (Volume 2: Short Papers)}
+      \field{title}{Generative incremental dependency parsing with neural networks}
+      \field{volume}{2}
       \field{year}{2015}
       \field{pages}{863\bibrangedash 869}
       \range{pages}{7}
-      \verb{url}
-      \verb http://aclweb.org/anthology/P/P15/P15-2142.pdf
-      \endverb
     \endentry
-    \entry{Buys+2018}{inproceedings}{}
+    \entry{buys2018exact}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=1533f1cf0dd23eb2455b7f4474f71c42}{%
            family={Buys},
@@ -355,14 +368,12 @@
       \field{datelabelsource}{}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{booktitle}{Proceedings of the 2018 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, {NAACL-HLT} 2018, New Orleans, Louisiana, USA, June 1-6, 2018, Volume 1 (Long Papers)}
+      \field{booktitle}{Proceedings of the 2018 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long Papers)}
       \field{title}{Neural Syntactic Generative Models with Exact Marginalization}
+      \field{volume}{1}
       \field{year}{2018}
       \field{pages}{942\bibrangedash 952}
       \range{pages}{11}
-      \verb{url}
-      \verb https://aclanthology.info/papers/N18-1086/n18-1086
-      \endverb
     \endentry
     \entry{carnie2010constituent}{book}{}
       \name{author}{1}{}{%
@@ -387,9 +398,6 @@
       \field{series}{Oxford linguistics}
       \field{title}{Constituent Structure}
       \field{year}{2010}
-      \verb{url}
-      \verb https://books.google.st/books?id=nmOyQQAACAAJ
-      \endverb
     \endentry
     \entry{chelba2000structured}{article}{}
       \name{author}{2}{}{%
@@ -455,7 +463,7 @@
       \field{pages}{359\bibrangedash 394}
       \range{pages}{36}
     \endentry
-    \entry{Cheng+2017:RNNG-VI}{inproceedings}{}
+    \entry{cheng2017rnng}{inproceedings}{}
       \name{author}{3}{}{%
         {{hash=ea420c999bde7b92905ea4ce7147ec31}{%
            family={Cheng},
@@ -492,12 +500,6 @@
       \field{year}{2017}
       \field{pages}{118\bibrangedash 124}
       \range{pages}{7}
-      \verb{doi}
-      \verb 10.18653/v1/P17-2019
-      \endverb
-      \verb{url}
-      \verb http://aclweb.org/anthology/P17-2019
-      \endverb
     \endentry
     \entry{chomsky1980rules}{article}{}
       \name{author}{1}{}{%
@@ -563,16 +565,13 @@
       \field{pages}{231\bibrangedash 256}
       \range{pages}{26}
     \endentry
-    \entry{Collins2003}{article}{}
+    \entry{collins2003head}{article}{}
       \name{author}{1}{}{%
         {{hash=b8bbd832353d6b8ffa73123369d39d55}{%
            family={Collins},
            family_i={C\bibinitperiod},
            given={Michael},
            given_i={M\bibinitperiod}}}%
-      }
-      \list{location}{1}{%
-        {Cambridge, MA, USA}%
       }
       \list{publisher}{1}{%
         {MIT Press}%
@@ -582,25 +581,95 @@
       \field{sortinit}{C}
       \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
       \field{labelyear}{2003}
-      \field{labelmonth}{12}
       \field{datelabelsource}{}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{issn}{0891-2017}
-      \field{journaltitle}{Comput. Linguist.}
-      \field{month}{12}
+      \field{journaltitle}{Computational linguistics}
       \field{number}{4}
-      \field{title}{Head-Driven Statistical Models for Natural Language Parsing}
+      \field{title}{Head-driven statistical models for natural language parsing}
       \field{volume}{29}
       \field{year}{2003}
       \field{pages}{589\bibrangedash 637}
       \range{pages}{49}
-      \verb{doi}
-      \verb 10.1162/089120103322753356
-      \endverb
-      \verb{url}
-      \verb http://dx.doi.org/10.1162/089120103322753356
-      \endverb
+    \endentry
+    \entry{collobert2008unified}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{hash=133261178beda1dc3991e0e1dfd5a791}{%
+           family={Collobert},
+           family_i={C\bibinitperiod},
+           given={Ronan},
+           given_i={R\bibinitperiod}}}%
+        {{hash=417a25f3511d7c21e76d4a15e67dd679}{%
+           family={Weston},
+           family_i={W\bibinitperiod},
+           given={Jason},
+           given_i={J\bibinitperiod}}}%
+      }
+      \list{organization}{1}{%
+        {ACM}%
+      }
+      \strng{namehash}{f03c11485c163ec75428e6ceb05851f1}
+      \strng{fullhash}{f03c11485c163ec75428e6ceb05851f1}
+      \field{sortinit}{C}
+      \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
+      \field{labelyear}{2008}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 25th international conference on Machine learning}
+      \field{title}{A unified architecture for natural language processing: Deep neural networks with multitask learning}
+      \field{year}{2008}
+      \field{pages}{160\bibrangedash 167}
+      \range{pages}{8}
+    \endentry
+    \entry{collobert2011natural}{article}{}
+      \name{author}{6}{}{%
+        {{hash=133261178beda1dc3991e0e1dfd5a791}{%
+           family={Collobert},
+           family_i={C\bibinitperiod},
+           given={Ronan},
+           given_i={R\bibinitperiod}}}%
+        {{hash=417a25f3511d7c21e76d4a15e67dd679}{%
+           family={Weston},
+           family_i={W\bibinitperiod},
+           given={Jason},
+           given_i={J\bibinitperiod}}}%
+        {{hash=ac762f2592005edf6bad58f566967c6c}{%
+           family={Bottou},
+           family_i={B\bibinitperiod},
+           given={Léon},
+           given_i={L\bibinitperiod}}}%
+        {{hash=7db9458d121085904e6496ca5d82977a}{%
+           family={Karlen},
+           family_i={K\bibinitperiod},
+           given={Michael},
+           given_i={M\bibinitperiod}}}%
+        {{hash=481308b301166b521c74fde6566e97e6}{%
+           family={Kavukcuoglu},
+           family_i={K\bibinitperiod},
+           given={Koray},
+           given_i={K\bibinitperiod}}}%
+        {{hash=2fcdcad35bbdb2117d9c48af1ee938a6}{%
+           family={Kuksa},
+           family_i={K\bibinitperiod},
+           given={Pavel},
+           given_i={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{d12381cfb1e47a6c365b9375e84171c5}
+      \strng{fullhash}{aaab451dc6e8d11474bacabdbd135819}
+      \field{sortinit}{C}
+      \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
+      \field{labelyear}{2011}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Machine Learning Research}
+      \field{number}{Aug}
+      \field{title}{Natural language processing (almost) from scratch}
+      \field{volume}{12}
+      \field{year}{2011}
+      \field{pages}{2493\bibrangedash 2537}
+      \range{pages}{45}
     \endentry
     \entry{conway2008neurocognitive}{article}{}
       \name{author}{2}{}{%
@@ -634,7 +703,7 @@
       \field{pages}{113\bibrangedash 131}
       \range{pages}{19}
     \endentry
-    \entry{Klein+2015:neural-crf}{inproceedings}{}
+    \entry{klein2015crf}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=33c8824e909897ff97adefd86d3c952a}{%
            family={Durrett},
@@ -666,14 +735,8 @@
       \field{year}{2015}
       \field{pages}{302\bibrangedash 312}
       \range{pages}{11}
-      \verb{doi}
-      \verb 10.3115/v1/P15-1030
-      \endverb
-      \verb{url}
-      \verb http://aclweb.org/anthology/P15-1030
-      \endverb
     \endentry
-    \entry{Dyer+2016:RNNG}{inproceedings}{}
+    \entry{dyer2016rnng}{inproceedings}{}
       \name{author}{4}{}{%
         {{hash=dc0d6b065a6566cde5d6b93214be1b55}{%
            family={Dyer},
@@ -715,12 +778,6 @@
       \field{year}{2016}
       \field{pages}{199\bibrangedash 209}
       \range{pages}{11}
-      \verb{doi}
-      \verb 10.18653/v1/N16-1024
-      \endverb
-      \verb{url}
-      \verb http://aclweb.org/anthology/N16-1024
-      \endverb
     \endentry
     \entry{emami2005neural}{article}{}
       \name{author}{2}{}{%
@@ -754,7 +811,7 @@
       \field{pages}{195\bibrangedash 227}
       \range{pages}{33}
     \endentry
-    \entry{Enguehard+2017:RNN-multitask}{inproceedings}{}
+    \entry{enguehard2017multitask}{inproceedings}{}
       \name{author}{3}{}{%
         {{hash=00667ed58a544bd8e9aaf3676816390a}{%
            family={Enguehard},
@@ -791,34 +848,28 @@
       \field{year}{2017}
       \field{pages}{3\bibrangedash 14}
       \range{pages}{12}
-      \verb{doi}
-      \verb 10.18653/v1/K17-1003
-      \endverb
-      \verb{url}
-      \verb http://aclweb.org/anthology/K17-1003
-      \endverb
     \endentry
-    \entry{Everaert+2015:structures}{article}{}
+    \entry{everaert2015structures}{article}{}
       \name{author}{5}{}{%
-        {{hash=eafd48bc617f90507df53d563392567f}{%
+        {{hash=0d61c509d153050a76d15e5405fd1fc3}{%
            family={Everaert},
            family_i={E\bibinitperiod},
-           given={M.},
-           given_i={M\bibinitperiod}}}%
-        {{hash=60ca157466220faeb56dfde1fe690bd3}{%
+           given={Martin\bibnamedelima BH},
+           given_i={M\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+        {{hash=8027dbdc3d8f9320ccbba2112facc9d7}{%
            family={Huybregts},
            family_i={H\bibinitperiod},
-           given={Marinus\bibnamedelimb A.\bibnamedelimi C.},
-           given_i={M\bibinitperiod\bibinitdelim A\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
+           given={Marinus\bibnamedelima AC},
+           given_i={M\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
         {{hash=28167c0b3800bc5cfb686676277005b0}{%
            family={Chomsky},
            family_i={C\bibinitperiod},
            given={Noam},
            given_i={N\bibinitperiod}}}%
-        {{hash=c151d11be54429cfb4ccd8a7104b17be}{%
+        {{hash=3525769907fd3647866f9b5e57c5c163}{%
            family={Berwick},
            family_i={B\bibinitperiod},
-           given={Robert\bibnamedelima C.},
+           given={Robert\bibnamedelima C},
            given_i={R\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
         {{hash=83cda44366bb6a56a085f42f1d4a0a2e}{%
            family={Bolhuis},
@@ -826,8 +877,11 @@
            given={Johan\bibnamedelima J},
            given_i={J\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
       }
-      \strng{namehash}{a1cf50a950cc2417137e2515e22ed4fc}
-      \strng{fullhash}{d5914a96cc22affa5088bcecbacf1a2d}
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{1f99c260fc50bd3e2f81b7bc99f418fa}
+      \strng{fullhash}{46e3343401129b050871a9ab8990d242}
       \field{sortinit}{E}
       \field{sortinithash}{fefc5210ef4721525b2a478df41efcd4}
       \field{labelyear}{2015}
@@ -835,13 +889,14 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Trends in cognitive sciences}
-      \field{title}{Structures, Not Strings: Linguistics as Part of the Cognitive Sciences.}
-      \field{volume}{19 12}
+      \field{number}{12}
+      \field{title}{Structures, not strings: linguistics as part of the cognitive sciences}
+      \field{volume}{19}
       \field{year}{2015}
       \field{pages}{729\bibrangedash 743}
       \range{pages}{15}
     \endentry
-    \entry{Finkel+2008}{inproceedings}{}
+    \entry{finkel2008crf}{inproceedings}{}
       \name{author}{3}{}{%
         {{hash=4de26fb3b3f2f480bc1eafd9e4d3c78a}{%
            family={Finkel},
@@ -878,44 +933,45 @@
       \field{year}{2008}
       \field{pages}{959\bibrangedash 967}
       \range{pages}{9}
-      \verb{url}
-      \verb http://aclweb.org/anthology/P08-1109
-      \endverb
     \endentry
-    \entry{Frank+2012:hierarchical}{article}{}
+    \entry{frank2012hierarchical}{article}{}
       \name{author}{3}{}{%
-        {{hash=15c03152f2d27d8797f226e8143b19a2}{%
+        {{hash=cada3be7ca7ee2ce31d49660b09de019}{%
            family={Frank},
            family_i={F\bibinitperiod},
-           given={Stefan\bibnamedelima L.},
+           given={Stefan\bibnamedelima L},
            given_i={S\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
         {{hash=cf6a4ffac9b65bcdddd3c4796403f524}{%
            family={Bod},
            family_i={B\bibinitperiod},
            given={Rens},
            given_i={R\bibinitperiod}}}%
-        {{hash=973a6d45fe0bbec002d53420ce891d06}{%
+        {{hash=f9e0a3817439f8ffc01ed0f6b9441c9d}{%
            family={Christiansen},
            family_i={C\bibinitperiod},
-           given={Morten\bibnamedelima H.},
+           given={Morten\bibnamedelima H},
            given_i={M\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
       }
-      \strng{namehash}{2ba338fb853316484cf755b512381dcd}
-      \strng{fullhash}{0ff1782557e81661de65cedd1b3f336a}
+      \list{publisher}{1}{%
+        {The Royal Society}%
+      }
+      \strng{namehash}{7512726088de820c7cc8b5d9039966e3}
+      \strng{fullhash}{1c36ed5e3cfb55fc0bb42d0c3a12a15c}
       \field{sortinit}{F}
       \field{sortinithash}{c6a7d9913bbd7b20ea954441c0460b78}
       \field{labelyear}{2012}
       \field{datelabelsource}{}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{journaltitle}{Proceedings. Biological sciences}
+      \field{journaltitle}{Proceedings of the Royal Society B: Biological Sciences}
+      \field{number}{1747}
       \field{title}{How hierarchical is language use?}
-      \field{volume}{279 1747}
+      \field{volume}{279}
       \field{year}{2012}
-      \field{pages}{4522\bibrangedash 31}
+      \field{pages}{4522\bibrangedash 4531}
       \range{pages}{10}
     \endentry
-    \entry{Klein+2018:reinforce}{inproceedings}{}
+    \entry{klein2018reinforce}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=8c0d6317a5a127c222cb122f7818e15e}{%
            family={Fried},
@@ -947,11 +1003,8 @@
       \field{year}{2018}
       \field{pages}{469\bibrangedash 476}
       \range{pages}{8}
-      \verb{url}
-      \verb http://aclweb.org/anthology/P18-2075
-      \endverb
     \endentry
-    \entry{Fu2006}{incollection}{}
+    \entry{fu2006gradient}{incollection}{}
       \name{author}{1}{}{%
         {{hash=5c14b8635da41c96177115c4385a9989}{%
            family={Fu},
@@ -1068,7 +1121,7 @@
       \field{pages}{515}
       \range{pages}{1}
     \endentry
-    \entry{Goldberg+2013:dynamic}{article}{}
+    \entry{goldberg2013dynamic}{article}{}
       \name{author}{2}{}{%
         {{hash=33b00f3e2f4f1bb310f1cf8d4a4c500a}{%
            family={Goldberg},
@@ -1096,11 +1149,8 @@
       \field{year}{2013}
       \field{pages}{403\bibrangedash 414}
       \range{pages}{12}
-      \verb{url}
-      \verb https://transacl.org/ojs/index.php/tacl/article/download/145/27
-      \endverb
     \endentry
-    \entry{Gulordava+2018:colorless-green}{inproceedings}{}
+    \entry{gulordava2018colorless}{inproceedings}{}
       \name{author}{5}{}{%
         {{hash=e422444437802b2371f67d73e26a624b}{%
            family={Gulordava},
@@ -1147,12 +1197,6 @@
       \field{year}{2018}
       \field{pages}{1195\bibrangedash 1205}
       \range{pages}{11}
-      \verb{doi}
-      \verb 10.18653/v1/N18-1108
-      \endverb
-      \verb{url}
-      \verb http://aclweb.org/anthology/N18-1108
-      \endverb
     \endentry
     \entry{hale2001earley}{inproceedings}{}
       \name{author}{1}{}{%
@@ -1179,7 +1223,7 @@
       \field{pages}{1\bibrangedash 8}
       \range{pages}{8}
     \endentry
-    \entry{Hale+2018:beam}{inproceedings}{}
+    \entry{hale2018beam}{inproceedings}{}
       \name{author}{4}{}{%
         {{hash=5b8733e930a1a87a90806c69963c531a}{%
            family={Hale},
@@ -1221,9 +1265,6 @@
       \field{year}{2018}
       \field{pages}{2727\bibrangedash 2736}
       \range{pages}{10}
-      \verb{url}
-      \verb http://aclweb.org/anthology/P18-1254
-      \endverb
     \endentry
     \entry{hall2014less}{inproceedings}{}
       \name{author}{3}{}{%
@@ -1258,7 +1299,7 @@
       \field{pages}{228\bibrangedash 237}
       \range{pages}{10}
     \endentry
-    \entry{Eisner+2012:imitation}{incollection}{}
+    \entry{he2012imitation}{inproceedings}{}
       \name{author}{3}{}{%
         {{hash=ab9793659f2bfad54eefb759c28350df}{%
            family={He},
@@ -1276,31 +1317,6 @@
            given={Hal},
            given_i={H\bibinitperiod}}}%
       }
-      \name{editor}{4}{}{%
-        {{hash=b4ac0d7da3c70152eb8651dd27648d63}{%
-           family={Pereira},
-           family_i={P\bibinitperiod},
-           given={F.},
-           given_i={F\bibinitperiod}}}%
-        {{hash=b70004bbac2b5517c4c32fc5cfe070be}{%
-           family={Burges},
-           family_i={B\bibinitperiod},
-           given={C.\bibnamedelimi J.\bibnamedelimi C.},
-           given_i={C\bibinitperiod\bibinitdelim J\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
-        {{hash=27b0ff756cf36911b4cd7d704bfca7a4}{%
-           family={Bottou},
-           family_i={B\bibinitperiod},
-           given={L.},
-           given_i={L\bibinitperiod}}}%
-        {{hash=2cffb24bf1e4e0056d694659663c471c}{%
-           family={Weinberger},
-           family_i={W\bibinitperiod},
-           given={K.\bibnamedelimi Q.},
-           given_i={K\bibinitperiod\bibinitdelim Q\bibinitperiod}}}%
-      }
-      \list{publisher}{1}{%
-        {Curran Associates, Inc.}%
-      }
       \strng{namehash}{d92533f88befab6244d5fb1b5f67c1b3}
       \strng{fullhash}{0eaf49d24b90914e3c0e920d208b3566}
       \field{sortinit}{H}
@@ -1309,14 +1325,11 @@
       \field{datelabelsource}{}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{booktitle}{Advances in Neural Information Processing Systems 25}
-      \field{title}{Imitation Learning by Coaching}
+      \field{booktitle}{Advances in Neural Information Processing Systems}
+      \field{title}{Imitation learning by coaching}
       \field{year}{2012}
       \field{pages}{3149\bibrangedash 3157}
       \range{pages}{9}
-      \verb{url}
-      \verb http://papers.nips.cc/paper/4545-imitation-learning-by-coaching.pdf
-      \endverb
     \endentry
     \entry{huddleston2002grammar}{manual}{}
       \name{author}{2}{}{%
@@ -1399,7 +1412,7 @@
       \field{title}{Categorical reparameterization with gumbel-softmax}
       \field{year}{2017}
     \endentry
-    \entry{Jordan+1999:VI}{article}{}
+    \entry{jordan1999vi}{article}{}
       \name{author}{4}{}{%
         {{hash=57976975ef8efe63daabdeed33b331fa}{%
            family={Jordan},
@@ -1438,7 +1451,7 @@
       \field{pages}{183\bibrangedash 233}
       \range{pages}{51}
     \endentry
-    \entry{Kingma+2014:VAE}{inproceedings}{}
+    \entry{kingma2014vae}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=1e072d74f4ac1094c9c26e1b592cea4a}{%
            family={Kingma},
@@ -1493,7 +1506,7 @@
       \field{pages}{2676\bibrangedash 2686}
       \range{pages}{11}
     \endentry
-    \entry{Klein+2003}{inproceedings}{}
+    \entry{klein2003accurate}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=9fb237891a1517d36109c68767dd6fae}{%
            family={Klein},
@@ -1526,12 +1539,6 @@
       \field{year}{2003}
       \field{pages}{423\bibrangedash 430}
       \range{pages}{8}
-      \verb{doi}
-      \verb 10.3115/1075096.1075150
-      \endverb
-      \verb{url}
-      \verb https://doi.org/10.3115/1075096.1075150
-      \endverb
     \endentry
     \entry{kneser1995improved}{inproceedings}{}
       \name{author}{2}{}{%
@@ -1608,7 +1615,7 @@
       \field{pages}{430\bibrangedash 474}
       \range{pages}{45}
     \endentry
-    \entry{Kuncoro+2017:RNNG-syntax}{inproceedings}{}
+    \entry{kuncoro2017syntax}{inproceedings}{}
       \name{author}{6}{}{%
         {{hash=162a85f97cead5ce47add0716781b2ac}{%
            family={Kuncoro},
@@ -1660,11 +1667,8 @@
       \field{year}{2017}
       \field{pages}{1249\bibrangedash 1258}
       \range{pages}{10}
-      \verb{url}
-      \verb http://aclweb.org/anthology/E17-1117
-      \endverb
     \endentry
-    \entry{Kuncoro+2018:RNNG-deps}{inproceedings}{}
+    \entry{kuncoro2018learn}{inproceedings}{}
       \name{author}{6}{}{%
         {{hash=162a85f97cead5ce47add0716781b2ac}{%
            family={Kuncoro},
@@ -1716,9 +1720,6 @@
       \field{year}{2018}
       \field{pages}{1426\bibrangedash 1436}
       \range{pages}{11}
-      \verb{url}
-      \verb http://aclweb.org/anthology/P18-1132
-      \endverb
     \endentry
     \entry{levy2008expectation}{article}{}
       \name{author}{1}{}{%
@@ -1747,7 +1748,7 @@
       \field{pages}{1126\bibrangedash 1177}
       \range{pages}{52}
     \endentry
-    \entry{Linzen+2016:LSTM-syntax}{article}{}
+    \entry{linzen2016syntax}{article}{}
       \name{author}{3}{}{%
         {{hash=11e9c967573c1c8a0604dda20cf8a914}{%
            family={Linzen},
@@ -1779,9 +1780,6 @@
       \field{year}{2016}
       \field{pages}{521\bibrangedash 535}
       \range{pages}{15}
-      \verb{url}
-      \verb http://aclweb.org/anthology/Q16-1037
-      \endverb
     \endentry
     \entry{maddison2017concrete}{article}{}
       \name{author}{3}{}{%
@@ -1813,7 +1811,44 @@
       \field{title}{The concrete distribution: A continuous relaxation of discrete random variables}
       \field{year}{2017}
     \endentry
-    \entry{Linzen+2018:targeted}{inproceedings}{}
+    \entry{marcus1993penn}{article}{}
+      \name{author}{3}{}{%
+        {{hash=a84230895aa53cc0ddcebd83c1386ec1}{%
+           family={Marcus},
+           family_i={M\bibinitperiod},
+           given={Mitchell\bibnamedelima P},
+           given_i={M\bibinitperiod\bibinitdelim P\bibinitperiod}}}%
+        {{hash=70c3bd2fb69d1b113d0d84c8f65670d5}{%
+           family={Marcinkiewicz},
+           family_i={M\bibinitperiod},
+           given={Mary\bibnamedelima Ann},
+           given_i={M\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+        {{hash=1a6b1a60e440837f7e64b04d28996d76}{%
+           family={Santorini},
+           family_i={S\bibinitperiod},
+           given={Beatrice},
+           given_i={B\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {MIT Press}%
+      }
+      \strng{namehash}{6b6b7a1c0a1e87bb3ed3c208a0f4719f}
+      \strng{fullhash}{470c508d9ea954e77d766b921b4c4bb7}
+      \field{sortinit}{M}
+      \field{sortinithash}{2684bec41e9697b92699b46491061da2}
+      \field{labelyear}{1993}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Computational linguistics}
+      \field{number}{2}
+      \field{title}{Building a large annotated corpus of English: The Penn Treebank}
+      \field{volume}{19}
+      \field{year}{1993}
+      \field{pages}{313\bibrangedash 330}
+      \range{pages}{18}
+    \endentry
+    \entry{linzen2018targeted}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=9db549dbc211f177a88418732ee99800}{%
            family={Marvin},
@@ -1845,42 +1880,38 @@
       \field{year}{2018}
       \field{pages}{1192\bibrangedash 1202}
       \range{pages}{11}
-      \verb{url}
-      \verb http://aclweb.org/anthology/D18-1151
-      \endverb
     \endentry
-    \entry{McCoy+2018:RNN-pos}{article}{}
+    \entry{mccoy2018revisiting}{article}{}
       \name{author}{3}{}{%
-        {{hash=710eef800fffb602ff06dfdc5fab9914}{%
+        {{hash=78fcdad9d615d9322d514e4541c592a5}{%
            family={McCoy},
            family_i={M\bibinitperiod},
-           given={R.\bibnamedelimi Thomas},
+           given={R\bibnamedelima Thomas},
            given_i={R\bibinitperiod\bibinitdelim T\bibinitperiod}}}%
-        {{hash=bc48ba7882116577e14f8e11c446d086}{%
-           family={Frank},
-           family_i={F\bibinitperiod},
-           given={Robert},
-           given_i={R\bibinitperiod}}}%
         {{hash=11e9c967573c1c8a0604dda20cf8a914}{%
            family={Linzen},
            family_i={L\bibinitperiod},
            given={Tal},
            given_i={T\bibinitperiod}}}%
+        {{hash=bc48ba7882116577e14f8e11c446d086}{%
+           family={Frank},
+           family_i={F\bibinitperiod},
+           given={Robert},
+           given_i={R\bibinitperiod}}}%
       }
-      \strng{namehash}{a09e8c90913bca89563b247186781092}
-      \strng{fullhash}{0a3a9a440b352d55337ade6fd71612f1}
+      \strng{namehash}{25d95c843b87277d26b9e89e3d8bc5d6}
+      \strng{fullhash}{987c28068521516a7f69380d8bb76ba6}
       \field{sortinit}{M}
       \field{sortinithash}{2684bec41e9697b92699b46491061da2}
       \field{labelyear}{2018}
       \field{datelabelsource}{}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{journaltitle}{CoRR}
+      \field{journaltitle}{arXiv preprint arXiv:1802.09091}
       \field{title}{Revisiting the poverty of the stimulus: hierarchical generalization without a hierarchical bias in recurrent neural networks}
-      \field{volume}{abs/1802.09091}
       \field{year}{2018}
     \endentry
-    \entry{Miao+2016}{inproceedings}{}
+    \entry{miao2016discrete}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=cca1d0cc31fc06bc0297c522a28f7e57}{%
            family={Miao},
@@ -1912,12 +1943,6 @@
       \field{year}{2016}
       \field{pages}{319\bibrangedash 328}
       \range{pages}{10}
-      \verb{doi}
-      \verb 10.18653/v1/D16-1031
-      \endverb
-      \verb{url}
-      \verb http://aclweb.org/anthology/D16-1031
-      \endverb
     \endentry
     \entry{mikolov2010recurrent}{inproceedings}{}
       \name{author}{5}{}{%
@@ -1959,7 +1984,7 @@
       \field{title}{Recurrent neural network based language model}
       \field{year}{2010}
     \endentry
-    \entry{Mnih+2014:NVIL}{inproceedings}{}
+    \entry{mnih2014nvil}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=effa745fe0078f9f6790f688512c5a53}{%
            family={Mnih},
@@ -1983,6 +2008,73 @@
       \field{booktitle}{ICML}
       \field{title}{Neural Variational Inference and Learning in Belief Networks}
       \field{year}{2014}
+    \endentry
+    \entry{neubig2017dynet}{article}{}
+      \true{moreauthor}
+      \true{morelabelname}
+      \name{author}{10}{}{%
+        {{hash=fcd2ecb2a6a4a3db4c9e66dddf4660b1}{%
+           family={Neubig},
+           family_i={N\bibinitperiod},
+           given={Graham},
+           given_i={G\bibinitperiod}}}%
+        {{hash=dc0d6b065a6566cde5d6b93214be1b55}{%
+           family={Dyer},
+           family_i={D\bibinitperiod},
+           given={Chris},
+           given_i={C\bibinitperiod}}}%
+        {{hash=33b00f3e2f4f1bb310f1cf8d4a4c500a}{%
+           family={Goldberg},
+           family_i={G\bibinitperiod},
+           given={Yoav},
+           given_i={Y\bibinitperiod}}}%
+        {{hash=fd1fa77c7bf29a596913ce09eed4d7b2}{%
+           family={Matthews},
+           family_i={M\bibinitperiod},
+           given={Austin},
+           given_i={A\bibinitperiod}}}%
+        {{hash=457d1a8416f68e512111e2072e02b9eb}{%
+           family={Ammar},
+           family_i={A\bibinitperiod},
+           given={Waleed},
+           given_i={W\bibinitperiod}}}%
+        {{hash=082dd46898a3380c97a52260d042c389}{%
+           family={Anastasopoulos},
+           family_i={A\bibinitperiod},
+           given={Antonios},
+           given_i={A\bibinitperiod}}}%
+        {{hash=ef2e5cd61947a3ce7719b5ce1450d9f0}{%
+           family={Ballesteros},
+           family_i={B\bibinitperiod},
+           given={Miguel},
+           given_i={M\bibinitperiod}}}%
+        {{hash=9c563343fc0981dcd795ba5e1e8a61ae}{%
+           family={Chiang},
+           family_i={C\bibinitperiod},
+           given={David},
+           given_i={D\bibinitperiod}}}%
+        {{hash=97267e7b4ca27a83ff5ec7fdc0c96064}{%
+           family={Clothiaux},
+           family_i={C\bibinitperiod},
+           given={Daniel},
+           given_i={D\bibinitperiod}}}%
+        {{hash=fcbee11f57094a6fbbfcbf494f023974}{%
+           family={Cohn},
+           family_i={C\bibinitperiod},
+           given={Trevor},
+           given_i={T\bibinitperiod}}}%
+      }
+      \strng{namehash}{7464b28583ae73672d13ade30a4d1e41}
+      \strng{fullhash}{80de3d2d58509d4fffc0ba6de2777d84}
+      \field{sortinit}{N}
+      \field{sortinithash}{925374ca63e7594de7fafdb83e64d41d}
+      \field{labelyear}{2017}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:1701.03980}
+      \field{title}{Dynet: The dynamic neural network toolkit}
+      \field{year}{2017}
     \endentry
     \entry{nivre2005dependency}{article}{}
       \name{author}{1}{}{%
@@ -2008,7 +2100,7 @@
       \field{pages}{1\bibrangedash 32}
       \range{pages}{32}
     \endentry
-    \entry{Paisley+2012:VISS}{inproceedings}{}
+    \entry{paisley2012viss}{inproceedings}{}
       \name{author}{3}{}{%
         {{hash=c8d689116a54128b56aa8f6997881eb6}{%
            family={Paisley},
@@ -2091,7 +2183,7 @@
       \field{pages}{959\bibrangedash 968}
       \range{pages}{10}
     \endentry
-    \entry{Ranganath+2014:BBVI}{inproceedings}{}
+    \entry{ranganath2014black}{inproceedings}{}
       \name{author}{3}{}{%
         {{hash=bb5c273638bcd68f168fefeca29f69c1}{%
            family={Ranganath},
@@ -2109,49 +2201,21 @@
            given={David},
            given_i={D\bibinitperiod}}}%
       }
-      \name{editor}{2}{}{%
-        {{hash=a4e041fb1be6fc5ec0f43802c95087d2}{%
-           family={Kaski},
-           family_i={K\bibinitperiod},
-           given={Samuel},
-           given_i={S\bibinitperiod}}}%
-        {{hash=ccb8e56c9ea1e2e3c9ceb8dabc540e1c}{%
-           family={Corander},
-           family_i={C\bibinitperiod},
-           given={Jukka},
-           given_i={J\bibinitperiod}}}%
-      }
-      \list{location}{1}{%
-        {Reykjavik, Iceland}%
-      }
-      \list{publisher}{1}{%
-        {PMLR}%
-      }
       \strng{namehash}{eb8aee9f156942bec0235da68df91a9e}
       \strng{fullhash}{e9b2e33054ca88bf36dd1b335bd4abf6}
       \field{sortinit}{R}
       \field{sortinithash}{c7387613477035a752d935acfc3e3ea2}
       \field{labelyear}{2014}
-      \field{labelmonth}{22--25 Apr}
       \field{datelabelsource}{}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{booktitle}{Proceedings of the Seventeenth International Conference on Artificial Intelligence and Statistics}
-      \field{month}{22--25 Apr}
-      \field{series}{Proceedings of Machine Learning Research}
-      \field{title}{{Black Box Variational Inference}}
-      \field{volume}{33}
+      \field{booktitle}{Artificial Intelligence and Statistics}
+      \field{title}{Black box variational inference}
       \field{year}{2014}
       \field{pages}{814\bibrangedash 822}
       \range{pages}{9}
-      \verb{file}
-      \verb http://proceedings.mlr.press/v33/ranganath14.pdf
-      \endverb
-      \verb{url}
-      \verb http://proceedings.mlr.press/v33/ranganath14.html
-      \endverb
     \endentry
-    \entry{Rennie+2017:argmax-baseline}{article}{}
+    \entry{rennie2017argmax}{article}{}
       \name{author}{5}{}{%
         {{hash=b5f7bf0963fd0783db5938a2e87ee4cc}{%
            family={Rennie},
@@ -2193,7 +2257,7 @@
       \field{pages}{1179\bibrangedash 1195}
       \range{pages}{17}
     \endentry
-    \entry{Rezende+14:DGM}{inproceedings}{}
+    \entry{rezende2014dgm}{inproceedings}{}
       \name{author}{3}{}{%
         {{hash=1cbae2618bca6e9640c2f6595a544a0b}{%
            family={Rezende},
@@ -2225,16 +2289,13 @@
       \field{pages}{1278\bibrangedash 1286}
       \range{pages}{9}
     \endentry
-    \entry{Roark2001}{article}{}
+    \entry{roark2001probabilistic}{article}{}
       \name{author}{1}{}{%
         {{hash=87f54978e777fd84f0f580e62cbda8ba}{%
            family={Roark},
            family_i={R\bibinitperiod},
            given={Brian},
            given_i={B\bibinitperiod}}}%
-      }
-      \list{location}{1}{%
-        {Cambridge, MA, USA}%
       }
       \list{publisher}{1}{%
         {MIT Press}%
@@ -2244,27 +2305,18 @@
       \field{sortinit}{R}
       \field{sortinithash}{c7387613477035a752d935acfc3e3ea2}
       \field{labelyear}{2001}
-      \field{labelmonth}{06}
       \field{datelabelsource}{}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{issn}{0891-2017}
-      \field{journaltitle}{Comput. Linguist.}
-      \field{month}{06}
+      \field{journaltitle}{Computational linguistics}
       \field{number}{2}
-      \field{title}{Probabilistic Top-down Parsing and Language Modeling}
+      \field{title}{Probabilistic top-down parsing and language modeling}
       \field{volume}{27}
       \field{year}{2001}
       \field{pages}{249\bibrangedash 276}
       \range{pages}{28}
-      \verb{doi}
-      \verb 10.1162/089120101750300526
-      \endverb
-      \verb{url}
-      \verb https://doi.org/10.1162/089120101750300526
-      \endverb
     \endentry
-    \entry{Ross:2006:SIM}{book}{}
+    \entry{ross2006simulation}{book}{}
       \name{author}{1}{}{%
         {{hash=eed02fd8e6aac71a2a3492388b00db90}{%
            family={Ross},
@@ -2288,74 +2340,6 @@
       \field{labeltitlesource}{title}
       \field{title}{Simulation, Fourth Edition}
       \field{year}{2006}
-    \endentry
-    \entry{Schulman+2015:surrogate}{incollection}{}
-      \name{author}{4}{}{%
-        {{hash=3e09bd2a25d237ebdaed560a07c0451e}{%
-           family={Schulman},
-           family_i={S\bibinitperiod},
-           given={John},
-           given_i={J\bibinitperiod}}}%
-        {{hash=231312991eab5915498d6c19c2a8cd4e}{%
-           family={Heess},
-           family_i={H\bibinitperiod},
-           given={Nicolas},
-           given_i={N\bibinitperiod}}}%
-        {{hash=b2f6367bc66a7a3541e2e89009daf0dc}{%
-           family={Weber},
-           family_i={W\bibinitperiod},
-           given={Theophane},
-           given_i={T\bibinitperiod}}}%
-        {{hash=e28d4ee199593959d8c29980a64f1974}{%
-           family={Abbeel},
-           family_i={A\bibinitperiod},
-           given={Pieter},
-           given_i={P\bibinitperiod}}}%
-      }
-      \name{editor}{5}{}{%
-        {{hash=7ace0f703f75865b2add1cb4c55909ea}{%
-           family={Cortes},
-           family_i={C\bibinitperiod},
-           given={C.},
-           given_i={C\bibinitperiod}}}%
-        {{hash=8f87e28885fa1a253eaadafeeb73e581}{%
-           family={Lawrence},
-           family_i={L\bibinitperiod},
-           given={N.\bibnamedelimi D.},
-           given_i={N\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
-        {{hash=0beb50eb25818ba13aab0a4b29a04314}{%
-           family={Lee},
-           family_i={L\bibinitperiod},
-           given={D.\bibnamedelimi D.},
-           given_i={D\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
-        {{hash=f2ea44ad7988f1351e0c0da3857862bd}{%
-           family={Sugiyama},
-           family_i={S\bibinitperiod},
-           given={M.},
-           given_i={M\bibinitperiod}}}%
-        {{hash=825f90fd818e38383a2e80d4d3331dd4}{%
-           family={Garnett},
-           family_i={G\bibinitperiod},
-           given={R.},
-           given_i={R\bibinitperiod}}}%
-      }
-      \list{publisher}{1}{%
-        {Curran Associates, Inc.}%
-      }
-      \strng{namehash}{8d6613ae59595910252a86a61babf6c8}
-      \strng{fullhash}{a225af9786234f1806388463bbc35ea5}
-      \field{sortinit}{S}
-      \field{sortinithash}{fd1e7c5ab79596b13dbbb67f8d70fb5a}
-      \field{extrayear}{1}
-      \field{labelyear}{2015}
-      \field{datelabelsource}{}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{booktitle}{Advances in Neural Information Processing Systems 28}
-      \field{title}{Gradient Estimation Using Stochastic Computation Graphs}
-      \field{year}{2015}
-      \field{pages}{3528\bibrangedash 3536}
-      \range{pages}{9}
     \endentry
     \entry{schulman2015gradient}{inproceedings}{}
       \name{author}{4}{}{%
@@ -2384,7 +2368,6 @@
       \strng{fullhash}{a225af9786234f1806388463bbc35ea5}
       \field{sortinit}{S}
       \field{sortinithash}{fd1e7c5ab79596b13dbbb67f8d70fb5a}
-      \field{extrayear}{2}
       \field{labelyear}{2015}
       \field{datelabelsource}{}
       \field{labelnamesource}{author}
@@ -2395,28 +2378,27 @@
       \field{pages}{3528\bibrangedash 3536}
       \range{pages}{9}
     \endentry
-    \entry{Smith2012:adversarial}{article}{}
+    \entry{smith2012adversarial}{article}{}
       \name{author}{1}{}{%
-        {{hash=a0c460aba9a2d1a450d5df136652f4db}{%
+        {{hash=9a7134e1e77eb89fe5582543a3025f2a}{%
            family={Smith},
            family_i={S\bibinitperiod},
-           given={Noah\bibnamedelima A.},
+           given={Noah\bibnamedelima A},
            given_i={N\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
       }
-      \strng{namehash}{a0c460aba9a2d1a450d5df136652f4db}
-      \strng{fullhash}{a0c460aba9a2d1a450d5df136652f4db}
+      \strng{namehash}{9a7134e1e77eb89fe5582543a3025f2a}
+      \strng{fullhash}{9a7134e1e77eb89fe5582543a3025f2a}
       \field{sortinit}{S}
       \field{sortinithash}{fd1e7c5ab79596b13dbbb67f8d70fb5a}
       \field{labelyear}{2012}
       \field{datelabelsource}{}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{journaltitle}{CoRR}
-      \field{title}{Adversarial Evaluation for Models of Natural Language}
-      \field{volume}{abs/1207.0245}
+      \field{journaltitle}{arXiv preprint arXiv:1207.0245}
+      \field{title}{Adversarial evaluation for models of natural language}
       \field{year}{2012}
     \endentry
-    \entry{Goldberg+2016:multitask}{inproceedings}{}
+    \entry{goldberg2016multitask}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=b874f93d29ad9151e52501b113f21077}{%
            family={S{ø}gaard},
@@ -2448,12 +2430,6 @@
       \field{year}{2016}
       \field{pages}{231\bibrangedash 235}
       \range{pages}{5}
-      \verb{doi}
-      \verb 10.18653/v1/P16-2038
-      \endverb
-      \verb{url}
-      \verb http://aclweb.org/anthology/P16-2038
-      \endverb
     \endentry
     \entry{stern2017minimal}{inproceedings}{}
       \name{author}{3}{}{%
@@ -2483,7 +2459,6 @@
       \strng{fullhash}{92f41fe4110f73bb5a09e42453c25a69}
       \field{sortinit}{S}
       \field{sortinithash}{fd1e7c5ab79596b13dbbb67f8d70fb5a}
-      \field{extrayear}{1}
       \field{labelyear}{2017}
       \field{labelmonth}{07}
       \field{datelabelsource}{}
@@ -2496,38 +2471,7 @@
       \field{pages}{818\bibrangedash 827}
       \range{pages}{10}
     \endentry
-    \entry{Stern+2017:beam}{inproceedings}{}
-      \name{author}{3}{}{%
-        {{hash=8b00e95c184f76a063851ed2b67c9301}{%
-           family={Stern},
-           family_i={S\bibinitperiod},
-           given={Mitchell},
-           given_i={M\bibinitperiod}}}%
-        {{hash=8c0d6317a5a127c222cb122f7818e15e}{%
-           family={Fried},
-           family_i={F\bibinitperiod},
-           given={Daniel},
-           given_i={D\bibinitperiod}}}%
-        {{hash=9fb237891a1517d36109c68767dd6fae}{%
-           family={Klein},
-           family_i={K\bibinitperiod},
-           given={Dan},
-           given_i={D\bibinitperiod}}}%
-      }
-      \strng{namehash}{0a292ace52e9b34928a865d51537657c}
-      \strng{fullhash}{a73400b3bef6b6f2a452159dc425d5af}
-      \field{sortinit}{S}
-      \field{sortinithash}{fd1e7c5ab79596b13dbbb67f8d70fb5a}
-      \field{extrayear}{2}
-      \field{labelyear}{2017}
-      \field{datelabelsource}{}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{booktitle}{EMNLP}
-      \field{title}{Effective Inference for Generative Neural Parsing}
-      \field{year}{2017}
-    \endentry
-    \entry{Sutton+2012:CRF}{article}{}
+    \entry{sutton2012crf}{article}{}
       \name{author}{2}{}{%
         {{hash=fd59f6a0549332a54ac82d8840ea6ff1}{%
            family={Sutton},
@@ -2556,7 +2500,7 @@
       \field{pages}{267\bibrangedash 373}
       \range{pages}{107}
     \endentry
-    \entry{Swayamdipta+2018:scaffold}{inproceedings}{}
+    \entry{swayamdipta2018scaffold}{inproceedings}{}
       \name{author}{6}{}{%
         {{hash=17a53fd167ccca7245cb9e8082ccb3a7}{%
            family={Swayamdipta},
@@ -2608,9 +2552,6 @@
       \field{year}{2018}
       \field{pages}{3772\bibrangedash 3782}
       \range{pages}{11}
-      \verb{url}
-      \verb http://aclweb.org/anthology/D18-1412
-      \endverb
     \endentry
     \entry{tesniere1959elements}{misc}{}
       \name{author}{1}{}{%
@@ -2634,7 +2575,80 @@
       \field{title}{Elements of structural syntax, translated by Timothy Osborne and Sylvain Kahane}
       \field{year}{1959}
     \endentry
-    \entry{Vlachos2012:imitation}{inproceedings}{}
+    \entry{titov2007generative}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{hash=38c1cf91413109beb40bd024b86e0969}{%
+           family={Titov},
+           family_i={T\bibinitperiod},
+           given={Ivan},
+           given_i={I\bibinitperiod}}}%
+        {{hash=f66a214e1ca36bb4cef5752eb337d6dc}{%
+           family={Henderson},
+           family_i={H\bibinitperiod},
+           given={James},
+           given_i={J\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Prague, Czech REpublic}%
+      }
+      \list{publisher}{1}{%
+        {Association for Computational Linguistics}%
+      }
+      \strng{namehash}{235471b954f1afc46693c0db633d3ce7}
+      \strng{fullhash}{235471b954f1afc46693c0db633d3ce7}
+      \field{sortinit}{T}
+      \field{sortinithash}{423d138a005a533b47e6475e39378bf2}
+      \field{labelyear}{2007}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 10th International Conference on Parsing Technologies}
+      \field{isbn}{978-1-932432-90-9}
+      \field{series}{IWPT '07}
+      \field{title}{A Latent Variable Model for Generative Dependency Parsing}
+      \field{year}{2007}
+      \field{pages}{144\bibrangedash 155}
+      \range{pages}{12}
+    \endentry
+    \entry{tran2018recurrent}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{hash=41baeee79998b5bb5c1b486916860ec5}{%
+           family={Tran},
+           family_i={T\bibinitperiod},
+           given={Ke},
+           given_i={K\bibinitperiod}}}%
+        {{hash=c126dbf9092eacff66786a1a0d1e81ca}{%
+           family={Bisazza},
+           family_i={B\bibinitperiod},
+           given={Arianna},
+           given_i={A\bibinitperiod}}}%
+        {{hash=593a7c6064e0b959f1197f1a531f8f64}{%
+           family={Monz},
+           family_i={M\bibinitperiod},
+           given={Christof},
+           given_i={C\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Brussels, Belgium}%
+      }
+      \list{publisher}{1}{%
+        {Association for Computational Linguistics}%
+      }
+      \strng{namehash}{290e67b5b21c84825b74e5c3c689690c}
+      \strng{fullhash}{5c3ecd0c1fe7726bb6846a06d9aaf7a6}
+      \field{sortinit}{T}
+      \field{sortinithash}{423d138a005a533b47e6475e39378bf2}
+      \field{labelyear}{2018}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing}
+      \field{title}{The Importance of Being Recurrent for Modeling Hierarchical Structure}
+      \field{year}{2018}
+      \field{pages}{4731\bibrangedash 4736}
+      \range{pages}{6}
+    \endentry
+    \entry{vlachos2012imitation}{inproceedings}{}
       \name{author}{1}{}{%
         {{hash=7e67c7cbda61759192c35b597e0ae638}{%
            family={Vlachos},
@@ -2642,55 +2656,21 @@
            given={Andreas},
            given_i={A\bibinitperiod}}}%
       }
-      \name{editor}{3}{}{%
-        {{hash=180a2eb9f878dfaf1937923bbd516aef}{%
-           family={Deisenroth},
-           family_i={D\bibinitperiod},
-           given={Marc\bibnamedelima Peter},
-           given_i={M\bibinitperiod\bibinitdelim P\bibinitperiod}}}%
-        {{hash=98b0d29966f947460b3eb25590bfa7b5}{%
-           family={Szepesvári},
-           family_i={S\bibinitperiod},
-           given={Csaba},
-           given_i={C\bibinitperiod}}}%
-        {{hash=c2cb77a864f65a21da0f69121b89835b}{%
-           family={Peters},
-           family_i={P\bibinitperiod},
-           given={Jan},
-           given_i={J\bibinitperiod}}}%
-      }
-      \list{location}{1}{%
-        {Edinburgh, Scotland}%
-      }
-      \list{publisher}{1}{%
-        {PMLR}%
-      }
       \strng{namehash}{7e67c7cbda61759192c35b597e0ae638}
       \strng{fullhash}{7e67c7cbda61759192c35b597e0ae638}
       \field{sortinit}{V}
       \field{sortinithash}{d18f5ce25ce0b5ca7f924e3f6c04870e}
       \field{labelyear}{2013}
-      \field{labelmonth}{30 Jun--01 Jul}
       \field{datelabelsource}{}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{abstract}{In the imitation learning paradigm algorithms learn from expert demonstrations in order to become able to accomplish a particular task. DaumÃ© III et al. [2009] framed structured prediction in this paradigm and developed the search-based structured prediction algorithm (Searn) which has been applied successfully to various natural language processing tasks with state-of-the-art performance. Recently, Ross et al. [2011] proposed the dataset aggre- gation algorithm (DAgger) and compared it with Searn in sequential prediction tasks. In this paper, we compare these two algorithms in the context of a more complex structured prediction task, namely biomedical event extraction. We demonstrate that DAgger has more stable performance and faster learning than Searn, and that these advantages are more pronounced in the parameter-free versions of the algorithms.}
-      \field{booktitle}{Proceedings of the Tenth European Workshop on Reinforcement Learning}
-      \field{month}{30 Jun--01 Jul}
-      \field{series}{Proceedings of Machine Learning Research}
+      \field{booktitle}{European Workshop on Reinforcement Learning}
       \field{title}{An investigation of imitation learning algorithms for structured prediction}
-      \field{volume}{24}
       \field{year}{2013}
       \field{pages}{143\bibrangedash 154}
       \range{pages}{12}
-      \verb{file}
-      \verb http://proceedings.mlr.press/v24/vlachos12a/vlachos12a.pdf
-      \endverb
-      \verb{url}
-      \verb http://proceedings.mlr.press/v24/vlachos12a.html
-      \endverb
     \endentry
-    \entry{Jordan+2008:GM}{article}{}
+    \entry{jordan2008graphical}{article}{}
       \name{author}{2}{}{%
         {{hash=1d2a0377716f2184ea82600dce921433}{%
            family={Wainwright},
@@ -2724,7 +2704,7 @@
       \field{pages}{1\bibrangedash 305}
       \range{pages}{305}
     \endentry
-    \entry{DBLP:journals/corr/abs-1805-12471}{article}{}
+    \entry{warstadt2018acceptability}{article}{}
       \name{author}{3}{}{%
         {{hash=d97b53c2cf0e9705139aa82b343c3d1d}{%
            family={Warstadt},
@@ -2736,50 +2716,126 @@
            family_i={S\bibinitperiod},
            given={Amanpreet},
            given_i={A\bibinitperiod}}}%
-        {{hash=26aed0a9226e745a0177ac2fc49f4cfd}{%
+        {{hash=fcbd7aac79c698626b0307115acdb949}{%
            family={Bowman},
            family_i={B\bibinitperiod},
-           given={Samuel\bibnamedelima R.},
+           given={Samuel\bibnamedelima R},
            given_i={S\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
       }
       \strng{namehash}{5f7b3e09c6ed56e256c02fe2385f44df}
-      \strng{fullhash}{92e60773563d275af5b415245fed06bd}
+      \strng{fullhash}{e022f285bd15ad3e6a22801b9ce91aac}
       \field{sortinit}{W}
       \field{sortinithash}{99e3ba1b3f78bb6f073e7fa7ac11636b}
       \field{labelyear}{2018}
       \field{datelabelsource}{}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{journaltitle}{CoRR}
+      \field{journaltitle}{arXiv preprint arXiv:1805.12471}
       \field{title}{Neural Network Acceptability Judgments}
-      \field{volume}{abs/1805.12471}
       \field{year}{2018}
     \endentry
-    \entry{Williams1992:REINFORCE}{article}{}
+    \entry{williams1992reinforce}{article}{}
       \name{author}{1}{}{%
-        {{hash=68500db67576d4d0a65080bb1c0f9b9b}{%
+        {{hash=f0fac00adb48128fc1f7750b2d8e7065}{%
            family={Williams},
            family_i={W\bibinitperiod},
-           given={Ronald\bibnamedelima J.},
+           given={Ronald\bibnamedelima J},
            given_i={R\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
       }
-      \strng{namehash}{68500db67576d4d0a65080bb1c0f9b9b}
-      \strng{fullhash}{68500db67576d4d0a65080bb1c0f9b9b}
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{f0fac00adb48128fc1f7750b2d8e7065}
+      \strng{fullhash}{f0fac00adb48128fc1f7750b2d8e7065}
       \field{sortinit}{W}
       \field{sortinithash}{99e3ba1b3f78bb6f073e7fa7ac11636b}
       \field{labelyear}{1992}
-      \field{labelmonth}{05}
       \field{datelabelsource}{}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{journaltitle}{Mach. Learn.}
-      \field{month}{05}
+      \field{journaltitle}{Machine learning}
       \field{number}{3-4}
-      \field{title}{Simple Statistical Gradient-Following Algorithms for Connectionist Reinforcement Learning}
+      \field{title}{Simple statistical gradient-following algorithms for connectionist reinforcement learning}
       \field{volume}{8}
       \field{year}{1992}
       \field{pages}{229\bibrangedash 256}
       \range{pages}{28}
+    \endentry
+    \entry{wilson2017marginal}{inproceedings}{}
+      \name{author}{5}{}{%
+        {{hash=bc00a337eef51f6117a24059d29d6f4f}{%
+           family={Wilson},
+           family_i={W\bibinitperiod},
+           given={Ashia\bibnamedelima C},
+           given_i={A\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
+        {{hash=a38e53f2691eb44e52e78c8e72de65a7}{%
+           family={Roelofs},
+           family_i={R\bibinitperiod},
+           given={Rebecca},
+           given_i={R\bibinitperiod}}}%
+        {{hash=8b00e95c184f76a063851ed2b67c9301}{%
+           family={Stern},
+           family_i={S\bibinitperiod},
+           given={Mitchell},
+           given_i={M\bibinitperiod}}}%
+        {{hash=34451c97b5a5bad6fcb6513573d1f94d}{%
+           family={Srebro},
+           family_i={S\bibinitperiod},
+           given={Nati},
+           given_i={N\bibinitperiod}}}%
+        {{hash=3503059e1c0c778913607c87d8c5173a}{%
+           family={Recht},
+           family_i={R\bibinitperiod},
+           given={Benjamin},
+           given_i={B\bibinitperiod}}}%
+      }
+      \strng{namehash}{b12b615e68e830c20e6cf1cc2fbf786e}
+      \strng{fullhash}{e82328c25d4abaf18ec2351824ad8aff}
+      \field{sortinit}{W}
+      \field{sortinithash}{99e3ba1b3f78bb6f073e7fa7ac11636b}
+      \field{labelyear}{2017}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Advances in Neural Information Processing Systems}
+      \field{title}{The marginal value of adaptive gradient methods in machine learning}
+      \field{year}{2017}
+      \field{pages}{4148\bibrangedash 4158}
+      \range{pages}{11}
+    \endentry
+    \entry{xiang2009illusory}{article}{}
+      \name{author}{3}{}{%
+        {{hash=986ad88e4b50a16bf5d6fa859fd7b6b3}{%
+           family={Xiang},
+           family_i={X\bibinitperiod},
+           given={Ming},
+           given_i={M\bibinitperiod}}}%
+        {{hash=b87fd264848ddfe0feac987452a84433}{%
+           family={Dillon},
+           family_i={D\bibinitperiod},
+           given={Brian},
+           given_i={B\bibinitperiod}}}%
+        {{hash=6fd6c9e8e81273c684e8799a212e8c7b}{%
+           family={Phillips},
+           family_i={P\bibinitperiod},
+           given={Colin},
+           given_i={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{a3e36c35d59c1092a7113696641174c7}
+      \strng{fullhash}{187b98d309ddf3cd68defb8b8bf72689}
+      \field{sortinit}{X}
+      \field{sortinithash}{2999ebab86052e6d71b434385f8b4ed2}
+      \field{labelyear}{2009}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Brain and Language}
+      \field{number}{1}
+      \field{title}{Illusory licensing effects across dependency types: ERP evidence}
+      \field{volume}{108}
+      \field{year}{2009}
+      \field{pages}{40\bibrangedash 55}
+      \range{pages}{16}
     \endentry
     \entry{yin2018structvae}{article}{}
       \name{author}{4}{}{%
@@ -2816,7 +2872,7 @@
       \field{title}{StructVAE: Tree-structured Latent Variable Models for Semi-supervised Semantic Parsing}
       \field{year}{2018}
     \endentry
-    \entry{Zhang+2016:multitask}{inproceedings}{}
+    \entry{zhang2016multitask}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=a93b8226adf7f0cb3e5e0e30fbc9c177}{%
            family={Zhang},
@@ -2848,14 +2904,12 @@
       \field{year}{2016}
       \field{pages}{1557\bibrangedash 1566}
       \range{pages}{10}
-      \verb{doi}
-      \verb 10.18653/v1/P16-1147
-      \endverb
-      \verb{url}
-      \verb http://aclweb.org/anthology/P16-1147
-      \endverb
     \endentry
   \endsortlist
+  \missing{Roark2001}
+  \missing{baydin2017automatic}
+  \missing{Stern+2017:beam}
+  \missing{Buys+2018}
 \endrefsection
 \endinput
 

@@ -3,7 +3,7 @@
 \section{Model}
 I describe the model.
 \begin{itemize}
-  \item A discriminative RNNG is a discriminative transition based parser that uses regular RNNs to summarize the actions in the history and the words on the buffer into vectors, and uses a special RNN with a syntax-dependent recurrence---a StackLSTM \citep{Ballesteros+2017:StackLSTM} outfitted with a custom `composition' function---to obtain a vector representation of items on the the stack.
+  \item A discriminative RNNG is a discriminative transition based parser that uses regular RNNs to summarize the actions in the history and the words on the buffer into vectors, and uses a special RNN with a syntax-dependent recurrence---a StackLSTM \citep{ballesteros2017greedy} outfitted with a custom `composition' function to summarize closed constituents---to obtain a vector representation of items on the the stack.
   \item Depending on the perspective, the generative RNNG is either a structured model of language that predicts words together with their structure, or a generative version of the discriminative RNNG that jointly models the words in the instead of conditioning on them. From the view of parsing, it simply dispends with the buffer of the discriminative RNNG to instead predict the words that dscorate the tree. As a model of sentences, it can be understood as kind of structured RNN: it predicts words, but also compresses and labels them recursively whenever they form a complete constituents.
   \item Specify the transition-system.
   \item Fundamentally, the model is a probability distribution over action sequences $\veca = ( a_1, \dots, a_T )$ that generate trees $\y$ conditionally given a sequence of words $\x$ in the discriminative model, and jointly with $\x$ in the the generative model.
@@ -61,14 +61,12 @@ I describe the model.
       &= \frac{ \exp ( \vecr_{x_{\nu(t)}}^{\top} \vecu_t + b_{x_{\nu(t)}} ) }{ \sum_{x \in \Sigma} \exp ( \vecr_{x}^{\top} \vecu_t + b_{x} ) },  \\
   \end{align}
   where $A$ can denote either $\discactions$ or $\genactions$, and $\vecw_i$, $\vecv_i$, $\vecr_i$, and $b_i$ are parameters.
-
   % \begin{align*}
   %   \vecW &= [ \vecw_1, \dots, \vecw_{|A|} ] \in \reals^{ D \times |A| } \\
   %   \vecV &= [ \vecv_1, \dots, \vecv_{|N|} ] \in \reals^{ D \times |N| } \\
   %   \vecR &= [ \vecr_1, \dots, \vecr_{|\Sigma|} ] \in \reals^{ D \times |\Sigma| }\}
   % \end{align*}
-
-  are real valued parameters of appropriate dimension.
+  % are real valued parameters of appropriate dimension.
 
   \item How the feature vector $\vecu_t$ is constructed is outlined in the next section.
 
@@ -80,7 +78,7 @@ I describe the model.
   \begin{align*}
     \genactions &= \{ \reduce \} \cup \{ \open(n) \mid n \in N \} \cup \{ \gen(x) \mid x \in \Sigma \},
   \end{align*}
-  and defined $p(\veca)$ as in \ref{eq:naive-rnng-model}. However, in the case of the generative model this is particularly inefficient from a computational perspective. Note that the set $\Sigma$ is generally very very large\footnote{On the order of tens of thousands.}, and observe that the normalization in \ref{eq:action-regression} requires a sum over all actions, while a large number of the actions do not generate words. For consistency we extend this modelling choice to the discriminative RNNG. Besides, the presentation in \ref{eq:disc-model} and \ref{eq:gen-model} is conceptually cleaner: first choose an action, then, if required, choose the details of that action. For these reasons combined we opt for the two-step prediction. And although it appears that \citet{Dyer+2016:RNNG} model the sequences according to \ref{eq:naive-rnng-model}, followup work takes our approach and models the actions of the generative RNNG as in equation \ref{eq:gen-model} \citep{Hale+2018:beam}.
+  and defined $p(\veca)$ as in \ref{eq:naive-rnng-model}. However, in the case of the generative model this is particularly inefficient from a computational perspective. Note that the set $\Sigma$ is generally very very large\footnote{On the order of tens of thousands.}, and observe that the normalization in \ref{eq:action-regression} requires a sum over all actions, while a large number of the actions do not generate words. For consistency we extend this modelling choice to the discriminative RNNG. Besides, the presentation in \ref{eq:disc-model} and \ref{eq:gen-model} is conceptually cleaner: first choose an action, then, if required, choose the details of that action. For these reasons combined we opt for the two-step prediction. And although it appears that \citet{dyer2016rnng} model the sequences according to \ref{eq:naive-rnng-model}, followup work takes our approach and models the actions of the generative RNNG as in equation \ref{eq:gen-model} \citep{hale2018beam}.
 
 \end{itemize}
 
@@ -99,19 +97,19 @@ Here I describe the research into syntax and cognition using the RNNG.
 \paragraph{Cognition} RNNGs can tell us something about our brains.
 \begin{itemize}
   \item Psycholinguistic research that indicates that top-down parsing is a cognitively plausible parsing strategy \citep{brennan2016abstract}.
-  \item RNNGs are good statistical predictors in psycholinguistic research \citep{Hale+2018:beam}. More precisely: the sequential word-probabilities that are derived from a generative RNNG in combination with word-synchronous beam-search \citep{Stern+2017:beam} provide per-word complexity metrics that predict human reading difficulty well.
+  \item RNNGs are good statistical predictors in psycholinguistic research \citep{hale2018beam}. More precisely: the sequential word-probabilities that are derived from a generative RNNG in combination with word-synchronous beam-search \citep{Stern+2017:beam} provide per-word complexity metrics that predict human reading difficulty well.
 \end{itemize}
 
 \paragraph{Syntax} What do RNNGs learn about syntax?
 \begin{itemize}
-  \item RNNGs learn a number of syntactic phenomena as a side product of the main objective. The attention mechanism in the composition function learns a type of `soft' head-rules, and when trained on trees without syntactic labels the RNNG still learns representations for constituents that cluster according to their withheld gold label \citep{Kuncoro+2017:RNNG-syntax}.
-  \item RNNGs are better at a long-distance verb-argument agreement task than LSTMS \citep{Linzen+2016:LSTM-syntax,Kuncoro+2018:RNNG-deps}.
+  \item RNNGs learn a number of syntactic phenomena as a side product of the main objective. The attention mechanism in the composition function learns a type of `soft' head-rules, and when trained on trees without syntactic labels the RNNG still learns representations for constituents that cluster according to their withheld gold label \citep{kuncoro2017syntax}.
+  \item RNNGs are better at a long-distance verb-argument agreement task than LSTMS \citep{linzen2016syntax,kuncoro2018learn}.
 \end{itemize}
 
 \section{Experiments}
 We perform three types of experiments with the RNNG:
 \begin{itemize}
-  \item We reproduce the parsing f-scores and perplexities from \citep{Dyer+2016:RNNG}, and some more.
+  \item We reproduce the parsing f-scores and perplexities from \citep{dyer2016rnng}, and some more.
   \item We evauluate `how good the model is' as a sampler.
 \end{itemize}
 
@@ -119,7 +117,7 @@ We perform three types of experiments with the RNNG:
 \begin{itemize}
   \item We train with standard hyperparameter settings and optimizer, and replicate the original results. We will get a little lower with the discriminative model because we do not use tags.
   \item We evaluate F-score with 100 samples (as many proposal trees as possible).
-  \item We evaluate perplexity with varying number of samples: 1 (argmax), 10, 20, 50, 100 (default). The peplexity evaluation with the argmax prediction gives an impression of the uncertaty in the model \citep{Buys+2018}.
+  \item We evaluate perplexity with varying number of samples: 1 (argmax), 10, 20, 50, 100 (default). The peplexity evaluation with the argmax prediction gives an impression of the uncertaty in the model \citep{buys2018exact}.
 \end{itemize}
 
 \paragraph{Sampler} We investigate the following:
@@ -139,7 +137,7 @@ We perform three types of experiments with the RNNG:
 
 \section{Related work}
 \begin{itemize}
-  \item Generative dependency parsing and language modelling \citep{Buys+2015:bayes-gen-dep,Buys+2015:neural-gen-dep,Buys+2018}
+  \item Generative dependency parsing and language modelling \citep{titov2007generative,buys2015bayesian,buys2015generative,buys2018exact}
   \item Top-down parsing and language modelling \citep{Roark2001}.
-  \item Brains research with top-down parsing \citep{Hale+2018:beam,brennan2016abstract}.
+  \item Brain research with top-down parsing \citep{brennan2016abstract,hale2018beam}.
 \end{itemize}

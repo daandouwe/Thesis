@@ -1,23 +1,43 @@
 % \bibliography{../src/bibliography}
 
-\section{Data}
-I describe in detail the data used in the experiments:
+In this appendix I summarize all choices made concerning data, implementation, and optimization.
 \begin{itemize}
-  \item Data preprocessing for the PTB and unlabeled data.
-  \item Vocabulary and UNKing for all models.
+  \item We choose simplicity over maximal performance: minimal UNKing; embeddings learned from scratch; basic SGD optimization.
+  \item We surmise that more elaborate UNKin, or more elaborate embeddings should improve performance,
+  \item Our goal however is to compare in the most vanilla setting possible, to maximally focus on the essential differences between the approaches.
+\end{itemize}
+
+\section{Data}
+
+\paragraph{Penn Treebank}
+We follow \citet{stern2017minimal} in all choices of data processing and unk-ing. Most importantly, we use only a single unknown token, and perform dynamic
+\begin{itemize}
+  \item We use the Penn Treebank \citep{marcus1993penn} for our experiments, with standard splits of sections 2-21 for training, section 22 for development, and section 23 for testing.
+  \item We perform no token preprocessing, and only a single \texttt{<UNK>} token is used for unknown words at test time.
+  \item For all discriminative models the vocabulary contains all words in the training data and words are replaced by \texttt{<UNK>} with probability $1 / (1 + \text{freq}(w))$ during training, where $\text{freq}(w)$ is the frequency of $w$ in the training data.
+  \item For all generative models the vocabulary contains all words with a count greater that  in the training data and words are replaced by \texttt{<UNK>} with probability $1 / (1 + \text{freq}(w))$ during training, where $\text{freq}(w)$ is the frequency of $w$ in the training data.
+  \item We use automatically predicted tags for training and testing, obtaining predicted part-of- speech tags for the Penn Treebank using the Stan- ford tagger (Toutanova et al., 2003) with 10-way jackknifing, and using the provided predicted part- of-speech and morphological tags for the French Treebank.
+\end{itemize}
+
+\paragraph{Penn Treebank}
+
+\section{Implementation}
+\begin{itemize}
+  \item Implemented in Dynet \citep{neubig2017dynet}.
+  \item Surrogate objective and gradient blocking \cite{schulman2015gradient}.
+  \item All embeddings are learned from random initialization. More elaborate word embeddings (GloVE, FastText, ELMO) will no doubt improve results, but this is not the aim of our researcg.
+\end{itemize}
+
+\section{Hyperparameters}
+For the RNNG we follow exactly the hyperparameters from the published papers. For the CRF parser
+\begin{itemize}
+  \item
 \end{itemize}
 
 \section{Optimization}
 I describe the choices made with regards to optimization.
 \begin{itemize}
-  \item Optimization by automatic differentiation \citep{Blei+2016:VI}
-  \item SGD and not Adam or other adaptive methods \citep{stern2017minimal} and choices of hyperparameters.
+  \item Automatic differentiation \citep{baydin2018automatic} for gradients.
+  \item SGD and not Adam or other adaptive methods \citep{wilson2017marginal} and choices of hyperparameters.
   \item Learning rate schedule based on development scores.
-  \item Surrogate objective and gradient blocking \cite{schulman2015gradient}.
-\end{itemize}
-
-\section{Implementation}
-\begin{itemize}
-  \item We use Dynet.
-  \item Other specifics for optimization such as how to obtain blocked gradients.
 \end{itemize}

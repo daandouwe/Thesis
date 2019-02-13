@@ -465,9 +465,9 @@ INPUT ../03-rnng/rnng.tex
 INPUT ../03-rnng/rnng.tex
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/rm-lmbx9.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/rm-lmbx5.tfm
-INPUT ../04-crf-parser/crf-parser.tex
-INPUT ../04-crf-parser/crf-parser.tex
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
+INPUT ../04-crf-parser/crf-parser.tex
+INPUT ../04-crf-parser/crf-parser.tex
 INPUT ../05-semisupervised/semisupervised.tex
 INPUT ../05-semisupervised/semisupervised.tex
 INPUT ../06-syneval/syneval.tex
@@ -479,6 +479,9 @@ INPUT ../08-app-figures/figures.tex
 INPUT ../08-app-figures/figures.tex
 INPUT ../09-app-implementation/implementation.tex
 INPUT ../09-app-implementation/implementation.tex
+INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/lm/t1lmtt.fd
+INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/lm/t1lmtt.fd
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmtt10.tfm
 INPUT ../10-app-crf/crf.tex
 INPUT ../10-app-crf/crf.tex
 INPUT ../11-app-vi/vi.tex
@@ -489,11 +492,11 @@ INPUT ../figures/control-variate.pdf
 INPUT thesis.aux
 INPUT thesis.run.xml
 OUTPUT thesis.run.xml
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb
@@ -524,5 +527,6 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy6.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy8.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy9.pfb
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmtt10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb

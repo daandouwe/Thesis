@@ -4,7 +4,7 @@ In this chapter we show how the RNNG can be trained on unlabeled data. Together 
 \begin{itemize}
   \item I formulate an unsupervised objective for the RNNG that we can combine with the supervised objective to perfom semisupervised training.
   \item I introduce an approximate posterior in the form of a discriminative parser and derive a variational lower bound on the unsupervised objective.
-  \item I show how to obtain gradients for this lowerbound by rewrinting the gradient into a form that is called the score function estimator \citep{Williams1992:REINFORCE,Fu2006}.
+  \item I show how to obtain gradients for this lowerbound by rewrinting the gradient into a form that is called the score function estimator \citep{williams1992reinforce,fu2006gradient}.
 \end{itemize}
 
 \paragraph{Notation} In this chapter we write $\x$ for a sentence, $\y$ for a (latent) constituency tree, and $\yieldx$ for the \textit{yield} of $\x$, all trees that can be assigned to $\x$. Furthermore, let $\mathcal{D}_L = \{ (\x_i, \y_i)\}_{i=1}^N$ be a labeled dataset of sentences $\x$ with gold trees $\y$, and let $\mathcal{D}_U = \{ \x_i \}_{i=1}^M$ be an unlabeled dataset consisting of just sentences $\x$. We denote our generative RNNG with $\ptheta$ and when we write $\qlambda$ we will mean either the discriminative RNNG or the CRF parser.
@@ -27,7 +27,7 @@ This objective is optimized as usual using stochastic gradient estimates:
   \nabla_{\theta} \mathcal{L}_{S}(\theta)
     &\approx \frac{N}{K} \sum_{(\x, \y) \in \mathcal{B}} \nabla_{\theta} \log \ptheta (\x, \y), \\
 \end{align*}
-where $\mathcal{B} \subseteq \mathcal{D}_U$ is a mini-batch of size $K$ sampled uniformly from the dataset. We rely on automatic differentiation to compute $\nabla_{\theta} \log \ptheta(\x, \y)$ \citep{Baydin+2017:AD}.
+where $\mathcal{B} \subseteq \mathcal{D}_U$ is a mini-batch of size $K$ sampled uniformly from the dataset. We rely on automatic differentiation to compute $\nabla_{\theta} \log \ptheta(\x, \y)$ \citep{baydin2017automatic}.
 
 \paragraph{Unsupervised objective}
 We define the unsupervised objective $\mathcal{L}_{U}(\theta, \lambda)$ as
@@ -38,7 +38,7 @@ We define the unsupervised objective $\mathcal{L}_{U}(\theta, \lambda)$ as
 \end{align*}
 This is a language modelling objective, in which we treat $\y$ as latent. We have noted the a consequence the lack of independence assumptions of the RNNG is that the sum over trees $\y$ is not tractable. To optimize this objective we must thus fall back on approximate methods.
 
-\section{Variational approximation} We optimize the unsupervised objective using variational inference \citep{Blei+2016:VI}. We introduce a posterior $\qlambda(\y | \x)$ parametrised by $\lambda$ and use Jensen's inequality to derive a variational lower bound on the objective $\mathcal{L}_U(\theta, \lambda)$. First we bound the likelihood of one $\x$ in $\mathcal{D}_U$
+\section{Variational approximation} We optimize the unsupervised objective using variational inference \citep{blei2016vi}. We introduce a posterior $\qlambda(\y | \x)$ parametrised by $\lambda$ and use Jensen's inequality to derive a variational lower bound on the objective $\mathcal{L}_U(\theta, \lambda)$. First we bound the likelihood of one $\x$ in $\mathcal{D}_U$
 \begin{align*}
   \log p (\x)
     &= \log \sum_{\y  \in \mathcal{Y}(\x)} \qlambda(\y |\x) \frac{\ptheta(\x,\y )}{\qlambda(\y | \x)} \\
@@ -54,7 +54,7 @@ and write
    &\leq \sum_{\x \in \mathcal{D}_U} \log p (\x) \nonumber \\
    &= \mathcal{L}_{U}(\theta, \lambda)
 \end{align}
-as a lower bound on our true objective $\mathcal{L}_{U}$. This is a particular instance of the evidence lower bound (ELBO) \citep{Blei+2016:VI}. The quantity can be rewritten to reveal an entropy term H($q$)
+as a lower bound on our true objective $\mathcal{L}_{U}$. This is a particular instance of the evidence lower bound (ELBO) \citep{blei2016vi}. The quantity can be rewritten to reveal an entropy term H($q$)
 \begin{align*}
   \expect_{q} \Big[\log \ptheta(\x,\y )  - \log  \qlambda(\y | \x) \Big]
     &=\expect_{q} \Big[\log \ptheta(\x,\y ) \Big]  - \expect_{q} \Big[\log \qlambda(\y | \x) \Big] \\
@@ -90,7 +90,7 @@ Just like the supervised objective $\mathcal{L}_U$ we optimize the lower bound $
 where $y_i \sim \qlambda( \cdot | \x)$ for $i=1,\dots,K$ are samples from the approximate posterior. We can move the gradient inside the expectation because $q$ does not depend on $\theta$, and note that $\nabla_{\theta} \log \qlambda(\y | \x) = 0$.
 
 \paragraph{Gradients of posterior parameters}
-The second gradient is not so straightforward and requires us to rewrite the objective into a form that is called the \textit{score function estimator} \citep{Fu2006}. Firstly we define a \textit{learning signal}
+The second gradient is not so straightforward and requires us to rewrite the objective into a form that is called the \textit{score function estimator} \citep{fu2006gradient}. Firstly we define a \textit{learning signal}
 \begin{equation}
   L(\x, \y) \defeq \log \ptheta(\x, \y) - \log \qlambda(\y | \x),
 \end{equation}
@@ -105,14 +105,14 @@ In this rewritten form the gradient is in the form of an expectation, and that d
     \expect_{q} \Big[ L(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) \Big]
         &\approx \frac{1}{K}\sum_{i=1}^K  L(\x, \y_i)\nabla_{\lambda} \log \qlambda(\x | \y_i)
 \end{align}
-where again $y_i \sim \qlambda(\cdot | \x)$ for $i=1,\dots,K$ are independently sampled from the approximate posterior. This estimator has been derived in slightly different forms in \citet{Williams1992:REINFORCE,Paisley+2012:VISS,Mnih+2014:NVIL,Ranganath+2014:BBVI,Miao+2016} and is also known as the \textsc{reinforce} estimator \citep{Williams1992:REINFORCE}.
+where again $y_i \sim \qlambda(\cdot | \x)$ for $i=1,\dots,K$ are independently sampled from the approximate posterior. This estimator has been derived in slightly different forms in \citet{williams1992reinforce,paisley2012viss,mnih2014nvil,ranganath2014black,miao2016discrete} and is also known as the \textsc{reinforce} estimator \citep{williams1992reinforce}.
 
 
 \section{Variance reduction}
 We introduce the two baselines:
 \begin{itemize}
-  \item Feedforward baseline \citep{Miao+2016}.
-  \item Argmax baseline from \citet{Rennie+2017:argmax-baseline} which is exact in the CRF, and approximate in the RNNG.
+  \item Feedforward baseline \citep{miao2016discrete}.
+  \item Argmax baseline from \citet{rennie2017argmax} which is exact in the CRF, and approximate in the RNNG.
   \item The CRF has no variance in estimating the entropy.
 \end{itemize}
 
@@ -127,7 +127,7 @@ We introduce the two baselines:
 
 \section{Related work}
 \begin{itemize}
-  \item Discrete latent variables in neural models \citep{Miao+2016,yin2018structvae}.
-  \item Semisupervised training for the RNNG \citep{Cheng+2017:RNNG-VI}.
-  \item Argmax baseline \cite{Rennie+2017:argmax-baseline}.
+  \item Discrete latent variables in neural models \citep{miao2016discrete,yin2018structvae}.
+  \item Semisupervised training for the RNNG \citep{cheng2017rnng}.
+  \item Argmax baseline \cite{rennie2017argmax}.
 \end{itemize}

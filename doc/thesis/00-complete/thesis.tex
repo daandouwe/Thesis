@@ -29,7 +29,7 @@
 
 % neural network functions
 \newcommand{\ff}{\textsc{FeedForward}}
-\newcommand{\rnn}{\textsc{Rnn}}
+\newcommand{\rnn}{\textsc{rnn}}
 \newcommand{\lstm}{\textsc{Lstm}}
 \newcommand{\rnng}{\textsc{Rnng}}
 \newcommand{\birnn}{\textsc{BiRnn}}
@@ -42,6 +42,8 @@
 \newcommand{\gen}{\textsc{gen}}
 \newcommand{\discactions}{A_{\mathcal{D}}}
 \newcommand{\genactions}{A_{\mathcal{G}}}
+
+\newcommand{\syneval}{\textsc{syneval}}
 
 
 % blocking gradient in computation graph
@@ -179,25 +181,28 @@ I find that:
 \input{../07-conclusion/conclusion}
 
 
-\printbibliography
-
-
 \appendix
 \chapter{Figures}
 \label{A1-figures}
 \input{../08-app-figures/figures.tex}
 
+
 \chapter{Implementation}
 \label{A2-implementation}
 \input{../09-app-implementation/implementation.tex}
+
 
 \chapter{Conditional Random Fields}
 \label{A3-crf}
 \input{../10-app-crf/crf.tex}
 
+
 \chapter{Variational Inference}
 \label{A4-vi}
 \input{../11-app-vi/vi.tex}
+
+
+\printbibliography
 
 
 %BACKMATTER SEE DOCUMENTATION

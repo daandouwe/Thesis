@@ -6,11 +6,11 @@ In this appendix we give an account of variational inference in general of amort
 \section{Variational Inference}
 We will write some generic things about variational inference.
 \begin{itemize}
-  \item Variational inference for exponential families, with conjugate priors \citep{Jordan+1999:VI,Jordan+2008:GM,Blei+2016:VI}.
-  \item With amortized inference, using neural networks, for non-conjugate models \citep{Kingma+2014:VAE,Rezende+14:DGM} and in particular the reparametrization trick that makes these models efficiently trainable.
+  \item Variational inference for exponential families, with conjugate priors \citep{jordan1999vi,jordan2008graphical,blei2016vi}.
+  \item With amortized inference, using neural networks, for non-conjugate models \citep{kingma2014vae,rezende2014dgm} and in particular the reparametrization trick that makes these models efficiently trainable.
   \item Reparametrization for discrete latent variables \citep{maddison2017concrete,jang2017gumbel}.
   \item The generalization of this reparametrization trick in automatic differentiation variational inference \citep{kucukelbir2017automatic}.
-  \item Black box variational inference, which uses the same combination of score function gradient with variance reduction that we resort to \citep{Ranganath+2014:BBVI}.
+  \item Black box variational inference, which uses the same combination of score function gradient with variance reduction that we resort to \citep{ranganath2014black}.
 \end{itemize}
 
 
@@ -56,7 +56,7 @@ We
 
 
 \section{Optimization}
-We use automatic differentiation \citep{Baydin+2017:AD} to obtain all our gradients. In order to obtain the gradients in formula \ref{eq:score-function-estimator} using this method we rewrite it in the form of a \textit{surrogate objective} \citep{Schulman+2015:surrogate}:
+We use automatic differentiation \citep{baydin2017automatic} to obtain all our gradients. In order to obtain the gradients in formula \ref{eq:score-function-estimator} using this method we rewrite it in the form of a \textit{surrogate objective} \citep{schulman2015gradient}:
 \begin{align}
   \label{eq:surrogate}
   \objective_{ \textsc{surr} }(\theta, \lambda) &= \frac{1}{K}\sum_{i=1}^K \log \qlambda(\x | \y_i) \blockgrad( L(\x, \y_i) ).
@@ -76,7 +76,7 @@ Automatic differentiation of equation \ref{eq:surrogate} with respect to $\lambd
 hence the adjective \textit{surrogate}.
 
 \section{Variance reduction}
-We have derived an estimator for the gradient of the posterior parameters in the unsupervised objective. This estimator is unbiased, but is known to have high variance, often too much to be useful \citep{Paisley+2012:VISS}. Two effective methods to counter this are control variates and baselines \citep{Ross:2006:SIM}.
+We have derived an estimator for the gradient of the posterior parameters in the unsupervised objective. This estimator is unbiased, but is known to have high variance, often too much to be useful \citep{paisley2012viss}. Two effective methods to counter this are control variates and baselines \citep{ross2006simulation}.
 
 \paragraph{Variance of estimator} First, let's analyze the variance of our estimator. Note that our expectation is of the general form
 \begin{align*}
@@ -168,7 +168,7 @@ Bringing this all together, we let our new estimator be
     &= \expect \Big[ \hat{f}(X) \Big] \approx \frac{1}{n} \sum_{i=1}^n [ f(X_i) - ag(X_i) \Big] - \mu_{g}
 \end{align*}
 
-\paragraph{Example} \citep{Ross:2006:SIM} Suppose we want to use simulation to determine
+\paragraph{Example} \citep{ross2006simulation} Suppose we want to use simulation to determine
 \begin{equation*}
     \expect \Big[f(X)\Big] = \expect \Big[e^X\Big] = \int_0^1 e^x dx = e - 1
 \end{equation*}

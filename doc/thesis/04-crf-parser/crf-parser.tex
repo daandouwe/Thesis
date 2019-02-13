@@ -65,9 +65,9 @@ I describe how the local scores are computed using neural networks.
 
 \subsection{Motivation}
 \begin{itemize}
-  \item Key point to make: this model regards a constituency tree as a collection of \textit{labeled spans} over a sentence. Earlier models, both log-linear and neural, regard a constituency tree as a collection of \textit{anchored rules} over a sentence \citep{Finkel+2008,Klein+2015:neural-crf}.
+  \item Key point to make: this model regards a constituency tree as a collection of \textit{labeled spans} over a sentence. Earlier models, both log-linear and neural, regard a constituency tree as a collection of \textit{anchored rules} over a sentence \citep{finkel2008crf,klein2015crf}.
   \item A model over spanned rules puts more expressiveness in the state space of the dynamic program, because the correlations between subparts of the trees are modeled through the rich rules. The model in \citet{stern2017minimal} instead puts the expressiveness in the input space by using rich neural feature representations. The state space in contrast is less structured, because the score-function is agnostic to the composition of it's children.
-  \item Earlier approaches went even farther. These approaches enriched the grammar by lexicalizing the rules \citep{Collins2003} or by breaking the grammar's independence assumptions by annotating the rule with parent and sibling labels \citep{Klein+2003}.
+  \item Earlier approaches went even farther. These approaches enriched the grammar by lexicalizing the rules \citep{collins2003head} or by breaking the grammar's independence assumptions by annotating the rule with parent and sibling labels \citep{klein2003accurate}.
   \item The choice to model labeled spans makes dramatically improves the speed of this model. In the section on inference we will show precisely how.
 \end{itemize}
 
@@ -188,8 +188,8 @@ We perform three types of experiments with the CRF parser:
 Here I describe related work, and in particular earlier approaches to (neural) CRF-parsing.
 \begin{enumerate}
   \item Of course \citep{stern2017minimal}
-  \item CRFs \citep{Sutton+2012:CRF}
-  \item CRF parsing with linear and nonlinear features \citep{Finkel+2008,Klein+2015:neural-crf}
+  \item CRFs \citep{sutton2012crf}
+  \item CRF parsing with linear and nonlinear features \citep{finkel2008crf,klein2015crf}
   \item Attempts to simplify the grammar and thus the state-space of the dynamic program \citep{hall2014less}.
   \item Recent extension of \citet{stern2017minimal}, with same model but different features \citep{kitaev2018attentive}.
 \end{enumerate}
