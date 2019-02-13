@@ -94,7 +94,7 @@ class SpanMultitaskLanguageModel(object):
         self.spec.pop("self")
         self.spec.pop("model")
 
-        self.model = model.add_subcollection("MultitaskLanguageModel")
+        self.model = model.add_subcollection("SpanMultitaskLanguageModel")
         self.word_vocab = word_vocab
         self.label_vocab = label_vocab
         self.lstm_dim = lstm_dim

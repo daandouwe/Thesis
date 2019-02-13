@@ -355,3 +355,19 @@ def add_dummy_tags(tree, tag='*'):
             i += 1
     assert i == max_idx, i
     return new_tree
+
+
+def uncollapse(spans):
+    """Uncollapse the unary chains in a list of spans.
+
+    Example:
+        turns (1, 4, ('S', 'NP',)) into (1, 4, ('S',)) and (1, 4, ('NP',))
+    """
+    new_spans = []
+    for left, right, labels in spans:
+        if len(labels) > 1:
+            for label in labels:
+                new_spans.append((left, right, (label,)))
+        else:
+            new_spans.append((left, right, labels))
+    return new_spans

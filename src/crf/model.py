@@ -138,7 +138,9 @@ class ChartParser(object):
                         split_sum)
 
                 # the dummy node cannot be the top node
-                start = 0 if length < len(words) else 1
+                # start = 0 if length < len(words) else 1
+                start = 0
+
                 summed[left, right] = semiring.sums([
                     chart[left, right, label]
                     for label in self.label_vocab.values[start:]
@@ -147,6 +149,8 @@ class ChartParser(object):
         # implicit top node that expands to all but the dummy node
         lognormalizer = summed[0, len(words)]
 
+        # chart[0, len(words), self.label_vocab.values[0]] = semiring.zero()
+
         return chart, summed, lognormalizer
 
     def outside(self, words, label_scores, inside_chart, inside_summed, semiring=LogProbSemiring):
@@ -154,20 +158,33 @@ class ChartParser(object):
         chart = {}
         outside_summed = {}
 
+
+        # top_edge_weights = {label: inside_chart[0, len(words), label]
+        #     for label in self.label_vocab.values}
+        #
+        # top_edges_total = semiring.sums(list(top_edge_weights.values()))
+        #
+        # top_edge_logprobs = {label: semiring.division(score, top_edges_total)
+        #     for label, score in top_edge_weights.items()}
+
+
         for length in range(len(words), 0, -1):
             for left in range(len(words) - length, -1, -1):
                 right = left + length
 
                 if left == 0 and right == len(words):
-                    # TODO: this is a total hack, and incorrect too
-                    chart[left, right, self.label_vocab.values[0]] = semiring.one()
-                    for label in self.label_vocab.values[1:]:
-                        chart[left, right, label] = semiring.zero()
-                        # chart[left, right, label] = semiring.sums([
-                        #     inside_chart[left, right, l]
-                        #     for l in self.label_vocab.values[1:]
-                        #     if l != label
-                        # ])
+
+                    # All edges from TOP have the same weight:
+                    for label in self.label_vocab.values:
+                        chart[left, right, label] = semiring.division(
+                            semiring.one(),
+                            np.log(len(self.label_vocab.indices)))
+
+                    # for label, label_index in self.label_vocab.indices.items():
+                    #     chart[left, right, label] = semiring.product(
+                    #         semiring.one(),
+                    #         top_edge_logprobs[label])
+
                 else:
                     left_split_sum = semiring.zero() if left == 0 else semiring.sums([
                         semiring.product(
@@ -240,38 +257,66 @@ class ChartParser(object):
 
         return tree, score
 
-    def marginals(self, inside_chart, outside_chart, lognormalizer, semiring=LogProbSemiring, eps=1e-4):
-        assert set(inside_chart) == set(outside_chart)
+    def marginals(self, inside_chart, outside_chart, lognormalizer, semiring=LogProbSemiring):
+        assert set(inside_chart) == set(outside_chart)  # must contain the same nodes
 
         marginals = {}
         for node in inside_chart:
+
             marginals[node] = dy.exp(
                 semiring.division(
                     semiring.product(
                         inside_chart[node],
                         outside_chart[node]),
-                    lognormalizer)
-            )
+                    lognormalizer))
 
-        # # TODO: this should not be needed
-        # total = dy.esum(list(marginals.values()))
-        # if not abs(total.value() - 1.) < eps:
-        #     for node, value in marginals.items():
-        #         marginals[node] = dy.cdiv(value, total)
+            # marginals[node] = dy.exp(
+            #     semiring.product(
+            #         inside_chart[node],
+            #         outside_chart[node]))
+
+        # TODO: normalization should not be needed!
+        total = dy.esum(list(marginals.values()))
+        for node, value in marginals.items():
+            marginals[node] = dy.cdiv(value, total)
+
+        # sent_len = max(marginals.keys(), key=lambda x: x[1])[1]
+        #
+        # print('Number of nodes:', len(marginals))
+        #
+        # top_marginals = sorted([
+        #     ((left, right, label), value.value())
+        #         for (left, right, label), value in marginals.items()
+        #         if left == 0 and right == sent_len],
+        #     key=lambda x: x[-1])
+        # for marginal in top_marginals:
+        #     print(marginal)
 
         return marginals
 
     def entropy(self, marginals, label_scores, lognormalizer):
 
-        expected_scores = dy.esum([
+        all_scores = [label_scores[left, right][self.label_vocab.index(label)]
+            for left, right, label in marginals]
+
+        expected_scores = [
             marginals[left, right, label] * label_scores[left, right][self.label_vocab.index(label)]
             for left, right, label in marginals
-        ])
-        entropy = -expected_scores + lognormalizer
+        ]
 
-        return entropy
+        expected_score = dy.esum(expected_scores)
 
-    def forward(self, tree, is_train=True, max_margin=False, return_entropy=False):
+        # for expected, score in zip(expected_scores, all_scores):
+        #     print(expected.value(), score.value())
+
+        # entropy = -dy.esum(expected_scores) + lognormalizer
+        # entropy = -expected_scores
+
+        entropy = lognormalizer - expected_score
+
+        return entropy, expected_score
+
+    def forward(self, tree, is_train=True, return_entropy=True):
         assert isinstance(tree, trees.SpanNode)
 
         words = tree.words()
@@ -279,18 +324,6 @@ class ChartParser(object):
             unked_words = self.word_vocab.unkify(words)
         else:
             unked_words = self.word_vocab.process(words)
-
-        # if max_margin:
-        #     label_scores = self.get_node_scores(unked_words)
-        #     pred, pred_score = self.viterbi(words, label_scores)
-        #     gold_score = self.score_tree(tree, label_scores)
-        #     correct = pred.un_cnf().linearize() == tree.un_cnf().linearize()
-        #     loss = dy.zeros(1) if correct else pred_score - gold_score
-        #     # TODO: this is not working as expected
-        #     # print('pred', pred_score.value(), 'gold', gold_score.value())
-        #     # print('>', pred.un_cnf().linearize())
-        #     # print()
-        #     return loss
 
         label_scores = self.get_node_scores(unked_words)
         score = self.score_tree(tree, label_scores)
@@ -300,16 +333,10 @@ class ChartParser(object):
         nll = -logprob
 
         if return_entropy:
-            # Should not be needed
-            # label_scores = {(left, right): dy.inputVector(label_scores[left, right].value())
-            #     for left, right in label_scores}
-            # inside_summed = {(left, right): dy.scalarInput(inside_summed[left, right].value())
-            #     for left, right in inside_summed}
-            # lognormalizer = dy.scalarInput(lognormalizer.value())
 
             outside_chart = self.outside(words, label_scores, inside_chart, inside_summed)
             marginals = self.marginals(inside_chart, outside_chart, lognormalizer)
-            entropy = self.entropy(marginals, label_scores, lognormalizer)
+            entropy, expected_score = self.entropy(marginals, label_scores, lognormalizer)
 
             score_sum = dy.esum([
                 label_scores[left, right][self.label_vocab.index(label)]
@@ -317,13 +344,42 @@ class ChartParser(object):
             ])
 
             print(
+                'sent-length', len(words),
+                'tree-score', round(score.value(), 4),
+                'expected-score', round(expected_score.value(), 4),
+                'num-scores', len(marginals),
                 'score-sum', round(score_sum.value(), 2),
                 'entropy', round(entropy.value(), 2),
-                'marginal-sum', round(dy.esum(list(marginals.values())).value(), 2)
+                'marginal-sum', round(dy.esum(list(marginals.values())).value(), 2),
+                'lognormalizer', round(lognormalizer.value(), 2),
             )
+
+            # top_outside = sorted([
+            #     ((left, right, label), value.value())
+            #         for (left, right, label), value in outside_chart.items()
+            #         if left == 0 and right == len(words)],
+            #     key=lambda x: x[-1])
+            #
+            # for outside in top_outside:
+            #     print(outside)
+            # print('>', ' '.join(words))
+            # print()
+
             # return nll, entropy
             return nll
         else:
+            score_sum = dy.esum([
+                label_scores[left, right][self.label_vocab.index(label)]
+                for left, right, label in inside_chart
+            ])
+
+            print(
+                'sent-length', len(words),
+                'tree-score', round(score.value(), 4),
+                'lognormalizer', round(lognormalizer.value(), 2),
+                'score-sum', round(score_sum.value(), 2),
+            )
+
             return nll
 
     def parse(self, words):

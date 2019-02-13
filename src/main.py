@@ -108,8 +108,6 @@ def main():
                         help='max number of epochs')
     training.add_argument('--max-time', type=int, default=inf,
                         help='max time in seconds')
-    training.add_argument('--max-lines', type=int, default=-1,
-                        help='max lines from the dataset')
     training.add_argument('--batch-size', type=int, default=1,
                         help='size of mini batch')
     training.add_argument('--dropout', type=float, default=0.2,

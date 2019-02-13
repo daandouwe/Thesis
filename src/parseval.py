@@ -1,18 +1,23 @@
 """
 Custom Parseval implementation.
 """
-
-import sys
+import argparse
 
 from utils.evalb import Parseval
 
 
-def main(gold_path, pred_path):
-    Parseval(gold_path, pred_path).evaluate()
+def main(gold_path, pred_path, tsv_output=False):
+    Parseval(gold_path, pred_path).evaluate(tsv_output=tsv_output)
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 3:
-        exit('Usage: \n  python parseval.py gold_path pred_path')
 
-    main(sys.argv[1], sys.argv[2])
+    parser = argparse.ArgumentParser(description='PARSEVAL bracketing evaluation.')
+
+    parser.add_argument('gold_path')
+    parser.add_argument('pred_path')
+    parser.add_argument('--tsv-output', action='store_true')
+
+    args = parser.parse_args()
+
+    main(args.gold_path, args.pred_path, args.tsv_output)

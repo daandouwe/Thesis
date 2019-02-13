@@ -92,7 +92,7 @@ def predict_tree_file(args):
 
 
 def predict_input_disc(args):
-    print('Predicting with discriminative model.')
+    print('Predicting with discriminative rnng.')
 
     parser = load_model(args.checkpoint)
 
@@ -100,36 +100,68 @@ def predict_input_disc(args):
         sentence = input('Input a sentence: ')
         words = sentence.split()
 
-        print('Greedy decoder:')
-        tree, logprob = parser.parse(words)
-        print('  {} {:.2f}'.format(
-            tree.linearize(with_tag=False), logprob.value()))
+        print('Processed:', ' '.join(parser.word_vocab.process(words)))
         print()
 
-        print('Sampling decoder:')
-        for _ in range(5):
-            tree, logprob, *rest = parser.sample(words)
+        print('Parse:')
+        tree, nll = parser.parse(words)
+        print('  {} {:.2f}'.format(
+            tree.linearize(with_tag=False), nll.value()))
+        print()
+
+        print('Samples (alpha = {}):'.format(args.alpha, 2))
+        for _ in range(8):
+            tree, nll, *rest = parser.sample(words, alpha=args.alpha)
             print('  {} {:.2f}'.format(
-                tree.linearize(with_tag=False), logprob.value()))
+                tree.linearize(with_tag=False), nll.value()))
+        print('-'*79)
+        print()
+
+
+def predict_input_crf(args):
+    print('Predicting with crf parser.')
+
+    parser = load_model(args.checkpoint)
+
+    while True:
+        sentence = input('Input a sentence: ')
+        words = sentence.split()
+
+        print('Processed:', ' '.join(parser.word_vocab.process(words)))
+        print()
+
+        print('Parse:')
+        tree, nll = parser.parse(words)
+        print('  {} {:.2f}'.format(
+            tree.linearize(with_tag=False), nll.value()))
+        print()
+
+        print('Samples:')
+        for tree, nll in parser.sample(words, num_samples=8):
+            print('  {} {:.2f}'.format(
+                tree.linearize(with_tag=False), nll.value()))
         print('-'*79)
         print()
 
 
 def predict_input_gen(args):
-    print('Predicting with generative model.')
+    print('Predicting with generative rnng.')
 
     joint = load_model(args.checkpoint)
     proposal = load_model(args.proposal_model)
+
     parser = GenerativeDecoder(
-        model=joint, proposal=proposal, num_samples=args.num_samples)
+        model=joint, proposal=proposal, num_samples=args.num_samples, alpha=args.alpha)
 
     while True:
         sentence = input('Input a sentence: ')
         words = sentence.split()
 
         print('Processed:', ' '.join(joint.word_vocab.process(words)))
+        print()
 
         print('Perplexity: {:.2f}'.format(parser.perplexity(words)))
+        print()
 
         print('MAP tree:')
         tree, proposal_logprob, joint_logprob = parser.map_tree(words)
@@ -321,10 +353,14 @@ def inspect_model(args):
 
 def main(args):
     if args.from_input:
-        if args.model_type in ('disc-rnng', 'crf'):
+        if args.model_type == 'disc-rnng':
             predict_input_disc(args)
+        elif args.model_type == 'crf':
+            predict_input_crf(args)
         elif args.model_type == 'gen-rnng':
             predict_input_gen(args)
+        else:
+            exit('Invalid option for prediction: {}'.format(args.model_type))
     elif args.from_text_file:
         predict_text_file(args)
     elif args.from_tree_file:

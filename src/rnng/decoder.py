@@ -20,7 +20,7 @@ class GenerativeDecoder:
             model=None,
             proposal=None,
             num_samples=100,
-            alpha=0.8,
+            alpha=1.0,
     ):
         if model is not None:
             assert isinstance(model, GenRNNG), type(model)
@@ -97,10 +97,15 @@ class GenerativeDecoder:
         else:
             words = list(words)
             samples = []
-            for _ in range(self.num_samples):
+            if isinstance(self.proposal, DiscRNNG):
+                for _ in range(self.num_samples):
+                    dy.renew_cg()
+                    tree, nll = self.proposal.sample(words, alpha=self.alpha)
+                    samples.append((tree, -nll.value()))
+            elif isinstance(self.proposal, ChartParser):
                 dy.renew_cg()
-                tree, nll = self.proposal.sample(words, alpha=self.alpha)
-                samples.append((tree, -nll.value()))
+                for tree, nll in self.proposal.sample(words, self.num_samples):
+                    samples.append((tree, -nll.value()))
 
         # Count and filter
         samples = self.count_samples(samples)  # list of tuples (tree, post_logprob, count)

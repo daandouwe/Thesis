@@ -155,7 +155,7 @@ def main(args):
         )
     else:
         raise ValueError(f'Invalid model {args.model_type}.')
-        
+
     # Train the model
     trainer.train()
 
