@@ -29,3 +29,7 @@ For all available options use
 ```bash
 python src/main.py --help
 ```
+
+
+# TODO
+- [ ] With new data: either add `TOP` label to predictions, or remove `TOP` from gold trees.

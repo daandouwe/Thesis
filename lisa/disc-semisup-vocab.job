@@ -3,7 +3,7 @@
 #SBATCH -p normal
 #SBATCH -J disc-semisup-vocab
 #SBATCH -o lisa/out/disc-semisup-vocab.out
-#SBATCH -t 3-00:00:00
+#SBATCH -t 5-00:00:00
 
 # send an e-mail when the job starts
 echo "Job $SLURM_JOB_NAME started at `date`" | mail $USER -s "Started job $SLURM_JOB_NAME"
