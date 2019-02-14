@@ -2378,6 +2378,34 @@
       \field{pages}{3528\bibrangedash 3536}
       \range{pages}{9}
     \endentry
+    \entry{sennrich2017grammatical}{inproceedings}{}
+      \name{author}{1}{}{%
+        {{hash=dbb9225ae208939ef2c5eec31d16922a}{%
+           family={Sennrich},
+           family_i={S\bibinitperiod},
+           given={Rico},
+           given_i={R\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Valencia, Spain}%
+      }
+      \list{publisher}{1}{%
+        {Association for Computational Linguistics}%
+      }
+      \strng{namehash}{dbb9225ae208939ef2c5eec31d16922a}
+      \strng{fullhash}{dbb9225ae208939ef2c5eec31d16922a}
+      \field{sortinit}{S}
+      \field{sortinithash}{fd1e7c5ab79596b13dbbb67f8d70fb5a}
+      \field{labelyear}{2017}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 15th Conference of the European Chapter of the Association for Computational Linguistics: Volume 2, Short Papers}
+      \field{title}{How Grammatical is Character-level Neural Machine Translation? Assessing MT Quality with Contrastive Translation Pairs}
+      \field{year}{2017}
+      \field{pages}{376\bibrangedash 382}
+      \range{pages}{7}
+    \endentry
     \entry{smith2012adversarial}{article}{}
       \name{author}{1}{}{%
         {{hash=9a7134e1e77eb89fe5582543a3025f2a}{%
@@ -2905,11 +2933,39 @@
       \field{pages}{1557\bibrangedash 1566}
       \range{pages}{10}
     \endentry
+    \entry{zweig2011microsoft}{report}{}
+      \name{author}{2}{}{%
+        {{hash=cfb1a34f05df33abbac5edaa416f2b48}{%
+           family={Zweig},
+           family_i={Z\bibinitperiod},
+           given={Geoffrey},
+           given_i={G\bibinitperiod}}}%
+        {{hash=0c1232164e3919bf78dc1ceb5c977473}{%
+           family={Burges},
+           family_i={B\bibinitperiod},
+           given={Christopher\bibnamedelima JC},
+           given_i={C\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {Citeseer}%
+      }
+      \strng{namehash}{fad079a8a4406feddf8b85445c8f1aa9}
+      \strng{fullhash}{fad079a8a4406feddf8b85445c8f1aa9}
+      \field{sortinit}{Z}
+      \field{sortinithash}{fdda4caaa6b5fa63e0c081dcb159543a}
+      \field{labelyear}{2011}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{The microsoft research sentence completion challenge}
+      \field{type}{techreport}
+      \field{year}{2011}
+    \endentry
   \endsortlist
   \missing{Roark2001}
-  \missing{baydin2017automatic}
   \missing{Stern+2017:beam}
   \missing{Buys+2018}
+  \missing{baydin2017automatic}
 \endrefsection
 \endinput
 

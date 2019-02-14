@@ -35,8 +35,8 @@ I describe the model.
 
   \item Then let $\indicator_{ \{ a_t \, = \, \open \} }$ be the indicator function for the event that the action $a_t$ is to open a new nonterminal, and similarly let $\indicator_{ \{ a_t \, = \, \gen \} }$ be the indicator function for the event that the action $a_t$ is to generate a word. Furthermore we introduce two functions that maps between sets of indices to indicate the number of times a particular action has been taken at each time step:
   \begin{align*}
-    \mu &: \{ 1, \dots, T \} \to \{ 1, \dots, M \}: \mu(t) = \sum_{i < t} \indicator_{ \{ a_i \, = \, \open \} },  \\
-    \nu &: \{ 1, \dots, T \} \to \{ 1, \dots, N \}: \nu(t) = \sum_{i < t} \indicator_{ \{ a_i \, = \, \gen \} }.
+    \mu &: [ T ] \to [ M ]: \mu(t) = \sum_{i=0}^{t-1} \indicator_{ \{ a_i \, = \, \open \} },  \\
+    \nu &: [ T ] \to [ N ]: \nu(t) = \sum_{i=0}^{t-1} \indicator_{ \{ a_i \, = \, \gen \} }.
   \end{align*}
 
   \item Let $\veca$ be a sequeunce from $\discactions^T$. Then the model for the discrminative RNNG is
@@ -133,7 +133,6 @@ We perform three types of experiments with the RNNG:
   We estimate the quantity $\text{H}(Y \mid X = x)$ with the model samples. We estimate the quantity $\text{H}(Y \mid X)$ by a sum over the development dataset. For the probabilities $p_X(x)$ we use the marginalized probabilities of the joint RNNG (with samples from the discrminative parser $p_{Y \mid X}$).
   \item We asses for some cherry picked sentences. This is more qualitative. These sentences should be difficult or ambiguous. Or they can be ungramatical when taken from the syneval dataset. We can evaluate their entropy, and the diversity of samples, for example to see if there are clear modes. We can make violinplots of the probabilities of the samples. We can compute the f-scores of the samples compared with the argmax tree.
 \end{itemize}
-
 
 \section{Related work}
 \begin{itemize}

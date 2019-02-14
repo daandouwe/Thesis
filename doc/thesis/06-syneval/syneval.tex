@@ -1,28 +1,36 @@
 % \bibliography{../src/bibliography.bib}
 
-Language models are typically evaluated by the perplexity they assign on held out data, and so did we evaluate our language models in the previous chapters. In this chapter we look at alternative evaluation. In particular, we are interested in evaluation that specifically probes the syntactic abilities of language models. To this end we take the dataset introduced by \citet{linzen2018targeted}, which presents a comprehensive set of syntactic challenges, and evaluate our models against it. The dataset consists of constructed sentence pairs that differ in only one word, where one sentence is grammatical and the other is not. The task is to assign higher probability to the grammatical sentence. This task can be thought of as soliciting comparative \textit{acceptability judgements}, a key concept in linguistics. We will refer to this dataset as \syneval, for \textit{syntactic evaluation}.
+Language models are typically evaluated by the perplexity they assign on held out data. And thus did we evaluate our language models in the previous chapters. In this chapter we look at alternatives. In particular, we loot at evaluation that specifically probes the syntactic ability of language models. To this end we take the dataset introduced by \citet{linzen2018targeted}, which presents a comprehensive set of syntactic challenges, and evaluate the models presented thus far against them. The dataset consists of constructed sentence pairs that differ in only one word, where one sentence is grammatical and the other is not, and the task is to assign higher probability to the grammatical sentence. We can think of this task as soliciting comparative \textit{acceptability judgements}, which is a key concept in linguistics. We will refer to this dataset as $\syneval$, for \textit{syntactic evaluation}.
 
-The chapter is organized as follows. First, I introduce the \syneval dataset and describe syntactic phenomana that it tests, and I summarize earlier work on syntactic evaluation. I then describe multitask learning as an approach that has been taken to improve language models for this task, and introduce a novel multitask model based on span labeling. I then evaluate all the models introduced in this thesis on this dataset and describe the results.
+The chapter is organized as follows. First, I introduce the $\syneval$ dataset and describe syntactic phenomena that it tests, and review how this dataset relates to other work on syntactic evaluation. I then describe multitask learning as an approach that has been taken to improve language models for this task, and introduce a novel multitask model based on span labeling. Finally I evaluate all the models introduced in this thesis on this dataset and discuss the results.
 
 \section{Syntactic evaluation}
-A shortcoming of perplexity is that the metric conflates various sources of succes. A language model can make use of many features of language to predict the probability of a sequence of words. Although we would like the probability of a sentence to depend on high-level phenomena such as syntactic well-formedness or global semantic coherence, a language model can also obtain low peplexity by assiging high probability to collocations and semantic relations that can predicted from local context, since most sentences are grammatically simple \citep{linzen2018targeted}. Arguably, this conflation is also the appeal: perplexity is a one size fits all metric. But to get a more fine-grained analysis of language models we must resort to fine-grained metrics.
+A shortcoming of perplexity is that the metric conflates various sources of succes. A language model can make use of many aspects of language to predict the probability of a sequence of words. And although we would like the probability of a sentence to depend on high-level phenomena such as syntactic well-formedness or global semantic coherence, a language model can also focus on lower hanging fruit such as collocations and other semantic relations predicted from local context to obtain low peplexity. How much a language model has picked up on syntax is especially challing, given that most sentences in a corpus are grammatically simple \citep{linzen2018targeted}. Arguably, this conflation is also the appeal: perplexity is a one size fits all metric. But for a fine-grained analysis we must resort to a fine-grained metric.
 
-Recently, a series of papers has introduced tasks that specifically evaluate the syntactic abilities of language models \citep{linzen2016syntax,gulordava2018colorless,linzen2018targeted}. And that can be very informative. The task introduced by \citet{linzen2016syntax} is to predict the correct conjugation of a verb in long-distance subject-verb agreement---especially in the precense of distracting subjects that intervene. This task has revealed that lower perplexity does not imply greater succes on this task \citep{tran2018recurrent}, and that an explicitly syntactic model like the RNNG significanlty outperforms purely sequential models, especially when the distance between the subject and the verb increases \citep{kuncoro2018learn}. This type of agreement is one of the many phenomena evaluated in \syneval.
+Recently, a series of papers has introduced tasks that specifically evaluate the syntactic abilities of language models \citep{linzen2016syntax,gulordava2018colorless,linzen2018targeted}. And that can be very informative. The task introduced by \citet{linzen2016syntax} is to predict the correct conjugation of a verb given an earlier occuring subject---especially in the precense of distracting subjects that intervene\footnote{E.g. \textit{Parts} of the river valley \textit{have}/\textit{has}.}. This task has revealed that lower perplexity does not imply greater succes on this task \citep{tran2018recurrent}, and that an explicitly syntactic model like the RNNG significanlty outperforms purely sequential models, especially with increasing distance between the subject and the verb \citep{kuncoro2018learn}. This type of agreement is one of the phenomena evaluated in $\syneval$.
 
-\subsection{Dataset}
-The \syneval dataset consists of contrastive sentence pairs where one sentence is grammatical and the other is not. These sentences differ in only one word. Let $(\x, \x')$ be this minimal pair, with grammatical sentence $\x$ and an ungrammatical sentence $\x'$. Then a language model $p$ makes a correct prediction on this pair if $p(\x) > p(\x')$.
+\paragraph{Dataset}
+The $\syneval$ dataset consists of contrastive sentence pairs that differ in only one word. Let $(\x, \x')$ be this minimal pair, with grammatical sentence $\x$ and an ungrammatical sentence $\x'$. Then a language model $p$ makes a correct prediction on this pair if $p(\x) > p(\x')$.
 
-The classification is based on the probability that the model assigns to the entire sentence. This means that the task can be applied to grammatical phenomena that are not local, because they that depend not on a single word, or where the phenomena is not purely sequential, which contrasts with the task introduced in \citet{linzen2016syntax} that revolves around the prediction for one word. This approach is also more natural for a model like the RNNG, where the probability of the sentence is computed by marginalizing over all latent structures, whereas individual word probabilities can only be obtained when conditioning on a single structure---for example the predicted parse---as is done in \cite{kuncoro2018learn}.
+The classification is based on the probability of the entire sequence. This makes the task applicable to grammatical phenomena that involve interaction between multiple words, or where the word of contention does not have any left context. This contrasts with the task introduced in \citet{linzen2016syntax}. This approach is also more natural for a model like the RNNG, where the probability of the sentence is computed by marginalizing over all latent structures, whereas individual word probabilities can only be obtained when conditioning on a single structure---for example a predicted parse---as is done in \cite{kuncoro2018learn}.
 
-The sentence pairs fall into three categories that linguists consider to depend on hierachical syntactic structure \citep{everaert2015structures,xiang2009illusory}:
-  \begin{enumerate}
+The sentence pairs fall into three categories that linguists consider to depend crucially on hierachical syntactic structure \citep{everaert2015structures,xiang2009illusory}:
+  \begin{enumerate}[noitemsep]
     \item Subject-verb agreement (The farmer \textit{smiles}.)
     \item Reflexive anaphora (The senators embarassed \textit{themselves}.)
     \item Negative polarity items (\textit{No} authors have \textit{ever} been famous.)
   \end{enumerate}
-In each category the dataset contains sentences of increasing difficulty. For example, the distance between two words in a syntactic dependency can be increased by separating them with a prepositional phrase: \textit{The farmer next to the guards smiles}. In this example \textit{the guards} additionally forms a distractor for the proper conjugation of \textit{smiles}, making the example extra challenging.
+The dataset contains constructions of increasing difficulty for each of these category. For example, the distance between two words in a syntactic dependency can be increased by separating them with a prepositional phrase: \textit{The farmer next to the guards smiles}. In this example \textit{the guards} additionally forms a distractor for the proper conjugation of \textit{smiles}, making the example extra challenging.
 
 The dataset is constructed automatically using handcrafted context-free grammars. The lexical rules are finegrained so that the resulting sentences reasonably coherent semantically. In particular there are rules for animate and innanimate objects so a sentence like \textit{The apple laughs} cannot be constructed. The total dataset consists of around 350,000 sentence pairs.
+
+The authors evaluate a number of models on the examples:
+\begin{itemize}
+  \item Human evaluation via amazon mechanical turk.
+  \item N-gram language model with kneser ney smoothing.
+  \item RNN language model (LSTM).
+  \item RNN language model with multitask learning.
+\end{itemize}
 
 % \begin{enumerate}
 %   \item \textbf{Simple agreement}:  \\
@@ -55,8 +63,7 @@ The dataset is constructed automatically using handcrafted context-free grammars
 %     The authors that no guards like have ever been famous.
 % \end{enumerate}
 
-\paragraph{Categories} We give the entire list of categories with examples, taken from \citet{linzen2018targeted}. Most of these categories come in the two version described above: with animate and innanimate subjects and verbs. For the full list of lexical items used in the constructions we refer the reader to appendix A of \citet{linzen2018targeted}.
-
+\paragraph{Categories} The following list is the complete set of categories that are evaulated in the $\syneval$ dataset, and they are taken from \citet{linzen2018targeted}.
 \begin{enumerate}[noitemsep]
   \item \textbf{Simple agreement}:
     \begin{enumerate}
@@ -93,10 +100,20 @@ The dataset is constructed automatically using handcrafted context-free grammars
       \item The movies that the guard likes \textit{are} good.
       \item *The movies that the guard likes \textit{is} good.
     \end{enumerate}
+  \item \textbf{Agreement across an object relative (no \textit{that})}:
+    \begin{enumerate}
+      \item The movies the guard likes \textit{are} good.
+      \item *The movies the guard likes \textit{is} good.
+    \end{enumerate}
   \item \textbf{Agreement in an object relative}:
     \begin{enumerate}
       \item The movies that the guard \textit{likes} are good.
       \item *The movies that the guard \textit{like} are good.
+    \end{enumerate}
+  \item \textbf{Agreement in an object relative (no \textit{that})}:
+    \begin{enumerate}
+      \item The movies the guard \textit{likes} are good.
+      \item *The movies the guard \textit{like} are good.
     \end{enumerate}
   \item \textbf{Simple reflexive anaphora}:
     \begin{enumerate}
@@ -118,6 +135,11 @@ The dataset is constructed automatically using handcrafted context-free grammars
       \item \textit{No} authors have ever been famous.
       \item *\textit{Most} authors have ever been famous.
     \end{enumerate}
+  \item \textbf{Simple NPI (the)}:
+    \begin{enumerate}
+      \item \textit{No} authors have ever been popular.
+      \item *\textit{The} authors have ever been popular.
+    \end{enumerate}
   \item \textbf{NPI across a relative clause}:
     \begin{enumerate}
       \item \textit{No} authors that \textit{the} guards like have ever been famous.
@@ -129,33 +151,34 @@ The dataset is constructed automatically using handcrafted context-free grammars
       \item *\textit{The} authors that \textit{no} guards like have ever been famous.
     \end{enumerate}
 \end{enumerate}
+Most of these categories come in the two version described above: with animate and innanimate subjects and verbs. For the full list of lexical items used in the constructions we refer the reader to appendix A of \citet{linzen2018targeted}.
 
-\subsection{Related work}
-In this section I give a short review the literature on related syntactic evaluations. \citet{linzen2016syntax} introduce the task of long distance subject-verb agreement and \citet{gulordava2018colorless} make this test more challenging by turning the sentences nonsensical while keeping them grammatical. Both datasets are extracted from a wikipedia corpus based on their predicted dependency structure. To make the sentences nonsensical, \citet{gulordava2018colorless} randomly substitute words from the same grammatical category.\footnote{An approach inspired by Chomsky's (in)famous sentence \textit{Colorless green ideas sleep furiously.}.} \citet{warstadt2018acceptability} fine-tune neural models to learn to immitate grammatical acceptability judgments gathered from linguistics textbooks.
-\citet{mccoy2018revisiting} Train a neural machine translation model to learn how to turn a declarative sentence into a question. Linguist have argued that the transformations required to generate one from the other provide strong evidence for the existence of hierarchical structure in language \cite{everaert2015structures}.\footnote{These pairs play a central role as empirical evidence in the argument---known as the \textit{argument from the poverty of the stimulus}---that humans have an innate predisposition for generalizations that rely on hierarchical structure rather than linear order \citep{chomsky1980rules}. Sequence-to-sequence neural machine translation, on the other hand, is a fully sequential model that involves no hierarchical structure or transformations.}
+\paragraph{Related work} There has been a surge recently of work on syntactic evaluation. \citet{linzen2016syntax} introduce the task of long distance subject-verb agreement and \citet{gulordava2018colorless} make this test more challenging by turning the sentences nonsensical while keeping them grammatical. Both datasets are extracted from a wikipedia corpus based on properties of their predicted dependency parse. To make the sentences nonsensical, \citet{gulordava2018colorless} randomly substitute words from the same grammatical category.\footnote{An approach inspired by Chomsky's (in)famous sentence \textit{Colorless green ideas sleep furiously} that is both grammatical and nonsensical.} \citet{warstadt2018acceptability} fine-tune neural models to learn to immitate grammatical acceptability judgments gathered from linguistics textbooks.
+\citet{mccoy2018revisiting} Train a neural machine translation model to learn how to turn a declarative sentence into a question. Linguist have argued that the transformations required to generate one from the other provide strong evidence for the existence of hierarchical structure in language \cite{everaert2015structures}.\footnote{These pairs play a central role as empirical evidence in the argument---known as the \textit{argument from the poverty of the stimulus}---that humans have an innate predisposition for generalizations that rely on hierarchical structure rather than linear order \citep{chomsky1980rules}. Sequence-to-sequence neural machine translation, on the other hand, is a fully sequential model that involves no hierarchical structure or transformations.} Finally, targeted evaluation has been introduced previously for semantic comprehension by \citet{zweig2011microsoft} in a sentence completion task, and minimal contrastive sentence pairs have been used to evaluate neural machine translation by \citet{sennrich2017grammatical}.
 
 
 \section{Multitask learning}
-One method to improve language models for the tasks described in this chapter is multitask learning \cite{collobert2008unified,collobert2011natural,zhang2016multitask,goldberg2016multitask}, which has already been applied succesfully to improve the perfomance of neural language models on syntactic evaluation tasks \citep{enguehard2017multitask,linzen2018targeted}. Multitask learning is a simple and effective way of providing additional supervision to neural models by combining multiple tasks in one single objective. The model is thus by encouraged to compute representations that are useful in all the tasks.
+One method that makes language models perform better in the tasks described in this chapter is to provide stronger syntactic supervision by using multitask learning \citep{enguehard2017multitask,linzen2018targeted}. Multitask learning is a simple yet effective way of providing additional supervision to neural models by combining multiple tasks in one single objective, and has been succcesfully applied in natural language processing \cite{collobert2008unified,collobert2011natural,zhang2016multitask,goldberg2016multitask}. By combining objectives that share parameters the model is encouraged to learn representations that are useful in all the tasks.
 
-In this section I describe two simple baselines for the syntactic evaluation task that are based on multitask learning. Both methods are based on language modelling with a syntactic side objective. The first side objective is to predict combinatory categorical grammar (CCG) supertags \citep{bangalore1999supertagging} for each word in the sentence, which is proposed in \citep{enguehard2017multitask}. The second side objective is to label spans of words with labels from a treebank. This objective is inspired by the label scoring function in the CRF parser introduced in chapter \ref{04-crf}. This is similar to a recent work in semantic parsing where it this side-objective is is called a `syntactic scaffold' \citep{swayamdipta2018scaffold}. The exact form of our side-objective is novel, as far as the author is aware of, and is parametrized in a considerably simpler way. Both objectives are challenging and require representations that encode a fair amount of syntactic information.
+In this section I describe two simple baselines for the syntactic evaluation task that are based on multitask learning. Both methods are based on language modelling with a syntactic side objective. The first side objective is to predict combinatory categorical grammar (CCG) supertags \citep{bangalore1999supertagging} for each word in the sentence, and is proposed in \citep{enguehard2017multitask}. The second side objective is to label spans of words with their category. This objective is inspired by the label scoring function in the CRF parser introduced in chapter \ref{04-crf}.\foonote{This is similar to an approach found in recent work on semantic parsing where a similar side-objective is used and where it is called a `syntactic scaffold' \citep{swayamdipta2018scaffold}. The exact form of our side-objective is novel, as far as the author is aware of, and is parametrized in a considerably simpler way.} Both objectives are challenging and should require representations that encode a fair amount of syntactic information.
 
-In our case we combine a language model $p$ with a model $q$ that learns syntactic side-objective, and optimize these jointly over a single labeled dataset $\dataset$. In this case, the objective is to maximize
+\paragraph{Multitask objective}
+In our case we combine a language model $p$ with a syntactic model $q$, and optimize these jointly over a single labeled dataset $\dataset$\footnote{Note that it is our choice to focus on only a single dataset, and that multitask learning is principle more flexible than that, providing the option to combine multiple disjoint datasets in a single objective.}. In this case, we maximize the objective
 \begin{equation}
   \label{eq:multitask-objective}
   \mathcal{L}(\theta, \lambda, \xi) = \sum_{ (\x, \y) \in \mathcal{D} }\log p_{\theta, \lambda}(\x) + \log q_{\theta,\xi}(\y | \x)
 \end{equation}
-with respect to all the parameters $\theta$, $\lambda$ and $\xi$. The key point of multitask learning is that the the two models $p$ and $q$ share the set of parameters $\theta$ and that in objective \ref{eq:multitask-objective} the parameters $\theta$ will be optimized to fit both objectives well. The parameters in $\lambda$ and $\xi$ are optimized to their respective objectives separately. The proportion and the nature of the parameters that belong to $\theta$ is a choice of the modeller and the objective. How we made this choice we specify in the following paragraphs.
+with respect to the parameters $\theta$, $\lambda$ and $\xi$. The key feature of multitask learning is that the two models $p$ and $q$ share the set of parameters $\theta$ and that in objective \ref{eq:multitask-objective} these parameters will thus be optimized to fit \textit{both} the models well. The parameters in $\lambda$ and $\xi$ are optimized for their respective objectives separately. The proportion and the nature of the parameters that belong to $\theta$ is a choice of the modeller and determines how both objectives influence one another. In the following paragraphs we specify this parametrization.
 
 \paragraph{Language model}
-The main model $p$ is a straightforward RNN language model on sentences $\x = (x_1, \dots, x_n)$:
+The main model $p$ is a regular RNN language model on sentences $\x = (x_1, \dots, x_n)$:
 \begin{align*}
   \log p_{\theta, \lambda} = \sum_{i=1}^n \log p_{\theta, \lambda}(x_i \mid \x_{<i}),
 \end{align*}
 where the probabilities are computed by linear regression on a feature vector $\fw_{i-1}$ as
 \begin{align*}
   % p_{\theta, \lambda}( x_i \mid x_1, \dots, x_{i-1}) &\propto \Big[ \exp ( \vecW^{\top} \fw_{i-1} + \vecb ) \Big]_{x_i}.
-  p_{\theta, \lambda}( x_i \mid \x_{<i}) &\propto \exp \Big[ \vecW^{\top} \fw_{i-1} + \vecb \Big]_{x_i}.
+  p_{\theta, \lambda}( x \mid \x_{<i}) &\propto \exp \Big[ \vecW^{\top} \fw_{i-1} + \vecb \Big]_{x_i}.
 \end{align*}
 where the parameters $\xi = \{ \vecW, \vecb \}$ are specific to the language model. The features $\fw_i$ are computed using a forward \rnn parametrized by $\theta$,
 \begin{align*}
@@ -164,7 +187,7 @@ where the parameters $\xi = \{ \vecW, \vecb \}$ are specific to the language mod
 These features are also used in the side objective, and it is in this precise sense that the parameters $\theta$ are shared between $p$ and $q$.
 
 \paragraph{Word labeling}
-This side objective is taken from \citep{enguehard2017multitask}. Let $\y = ( y_1, \dots, y_n )$ be a sequence of CCG supertags for the sentence \x, with one tag for each word. The side model is then a simple greedy tagging model:
+This side objective is taken from \citet{enguehard2017multitask} and is the side objective that is used in the multitask model of \citet{linzen2018targeted}. Let $\y = ( y_1, \dots, y_n )$ be a sequence of CCG supertags for the sentence \x, with one tag for each word. The side model is then a simple greedy tagging model:
 \begin{align*}
   \log q_{\theta, \xi}(\y \mid \x)
     &= \sum_{i=1}^n \log q_{\theta, \xi}( y_i \mid \x).  \\

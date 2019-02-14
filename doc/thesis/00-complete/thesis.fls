@@ -472,6 +472,7 @@ INPUT ../05-semisupervised/semisupervised.tex
 INPUT ../05-semisupervised/semisupervised.tex
 INPUT ../06-syneval/syneval.tex
 INPUT ../06-syneval/syneval.tex
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmbxi10.tfm
 INPUT ../07-conclusion/conclusion.tex
 INPUT ../07-conclusion/conclusion.tex
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmss17.tfm
@@ -507,6 +508,7 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.p
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx8.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx9.pfb
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmex10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi10.pfb
