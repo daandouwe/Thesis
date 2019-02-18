@@ -1,21 +1,22 @@
 [0] Config.pm:343> INFO - This is Biber 2.5
-[0] Config.pm:346> INFO - Logfile is 'thesis.blg'
-[49] biber-darwin:290> INFO - === Thu Feb 14, 2019, 13:47:10
-[88] Biber.pm:351> INFO - Reading 'thesis.bcf'
-[201] Biber.pm:776> INFO - Found 90 citekeys in bib section 0
-[214] Biber.pm:3493> INFO - Processing section 0
-[245] Biber.pm:3657> INFO - Looking for bibtex format file '../src/bibliography.bib' for section 0
-[256] bibtex.pm:1187> INFO - Decoding LaTeX character macros into UTF-8
-[267] bibtex.pm:1048> INFO - Found BibTeX data source '../src/bibliography.bib'
-[273] Utils.pm:149> WARN - Duplicate entry key: 'kuncoro2017syntax' in file '../src/bibliography.bib', skipping ...
-[382] Utils.pm:149> WARN - I didn't find a database entry for 'Stern+2017:beam' (section 0)
-[383] Utils.pm:149> WARN - I didn't find a database entry for 'Roark2001' (section 0)
-[383] Utils.pm:149> WARN - I didn't find a database entry for 'Buys+2018' (section 0)
-[383] Utils.pm:149> WARN - I didn't find a database entry for 'baydin2017automatic' (section 0)
-[499] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[500] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[500] Biber.pm:3306> INFO - Sorting list 'nyt/global/' of type 'entry' with scheme 'nyt' and locale 'en-US'
-[500] Biber.pm:3310> INFO - No sort tailoring available for locale 'en-US'
-[633] bbl.pm:526> INFO - Writing 'thesis.bbl' with encoding 'UTF-8'
-[645] bbl.pm:619> INFO - Output to thesis.bbl
-[645] Biber.pm:108> INFO - WARNINGS: 5
+[1] Config.pm:346> INFO - Logfile is 'thesis.blg'
+[118] biber-darwin:290> INFO - === Mon Feb 18, 2019, 19:22:56
+[181] Biber.pm:351> INFO - Reading 'thesis.bcf'
+[407] Biber.pm:776> INFO - Found 100 citekeys in bib section 0
+[431] Biber.pm:3493> INFO - Processing section 0
+[460] Biber.pm:3657> INFO - Looking for bibtex format file '../src/bibliography.bib' for section 0
+[476] bibtex.pm:1187> INFO - Decoding LaTeX character macros into UTF-8
+[497] bibtex.pm:1048> INFO - Found BibTeX data source '../src/bibliography.bib'
+[510] Utils.pm:149> WARN - Duplicate entry key: 'kuncoro2017syntax' in file '../src/bibliography.bib', skipping ...
+[712] Utils.pm:149> WARN - I didn't find a database entry for 'Stern+2017:beam' (section 0)
+[713] Utils.pm:149> WARN - I didn't find a database entry for 'Roark2001' (section 0)
+[713] Utils.pm:149> WARN - I didn't find a database entry for 'Buys+2018' (section 0)
+[713] Utils.pm:149> WARN - I didn't find a database entry for 'baydin2017automatic' (section 0)
+[713] Utils.pm:149> WARN - I didn't find a database entry for 'kitaev2018benepar' (section 0)
+[947] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[947] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[947] Biber.pm:3306> INFO - Sorting list 'nyt/global/' of type 'entry' with scheme 'nyt' and locale 'en-US'
+[947] Biber.pm:3310> INFO - No sort tailoring available for locale 'en-US'
+[1208] bbl.pm:526> INFO - Writing 'thesis.bbl' with encoding 'UTF-8'
+[1233] bbl.pm:619> INFO - Output to thesis.bbl
+[1234] Biber.pm:108> INFO - WARNINGS: 6

@@ -482,6 +482,9 @@ INPUT ../09-app-implementation/implementation.tex
 INPUT ../09-app-implementation/implementation.tex
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/lm/t1lmtt.fd
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/lm/t1lmtt.fd
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmtt9.tfm
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmri8.tfm
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmri7.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmtt10.tfm
 INPUT ../10-app-crf/crf.tex
 INPUT ../10-app-crf/crf.tex
@@ -530,5 +533,6 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy6.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy8.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy9.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmtt10.pfb
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmtt9.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb

@@ -1,13 +1,14 @@
 % \bibliography{../src/bibliography.bib}
 
-Language models are typically evaluated by the perplexity they assign on held out data. And thus did we evaluate our language models in the previous chapters. In this chapter we look at alternatives. In particular, we loot at evaluation that specifically probes the syntactic ability of language models. To this end we take the dataset introduced by \citet{linzen2018targeted}, which presents a comprehensive set of syntactic challenges, and evaluate the models presented thus far against them. The dataset consists of constructed sentence pairs that differ in only one word, where one sentence is grammatical and the other is not, and the task is to assign higher probability to the grammatical sentence. We can think of this task as soliciting comparative \textit{acceptability judgements}, which is a key concept in linguistics. We will refer to this dataset as $\syneval$, for \textit{syntactic evaluation}.
+Language models are typically evaluated by the perplexity they assign on held out data. And thus did we evaluate our language models in the previous chapters. In this chapter we look at alternatives. In particular, we look at evaluation that specifically probes the syntactic abilities of a language model. To this end we take the dataset introduced by \citet{linzen2018targeted}, which presents a comprehensive set of syntactic challenges, and evaluate the models presented thus far against them. The dataset consists of constructed sentence pairs that differ in only one word, where one sentence is grammatical and the other is not, and the task is to assign higher probability to the grammatical sentence. We can think of this task as soliciting comparative \textit{acceptability judgements}, which is a key concept in linguistics. We will refer to this dataset as $\syneval$, for \textit{syntactic evaluation}.
 
-The chapter is organized as follows. First, I introduce the $\syneval$ dataset and describe syntactic phenomena that it tests, and review how this dataset relates to other work on syntactic evaluation. I then describe multitask learning as an approach that has been taken to improve language models for this task, and introduce a novel multitask model based on span labeling. Finally I evaluate all the models introduced in this thesis on this dataset and discuss the results.
+\paragraph{Organization}
+The chapter is organized as follows. First, I introduce the $\syneval$ dataset and describe syntactic phenomena that it tests, and review how this dataset relates to other work on syntactic evaluation. I then describe multitask learning as an approach already suggested to improve language models for this task, and introduce a novel multitask model based on span labeling. Finally I evaluate all the models introduced in this thesis on this dataset and discuss the results.
 
 \section{Syntactic evaluation}
-A shortcoming of perplexity is that the metric conflates various sources of succes. A language model can make use of many aspects of language to predict the probability of a sequence of words. And although we would like the probability of a sentence to depend on high-level phenomena such as syntactic well-formedness or global semantic coherence, a language model can also focus on lower hanging fruit such as collocations and other semantic relations predicted from local context to obtain low peplexity. How much a language model has picked up on syntax is especially challing, given that most sentences in a corpus are grammatically simple \citep{linzen2018targeted}. Arguably, this conflation is also the appeal: perplexity is a one size fits all metric. But for a fine-grained analysis we must resort to a fine-grained metric.
+A shortcoming of perplexity is that the metric conflates various sources of succes \citep{linzen2018targeted}. A language model can make use of many aspects of language to predict the probability of a sequence of words. And although we would like the probability of a sentence to depend on high-level phenomena such as syntactic well-formedness or global semantic coherence, a language model can also focus on lower hanging fruit such as collocations and other semantic relations predicted from local context. Syntax is especially difficult to evaluate given that most sentences in a corpus are grammatically simple \citep{linzen2018targeted}. Arguably, this conflation is also the appeal: perplexity is a one size fits all metric. But for a fine-grained analysis we must resort to a fine-grained metric.
 
-Recently, a series of papers has introduced tasks that specifically evaluate the syntactic abilities of language models \citep{linzen2016syntax,gulordava2018colorless,linzen2018targeted}. And that can be very informative. The task introduced by \citet{linzen2016syntax} is to predict the correct conjugation of a verb given an earlier occuring subject---especially in the precense of distracting subjects that intervene\footnote{E.g. \textit{Parts} of the river valley \textit{have}/\textit{has}.}. This task has revealed that lower perplexity does not imply greater succes on this task \citep{tran2018recurrent}, and that an explicitly syntactic model like the RNNG significanlty outperforms purely sequential models, especially with increasing distance between the subject and the verb \citep{kuncoro2018learn}. This type of agreement is one of the phenomena evaluated in $\syneval$.
+Recently, a series of papers has introduced tasks that specifically evaluate the syntactic abilities of language models \citep{linzen2016syntax,gulordava2018colorless,linzen2018targeted}. And such tasks can be very revealing. The task introduced by \citet{linzen2016syntax} is to predict the correct conjugation of a verb given an earlier occuring subject---especially in the precense of distracting subjects that intervene\footnote{E.g. \textit{Parts} of the river valley \textit{have}/\textit{has}.}. This task has revealed that lower perplexity does not imply greater succes on this task \citep{tran2018recurrent}, and that an explicitly syntactic model like the RNNG significanlty outperforms purely sequential models, especially with increasing distance between the subject and the verb \citep{kuncoro2018learn}. This type of agreement is one of the phenomena evaluated in $\syneval$.
 
 \paragraph{Dataset}
 The $\syneval$ dataset consists of contrastive sentence pairs that differ in only one word. Let $(\x, \x')$ be this minimal pair, with grammatical sentence $\x$ and an ungrammatical sentence $\x'$. Then a language model $p$ makes a correct prediction on this pair if $p(\x) > p(\x')$.
@@ -23,14 +24,6 @@ The sentence pairs fall into three categories that linguists consider to depend 
 The dataset contains constructions of increasing difficulty for each of these category. For example, the distance between two words in a syntactic dependency can be increased by separating them with a prepositional phrase: \textit{The farmer next to the guards smiles}. In this example \textit{the guards} additionally forms a distractor for the proper conjugation of \textit{smiles}, making the example extra challenging.
 
 The dataset is constructed automatically using handcrafted context-free grammars. The lexical rules are finegrained so that the resulting sentences reasonably coherent semantically. In particular there are rules for animate and innanimate objects so a sentence like \textit{The apple laughs} cannot be constructed. The total dataset consists of around 350,000 sentence pairs.
-
-The authors evaluate a number of models on the examples:
-\begin{itemize}
-  \item Human evaluation via amazon mechanical turk.
-  \item N-gram language model with kneser ney smoothing.
-  \item RNN language model (LSTM).
-  \item RNN language model with multitask learning.
-\end{itemize}
 
 % \begin{enumerate}
 %   \item \textbf{Simple agreement}:  \\
@@ -63,7 +56,7 @@ The authors evaluate a number of models on the examples:
 %     The authors that no guards like have ever been famous.
 % \end{enumerate}
 
-\paragraph{Categories} The following list is the complete set of categories that are evaulated in the $\syneval$ dataset, and they are taken from \citet{linzen2018targeted}.
+\paragraph{Categories} The following list is the complete set of categories that are evaulated in the $\syneval$ dataset, taken from \citet{linzen2018targeted} with slight .\footnote{There is a slight confusion in the }
 \begin{enumerate}[noitemsep]
   \item \textbf{Simple agreement}:
     \begin{enumerate}
@@ -151,7 +144,7 @@ The authors evaluate a number of models on the examples:
       \item *\textit{The} authors that \textit{no} guards like have ever been famous.
     \end{enumerate}
 \end{enumerate}
-Most of these categories come in the two version described above: with animate and innanimate subjects and verbs. For the full list of lexical items used in the constructions we refer the reader to appendix A of \citet{linzen2018targeted}.
+For the full list of lexical items used in the constructions we refer the reader to \citet{linzen2018targeted}.
 
 \paragraph{Related work} There has been a surge recently of work on syntactic evaluation. \citet{linzen2016syntax} introduce the task of long distance subject-verb agreement and \citet{gulordava2018colorless} make this test more challenging by turning the sentences nonsensical while keeping them grammatical. Both datasets are extracted from a wikipedia corpus based on properties of their predicted dependency parse. To make the sentences nonsensical, \citet{gulordava2018colorless} randomly substitute words from the same grammatical category.\footnote{An approach inspired by Chomsky's (in)famous sentence \textit{Colorless green ideas sleep furiously} that is both grammatical and nonsensical.} \citet{warstadt2018acceptability} fine-tune neural models to learn to immitate grammatical acceptability judgments gathered from linguistics textbooks.
 \citet{mccoy2018revisiting} Train a neural machine translation model to learn how to turn a declarative sentence into a question. Linguist have argued that the transformations required to generate one from the other provide strong evidence for the existence of hierarchical structure in language \cite{everaert2015structures}.\footnote{These pairs play a central role as empirical evidence in the argument---known as the \textit{argument from the poverty of the stimulus}---that humans have an innate predisposition for generalizations that rely on hierarchical structure rather than linear order \citep{chomsky1980rules}. Sequence-to-sequence neural machine translation, on the other hand, is a fully sequential model that involves no hierarchical structure or transformations.} Finally, targeted evaluation has been introduced previously for semantic comprehension by \citet{zweig2011microsoft} in a sentence completion task, and minimal contrastive sentence pairs have been used to evaluate neural machine translation by \citet{sennrich2017grammatical}.
@@ -223,6 +216,26 @@ This model differs from the supertagging model in the interaction between featur
 
 \section{Experiments}
 
+In this section we report the results on the dataset.
+
+\begin{itemize}
+  \item \citet{linzen2018targeted} provide results with a number of
+  \item To provide baselines we also train
+\end{itemize}
+
+evaluate a number of models on the examples and also provide results of human judgements gathered.
+  \item Human evaluation via amazon mechanical turk.
+  \item N-gram language model with kneser ney smoothing.
+  \item RNN language model (LSTM).
+  \item RNN language model with multitask learning.
+
 \subsection{Setup}
+\begin{itemize}
+  \item Following the example of \citet{linzen2018targeted} we train a regular LSTM language model, and a multitask LSTM language model with CCG supertagging. We additionally train
+  \item For the language train 10 independent runs of each model and report means and standard deviations of their accuracy on the $\syneval$ dataset.
+  \
+\end{itemize}
+
+Details about training can be found in appendix \ref{A2-implementation}
 
 \subsection{Results}

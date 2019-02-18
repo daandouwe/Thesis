@@ -1,5 +1,7 @@
 % \bibliography{../src/bibliography}
 
+In this chapter we introduce the Recurrent Neural Network Grammar (RNNG), a probabilistic model of sentences with explicit phrase structure introduced by \citep{dyer2016rnng}.
+
 \section{Model}
 I describe the model.
 \begin{itemize}
@@ -11,8 +13,9 @@ I describe the model.
   Put simply, the model is defined as
   \begin{equation}
     \label{eq:naive-rnng-model}
-    p(\veca) = \prod_{t=1}^T p(a_t \mid \veca_{<t}).
+    p(\veca) = \prod_{t=1}^T p(a_t \mid \veca_{<t}),
   \end{equation}
+
   However, the exact model is slightly more complicated, a consequence of the difference between the discrminative and the generative actions, and a consequence of practical concerns regarding the implementation.
 
   \item First we define a set of discriminative actions and a set of generative models,
@@ -39,12 +42,12 @@ I describe the model.
     \nu &: [ T ] \to [ N ]: \nu(t) = \sum_{i=0}^{t-1} \indicator_{ \{ a_i \, = \, \gen \} }.
   \end{align*}
 
-  \item Let $\veca$ be a sequeunce from $\discactions^T$. Then the model for the discrminative RNNG is
+  \item Let $\veca$ be a sequence from $\discactions^T$. Then the model for the discrminative RNNG is
   \begin{align}
     \label{eq:disc-model}
     p(\veca \mid \x) = \prod_{t=1}^T p(a_t \mid \x, \veca_{<t}) p(n_{\mu(t)} \mid \x, \veca_{<t} )^{ \indicator_{ \{ a_t \, = \, \open \} } }.
   \end{align}
-  \item Let $\veca$ be a sequeunce from $\genactions^T$, which include the actions that generate words\footnote{Note that under this action set $p(a_t \mid \veca_{<t}, \x_{<t}) = p(a_t \mid \veca_{<t})$, given the fact that the words in $\x_{<t}$ are contained in $\veca_{<t}$.}, then the model for the generative RNNG is
+  \item Let $\veca$ be a sequence from $\genactions^T$, which include the actions that generate words\footnote{Note that under this action set $p(a_t \mid \veca_{<t}, \x_{<t}) = p(a_t \mid \veca_{<t})$, given the fact that the words in $\x_{<t}$ are contained in $\veca_{<t}$.}, then the model for the generative RNNG is
   \begin{align}
     \label{eq:gen-model}
     p(\veca) = \prod_{t=1}^T p(a_t \mid \veca_{<t}) p(n_{\mu(t)} \mid   \veca_{<t})^{ \indicator_{ \{ a_t \, = \, \open \} } } p(x_{\nu(t)} \mid \veca_{<t})^{ \indicator_{ \{ a_t \, = \, \gen \} } }.
