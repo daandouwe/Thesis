@@ -1242,6 +1242,33 @@
       \field{pages}{515}
       \range{pages}{1}
     \endentry
+    \entry{glorot2010understanding}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{hash=0b3943c3bfdbb5867b3760f7c7d488c2}{%
+           family={Glorot},
+           family_i={G\bibinitperiod},
+           given={Xavier},
+           given_i={X\bibinitperiod}}}%
+        {{hash=40a8e4774982146adc2688546f54efb2}{%
+           family={Bengio},
+           family_i={B\bibinitperiod},
+           given={Yoshua},
+           given_i={Y\bibinitperiod}}}%
+      }
+      \strng{namehash}{02af15243279c938a0a5ca766835bcd4}
+      \strng{fullhash}{02af15243279c938a0a5ca766835bcd4}
+      \field{sortinit}{G}
+      \field{sortinithash}{1c854ef9177a91bf894e66485bdbd3ed}
+      \field{labelyear}{2010}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the thirteenth international conference on artificial intelligence and statistics}
+      \field{title}{Understanding the difficulty of training deep feedforward neural networks}
+      \field{year}{2010}
+      \field{pages}{249\bibrangedash 256}
+      \range{pages}{8}
+    \endentry
     \entry{goldberg2013dynamic}{article}{}
       \name{author}{2}{}{%
         {{hash=33b00f3e2f4f1bb310f1cf8d4a4c500a}{%
@@ -2828,6 +2855,7 @@
       \strng{fullhash}{92f41fe4110f73bb5a09e42453c25a69}
       \field{sortinit}{S}
       \field{sortinithash}{fd1e7c5ab79596b13dbbb67f8d70fb5a}
+      \field{extrayear}{1}
       \field{labelyear}{2017}
       \field{labelmonth}{07}
       \field{datelabelsource}{}
@@ -2839,6 +2867,42 @@
       \field{year}{2017}
       \field{pages}{818\bibrangedash 827}
       \range{pages}{10}
+    \endentry
+    \entry{stern2017beam}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{hash=8b00e95c184f76a063851ed2b67c9301}{%
+           family={Stern},
+           family_i={S\bibinitperiod},
+           given={Mitchell},
+           given_i={M\bibinitperiod}}}%
+        {{hash=8c0d6317a5a127c222cb122f7818e15e}{%
+           family={Fried},
+           family_i={F\bibinitperiod},
+           given={Daniel},
+           given_i={D\bibinitperiod}}}%
+        {{hash=9fb237891a1517d36109c68767dd6fae}{%
+           family={Klein},
+           family_i={K\bibinitperiod},
+           given={Dan},
+           given_i={D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Association for Computational Linguistics}%
+      }
+      \strng{namehash}{0a292ace52e9b34928a865d51537657c}
+      \strng{fullhash}{a73400b3bef6b6f2a452159dc425d5af}
+      \field{sortinit}{S}
+      \field{sortinithash}{fd1e7c5ab79596b13dbbb67f8d70fb5a}
+      \field{extrayear}{2}
+      \field{labelyear}{2017}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing}
+      \field{title}{Effective Inference for Generative Neural Parsing}
+      \field{year}{2017}
+      \field{pages}{1695\bibrangedash 1700}
+      \range{pages}{6}
     \endentry
     \entry{sutton2012crf}{article}{}
       \name{author}{2}{}{%
@@ -3303,11 +3367,8 @@
       \field{year}{2011}
     \endentry
   \endsortlist
-  \missing{Stern+2017:beam}
-  \missing{Buys+2018}
   \missing{baydin2017automatic}
-  \missing{kitaev2018benepar}
-  \missing{Roark2001}
+  \missing{Buys+2018}
 \endrefsection
 \endinput
 

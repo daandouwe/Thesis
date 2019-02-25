@@ -1,4 +1,4 @@
-% \bibliography{../src/bibliography}
+\bibliography{../src/bibliography}
 
 In this chapter we introduce the Recurrent Neural Network Grammar (RNNG), a probabilistic model of sentences with explicit phrase structure introduced by \citep{dyer2016rnng}.
 
@@ -7,7 +7,33 @@ I describe the model.
 \begin{itemize}
   \item A discriminative RNNG is a discriminative transition based parser that uses regular RNNs to summarize the actions in the history and the words on the buffer into vectors, and uses a special RNN with a syntax-dependent recurrence---a StackLSTM \citep{ballesteros2017greedy} outfitted with a custom `composition' function to summarize closed constituents---to obtain a vector representation of items on the the stack.
   \item Depending on the perspective, the generative RNNG is either a structured model of language that predicts words together with their structure, or a generative version of the discriminative RNNG that jointly models the words in the instead of conditioning on them. From the view of parsing, it simply dispends with the buffer of the discriminative RNNG to instead predict the words that dscorate the tree. As a model of sentences, it can be understood as kind of structured RNN: it predicts words, but also compresses and labels them recursively whenever they form a complete constituents.
-  \item Specify the transition-system.
+\end{itemize}
+
+\paragraph{Transition sytem}
+The RNNG uses a transition specially designed for top-down parsing and generation. The discriminative transition system has three actions:
+\begin{itemize}
+  \item \open(X) opens a new nonterminal symbol X in the partially constructed tree.
+  \item $\shift$ moves the topmost word $x$ from the buffer onto the stack.
+  \item $\reduce$ closes the open constituent by composing the symbols in it into a single item representing the content of the subtree. This allows nodes with an arbitrary number of children.
+\end{itemize}
+How these actions work to build a tree is best illustrated with an example derivation, given in table \ref{tab:disc-trans}. The actions are constrained in order to derive only well-formed trees:
+\begin{itemize}
+  \item $\shift$ can only be excecuted if there is at least one open nonterminal (all words must be under some nonterminal symbol).
+  \item $\open(X)$ requires there to be words left on the buffer (all constituents must eventually hold terminals).
+  \item $\reduce$ requires there to be at least one terminal following the open nonterminal, and the topmost nonterminal can only be closed when the buffer is empty (all nodes must end under a single root node).
+\end{itemize}
+The generative transition system is derived from this system by replacing the $\shift$ action, which moves the word $x$ from the buffer into the open constituent on the stack, with an action that \textit{predicts} the word:
+\begin{itemize}
+  \item $\gen(x)$ predicts that $x$ is the next word in the open constituent, and puts this word on the top of the stack.
+\end{itemize}
+The buffer is dispensed with and is replaced by a similar structure that records the sequence words predicted so far. An example derrivation parallel to the discriminative example is given in table \ref{tab:gen-trans}.
+
+\input{../tables/disc-transitions.tex}
+
+\input{../tables/gen-transitions.tex}
+
+\paragraph{Probabilistic model}
+\begin{itemize}
   \item Fundamentally, the model is a probability distribution over action sequences $\veca = ( a_1, \dots, a_T )$ that generate trees $\y$ conditionally given a sequence of words $\x$ in the discriminative model, and jointly with $\x$ in the the generative model.
 
   Put simply, the model is defined as
@@ -86,9 +112,19 @@ I describe the model.
 \end{itemize}
 
 \subsection{Features}
-The feature vector $\vecu_t$ from which the transition probabilities are computed are computed from the stack configuration's entire history, and in a syntax-dependent way.
+The transition probabilities are computed from the feature vector $\vecu_t$, which is computed incrementally and in a syntax-dependent way, summarizing the parser's entire configuration history at time $t$. This vector is defined as the concatenation of three vectors, each summarizing one of the three datastructures:
+\begin{align*}
+  \vecu_t = [\mathbf{s}_t, \mathbf{b}_t, \mathbf{h}_t],
+\end{align*}
+where $\mathbf{s}_t$ represents the stack, $\mathbf{b}_t$ represents the buffer, and $\mathbf{h}_t$ represents the history of actions. The vectors $\mathbf{b}_t$ and $\mathbf{h}_t$ are computed each with a regular $\rnn$, the history vector in the forward direction, and the buffer in the backward direction, to provide a lookahead:
+\begin{align*}
+  \mathbf{h}_t &= \rnn^{f}( \veca )[t],  \\
+  \mathbf{b}_t &= \rnn^{b}( \x )[t].  \\
+\end{align*}
+The vector $\mathbf{s}_t$ represents the partially constructed tree that is on the stack, and its computation depends on this structure. This syntax-dependent computation achieved by using a special, structured $\rnn$ that encodes the tree in top-down order while recursively compressing constituents whenever they are completed. To be precise, the $\rnn$ incrementally computes a new hidden state based on incoming nonterminal and terminal symbols while these are respectively opened and shifted, as a regular $\rnn$ would, but rewrites this history whenever the constituent that they form is closed. Whenever a $\reduce$ action is predicted, the $\rnn$ rewinds its hidden state to before the constituent was opened; the items in the constinuent are represented as single vector by a composition function; and this vector is fed into the rewound $\rnn$ as if the subtree where a single input. The closed constituent is now a single item represented by a single vector. Due to the nested nature of constituents this procedure recursively compressesed subtrees. The entire process is best illustrated by the figure in...
+
+\part{Composition function}
 \begin{itemize}
-  \item The StackLSTM computes incremental features for the sequences on the three datastructures of the transition-system, with unbounded history.
   \item A composition function computes representations of closed constituents on the stack.
   \item There are two options for the composition function: simple BiRNN and attention-based. The attention-based composition performed best in earlier research, so we focus on this function.
   \item There is evidence that the stack-datastructure is all that is needed. However, we focus on the models that compute representations of all the datastructures.
@@ -100,7 +136,7 @@ Here I describe the research into syntax and cognition using the RNNG.
 \paragraph{Cognition} RNNGs can tell us something about our brains.
 \begin{itemize}
   \item Psycholinguistic research that indicates that top-down parsing is a cognitively plausible parsing strategy \citep{brennan2016abstract}.
-  \item RNNGs are good statistical predictors in psycholinguistic research \citep{hale2018beam}. More precisely: the sequential word-probabilities that are derived from a generative RNNG in combination with word-synchronous beam-search \citep{Stern+2017:beam} provide per-word complexity metrics that predict human reading difficulty well.
+  \item RNNGs are good statistical predictors in psycholinguistic research \citep{hale2018beam}. More precisely: the sequential word-probabilities that are derived from a generative RNNG in combination with word-synchronous beam-search \citep{stern2017beam} provide per-word complexity metrics that predict human reading difficulty well.
 \end{itemize}
 
 \paragraph{Syntax} What do RNNGs learn about syntax?
@@ -140,6 +176,6 @@ We perform three types of experiments with the RNNG:
 \section{Related work}
 \begin{itemize}
   \item Generative dependency parsing and language modelling \citep{titov2007generative,buys2015bayesian,buys2015generative,buys2018exact}
-  \item Top-down parsing and language modelling \citep{Roark2001}.
+  \item Top-down parsing and language modelling \citep{roark2001probabilistic}.
   \item Brain research with top-down parsing \citep{brennan2016abstract,hale2018beam}.
 \end{itemize}
