@@ -1,67 +1,52 @@
 % \bibliography{../src/bibliography}
 
-This chapter introduces an alternative parser to act as proposal model in the approximate marginalization.
+This chapter introduces a neural Conditional Random Field (CRF) parser that can be used as an alternative proposal distribution for the approximate marginalization of the RNNG. This parser combines the efficient exact inference of chart-based parsing, the rich nonlinear features of neural networks, and the global training of a CRF. The chart-based approach allows efficient exact inference alowing for exact decoding and global sampling. The neural features can be complex and can condition on the entire sentence. And the CRF training objective [...something about receiving information about all substructures...]. The parser is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} to global CRF training. The original is trained with a margin-based objective. Our interest in in this model is as a proposal distribution, which requires probabilistical training.
 
-\begin{itemize}
-  \item The parser is a neural Conditional Random Field (CRF) parser that combines the efficient exact inference of chart-based parsing with the rich nonlinear features of neural networks.
-  \item The chart-based approach allows efficient exact inference, while the neural features can be relatively rich and can condition on the entire sentence.
-  \item The neural network is used exclusively to learn good representation from which to predict local scores, while the global structured interactions are
-  \item The parser is an adaptation of the chart-based parser introduced in \citet{stern2017minimal}, where it is trained with a margin-based objective.
-\end{itemize}
+% \paragraph{Notation}
+% Let a sentence be $x_1,\dots,x_n$, where each $x_i$
+% is a word. We are given a CFG $(N, \Sigma, R, S)$ in Chomsky normal
+% form. Let $\psi$ be a function that maps any rule production $r \in R$ of the form $\langle A \to B \;C, i, k, j \rangle$ or $\langle A, i, i+1 \rangle$ to a value $\psi(r) \geq 0$. Let a tree $T$ be a set of such rules $r$ with the only constraint that these rules make up a tree.
 
-\paragraph{Notation}
-Let a sentence be $x_1,\dots,x_n$, where each $x_i$
-is a word. We are given a CFG $(N, \Sigma, R, S)$ in Chomsky normal
-form. Let $\psi$ be a function that maps any rule production $r \in R$ of the form $\langle A \to B \;C, i, k, j \rangle$ or $\langle A, i, i+1 \rangle$ to a value $\psi(r) \geq 0$. Let a tree $T$ be a set of such rules $r$ with the only constraint that these rules make up a tree.
-
+% I describe the probabilistic model of the parser.
+% \begin{enumerate}
+%   \item Introduce probabilistic model, reference the appendix on CRFs \ref{A3-crf}.
+%   \item Desribe how this is an adaptation from \citet{stern2017minimal} to probabilistic training.
+% \end{enumerate}
 
 \section{Model}
-I describe the probabilistic model of the parser.
-\begin{enumerate}
-  \item Introduce probabilistic model, reference the appendix on CRFs \ref{A3-crf}.
-  \item Desribe how this is an adaptation from \citet{stern2017minimal} to probabilistic training.
-\end{enumerate}
 
-Following the minimal span parser we a scoring function $\psi$ as defined on spans
+The model is a CRF defined over labeled spans. We consider a tree as a collection of labeled spans $\y = \{ \y_a \}_{a=1}^A$ where $\y_a = \{ (i, j, \ell) }$, and define the score of a tree as the product of nonnegative local potentials $\Psi(\x, \y_a)$ that score these spans in conjunction with the sentence. The probability of a tree is the globally normalized score of the tree:
 \begin{align}
-  \log\psi(A \to B \;C, i, k, j) = \log\psi(A, i, j)\\
+  \label{eq:crf-model}
+  p(\y \mid \x) &= \frac{1}{Z(\x)} \prod_{a=1}^A \Psi(\x, \y_a),
 \end{align}
-discarding the rest of the span information. The function is then defined as
-\begin{align}
-  \label{eq:span-score}
-  \log\psi(A, i, j) &\defeq s(i, j, A),
-\end{align}
-and thus the potential of a tree as
-\begin{align}
-\label{eq:tree-score}
-    \log\Psi(T) &= \sum_{r \in T} \log\psi(r) \\
-      &= \sum_{\langle A, i, j \rangle \in T} s(i, j, A), \\
-\end{align}
-Note that the potential function as defined in \ref{eq:rule-score} disregards most of the information in a binary rule. In particular we see that $B$, $C$ and $k$, the labels and split-point of the children, are discarded.
+where
+\begin{align*}
+  Z(\x) = \sum_{ \y \in \yieldx } \prod_{a=1}^A \Psi(\x, \y_a)
+\end{align*}
+is the normalizing constant that sums over all the possible parse trees and makes sures that the probability distribution sums to 1. This normalizing constant can be computed efficiently with the inside algorithm.
 
-Now note that equation \ref{eq:tree-score} corresponds exactly to the second formula in section 3 of the minimal span-based parser paper
-\begin{align}
-s_{tree}(T) = \sum_{(\ell(i,j))\in T}[s(i, j, \ell)] .
-\end{align}
-which is how I derived that \ref{eq:rule-score} is the correct formula for the rule score.
-
-We obtain our CRF objective when we normalize this score globally
-\begin{align}
-\label{eq:crf-objective}
-    P(T) &= \frac{\prod_{r \in T} \psi(r)}{\sum_{T' \in \mathcal{T}} \prod_{r' \in T'} \psi(r')} \\
-\end{align}
-or equivalently
-\begin{align}
-\label{eq:logcrf-objective}
-    \log P(T) &= \sum_{r \in T} \log \psi(r) - \log \sum_{T \in \mathcal{T}} \prod_{r \in T} \psi(r) \\
-\end{align}
-
+The factorization over labeled spans is an even stronger assumption than that typically made of factorization over anchored context-free rules. By scoring just labeled spans, the scoring function has no access to information about child nodes. This puts a greater burden on the scoring function, which is made up for by a very rich neural network parametrization, but will also greatly reduce the size of the state-space of the dynamic programs, greatly speeding up training and inference.
 
 \subsection{Features}
-I describe how the local scores are computed using neural networks.
-\begin{itemize}
-  \item Give formal expression for feature function: `LSTM minus features' with Feedforward scoring function.
-\end{itemize}
+The scoring function $\Psi$ is implemented using neural networks following \citet{stern2017minimal}. Although the local potentials can only make minimal use of structural information, as we argued above, they can depend on the entire sentence. This suggest the use of $\rnn$ encodings.
+
+The representation of a span $(i, j)$ is the concatenation of the difference between forward and backward vectors computed by a bidirectional $\rnn$
+\begin{align}
+  \label{eq:potential-function}
+  \vecs_{ij} = [\fw_j - \fw_i; \bw_i - \bw_j],
+\end{align}
+illustrated in figure \ref{fig:span-feature}. The score for a label is computed from this vector using a feedforward network:
+\begin{align}
+   % s(i, j, \ell) = s(i, j) = \Big[ \ff( \vecs_{ij} ) \Big]_{\ell}.
+  \log \Psi(\x, \y_a) = \Big[ \ff( \vecs_{ij} ) \Big]_{\ell}.
+\end{align}
+
+\begin{figure}
+  \includegraphics{span-encoding.pdf}[width=\textwidth]
+  \caption{Representation for the span $(1, 4)$ computed from $\rnn$ encodings. Taken from \citet{stern2018analyis}.}
+  \label{fig:span-feature}
+\end{figure}
 
 \subsection{Motivation}
 \begin{itemize}
@@ -166,7 +151,7 @@ We perform three types of experiments with the CRF parser:
 \begin{itemize}
   \item We evaluate validation F-score and perplexity.
   \item We evaluate F-score with 100 samples (as many proposal trees as possible).
-  \item We evaluate perplexity with varying number of samples: 1 (argmax), 10, 20, 50, 100 (default). The peplexity evaluation with the argmax prediction gives an impression of the uncertaty in the model \citep{Buys+2018}.
+  \item We evaluate perplexity with varying number of samples: 1 (argmax), 10, 20, 50, 100 (default). The peplexity evaluation with the argmax prediction gives an impression of the uncertaty in the model \citep{buys2018exact}.
   \item  We perform learning rate decay and model selection based on a development score computed with the samples from the discriminative RNNG. Undecided: should we train a separate joint RNNG with CRF samples?
 \end{itemize}
 
@@ -194,6 +179,28 @@ Here I describe related work, and in particular earlier approaches to (neural) C
   \item Recent extension of \citet{stern2017minimal}, with same model but different features \citep{kitaev2018attentive}.
 \end{enumerate}
 
+Earlier work on CRF parsing consider a tree as a collection of anchored rule productions productions \cite{finkel2008crf,klein2015crf}, and hence define the score of a tree as the product over clique potentials on anchored rules:
+\begin{align}
+  \log\psi(A \to B \;C, i, k, j) = \log\psi(A, i, j)\\
+\end{align}
+discarding the rest of the span information. The function is then defined as
+\begin{align}
+  \label{eq:span-score}
+  \log\psi(A, i, j) &\defeq s(i, j, A),
+\end{align}
+and thus the potential of a tree as
+\begin{align}
+\label{eq:tree-score}
+    \log\Psi(T) &= \sum_{r \in T} \log\psi(r) \\
+      &= \sum_{\langle A, i, j \rangle \in T} s(i, j, A), \\
+\end{align}
+Note that the potential function as defined in \ref{eq:rule-score} disregards most of the information in a binary rule. In particular we see that $B$, $C$ and $k$, the labels and split-point of the children, are discarded.
+
+Now note that equation \ref{eq:tree-score} corresponds exactly to the second formula in section 3 of the minimal span-based parser paper
+\begin{align}
+s_{tree}(T) = \sum_{(\ell(i,j))\in T}[s(i, j, \ell)] .
+\end{align}
+which is how I derived that \ref{eq:rule-score} is the correct formula for the rule score.
 
 
 % \section{Semiring formulation}

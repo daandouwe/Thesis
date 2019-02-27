@@ -5,12 +5,12 @@
   0 &  & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat}\,|\,\textit{meows}\,|\,. & \open(S) \\
   1 & (S & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat}\,|\,\textit{meows}\,|\,. & \open(NP) \\
   2 & (S\,|\,(NP  & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat}\,|\,\textit{meows}\,|\,. & \shift \\
-  3 & (S\,|\,(NP\,\textit{The} & \textit{hungry}\,|\,\textit{cat}\,|\,\textit{meows}\,|\,. & \shift \\
-  4 & (S\,|\,(NP\,\textit{The}\,|\,\textit{hungry} & \textit{cat}\,|\,\textit{meows}\,|\,. & \shift \\
-  5 & (S\,|\,(NP\,\textit{The}\,|\,\textit{hungry}\,|\,\textit{cat} & \textit{meows}\,|\,. & \reduce \\
+  3 & (S\,|\,(NP\,|\,\textit{The} & \textit{hungry}\,|\,\textit{cat}\,|\,\textit{meows}\,|\,. & \shift \\
+  4 & (S\,|\,(NP\,|\,\textit{The}\,|\,\textit{hungry} & \textit{cat}\,|\,\textit{meows}\,|\,. & \shift \\
+  5 & (S\,|\,(NP\,|\,\textit{The}\,|\,\textit{hungry}\,|\,\textit{cat} & \textit{meows}\,|\,. & \reduce \\
   6 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat}) & \textit{meows}\,|\,. & \open(VP) \\
   7 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,|\,(VP & \textit{meows}\,|\,. & \shift \\
-  8 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,|\,(VP \textit{meows} & . & \reduce \\
+  8 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,|\,(VP\,|\,\textit{meows} & . & \reduce \\
   9 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,|\,(VP\,\textit{meows}) & . & \shift \\
   10 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,|\,(VP \textit{meows})\,|\,. &  & \reduce \\
   11 & (S\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,(VP\,\textit{meows})\,.) &  &  \\ \hline
