@@ -1,0 +1,237 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\defcounter {refsection}{0}\relax 
+\thispagestyle {empty}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{Acknowledgements}{2}{chapter*.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {1}Introduction}{3}{chapter.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{The approximate marginalization}{4}{paragraph*.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Semi-supervised training by including unlabeled data}{5}{paragraph*.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Alternative, simpler, models}{5}{paragraph*.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Targeted syntactic evaluation}{6}{paragraph*.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {2}Background}{7}{chapter.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.1}Syntax}{7}{section.2.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Constituents}{8}{paragraph*.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Syntactic categories}{9}{paragraph*.9}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Hierarchical structure}{10}{paragraph*.12}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Cognitive reality}{11}{paragraph*.13}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Controversy}{11}{paragraph*.14}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.2}Parsing}{12}{section.2.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.3}Language models}{12}{section.2.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.4}Neural networks}{14}{section.2.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {3}Recurrent Neural Network Grammars}{17}{chapter.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3.1}Model}{17}{section.3.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Transition sytem}{18}{paragraph*.17}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Probabilistic model}{19}{paragraph*.20}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Note on actions}{21}{paragraph*.21}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.1.1}Features}{22}{subsection.3.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Composition function}{24}{paragraph*.22}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3.2}Training}{24}{section.3.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3.3}Inference}{24}{section.3.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.3.1}Discriminative model}{24}{subsection.3.3.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.3.2}Generative model}{25}{subsection.3.3.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Approximate marginalization}{25}{paragraph*.23}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Approximate MAP tree}{26}{paragraph*.24}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Proposal distribution}{26}{paragraph*.25}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3.4}Experiments}{26}{section.3.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Supervised model}{27}{paragraph*.26}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Sampler}{27}{paragraph*.27}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3.5}Related work}{28}{section.3.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.5.1}Generative parsing}{28}{subsection.3.5.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.5.2}Syntax and cognition}{28}{subsection.3.5.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Syntax}{28}{paragraph*.28}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Cognition}{28}{paragraph*.29}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {4}Conditional Random Field parser}{30}{chapter.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.1}Model}{31}{section.4.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.1}Features}{32}{subsection.4.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.2}Motivation}{32}{subsection.4.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.2}Inference}{34}{section.4.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Lognoramlizer}{35}{paragraph*.31}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Entropy}{35}{paragraph*.32}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Parse}{35}{paragraph*.33}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.2.1}Inside recursion}{35}{subsection.4.2.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.2.2}Outside recursion}{37}{subsection.4.2.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.3}Experiments}{37}{section.4.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Supervised model}{38}{paragraph*.34}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Proposal model}{38}{paragraph*.35}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Sampler}{38}{paragraph*.36}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.4}Related work}{39}{section.4.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {5}Semisupervised learning}{41}{chapter.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Notation}{41}{paragraph*.37}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5.1}Objective}{42}{section.5.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Supervised objective}{42}{paragraph*.38}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Unsupervised objective}{42}{paragraph*.39}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5.2}Variational approximation}{43}{section.5.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Posterior}{44}{paragraph*.40}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5.3}Optimization}{44}{section.5.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Gradients of joint parameters}{44}{paragraph*.41}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Gradients of posterior parameters}{45}{paragraph*.42}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5.4}Variance reduction}{45}{section.5.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5.5}Experiments}{45}{section.5.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5.6}Related work}{46}{section.5.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {6}Syntactic evaluation}{47}{chapter.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Organization}{47}{paragraph*.43}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {6.1}Syntactic evaluation}{48}{section.6.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Dataset}{48}{paragraph*.44}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Categories}{49}{paragraph*.45}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Related work}{52}{paragraph*.46}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {6.2}Multitask learning}{52}{section.6.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Multitask objective}{53}{paragraph*.47}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Language model}{54}{paragraph*.48}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Word labeling}{54}{paragraph*.49}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Span labeling}{54}{paragraph*.50}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {6.3}Experiments}{55}{section.6.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.3.1}Setup}{56}{subsection.6.3.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.3.2}Results}{56}{subsection.6.3.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {7}Conclusion}{57}{chapter.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7.1}Main contributions}{57}{section.7.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Global training of a chart based neural parser.}{57}{paragraph*.51}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Semisupervised training of RNNGs.}{57}{paragraph*.52}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Effective baselines for the score function estimator.}{57}{paragraph*.53}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7.2}Future work}{57}{section.7.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Something.}{57}{paragraph*.54}
+\defcounter {refsection}{0}\relax 
+\contentsline {part}{Appendices}{58}{paragraph*.54}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {A}Figures}{59}{appendix.A}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {A.1}Training plots}{59}{section.A.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Development scores}{59}{paragraph*.55}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Training losses}{60}{paragraph*.56}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {A.2}Test scores}{60}{section.A.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {A.3}Samples}{60}{section.A.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {A.4}Syntactic evaluation}{60}{section.A.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {B}Implementation}{61}{appendix.B}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {B.1}Data}{61}{section.B.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {B.1.1}Datasets}{61}{subsection.B.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Penn Treebank}{61}{paragraph*.57}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{One Billion Word Benchmark}{62}{paragraph*.58}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{CCG supertags}{62}{paragraph*.59}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {B.1.2}Vocabularies}{63}{subsection.B.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Unknown words}{63}{paragraph*.60}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Embeddings}{63}{paragraph*.61}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {B.2}Implementation}{64}{section.B.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Optimization}{64}{paragraph*.63}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Hyperparameters}{65}{paragraph*.65}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {C}Conditional Random Fields}{66}{appendix.C}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {D}Variational Inference}{67}{appendix.D}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {D.1}Variational Inference}{67}{section.D.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {D.2}Score function estimator}{68}{section.D.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {D.3}Optimization}{69}{section.D.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {D.4}Variance reduction}{70}{section.D.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Variance of estimator}{70}{paragraph*.67}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Control variates}{71}{paragraph*.68}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Example}{73}{paragraph*.69}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{References}{75}{appendix*.71}

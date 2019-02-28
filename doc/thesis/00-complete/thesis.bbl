@@ -748,6 +748,31 @@
       \field{pages}{1\bibrangedash 11}
       \range{pages}{11}
     \endentry
+    \entry{dozat2016deep}{article}{}
+      \name{author}{2}{}{%
+        {{hash=d1d28f03da75cca98fac1800aec56dbb}{%
+           family={Dozat},
+           family_i={D\bibinitperiod},
+           given={Timothy},
+           given_i={T\bibinitperiod}}}%
+        {{hash=1261894eaefc186bfeabf336e05e6294}{%
+           family={Manning},
+           family_i={M\bibinitperiod},
+           given={Christopher\bibnamedelima D},
+           given_i={C\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+      }
+      \strng{namehash}{36b764e363a624ccfb5731550f241477}
+      \strng{fullhash}{36b764e363a624ccfb5731550f241477}
+      \field{sortinit}{D}
+      \field{sortinithash}{78f7c4753a2004675f316a80bdb31742}
+      \field{labelyear}{2016}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:1611.01734}
+      \field{title}{Deep biaffine attention for neural dependency parsing}
+      \field{year}{2016}
+    \endentry
     \entry{klein2015crf}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=33c8824e909897ff97adefd86d3c952a}{%

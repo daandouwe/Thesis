@@ -1,6 +1,16 @@
-% \bibliography{../src/bibliography}
+\bibliography{../src/bibliography}
 
-This chapter introduces a neural Conditional Random Field (CRF) parser that can be used as an alternative proposal distribution for the approximate marginalization of the RNNG. This parser combines the efficient exact inference of chart-based parsing, the rich nonlinear features of neural networks, and the global training of a CRF. The chart-based approach allows efficient exact inference alowing for exact decoding and global sampling. The neural features can be complex and can condition on the entire sentence. And the CRF training objective [...something about receiving information about all substructures...]. The parser is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} to global CRF training. The original is trained with a margin-based objective. Our interest in in this model is as a proposal distribution, which requires probabilistical training.
+This chapter introduces a neural Conditional Random Field (CRF) parser that can be used as an alternative proposal distribution for the approximate marginalization of the RNNG. The model is a span-factored CRF that independently predicts scores for labeled spans over the sentence using neural networks. The scores then interact in a chart-based dynamic program, giving a compact description of the distribution over trees.
+
+This approach combines the efficient exact inference of chart-based parsing, the rich nonlinear features of neural networks, and the global training of a CRF. The chart-based approach allows efficient exact inference alowing for exact decoding and global sampling while the neural features can be complex and can condition on the entire sentence. The CRF training objective [...something about receiving information about all substructures...]. The parser is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} to global CRF training. The original is trained with a margin-based objective. Our interest in in this model is as a proposal distribution, which requires probabilistical training.
+
+In this chapter:
+\begin{itemize}
+  \item I present the parser and describe how it is an adaptation of earlier (neural) crf parsing and the maximum margin trained parser of \citet{stern2017minimal}.
+  \item I show how the several inference problems of interest can be solved exactly: prediction, entropy, sampling.
+  \item We train the parser in a supervised fashion and show it's adequacy as a parser.
+  \item We invesitage how samples are obtained from this parser.
+\end{itemize}
 
 % \paragraph{Notation}
 % Let a sentence be $x_1,\dots,x_n$, where each $x_i$
@@ -15,7 +25,7 @@ This chapter introduces a neural Conditional Random Field (CRF) parser that can 
 
 \section{Model}
 
-The model is a CRF defined over labeled spans. We consider a tree as a collection of labeled spans $\y = \{ \y_a \}_{a=1}^A$ where $\y_a = \{ (i, j, \ell) }$, and define the score of a tree as the product of nonnegative local potentials $\Psi(\x, \y_a)$ that score these spans in conjunction with the sentence. The probability of a tree is the globally normalized score of the tree:
+The model is a CRF over labeled spans that form a tree. We write $\y_a = (i, j, \ell) }$ for a labeled span and consider a tree as a collection of these $\y = \{ \y_a \}_{a=1}^A$. We define the score of a tree as the product of nonnegative local potentials $\Psi(\x, \y_a) \geq 0$. The function $\Psi$ scores each span seperately, conditional one the entire sentence. The probability of a tree is the globally normalized score of the tree:
 \begin{align}
   \label{eq:crf-model}
   p(\y \mid \x) &= \frac{1}{Z(\x)} \prod_{a=1}^A \Psi(\x, \y_a),
@@ -26,12 +36,10 @@ where
 \end{align*}
 is the normalizing constant that sums over all the possible parse trees and makes sures that the probability distribution sums to 1. This normalizing constant can be computed efficiently with the inside algorithm.
 
-The factorization over labeled spans is an even stronger assumption than that typically made of factorization over anchored context-free rules. By scoring just labeled spans, the scoring function has no access to information about child nodes. This puts a greater burden on the scoring function, which is made up for by a very rich neural network parametrization, but will also greatly reduce the size of the state-space of the dynamic programs, greatly speeding up training and inference.
+By factorizing a tree over labeled spans we make an even stronger assumption than that typically made by factorizating over anchored context-free rules, see table \ref{02-background}. By scoring just labels for spans the potential function has no access to information about the direct substructure under the node, such as the child nodes and split point, and this puts a greater burden on it. The function can rely less on the tree structure and must thus rely more on the structure of the input sentence. But the stronger factorization will also greatly reduce the size of the state-space of the dynamic programs, greatly speeding up training and inference, an the burden of the feature function will be carried by a rich neural network parametrization. Together, this will make the parser fast and very effective.
 
 \subsection{Features}
-The scoring function $\Psi$ is implemented using neural networks following \citet{stern2017minimal}. Although the local potentials can only make minimal use of structural information, as we argued above, they can depend on the entire sentence. This suggest the use of $\rnn$ encodings.
-
-The representation of a span $(i, j)$ is the concatenation of the difference between forward and backward vectors computed by a bidirectional $\rnn$
+The scoring function $\Psi$ is implemented with neural networks following the design of the minimal scoring function of \citet{stern2017minimal}. The local potentials can only make minimal use of structural information, as we argued above, but they can depend on the entire sentence. This suggest the use of $\rnn$ encodings. The representation of a span $(i, j)$ is the concatenation of the difference between forward and backward vectors computed by a bidirectional $\rnn$
 \begin{align}
   \label{eq:potential-function}
   \vecs_{ij} = [\fw_j - \fw_i; \bw_i - \bw_j],
@@ -41,33 +49,56 @@ illustrated in figure \ref{fig:span-feature}. The score for a label is computed 
    % s(i, j, \ell) = s(i, j) = \Big[ \ff( \vecs_{ij} ) \Big]_{\ell}.
   \log \Psi(\x, \y_a) = \Big[ \ff( \vecs_{ij} ) \Big]_{\ell}.
 \end{align}
+This architecture is rightly called minimal, but it works surprisingly well: \citet{stern2017minimal} experiment with more elaborate functions based on concatenation of vectors (a strict superset of the minus approach) and biaffine scoring (inspired by \citep{dozat2016deep}), but these function improve marginally, if they do at all.
 
 \begin{figure}
-  \includegraphics{span-encoding.pdf}[width=\textwidth]
-  \caption{Representation for the span $(1, 4)$ computed from $\rnn$ encodings. Taken from \citet{stern2018analyis}.}
+  \includegraphics[width=\textwidth]{span-encoding.pdf}
+  \caption{Representation for the span $(1, 4)$ computed from $\rnn$ encodings. Taken without permission from \citet{stern2018analyis}.}
   \label{fig:span-feature}
 \end{figure}
 
 \subsection{Motivation}
-\begin{itemize}
-  \item Key point to make: this model regards a constituency tree as a collection of \textit{labeled spans} over a sentence. Earlier models, both log-linear and neural, regard a constituency tree as a collection of \textit{anchored rules} over a sentence \citep{finkel2008crf,klein2015crf}.
-  \item A model over spanned rules puts more expressiveness in the state space of the dynamic program, because the correlations between subparts of the trees are modeled through the rich rules. The model in \citet{stern2017minimal} instead puts the expressiveness in the input space by using rich neural feature representations. The state space in contrast is less structured, because the score-function is agnostic to the composition of it's children.
-  \item Earlier approaches went even farther. These approaches enriched the grammar by lexicalizing the rules \citep{collins2003head} or by breaking the grammar's independence assumptions by annotating the rule with parent and sibling labels \citep{klein2003accurate}.
-  \item The choice to model labeled spans makes dramatically improves the speed of this model. In the section on inference we will show precisely how.
-\end{itemize}
+The model regards a constituency tree as a collection of \textit{labeled spans} over a sentence. Earlier CRF models for constituency parsing, both log-linear and neural, factorize trees over \textit{anchored rules} \citep{finkel2008crf,klein2015crf}. This puts most of the expressiveness of the model in the state space of the dynamic program, modelling interactions between subparts of the trees through their interaction in the rules, instead of at the feature level. The model in \citet{stern2017minimal} removes part of this structure, and puts more expressiveness in the input space by using rich neural feature representations conditioning on the entire sentence. The discrete interaction between the local scores remains only at level of labeled spans. This dramatically improves the speed of this model, which will become evident in the next section.
+
+Chart based parsing shows a move from grammar to features. The work of \citet{hall2014less} shows how the log-linear CRF model of \cite{finkel2008crf} can work with bare unnanotated grammars when relying more on surface features of the sentence, and \citet{klein2015crf} show how these surface features can be replaced with dense neural features. The work of \citep{stern2017minimal} moves one step further: the grammar is dispensed with altogether, making the model span-factored, and the scoring function is given the full power of neural networks.
+
+Contrast this with generative parsing based on treebank grammars, where features are not available because the models are not conditional. Instead, these models rely entirely on detailed rule information. Basic treebank grammars do not parse well because the rules provide too little context, and good results can only be obtained by enriching grammars. Hence the independence assumptions in the grammar are typically weakened, not strengtehened. Such approaches lexicalize rules \citep{collins2003head}, annotate the rule with parent and sibling labels \citep{klein2003accurate}, or automatically learn refinements of nonterminal categories \citep{petrov2006learning}.
+
+The closest predecessor to our model is the neural CRF parser of \citet{klein2015crf}, which predicts local potential for anchored rules using a feedfoward network. This differs from our approach in two ways. Their method requires a grammar, extracted from a treebank beforehand, whereas our approach implictly assumes all rules are possible rules in the grammar. Secondly, their scoring function conditions only on the parts of the sentence directly under the rule, dictated by the use of a feedforward network, whereas our scoring function computes a score bassed on representations computed from the entire sequence.
 
 \section{Inference}
-Due to the parametrization, the model allows efficient inference. In this section we describe efficient solutions to three related problems:
+Because the model is span-factored it allows efficient inference. In this section we describe efficient solutions to four related problems:
 \begin{itemize}
-  \item Find the best parse $\mathbf{y}^{*} = \arg \max_{\mathbf{y}} p(\mathbf{y} | \mathbf{x})$
-  \item Compute the normalizer $Z(\mathbf{x}) = \sum_{ \mathbf{y} } \prod_{ a=1 }^{ A } \Psi( \mathbf{x}, \mathbf{y}_a )$, where $F = \{ \Psi_a \}_{a=1}^{A}$ is the set of factors in the graph.
-  \item Compute the entropy conditioned on $\mathbf{x}$, $H(\mathbf{y} | \mathbf{x})$.
+  \item Find the best parse $\hat{ \y } = \arg \max_{\y } p(\y  \mid \x)$
+  \item Compute the normalizer $Z(\x) = \sum_{ \y  } \prod_{ a=1 }^{ A } \Psi( \x, \y_a )$.
+  \item Obtain a sample $y \sim p(\y  \mid \x)$.
+  \item Compute the entropy $H(\y \midx)$ conditional on $\x$.
 \end{itemize}
-All three problems can be solved with a different instance of the same two algorithm: the inside algorithm and the outside algorithm.
+
+These problems are solved by different instances of the same two algorithms: the inside algorithm and the outside algorithm. We first describe how these quantities will be used, and then how these are computed. For each labeled span, the inside algorithms comptutes the inside values
+\begin{align*}
+  \alpha &= ... \\
+\end{align*}
+and the outside algorithm computes the outside values
+\begin{align*}
+  \beta &= ..
+\end{align*}
+Given these quantities, we can directly solve three problems described above.
+
+\paragraph{Lognoramlizer}
+The lognormalizer is the inside value at the root node
+\begin{itemize}
+  \item $Z(\x) = \alpha(\textt{ROOT}, 1, n)$.
+\end{itemize}
+
+\paragraph{Entropy}
+Derivation for entropy...
+
+\paragraph{Parse}
+Semirings... Viterbi from inside... Replacing the max with plus. sum-product, max-product, etcetera.
+
 
 \subsection{Inside recursion}
-% NOTE: This is a complete draft section, just for me to get the correct derivation for the implementation. In the actual section I will follow the semiring formulation, and connect it with the belief-propagation/message-passing/sum-product algorithm.
-%
 In this derivation we follow Michael Collins notes on the Inside-Outside Algorithm.\footnote{\url{http://www.cs.columbia.edu/~mcollins/io.pdf}} We have the following general result for the inside value $\alpha$. For all $A \in N$, for all $0 \leq i < n$
 \begin{align}
     \label{eq:collins-inside-base}
@@ -132,6 +163,7 @@ where
     S(i, j) &= \sum_{A \in N} \alpha(A, i, j) \\
     S'(i, j) &= \sum_{A \in N} \psi(A, i, j) \beta(A, i, j)
 \end{align*}
+
 
 \section{Experiments}
 We perform three types of experiments with the CRF parser:
