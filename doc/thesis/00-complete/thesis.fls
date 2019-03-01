@@ -334,8 +334,6 @@ OUTPUT thesis.pdf
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/lm/t1lmss.fd
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/lm/t1lmss.fd
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmss10.tfm
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmsso10.tfm
-INPUT /usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmssbx10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmssbx10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmssbx10.tfm
@@ -378,6 +376,7 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/latex-fonts/lasy10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/latex-fonts/lasy9.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/latex-fonts/lasy6.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmssbx10.tfm
+INPUT /usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmss12.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmssbx10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/rm-lmr10.tfm
@@ -408,6 +407,7 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmss17.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmssbx10.tfm
 INPUT ../01-introduction/introduction.tex
 INPUT ../01-introduction/introduction.tex
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmsso10.tfm
 INPUT ../02-background/background.tex
 INPUT ../02-background/background.tex
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmr8.tfm
@@ -455,6 +455,7 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm1
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/latex-fonts/lasy10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/latex-fonts/lasy7.tfm
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmri10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmcsc10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/rm-lmbx10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/rm-lmbx8.tfm
@@ -510,7 +511,6 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb
@@ -551,7 +551,6 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmtt10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmtt9.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmb8a.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmr8a.pfb

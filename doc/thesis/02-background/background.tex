@@ -215,9 +215,11 @@ In this research I take a position of extreme pragmatism with respect to syntax:
     \hline
     (S, 0, 10)     & (S $\to$ SBAR $\varnothing$, 0, 3, 10)  \\
     (SBAR, 0, 3)   & (SBAR $\to$ WHNP S+VP, 0, 1, 3)  \\
-    (VP, 1, 3)     & (S+VP $\to$ $\varnothing$ NP, 1, 2, 3)  \\
+    % (VP, 1, 3)     & (S+VP $\to$ $\varnothing$ NP, 1, 2, 3)  \\
+    (WHNP, 0, 1)     & (WHNP $\to$ \textit{What}, 0, 1)  \\
     $\qquad\vdots$ & $\qquad\vdots$  \\
-    (NP, 7, 9)     & (NP $\to$ $\varnothing$ $\varnothing$, 7, 8, 9)  \\
+    % (NP, 7, 9)     & (NP $\to$ $\varnothing$ $\varnothing$, 7, 8, 9)  \\
+    ($\varnothing$, 9, 10)     & ($\varnothing$ $\to$ ., 9, 10)  \\
   \end{tabular}
   \caption{Two conceptions of the tree in \ref{fig:tree-cnf-spans}.}
   \label{tab:spans-rules}

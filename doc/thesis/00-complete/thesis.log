@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  28 FEB 2019 14:12
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  1 MAR 2019 17:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1461,98 +1461,33 @@ File: english.lbx 2016/05/14 v3.4 biblatex localization (PK/JW/AB)
 
 LaTeX Warning: Label `eq:lowerbound' multiply defined.
 
-
-! LaTeX Error: Missing \begin{document}.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.590  {B
-         .2}{\ignorespaces Optimization\relax }}{64}{table.caption.64}}
-You're in trouble here.  Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
-
-! Extra }, or forgotten \endgroup.
-l.590  {B.2}{\ignorespaces Optimization\relax }}
-                                                {64}{table.caption.64}}
-I've deleted a group-closing symbol because it seems to be
-spurious, as in `$x}$'. But perhaps the } is legitimate and
-you forgot something else, as in `\hbox{$x}'. In such cases
-the way to recover is to insert both the forgotten and the
-deleted material, e.g., by typing `I$}'.
-
-! Extra }, or forgotten \endgroup.
-l.590 ...imization\relax }}{64}{table.caption.64}}
-                                                  
-I've deleted a group-closing symbol because it seems to be
-spurious, as in `$x}$'. But perhaps the } is legitimate and
-you forgot something else, as in `\hbox{$x}'. In such cases
-the way to recover is to insert both the forgotten and the
-deleted material, e.g., by typing `I$}'.
-
-
-LaTeX Warning: Label `tab:optimization' multiply defined.
-
-
-LaTeX Warning: Label `tab:model-parameters' multiply defined.
-
-
-LaTeX Warning: Label `A3-crf' multiply defined.
-
-
-LaTeX Warning: Label `A4-vi' multiply defined.
-
-
-LaTeX Warning: Label `eq:score-function-estimator' multiply defined.
-
-
-LaTeX Warning: Label `eq:surrogate' multiply defined.
-
-
-LaTeX Warning: Label `eq:cv-scale' multiply defined.
-
-
-LaTeX Warning: Label `eq:var-red' multiply defined.
-
-
-LaTeX Warning: Label `LastPage' multiply defined.
-
 )
 \openout1 = `thesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Try loading font information for T1+lmr on input line 126.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Try loading font information for T1+lmr on input line 127.
  (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/t1lmr.fd
 File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
-(lastpage)             ! on input line 126.
+(lastpage)             ! on input line 127.
 \AtBeginShipoutBox=\box72
 
 (/usr/local/texlive/2016/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
-Overfull \hbox (495.84512pt too wide) in paragraph at lines 590--13
-[]\T1/cmr/m/n/10.95 B.2Optimization64table.caption.64                          
-                                                                               
-                                                                               
-                                                                               
-      
- []
-
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count357
 \scratchdimen=\dimen279
@@ -1588,7 +1523,7 @@ Package: lscape 2000/10/22 v3.01 Landscape Pages (DPC)
 )
 Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
 )
-LaTeX Info: Redefining \microtypecontext on input line 126.
+LaTeX Info: Redefining \microtypecontext on input line 127.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
@@ -1623,8 +1558,8 @@ Package biblatex Warning: The following entry could not be found
 (biblatex)                LaTeX afterwards.
 
 )
-Package biblatex Info: Reference section=0 on input line 126.
-Package biblatex Info: Reference segment=0 on input line 126.
+Package biblatex Info: Reference section=0 on input line 127.
+Package biblatex Info: Reference segment=0 on input line 127.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -1662,7 +1597,7 @@ Package biblatex Info: Reference segment=0 on input line 126.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring ON on input line 126.
+Package hyperref Info: Link coloring ON on input line 127.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 
@@ -1671,10 +1606,10 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
 \c@section@level=\count363
 )
-LaTeX Info: Redefining \ref on input line 126.
-LaTeX Info: Redefining \pageref on input line 126.
-LaTeX Info: Redefining \nameref on input line 126.
-LaTeX Font Info:    Try loading font information for T1+lmss on input line 126.
+LaTeX Info: Redefining \ref on input line 127.
+LaTeX Info: Redefining \pageref on input line 127.
+LaTeX Info: Redefining \nameref on input line 127.
+LaTeX Font Info:    Try loading font information for T1+lmss on input line 127.
 
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/t1lmss.fd
@@ -1684,43 +1619,38 @@ Package microtype Info: Loading generic settings for font family
 (microtype)             `lmss' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
- [1{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
-
-] [2
-
-]
-LaTeX Font Info:    Calculating math sizes for size <13> on input line 126.
-LaTeX Font Info:    Try loading font information for OT1+lmr on input line 126.
+LaTeX Font Info:    Calculating math sizes for size <13> on input line 127.
+LaTeX Font Info:    Try loading font information for OT1+lmr on input line 127.
 
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OML+lmm on input line 126.
+LaTeX Font Info:    Try loading font information for OML+lmm on input line 127.
 
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 126
+LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 127
 .
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMX+lmex on input line 126
+LaTeX Font Info:    Try loading font information for OMX+lmex on input line 127
 .
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <13> on input line 126.
+(Font)              <13> on input line 127.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <9.09996> on input line 126.
+(Font)              <9.09996> on input line 127.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6.5> on input line 126.
-LaTeX Font Info:    Try loading font information for U+msa on input line 126.
+(Font)              <6.5> on input line 127.
+LaTeX Font Info:    Try loading font information for U+msa on input line 127.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
@@ -1728,7 +1658,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (/usr/local/texlive/2016/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 126.
+LaTeX Font Info:    Try loading font information for U+msb on input line 127.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -1736,27 +1666,31 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 (/usr/local/texlive/2016/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
-LaTeX Font Info:    Try loading font information for U+lasy on input line 126.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 127.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/base/ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
 
 LaTeX Font Warning: Font shape `U/lasy/m/n' in size <13> not available
-(Font)              size <12> substituted on input line 126.
+(Font)              size <12> substituted on input line 127.
 
 
 LaTeX Font Warning: Font shape `U/lasy/m/n' in size <6.5> not available
-(Font)              size <6> substituted on input line 126.
+(Font)              size <6> substituted on input line 127.
 
-[1]
+[1
+
+
+{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 126.
+(Font)              <10.95> on input line 127.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 126.
+(Font)              <8> on input line 127.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 126.
- (./thesis.toc [2
+(Font)              <6> on input line 127.
+
+(./thesis.toc [2
 
 
 ] [3])
@@ -1764,27 +1698,17 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 \openout7 = `thesis.toc'.
 
  [4] ABD: EveryShipout initializing macros
-LaTeX Font Info:    Try loading font information for OMS+lmr on input line 135.
+LaTeX Font Info:    Try loading font information for OMS+lmr on input line 136.
 
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/lm/omslmr.fd
 File: omslmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `OMS/lmr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 135.
-pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
-been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.148 \begin{acknowledgements}
-                               [1
+(Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 136.
+ [1
 
-]pdfTeX warning (ext4): destination with the same identifier (name{page.2}) has
- been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.152 \chapter
-              {Introduction} [2
+] [2
 
 ]
 Chapter 1.
@@ -1853,7 +1777,7 @@ two letters. (See Chapter 27 of The TeXbook.)
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<../figures/trees/npi-licensed.pdf, id=249, 526.77112pt x 259.41167pt>
+<../figures/trees/npi-licensed.pdf, id=235, 526.77112pt x 259.41167pt>
 File: ../figures/trees/npi-licensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-licensed.pdf>
@@ -1861,7 +1785,7 @@ Package pdftex.def Info: ../figures/trees/npi-licensed.pdf used on input line 6
 1.
 (pdftex.def)             Requested size: 151.08308pt x 74.40016pt.
 
-<../figures/trees/npi-unlicensed.pdf, id=250, 482.62106pt x 256.61702pt>
+<../figures/trees/npi-unlicensed.pdf, id=236, 482.62106pt x 256.61702pt>
 File: ../figures/trees/npi-unlicensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-unlicensed.pdf>
@@ -1927,27 +1851,13 @@ am-ples: 1 (argmax),
 [27]) [28] [29]
 Chapter 4.
 (../04-crf-parser/crf-parser.tex
-
-! LaTeX Error: Can be used only in preamble.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.1 \bibliography
-                 {../src/bibliography}
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [30
 
 ]
 ! Extra }, or forgotten $.
-l.28 ...rm a tree. We write $\y_a = (i, j, \ell) }
+l.17 ...rm a tree. We write $\y_a = (i, j, \ell) }
                                                   $ for a labeled span and c...
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
@@ -1955,77 +1865,106 @@ you forgot something else, as in `\hbox{$x}'. In such cases
 the way to recover is to insert both the forgotten and the
 deleted material, e.g., by typing `I$}'.
 
-[31] <../figures/span-encoding.pdf, id=679, 464.0005pt x 150.49072pt>
+[31] <../figures/span-encoding.pdf, id=667, 464.0005pt x 150.49072pt>
 File: ../figures/span-encoding.pdf Graphic file (type pdf)
 
 <use ../figures/span-encoding.pdf>
-Package pdftex.def Info: ../figures/span-encoding.pdf used on input line 55.
+Package pdftex.def Info: ../figures/span-encoding.pdf used on input line 44.
 (pdftex.def)             Requested size: 335.74251pt x 108.89745pt.
- [32]
-Underfull \vbox (badness 2626) has occurred while \output is active []
-
- [33 <../figures/span-encoding.pdf>]
-! Undefined control sequence.
-l.75   \item Compute the entropy $H(\y \midx
-                                            )$ conditional on $\x$.
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-l.91   \item $Z(\x) = \alpha(\textt
-                                   {ROOT}, 1, n)$.
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
+ [32] [33 <../figures/span-encoding.pdf>]
 [34]
 
-LaTeX Warning: Reference `eq:rule-score' on page 35 undefined on input line 120
-.
+! Package amsmath Error: Multiple \label's: label 'eq:inside' will be lost.
+
+See the amsmath package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.134   \end{align*}
+                    
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
 
 [35]
-
-LaTeX Warning: Reference `eq:inside-semiring' on page 36 undefined on input lin
-e 134.
-
-
-LaTeX Warning: Reference `eq:rule-score' on page 36 undefined on input line 144
-.
-
-
-Overfull \hbox (26.56099pt too wide) in paragraph at lines 160--160
+Overfull \hbox (18.35712pt too wide) in paragraph at lines 156--156
 [] 
  []
 
-[36] [37]
-Overfull \hbox (3.13356pt too wide) in paragraph at lines 186--187
+
+Underfull \vbox (badness 1655) has occurred while \output is active []
+
+ [36]
+
+! Package amsmath Error: Multiple \label's: label 'eq:inside-simplified' will b
+e lost.
+
+See the amsmath package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.256 \end{align*}
+                  
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! Package amsmath Error: Multiple \label's: label 'eq:viterbi-score' will be lo
+st.
+
+See the amsmath package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.262 \end{align*}
+                  
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Undefined control sequence.
+<argument>  a \osum 
+                    b = \log (e^{a} + e^{b}), 
+l.269 \end{align*}
+                  
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+<argument>  a \osum 
+                    b = \log (e^{a} + e^{b}), 
+l.269 \end{align*}
+                  
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+[37]
+Overfull \hbox (3.13356pt too wide) in paragraph at lines 299--300
 []\T1/lmr/m/n/10.95 (-20) We eval-u-ate per-plex-ity with vary-ing num-ber of s
 am-ples: 1 (argmax),
  []
 
-[38] [39]
+[38] [39] [40]
 
-LaTeX Warning: Reference `eq:rule-score' on page 40 undefined on input line 229
+LaTeX Warning: Reference `eq:rule-score' on page 41 undefined on input line 345
 .
 
-
-LaTeX Warning: Reference `eq:rule-score' on page 40 undefined on input line 235
-.
-
-) [40]
+) [41]
 Chapter 5.
-(../05-semisupervised/semisupervised.tex [41
+(../05-semisupervised/semisupervised.tex [42
 
-] [42] [43] [44] [45]) [46]
+] [43] [44] [45] [46]) [47]
 Chapter 6.
-(../06-syneval/syneval.tex [47
+(../06-syneval/syneval.tex [48
 
-] [48] [49] [50] [51] [52]
+] [49] [50] [51] [52] [53]
 ! Undefined control sequence.
 l.156 ...troduced in chapter \ref{04-crf}.\foonote
                                                   {This is similar to an app...
@@ -2035,7 +1974,7 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[53] [54]
+[54] [55]
 
 ! LaTeX Error: Lonely \item--perhaps a missing list environment.
 
@@ -2104,19 +2043,19 @@ Underfull \hbox (badness 10000) detected at line 230
 [][]
  []
 
-[55]) [56]
+[56]) [57]
 Chapter 7.
-(../07-conclusion/conclusion.tex) [57
+(../07-conclusion/conclusion.tex) [58
 
-] [58
+] [59
 
 ]
 Appendix A.
-(../08-app-figures/figures.tex [59
+(../08-app-figures/figures.tex [60
 
-]) [60]
+]) [61]
 Appendix B.
-(../09-app-implementation/implementation.tex [61
+(../09-app-implementation/implementation.tex [62
 
 ]
 LaTeX Font Info:    Try loading font information for T1+lmtt on input line 13.
@@ -2128,7 +2067,7 @@ Package microtype Info: Loading generic settings for font family
 (microtype)             `lmtt' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
- [62] [63] [64]
+ [63] [64] [65]
 
 ! LaTeX Error: Lonely \item--perhaps a missing list environment.
 
@@ -2136,21 +2075,21 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.48 \item S
+l.52 \item S
             urrogate objective and gradient blocking \cite{schulman2015gradi...
 
 Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
 
-Underfull \hbox (badness 10000) detected at line 48
+Underfull \hbox (badness 10000) detected at line 52
 [][]
  []
 
 ! Undefined control sequence.
 \enit@enditemize ->\enit@after 
                                \endlist \ifx \enit@series \relax \else \ifnu...
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2161,7 +2100,7 @@ and I'll forget about whatever was undefined.
 ! Undefined control sequence.
 \enit@enditemize ...x \else \ifnum \enit@resuming 
                                                   =\@ne \enit@setresumekeys ...
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2172,7 +2111,7 @@ and I'll forget about whatever was undefined.
 ! Missing number, treated as zero.
 <to be read again> 
                    =
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 A number should have been here; I inserted `0'.
 (If you can't figure out why I needed to see a number,
@@ -2181,7 +2120,7 @@ look up `weird error' in the index to The TeXbook.)
 ! Undefined control sequence.
 \enit@setresumekeys ...xpandafter {\enit@savekeys 
                                                   }\xdef \enit@afterlist {#2...
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2192,7 +2131,7 @@ and I'll forget about whatever was undefined.
 ! Undefined control sequence.
 \enit@setresumekeys ...it@toks }\ifnum \enit@type 
                                                   =\z@ #3\def \enit@noexcs {...
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2203,7 +2142,7 @@ and I'll forget about whatever was undefined.
 ! Missing number, treated as zero.
 <to be read again> 
                    =
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 A number should have been here; I inserted `0'.
 (If you can't figure out why I needed to see a number,
@@ -2212,7 +2151,7 @@ look up `weird error' in the index to The TeXbook.)
 ! Undefined control sequence.
 <argument> enit@resume@series@\enit@series 
                                            
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2223,7 +2162,7 @@ and I'll forget about whatever was undefined.
 ! Undefined control sequence.
 \enit@setresumekeys ...me@#1}{\csname c@\@listctr 
                                                   \endcsname \the \csname c@...
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2234,7 +2173,7 @@ and I'll forget about whatever was undefined.
 ! Undefined control sequence.
 \enit@setresumekeys ...e \the \csname c@\@listctr 
                                                   \endcsname }\fi }
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2245,14 +2184,14 @@ and I'll forget about whatever was undefined.
 ! You can't use `\relax' after \the.
 <recently read> \c@ 
                     
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 I'm forgetting what you said and using zero instead.
 
 ! Undefined control sequence.
 \enit@enditemize ...ist \fi \ifnum \enit@resuming 
                                                   =\thr@@ \enit@setresumekey...
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2263,7 +2202,7 @@ and I'll forget about whatever was undefined.
 ! Missing number, treated as zero.
 <to be read again> 
                    =
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 A number should have been here; I inserted `0'.
 (If you can't figure out why I needed to see a number,
@@ -2272,7 +2211,7 @@ look up `weird error' in the index to The TeXbook.)
 ! Undefined control sequence.
 \enit@setresumekeys ...xpandafter {\enit@savekeys 
                                                   }\xdef \enit@afterlist {#2...
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2283,7 +2222,7 @@ and I'll forget about whatever was undefined.
 ! Undefined control sequence.
 \enit@setresumekeys ...it@toks }\ifnum \enit@type 
                                                   =\z@ #3\def \enit@noexcs {...
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2294,7 +2233,7 @@ and I'll forget about whatever was undefined.
 ! Missing number, treated as zero.
 <to be read again> 
                    =
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 A number should have been here; I inserted `0'.
 (If you can't figure out why I needed to see a number,
@@ -2303,7 +2242,7 @@ look up `weird error' in the index to The TeXbook.)
 ! Undefined control sequence.
 \enit@setresumekeys ...me@#1}{\csname c@\@listctr 
                                                   \endcsname \the \csname c@...
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2314,7 +2253,7 @@ and I'll forget about whatever was undefined.
 ! Undefined control sequence.
 \enit@setresumekeys ...e \the \csname c@\@listctr 
                                                   \endcsname }\fi }
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2325,7 +2264,7 @@ and I'll forget about whatever was undefined.
 ! You can't use `\relax' after \the.
 <recently read> \c@ 
                     
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 I'm forgetting what you said and using zero instead.
 
@@ -2336,7 +2275,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -2345,13 +2284,13 @@ or  <return>  to continue without it.
 ! Extra \endgroup.
 <recently read> \endgroup 
                           
-l.49 \end{itemize}
+l.53 \end{itemize}
                   
 Things are pretty mixed up, but I think the worst is over.
 
-) [65]
+) [66]
 Appendix C.
-(../10-app-crf/crf.tex) [66
+(../10-app-crf/crf.tex) [67
 
 ]
 Appendix D.
@@ -2361,35 +2300,35 @@ Overfull \hbox (0.74757pt too wide) in paragraph at lines 10--11
 , for non-conjugate
  []
 
-[67
+[68
 
 ]
 Overfull \hbox (18.56999pt too wide) in paragraph at lines 38--38
 [] 
  []
 
-[68] [69] [70]
+[69] [70] [71]
 Overfull \hbox (50.92702pt too wide) in paragraph at lines 131--131
 [] 
  []
 
-[71] [72] <../figures/control-variate.pdf, id=1284, 344.73216pt x 173.3124pt>
+[72] [73] <../figures/control-variate.pdf, id=1264, 344.73216pt x 173.3124pt>
 File: ../figures/control-variate.pdf Graphic file (type pdf)
 
 <use ../figures/control-variate.pdf>
 Package pdftex.def Info: ../figures/control-variate.pdf used on input line 205.
 
 (pdftex.def)             Requested size: 235.01872pt x 118.15762pt.
-) [73] [74 <../figures/control-variate.pdf>] [75
+) [74] [75 <../figures/control-variate.pdf>] [76
 
-] [76] [77] [78] [79]
-Overfull \hbox (38.92006pt too wide) in paragraph at lines 209--209
+] [77] [78] [79] [80]
+Overfull \hbox (38.92006pt too wide) in paragraph at lines 210--210
 \T1/lmr/m/n/10.95 (-20) ``Ex-plor-ing the lim-its of lan-guage mod-el-ing''. \T
 1/lmr/m/it/10.95 (-20) arXiv preprint arXiv:1602.02410\T1/lmr/m/n/10.95 (-20) .
  
  []
 
-[80]
+[81]
 
 ! Package inputenc Error: Unicode char ỳ (U+1EF3)
 (inputenc)                not set up for use with LaTeX.
@@ -2398,19 +2337,19 @@ See the inputenc package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.209 
+l.210 
       
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-[81] [82] [83] [84] [85] 
+[82] [83] [84] [85] [86] 
 AED: lastpage setting LastPage
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 215.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 215.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 216.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 216.
 (./thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 215.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 215.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 216.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 216.
 
 
 LaTeX Font Warning: Size substitutions with differences
@@ -2422,72 +2361,66 @@ LaTeX Warning: There were undefined references.
 
 LaTeX Warning: There were multiply-defined labels.
 
-
-Package biblatex Warning: Please rerun LaTeX.
-(biblatex)                Page breaks have changed.
-
 Package logreq Info: Writing requests to 'thesis.run.xml'.
 \openout1 = `thesis.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 31492 strings out of 493014
- 572601 string characters out of 6133351
- 1063241 words of memory out of 5000000
- 33672 multiletter control sequences out of 15000+600000
- 172748 words of font info for 240 fonts, out of 8000000 for 9000
+ 31700 strings out of 493014
+ 574971 string characters out of 6133351
+ 1063720 words of memory out of 5000000
+ 33870 multiletter control sequences out of 15000+600000
+ 177686 words of font info for 248 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 62i,14n,72p,1828b,1277s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 62i,16n,72p,1828b,1277s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/
 texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2016/t
 exmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2016/texmf-dist/
 fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/2016/texmf-dist/fonts/enc/
-dvips/lm/lm-mathex.enc}{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/cm-s
-uper/cm-super-t1.enc}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfo
-nts/cm/cmmi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmr10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/
-cm/cmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/
-cmss10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mss9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cms
-sbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-ssi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-ssi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cms
-y10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
-8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></us
-r/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx8.pfb></usr/local/tex
-live/2016/texmf-dist/fonts/type1/public/lm/lmbx9.pfb></usr/local/texlive/2016/t
-exmf-dist/fonts/type1/public/lm/lmbxi10.pfb></usr/local/texlive/2016/texmf-dist
-/fonts/type1/public/lm/lmcsc10.pfb></usr/local/texlive/2016/texmf-dist/fonts/ty
-pe1/public/lm/lmex10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public
-/lm/lmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi6.
-pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi8.pfb></usr/l
-ocal/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi9.pfb></usr/local/texliv
-e/2016/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/2016/texm
-f-dist/fonts/type1/public/lm/lmr6.pfb></usr/local/texlive/2016/texmf-dist/fonts
-/type1/public/lm/lmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/publi
-c/lm/lmr9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri10.
-pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri9.pfb></usr/l
-ocal/texlive/2016/texmf-dist/fonts/type1/public/lm/lmss10.pfb></usr/local/texli
-ve/2016/texmf-dist/fonts/type1/public/lm/lmss12.pfb></usr/local/texlive/2016/te
-xmf-dist/fonts/type1/public/lm/lmssbx10.pfb></usr/local/texlive/2016/texmf-dist
-/fonts/type1/public/lm/lmsso10.pfb></usr/local/texlive/2016/texmf-dist/fonts/ty
-pe1/public/lm/lmsy10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public
-/lm/lmsy6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy8.p
-fb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy9.pfb></usr/lo
-cal/texlive/2016/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/local/texliv
-e/2016/texmf-dist/fonts/type1/public/lm/lmtt9.pfb></usr/local/texlive/2016/texm
-f-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/
-texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/201
-6/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texmf-
-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts
-/type1/urw/times/utmr8a.pfb>
-Output written on thesis.pdf (91 pages, 1375356 bytes).
+dvips/lm/lm-mathex.enc}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmmi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmr10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmss10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmss9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mssbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmssi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmssi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/c
+msy10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+sy8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></
+usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx8.pfb></usr/local/t
+exlive/2016/texmf-dist/fonts/type1/public/lm/lmbx9.pfb></usr/local/texlive/2016
+/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb></usr/local/texlive/2016/texmf-di
+st/fonts/type1/public/lm/lmcsc10.pfb></usr/local/texlive/2016/texmf-dist/fonts/
+type1/public/lm/lmex10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/publ
+ic/lm/lmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi
+6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi8.pfb></usr
+/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi9.pfb></usr/local/texl
+ive/2016/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/2016/te
+xmf-dist/fonts/type1/public/lm/lmr6.pfb></usr/local/texlive/2016/texmf-dist/fon
+ts/type1/public/lm/lmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/pub
+lic/lm/lmr9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri1
+0.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri9.pfb></usr
+/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmss10.pfb></usr/local/tex
+live/2016/texmf-dist/fonts/type1/public/lm/lmss12.pfb></usr/local/texlive/2016/
+texmf-dist/fonts/type1/public/lm/lmssbx10.pfb></usr/local/texlive/2016/texmf-di
+st/fonts/type1/public/lm/lmsso10.pfb></usr/local/texlive/2016/texmf-dist/fonts/
+type1/public/lm/lmsy10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/publ
+ic/lm/lmsy6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy8
+.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy9.pfb></usr/
+local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/local/texl
+ive/2016/texmf-dist/fonts/type1/public/lm/lmtt9.pfb></usr/local/texlive/2016/te
+xmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/201
+6/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive
+/2016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/te
+xmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/f
+onts/type1/urw/times/utmr8a.pfb>
+Output written on thesis.pdf (90 pages, 1361173 bytes).
 PDF statistics:
- 1755 PDF objects out of 2073 (max. 8388607)
- 1549 compressed objects within 16 object streams
- 455 named destinations out of 1000 (max. 500000)
- 43937 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 1730 PDF objects out of 2073 (max. 8388607)
+ 1526 compressed objects within 16 object streams
+ 451 named destinations out of 1000 (max. 500000)
+ 45985 words of extra memory for PDF output out of 51595 (max. 10000000)
 

@@ -1,6 +1,6 @@
 \bibliography{../src/bibliography}
 
-This chapter introduces a neural Conditional Random Field (CRF) parser that can be used as an alternative proposal distribution for the approximate marginalization of the RNNG. The model is a span-factored CRF that independently predicts scores for labeled spans over the sentence using neural networks. The scores then interact in a chart-based dynamic program, giving a compact description of the distribution over trees.
+This chapter introduces a neural Conditional Random Field (CRF) parser that can be used as an alternative proposal distribution for the approximate marginalization of the RNNG. The model is a span-factored CRF that independently predicts scores for labeled spans over the sentence using neural networks. The scores then interact in a chart-based dynamic program, giving a compact description of the probability distribution over parses.
 
 This approach combines the efficient exact inference of chart-based parsing, the rich nonlinear features of neural networks, and the global training of a CRF. The chart-based approach allows efficient exact inference alowing for exact decoding and global sampling while the neural features can be complex and can condition on the entire sentence. The CRF training objective [...something about receiving information about all substructures...]. The parser is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} to global CRF training. The original is trained with a margin-based objective. Our interest in in this model is as a proposal distribution, which requires probabilistical training.
 
@@ -12,20 +12,9 @@ In this chapter:
   \item We invesitage how samples are obtained from this parser.
 \end{itemize}
 
-% \paragraph{Notation}
-% Let a sentence be $x_1,\dots,x_n$, where each $x_i$
-% is a word. We are given a CFG $(N, \Sigma, R, S)$ in Chomsky normal
-% form. Let $\psi$ be a function that maps any rule production $r \in R$ of the form $\langle A \to B \;C, i, k, j \rangle$ or $\langle A, i, i+1 \rangle$ to a value $\psi(r) \geq 0$. Let a tree $T$ be a set of such rules $r$ with the only constraint that these rules make up a tree.
-
-% I describe the probabilistic model of the parser.
-% \begin{enumerate}
-%   \item Introduce probabilistic model, reference the appendix on CRFs \ref{A3-crf}.
-%   \item Desribe how this is an adaptation from \citet{stern2017minimal} to probabilistic training.
-% \end{enumerate}
 
 \section{Model}
-
-The model is a CRF over labeled spans that form a tree. We write $\y_a = (i, j, \ell) }$ for a labeled span and consider a tree as a collection of these $\y = \{ \y_a \}_{a=1}^A$. We define the score of a tree as the product of nonnegative local potentials $\Psi(\x, \y_a) \geq 0$. The function $\Psi$ scores each span seperately, conditional one the entire sentence. The probability of a tree is the globally normalized score of the tree:
+The model is a CRF factored over the labeled spans that form a tree. We write $\y_a = (i, j, \ell) }$ for a labeled span and consider a tree $\y = \{ \y_a \}_{a=1}^A$ as a collection of these. We define the score of a tree as the product of nonnegative local potentials $\Psi(\x, \y_a) \geq 0$. The function $\Psi$ scores each span seperately, conditional on the entire sentence. The probability of a tree is the globally normalized score of the tree:
 \begin{align}
   \label{eq:crf-model}
   p(\y \mid \x) &= \frac{1}{Z(\x)} \prod_{a=1}^A \Psi(\x, \y_a),
@@ -36,7 +25,7 @@ where
 \end{align*}
 is the normalizing constant that sums over all the possible parse trees and makes sures that the probability distribution sums to 1. This normalizing constant can be computed efficiently with the inside algorithm.
 
-By factorizing a tree over labeled spans we make an even stronger assumption than that typically made by factorizating over anchored context-free rules, see table \ref{02-background}. By scoring just labels for spans the potential function has no access to information about the direct substructure under the node, such as the child nodes and split point, and this puts a greater burden on it. The function can rely less on the tree structure and must thus rely more on the structure of the input sentence. But the stronger factorization will also greatly reduce the size of the state-space of the dynamic programs, greatly speeding up training and inference, an the burden of the feature function will be carried by a rich neural network parametrization. Together, this will make the parser fast and very effective.
+By factorizing a tree over labeled spans we make an even stronger assumption than that typically made by factorizating over anchored context-free rules\footnote{\cf table \ref{tab:spans-rules} for the different conceptions.}. This way, the potential function has no access to information about the direct substructure under the node, such as the child nodes and their split point. The function can thus rely less on the local tree structure and must thus rely more on the surface features of input sentence. This factorization will, however, greatly reduce the size of the state-space of the dynamic programs, speeding up training and inference, and the burden of the feature function will be carried by a rich neural network parametrization. Together, this will make the parser fast and very effective.
 
 \subsection{Features}
 The scoring function $\Psi$ is implemented with neural networks following the design of the minimal scoring function of \citet{stern2017minimal}. The local potentials can only make minimal use of structural information, as we argued above, but they can depend on the entire sentence. This suggest the use of $\rnn$ encodings. The representation of a span $(i, j)$ is the concatenation of the difference between forward and backward vectors computed by a bidirectional $\rnn$
@@ -57,112 +46,247 @@ This architecture is rightly called minimal, but it works surprisingly well: \ci
   \label{fig:span-feature}
 \end{figure}
 
-\subsection{Motivation}
-The model regards a constituency tree as a collection of \textit{labeled spans} over a sentence. Earlier CRF models for constituency parsing, both log-linear and neural, factorize trees over \textit{anchored rules} \citep{finkel2008crf,klein2015crf}. This puts most of the expressiveness of the model in the state space of the dynamic program, modelling interactions between subparts of the trees through their interaction in the rules, instead of at the feature level. The model in \citet{stern2017minimal} removes part of this structure, and puts more expressiveness in the input space by using rich neural feature representations conditioning on the entire sentence. The discrete interaction between the local scores remains only at level of labeled spans. This dramatically improves the speed of this model, which will become evident in the next section.
-
-Chart based parsing shows a move from grammar to features. The work of \citet{hall2014less} shows how the log-linear CRF model of \cite{finkel2008crf} can work with bare unnanotated grammars when relying more on surface features of the sentence, and \citet{klein2015crf} show how these surface features can be replaced with dense neural features. The work of \citep{stern2017minimal} moves one step further: the grammar is dispensed with altogether, making the model span-factored, and the scoring function is given the full power of neural networks.
-
-Contrast this with generative parsing based on treebank grammars, where features are not available because the models are not conditional. Instead, these models rely entirely on detailed rule information. Basic treebank grammars do not parse well because the rules provide too little context, and good results can only be obtained by enriching grammars. Hence the independence assumptions in the grammar are typically weakened, not strengtehened. Such approaches lexicalize rules \citep{collins2003head}, annotate the rule with parent and sibling labels \citep{klein2003accurate}, or automatically learn refinements of nonterminal categories \citep{petrov2006learning}.
-
-The closest predecessor to our model is the neural CRF parser of \citet{klein2015crf}, which predicts local potential for anchored rules using a feedfoward network. This differs from our approach in two ways. Their method requires a grammar, extracted from a treebank beforehand, whereas our approach implictly assumes all rules are possible rules in the grammar. Secondly, their scoring function conditions only on the parts of the sentence directly under the rule, dictated by the use of a feedforward network, whereas our scoring function computes a score bassed on representations computed from the entire sequence.
-
 \section{Inference}
 Because the model is span-factored it allows efficient inference. In this section we describe efficient solutions to four related problems:
 \begin{itemize}
   \item Find the best parse $\hat{ \y } = \arg \max_{\y } p(\y  \mid \x)$
   \item Compute the normalizer $Z(\x) = \sum_{ \y  } \prod_{ a=1 }^{ A } \Psi( \x, \y_a )$.
   \item Obtain a sample $y \sim p(\y  \mid \x)$.
-  \item Compute the entropy $H(\y \midx)$ conditional on $\x$.
+  \item Compute the entropy $H(\y \mid \x)$ conditional on $\x$.
 \end{itemize}
+These problems are solved by variants of the inside and outside algorithms. We first describe how the quantities computed by these algorithms will be used to solve these problems, and then how these are computed.
 
-These problems are solved by different instances of the same two algorithms: the inside algorithm and the outside algorithm. We first describe how these quantities will be used, and then how these are computed. For each labeled span, the inside algorithms comptutes the inside values
+\subsection{Quantities}
+For each labeled span $(i, j, \ell)$, we define the inside value $\alpha(i, j, \ell)$ as the sum of potentials of all trees that are rooted in node $\ell$ with leaves $w_{i+1} \dots w_j$. We define the outside value $\beta(i, j, \ell)$ as the sum over potentials of all trees with leaves $w_1 \dots w_i \,\ell\, w_{j+1} \dots w_n$, where the nonterminal $\ell$ is treated as a leaf that is not expanded. These values sum over complementary sets that together make up all parses of $\x$.
+
+% This can best be illustrated by figure \ref{fig:inside-tree} that introduces the notion of an \textit{inside tree} and an \textit{outside tree}. The inside value is the sum over the potentials of inside trees, and the outside value is the sum over all outside trees.
+
+We then define the quantity $\mu(i, j, \ell)$ as the sum of all parses of $\x$ that contain nonterminal $\y_a = (i, j, \ell)$:
 \begin{align*}
-  \alpha &= ... \\
+  \mu(i, j, \ell)
+    &\defeq \sum_{ \substack{ \y \in \yieldx \\ (i, j, \ell) \in \y } } \Psi(\x, \y_a),
 \end{align*}
-and the outside algorithm computes the outside values
+and note that under this these definition we have the result
 \begin{align*}
-  \beta &= ..
+  \mu(i, j, \ell) &= \alpha(i, j, \ell) \beta(i, j, \ell).
 \end{align*}
 Given these quantities, we can directly solve three problems described above.
 
-\paragraph{Lognoramlizer}
-The lognormalizer is the inside value at the root node
-\begin{itemize}
-  \item $Z(\x) = \alpha(\textt{ROOT}, 1, n)$.
-\end{itemize}
+\paragraph{Normalizer}
+The normalizer is the inside value at the root node
+\begin{align*}
+  Z(\x) = \alpha(\textsc{root}, 1, n).
+\end{align*}
+This follows from the definition of the inside algorithm: $\alpha(\textsc{root}, 1, n)$ is the sum of potentials of all trees rooted in $\textsc{root}$ that span words $w_1 \dots w_n$.
+
+\paragraph{Node marginals}
+Suppose we are sampling parses $\y$ for $\x$ from the model $p$. The probability that this parse contains labeled span $\y_a = (i, j, \ell)$ is called the marginal probability, and is computed as
+\begin{align*}
+  \frac{\alpha(i, j, \ell) \cdot \beta(i, j, \ell)}{Z(\x)}.
+\end{align*}
 
 \paragraph{Entropy}
-Derivation for entropy...
+The entropy of the distribution over parses can be computed using the node marginals by noting that we can write the expectation as
+\begin{align*}
+  H(\y \mid \x)
+    &= - \expect_{p} \Big[ \log p(\y \mid \x) \Big]  \\
+    &= - \expect_{p} \Big[ \sum_{a=1}^A \log \Psi(\x, \y_a) \Big] + \log Z(\x)  \\
+    % &= - \sum_{a=1}^A \expect_{p} \Big[ \log \Psi(\x, \y_a) \Big] + \log Z(\x)   \\
+    &= - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{a=1}^A \log \Psi(\x, \y_a) - \log Z(\x)  \\
+    &= - \sum_{ \y \in \yieldx } \frac{ \Psi(\x, \y_a) }{ Z(\x) } \sum_{a=1}^A \log \Psi(\x, \y_a) - \log Z(\x)  \\
+\end{align*}
 
 \paragraph{Parse}
-Semirings... Viterbi from inside... Replacing the max with plus. sum-product, max-product, etcetera.
+The best parse can be obtained with the Viterbi algoritm, which is an instance of the inside algorithm. The viterbi algorithm replaces the sum operator of the inside algorithmm with $\max$: at each node this selects the best substructure instead of summing over all of them.
+
+\subsection{Notation}
+I introduce the following notation for termporary reasons because I cannot make up my mind about how to write these things. Let $\y_a = (i, j, \ell)$, then:
+\begin{align*}
+  A &= \ell  \\
+  \psi(A, i, j) &= \Psi(\x, \y_a)
+\end{align*}
+
+In the following derivations I use some of the notation from semiring parsing \citep{goodman1999semiring,eisner2009semirings} and some notions from weighted hypergraphs \citep{gallo1993directed,klein2004parsing}. In particular I use the notion of a semiring
+\begin{align*}
+  \mathcal{K} = \langle \mathbb{K}, \oplus, \otimes, \bar{0}, \bar{1} \rangle,
+\end{align*}
+an algebraic structure over a field $\mathbb{K}$, with additive and multiplicative operations $\oplus$ and $\otimes$, and additive and multiplicative identities $\bar{1}$ and $\bar{0}$. In fact, a semiring  is equivalent to ring\footnote{The real numbers with regular addition and multiplication is an example of a ring.}, without the requirement of an additive inverse for each element.
+
+I also use the notion of a hypergraph as a compact representation of the collection of all possible trees for a sentence. In particular, a directed B-hypergraph (a \textit{backwards} hypergraph) is a pair $G = (V, E)$ consisting of nodes $V$ connected by hyperedges $E = V* \times V$. In our case the nodes are labeled spans $(A, i, j)$, and the set of hyperedges is $E = (V \times V) \times V$ with elements $(\langle (B, i, k), (C, k, j) \rangle )$
+
+
 
 
 \subsection{Inside recursion}
-In this derivation we follow Michael Collins notes on the Inside-Outside Algorithm.\footnote{\url{http://www.cs.columbia.edu/~mcollins/io.pdf}} We have the following general result for the inside value $\alpha$. For all $A \in N$, for all $0 \leq i < n$
-\begin{align}
-    \label{eq:collins-inside-base}
-    \alpha(A,i,i+1) = \psi(A, i, i+1)
-\end{align}
-and for all $(i, j)$ such that $1 \leq i < j \leq n$:
-\begin{align}
-    \label{eq:collins-inside-general}
-    \alpha(A,i,j) = \sum_{A \to B C} \sum_{k=i+1}^{j-1} \psi(A \to B \;C, i, k, j) \cdot \alpha(B,i,k) \cdot \alpha(C,k,j)
-\end{align}
-% \begin{align}
-% \label{eq:rule-score}
-%     \log\psi(A \to B \;C, i, k, j) \defeq s(i, j, A) + s_{span}(i, k) + s_{span}(k, j),
-% \end{align}
-Note that we are considering a CFG in which the rule set is complete, i.e.
-\begin{align}
-  \langle A \to B \;C \rangle \in R \text{ for each } (A, B, C) \in N^3,
-\end{align}
-and recall that the labels $B$ and $C$ do not appear in the scoring functions in \ref{eq:rule-score}. These facts will allow us to simplify the expression in formula \ref{eq:collins-inside-general} as
-\begin{subequations}
-\begin{align*}
-    \alpha(A,i,j) &= \sum_{B \in N} \sum_{C \in N} \sum_{k=i+1}^{j-1} \tilde{s}(i, j, A) \cdot \alpha(B,i,k) \cdot \alpha(C,k,j) \\
-        &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} \sum_{B \in N} \alpha(B,i,k) \cdot \sum_{C \in N} \alpha(C,k,j) \\
-        &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \label{eq:final-inside}
-\end{align*}
-\end{subequations}
-where we've introduced a number of notational abbreviations
-\begin{align*}
-  \tilde{s}(i, j, A)
-    &= \exp( s(i, j, A) ) \\
-    S(i,j) &= \sum_{A \in N} \alpha(A,i,j)
-\end{align*}
-Note that this is the exact same formula as \ref{eq:inside-semiring}.
+  The inside algorithm computes the quantities $\alpha(A,i,j)$ for all labels $A \in N$ and all spans $0 \leq i < j \leq n$. At the leaves, the sum is defined as
+  \begin{align}
+      \label{eq:inside-base}
+      \alpha(A, i, i+1) = \psi(A, i, i+1)
+  \end{align}
+  for $A \in N$, for all $0 \leq i < n$. To compute $\alpha(A, i, j)$ in the general case we need to sum over all possible binary expansions $(A \to B C, i, k, j)$ for $A, B \in N$ and $i \leq k \leq j$. This corresponds to the following recursive expression that uses the inside values of the subparts:
+  \begin{align*}
+  \label{eq:inside}
+    \alpha(A, i, j)
+      &= \bigoplus_{B \in N} \bigoplus_{C \in N} \bigoplus_{k=i+1}^{j-1} \psi(A, i, j) \otimes \alpha(B,i,k) \otimes \alpha(C,k,j) \\
+      &= \psi(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \bigoplus_{B \in N} \alpha(B,i,k) \otimes \bigoplus_{C \in N} \alpha(C,k,j) \\
+      &= \psi(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} S(i,k) \otimes S(k,j)
+  \end{align*}
+  where we've introduced the notational abbreviation
+  \begin{align*}
+      S(i,j) &= \bigoplus_{A \in N} \alpha(A,i,j).
+  \end{align*}
+  Looking at \ref{eq:inside} we can see the marginalized values $S(i, j)$ are all that are needed for the recursion. This suggest simplifying the recursion even further as
+  \begin{align*}
+  \label{eq:inside-simplified}
+    S(i, j)
+      &= \bigoplus_{A \in N} \alpha(A,i,j) \\
+      % &=  \bigoplus_{A \in N} \psi(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} S(i,k) \otimes S(k,j) \\
+      &= \Bigg[ \bigoplus_{A \in N} \psi(A, i, j) \Bigg] \otimes \Bigg[\bigoplus_{k=i+1}^{j-1} S(i,k) \otimes  S(k,j) \Bigg],
+  \end{align*}
+  where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting.
 
-From equation \ref{eq:final-inside} we can deduce that we in fact do even need to store the values $\alpha(i, j, A)$ but that it suffices to only store the marginalized values $S(i, j)$. In this case, the recursion simplifies even further:
-\begin{subequations}
-\begin{align*}
-    S(i, j) &= \sum_{A \in N} \alpha(A,i,j) \\
-        &=  \sum_{A \in N} \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \\
-        &= \Bigg[ \sum_{A \in N} \tilde{s}(i, j, A) \cdot \Bigg] \Bigg[\sum_{k=i+1}^{j-1} S(i,k) \cdot  S(k,j) \Bigg]
-\end{align*}
-\end{subequations}
-where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting. We can now recognize this as the `inside' equivalent of the expression from the paper\footnote{I believe there is actually an error in this equation: it should read  $s(i, j, \ell) + s_{span}(i, j)$ instead of just $s(i, j, \ell)$. This is implied by the score for a single node, which is given by equation \ref{eq:rule-score}, taken directly from the paper.}
-\begin{align}
-    s_{best}(i, j) = \max_{\ell} [s(i, j, \ell)] + \max_{k}[ s_{split}(i, k, j)].
-\end{align}
-The recursions are the same; the semirings are different. The viterbi recursion given above is in the \textsc{ViterbiSemiring}, which uses the $\max$ operator as $\oplus$; the inside recursion given in \ref{eq:final-inside} has standard addition (+) instead.
-
+  This recursion can be solved by computing the inside value of the nodes $(i, j, A)$ in topological order, so that the values of the subparts are availlable to compute the inside values higher up.
 
 \subsection{Outside recursion}
+  The outside algorithm computes the quantities $\beta(A,i,j)$ for all labels $A \in N$ and all spans $0 \leq i < j \leq n$. For the labels spanning the entire sentence, the outside value is defined as
+  \begin{align*}
+    \beta(A, 0, n) =
+    \begin{cases}
+      0, & \text{if}\ A = \textsc{root} \\
+      1, & \text{otherwise}.
+    \end{cases}
+  \end{align*}
+  To compute $\beta(A, i, j)$ in the general case we need to sum over all possible upward binary expansions that $A$ can be a part of, recursively making use of the outside values already computed. This means we sum over expansions $(B \to C \; A, k, i, j)$ for all labels $B$ and $C$ and left endpoints $1 \leq k < i$, and sum over expansions $(B \to A \; C, i, j, k)$ for all labels $B$ and $C$ and right endpoints $j < k \leq n$. This corresponds to the following recursive expression that uses the outside values of the superparts:
+  \begin{align*}
+    \beta(A, i, j)
+      &= \bigoplus_{B \in N} \bigoplus_{C \in N} \bigoplus_{k=1}^{i-1} \psi(B, k, j) \otimes \alpha(C, k, i-1) \otimes \beta(B, k, j) \\
+        &\qquad \oplus \bigoplus_{B \in N} \bigoplus_{C \in N} \bigoplus_{k=j+1}^{n} \psi(B, i, k) \otimes \beta(B, i, k) \otimes \alpha(C, j+1, k) \\
+      &=  \bigoplus_{k=1}^{i-1}  \Bigg[ \bigoplus_{B \in N} \psi(B, k, j)  \otimes \beta(B, k, j) \Bigg] \otimes \Bigg[ \bigoplus_{C \in N} \alpha(C, k, i-1) \Bigg] \\
+        &\qquad \oplus \bigoplus_{k=j+1}^{n}  \Bigg[ \bigoplus_{B \in N}  \psi(B, i, k) \otimes \beta(B, i, k) \Bigg] \otimes  \Bigg[  \bigoplus_{C \in N} \alpha(C, j+1, k) \Bigg] \\
+      &=  \bigoplus_{k=1}^{i-1}  S'(k, j) \otimes S(k, i-1) \oplus \bigoplus_{k=j+1}^{n} S'(i, k) \otimes  S(j+1, k) \\
+  \end{align*}
+  where
+  \begin{align*}
+      S(i, j) &= \bigoplus_{A \in N} \alpha(A, i, j) \\
+      S'(i, j) &= \bigoplus_{A \in N} \psi(A, i, j) \beta(A, i, j)
+  \end{align*}
+
+
+% \subsection{Inside recursion}
+% In this derivation we will use $\y_a = (i, j, \ell)$ interchangeably.
+%
+% \begin{align*}
+% \label{eq:inside}
+%   \alpha(A,i,j) &= \sum_{B \in N} \sum_{C \in N} \sum_{k=i+1}^{j-1} \tilde{s}(i, j, A) \cdot \alpha(B,i,k) \cdot \alpha(C,k,j) \\
+%     &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} \sum_{B \in N} \alpha(B,i,k) \cdot \sum_{C \in N} \alpha(C,k,j) \\
+%     &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j)
+% \end{align*}
+%
+% where we've introduced a number of notational abbreviations
+% \begin{align*}
+%   \tilde{s}(i, j, A)
+%     &= \exp( s(i, j, A) ) \\
+%     S(i,j) &= \sum_{A \in N} \alpha(A,i,j)
+% \end{align*}
+%
+% From equation \ref{eq:inside} we can deduce that we in fact do even need to store the values $\alpha(i, j, A)$ but that it suffices to only store the marginalized values $S(i, j)$. In this case, the recursion simplifies even further:
+% \begin{align*}
+%     S(i, j) &= \sum_{A \in N} \alpha(A,i,j) \\
+%         &=  \sum_{A \in N} \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \\
+%         &= \Bigg[ \sum_{A \in N} \tilde{s}(i, j, A) \Bigg] \cdot \Bigg[\sum_{k=i+1}^{j-1} S(i,k) \cdot  S(k,j) \Bigg]
+% \end{align*}
+% where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting.
+
+% \subsection{Inside recursion}
+  % In this derivation we follow Michael Collins notes on the Inside-Outside Algorithm.\footnote{\url{http://www.cs.columbia.edu/~mcollins/io.pdf}} We have the following general result for the inside value $\alpha$. For all $A \in N$, for all $0 \leq i < n$
+  % \begin{align}
+  %     \label{eq:collins-inside-base}
+  %     \alpha(A,i,i+1) = \psi(A, i, i+1)
+  % \end{align}
+  % and for all $(i, j)$ such that $1 \leq i < j \leq n$:
+  % \begin{align}
+  %     \label{eq:collins-inside-general}
+  %     \alpha(A,i,j) = \sum_{A \to B C} \sum_{k=i+1}^{j-1} \psi(A \to B \;C, i, k, j) \cdot \alpha(B,i,k) \cdot \alpha(C,k,j)
+  % \end{align}
+  % Note that we are considering a CFG in which the rule set is complete, i.e.
+  % \begin{align}
+  %   \langle A \to B \;C \rangle \in R \text{ for each } (A, B, C) \in N^3,
+  % \end{align}
+  % and recall that the labels $B$ and $C$ do not appear in the scoring functions in \ref{eq:rule-score}. These facts will allow us to simplify the expression in formula \ref{eq:collins-inside-general} as
+  % \begin{subequations}
+  % \begin{align*}
+  %     \alpha(A,i,j) &= \sum_{B \in N} \sum_{C \in N} \sum_{k=i+1}^{j-1} \tilde{s}(i, j, A) \cdot \alpha(B,i,k) \cdot \alpha(C,k,j) \\
+  %         &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} \sum_{B \in N} \alpha(B,i,k) \cdot \sum_{C \in N} \alpha(C,k,j) \\
+  %         &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \label{eq:final-inside}
+  % \end{align*}
+  % \end{subequations}
+  % where we've introduced a number of notational abbreviations
+  % \begin{align*}
+  %   \tilde{s}(i, j, A)
+  %     &= \exp( s(i, j, A) ) \\
+  %     S(i,j) &= \sum_{A \in N} \alpha(A,i,j)
+  % \end{align*}
+  % Note that this is the exact same formula as \ref{eq:inside-semiring}.
+  %
+  % From equation \ref{eq:final-inside} we can deduce that we in fact do even need to store the values $\alpha(i, j, A)$ but that it suffices to only store the marginalized values $S(i, j)$. In this case, the recursion simplifies even further:
+  % \begin{subequations}
+  % \begin{align*}
+  %     S(i, j) &= \sum_{A \in N} \alpha(A,i,j) \\
+  %         &=  \sum_{A \in N} \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \\
+  %         &= \Bigg[ \sum_{A \in N} \tilde{s}(i, j, A) \cdot \Bigg] \Bigg[\sum_{k=i+1}^{j-1} S(i,k) \cdot  S(k,j) \Bigg]
+  % \end{align*}
+  % \end{subequations}
+  % where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting. We can now recognize this as the `inside' equivalent of the expression from the paper\footnote{I believe there is actually an error in this equation: it should read  $s(i, j, \ell) + s_{span}(i, j)$ instead of just $s(i, j, \ell)$. This is implied by the score for a single node, which is given by equation \ref{eq:rule-score}, taken directly from the paper.}
+  % \begin{align}
+  %     s_{best}(i, j) = \max_{\ell} [s(i, j, \ell)] + \max_{k}[ s_{split}(i, k, j)].
+  % \end{align}
+  % The recursions are the same; the semirings are different. The viterbi recursion given above is in the \textsc{ViterbiSemiring}, which uses the $\max$ operator as $\oplus$; the inside recursion given in \ref{eq:final-inside} has standard addition (+) instead.
+
+% \subsection{Outside recursion}
+%   \begin{align*}
+%       \beta(A, i, j) &= \sum_{B \to C A \in R} \sum_{k=1}^{i-1} \psi(B \to C A, k, i-1, j) \cdot \alpha(C, k, i-1) \cdot \beta(B, k, j) \\
+%               &\qquad + \sum_{B \to A C \in R} \sum_{k=j+1}^{n} \psi(B \to A, C, i, j, k) \cdot \alpha(C, j+1, k) \cdot \beta(B, i, k) \\
+%           &= \sum_{B \in N} \sum_{C \in N} \sum_{k=1}^{i-1} \psi(B, k, j) \cdot \alpha(C, k, i-1) \cdot \beta(B, k, j) \\
+%               &\qquad + \sum_{B \in N} \sum_{C \in N} \sum_{k=j+1}^{n} \psi(B, i, k) \cdot \alpha(C, j+1, k) \cdot \beta(B, i, k) \\
+%           &=  \sum_{k=1}^{i-1}  \Bigg[ \sum_{B \in N} \psi(B, k, j)  \cdot \beta(B, k, j) \Bigg] \cdot \Bigg[ \sum_{C \in N} \alpha(C, k, i-1) \Bigg] \\
+%               &\qquad + \sum_{k=j+1}^{n}  \Bigg[ \sum_{B \in N}  \psi(B, i, k) \cdot \beta(B, i, k) \Bigg] \cdot  \Bigg[ \sum_{C \in N} \alpha(C, j+1, k) \Bigg] \\
+%           &=  \sum_{k=1}^{i-1}  S'(k, j) \cdot S(k, i-1) + \sum_{k=j+1}^{n} S'(i, k) \cdot  S(j+1, k) \\
+%   \end{align*}
+%   where
+%   \begin{align*}
+%       S(i, j) &= \sum_{A \in N} \alpha(A, i, j) \\
+%       S'(i, j) &= \sum_{A \in N} \psi(A, i, j) \beta(A, i, j)
+%   \end{align*}
+
+\subsection{Viterbi recursion}
+Obtaining the viterbi tree and its probability is a matter of using the inside recursion with maximization instead of a sum. The score of the best tree is  computed by replacing the sum with the $\max$ in equation
 \begin{align*}
-    \beta(A, i, j) &= \sum_{B \to C A \in R} \sum_{k=1}^{i-1} \psi(B \to C A, k, i-1, j) \cdot \alpha(C, k, i-1) \cdot \beta(B, k, j) \\
-            &\qquad + \sum_{B \to A C \in R} \sum_{k=j+1}^{n} \psi(B \to A, C, i, j, k) \cdot \alpha(C, j+1, k) \cdot \beta(B, i, k) \\
-        &= \sum_{B \in N} \sum_{C \in N} \sum_{k=1}^{i-1} \psi(B, k, j) \cdot \alpha(C, k, i-1) \cdot \beta(B, k, j) \\
-            &\qquad + \sum_{B \in N} \sum_{C \in N} \sum_{k=j+1}^{n} \psi(B, i, k) \cdot \alpha(C, j+1, k) \cdot \beta(B, i, k) \\
-        &=  \sum_{k=1}^{i-1}  \Bigg[ \sum_{B \in N} \psi(B, k, j)  \cdot \beta(B, k, j) \Bigg] \cdot \Bigg[ \sum_{C \in N} \alpha(C, k, i-1) \Bigg] \\
-            &\qquad + \sum_{k=j+1}^{n}  \Bigg[ \sum_{B \in N}  \psi(B, i, k) \cdot \beta(B, i, k) \Bigg] \cdot  \Bigg[ \sum_{C \in N} \alpha(C, j+1, k) \Bigg] \\
-        &=  \sum_{k=1}^{i-1}  S'(k, j) \cdot S(k, i-1) + \sum_{k=j+1}^{n} S'(i, k) \cdot  S(j+1, k) \\
+\label{eq:viterbi-score}
+  \nu(i,j)
+    &= [ \max_{A \in N} \tilde{s}(i, j, A) ] \cdot [\max_{ k \in \{ i+1, \dots, j-1 \} } \nu(i,k) \cdot  \nu(k,j) ].
 \end{align*}
-where
+Since these maximization over label and over split point is independent, we can find them seprately
 \begin{align*}
-    S(i, j) &= \sum_{A \in N} \alpha(A, i, j) \\
-    S'(i, j) &= \sum_{A \in N} \psi(A, i, j) \beta(A, i, j)
+\label{eq:viterbi-tree}
+  \hat{A} &= \argmax_{ A \in N } \tilde{s}(i, j, A)  \\
+  \hat{k} &= \argmax_{ k \in \{ i+1, \dots, j-1 \} } \nu(i, k) \cdot \nu(k, j)
 \end{align*}
+The best tree is then found by following back the best splits an labels from the root.
+
+\subparagraph{Numerical concerns}
+The above recursion computes the result of exponentially many additions and multiplications. This will soon run into the problem of numerical underflow and overflow. Instead, we compute these quantities in the logarithmic domain, defining the $\oplus$ as
+\begin{align*}
+  a \osum b = \log(e^{a} + e^{b}),
+\end{align*}
+and $\otimes$ as
+\begin{align*}
+  a \otimes b = a + b.
+\end{align*}
+The definition of $\oplus$ is made numerically stable by writing
+\begin{align*}
+  \log(e^{a} + e^{b} = a + \log(1 + e^{b-a}) = b + \log(1 + e^{a-b})
+\end{align*}
+and choosing expression with the smaller exponent.
 
 
 \section{Experiments}
@@ -211,6 +335,15 @@ Here I describe related work, and in particular earlier approaches to (neural) C
   \item Recent extension of \citet{stern2017minimal}, with same model but different features \citep{kitaev2018attentive}.
 \end{enumerate}
 
+\subsection{Motivation}
+The model regards a constituency tree as a collection of \textit{labeled spans} over a sentence. Earlier CRF models for constituency parsing, both log-linear and neural, factorize trees over \textit{anchored rules} \citep{finkel2008crf,klein2015crf}. This puts most of the expressiveness of the model in the state space of the dynamic program, modelling interactions between subparts of the trees through their interaction in the rules, instead of at the feature level. The model in \citet{stern2017minimal} removes part of this structure, and puts more expressiveness in the input space by using rich neural feature representations conditioning on the entire sentence. The discrete interaction between the local scores remains only at level of labeled spans. This dramatically improves the speed of this model, which will become evident in the next section.
+
+Chart based parsing shows a move from grammar to features. The work of \citet{hall2014less} shows how the log-linear CRF model of \cite{finkel2008crf} can work with bare unnanotated grammars when relying more on surface features of the sentence, and \citet{klein2015crf} show how these surface features can be replaced with dense neural features. The work of \citep{stern2017minimal} moves one step further: the grammar is dispensed with altogether, making the model span-factored, and the scoring function is given the full power of neural networks.
+
+Contrast this with generative parsing based on treebank grammars, where features are not available because the models are not conditional. Instead, these models rely entirely on detailed rule information. Basic treebank grammars do not parse well because the rules provide too little context, and good results can only be obtained by enriching grammars. Hence the independence assumptions in the grammar are typically weakened, not strengtehened. Such approaches lexicalize rules \citep{collins2003head}, annotate the rule with parent and sibling labels \citep{klein2003accurate}, or automatically learn refinements of nonterminal categories \citep{petrov2006learning}.
+
+The closest predecessor to our model is the neural CRF parser of \citet{klein2015crf}, which predicts local potential for anchored rules using a feedfoward network. This differs from our approach in two ways. Their method requires a grammar, extracted from a treebank beforehand, whereas our approach implictly assumes all rules are possible rules in the grammar. Secondly, their scoring function conditions only on the parts of the sentence directly under the rule, dictated by the use of a feedforward network, whereas our scoring function computes a score bassed on representations computed from the entire sequence.
+
 Earlier work on CRF parsing consider a tree as a collection of anchored rule productions productions \cite{finkel2008crf,klein2015crf}, and hence define the score of a tree as the product over clique potentials on anchored rules:
 \begin{align}
   \log\psi(A \to B \;C, i, k, j) = \log\psi(A, i, j)\\
@@ -220,19 +353,8 @@ discarding the rest of the span information. The function is then defined as
   \label{eq:span-score}
   \log\psi(A, i, j) &\defeq s(i, j, A),
 \end{align}
-and thus the potential of a tree as
-\begin{align}
-\label{eq:tree-score}
-    \log\Psi(T) &= \sum_{r \in T} \log\psi(r) \\
-      &= \sum_{\langle A, i, j \rangle \in T} s(i, j, A), \\
-\end{align}
 Note that the potential function as defined in \ref{eq:rule-score} disregards most of the information in a binary rule. In particular we see that $B$, $C$ and $k$, the labels and split-point of the children, are discarded.
 
-Now note that equation \ref{eq:tree-score} corresponds exactly to the second formula in section 3 of the minimal span-based parser paper
-\begin{align}
-s_{tree}(T) = \sum_{(\ell(i,j))\in T}[s(i, j, \ell)] .
-\end{align}
-which is how I derived that \ref{eq:rule-score} is the correct formula for the rule score.
 
 
 % \section{Semiring formulation}
