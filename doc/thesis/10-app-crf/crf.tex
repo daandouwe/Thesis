@@ -1,3 +1,5 @@
+% \bibliography{../src/bibliography}
+
 In the derrivation of the inference algorithms I make use of the notion of a \textit{weighted hypergraph} as a compact representation of all parses and their scores \citep{gallo1993directed,klein2004parsing}. I also use some of the ideas and notation of semiring parsing \citep{goodman1999semiring,eisner2009semirings}.
 
 I also introduce the following notation for termporary reasons because I cannot make up my mind about how to write these things. Let $\y_a = (i, j, \ell)$, then:
@@ -7,11 +9,21 @@ I also introduce the following notation for termporary reasons because I cannot 
 \end{align*}
 
 \section{Hypergraph}
-  A backward-hypergraph \citep{gallo1993directed}, or simply \textit{hypergraph} is a pair $G = (V, E)$, consisting of a set of nodes $V$, and a set of directed hyperedges $E \subseteq V^{+} \times V$ that connect a \textit{set} of nodes at the \textit{tail} of the arrow to a single node at the \textit{head} of the arrow. In our case we let the set $V$ consists of all posible labeled spans over a sentence of length $n$, together with the words
+  A backward-hypergraph \citep{gallo1993directed}, or simply \textit{hypergraph} is a pair $G = (V, E)$, consisting of a set of nodes $V$, and a set of directed hyperedges $E \subseteq 2^V \times V$ that connect a \textit{set} of nodes at the \textit{tail} of the arrow to a single node at the \textit{head} of the arrow.
+
+  In our case the hypegraph represents all the possible derivations of a sentence under a grammar. The $V$ consists of the invidual words of a sentence $x$, together with the all posible labeled spans over that sentence:
   \begin{align*}
-    V = \{ (A, i, j) \mid A \in N \text{ and } 0 \leq i < j \leq n \} \cup \{ (\textsc{root}, 0, n) \} \cup \{ w_1, \dots, \w_n \}
+    V = \Big\{ \x_1, \dots, \x_n \Big\} \cup \Big\{ (A, i, j) \mid A \in \Lambda, 0 \leq i < j \leq n \Big\} \cup \Big\{ (S^{\dagger}, 0, n) \Big\}.
   \end{align*}
-  Because we (implicitly) use a normal form containing all possible productions, the set of hyperedges is particularly regular: $E$ contains all edges $((u, w), v)$ connecting nodes $u = (B, i, k)$ and $w = (C, k, j)$ at the tail with $v = (A, i, j)$ at the head for all $A, B, C \in N$ and $1 \leq i < k < j \leq n$, and all edges $(w_i, v)$ where $w_i$ is the $i$-th word and $v = (A, i, i+1)$ for $0 \leq i \leq n$. Figure \ref{fig:hypergraph} shows a fragment of such a hypergraph for an example sentence. Finally, a weighted hypergraph is a hypergraph equided with a fuction $\omega : E \to \reals$ that assigns a weight to each edge; in our case this is the function $\Psi$.
+  The edge set describes all the ways adjacent constituents can be combined to form a larger constituent. Because we (implicitly) use a normal form grammar containing all possible productions, the set of hyperedges is particularly regular: $E$ contains all edges that connect nodes $(B, i, k)$ and $(C, k, j)$ at the tail with $(A, i, j)$ at the head for all $0 \leq i < k < j \leq n$, and all edges that connect $w_i$ to $(A, i, i+1)$:
+
+  \begin{align*}
+    E
+      &= \Bigg\{ \Big\langle \Big\{ (B, i, k), (C, k, j) \Big\},  (A, i, j) \Big\rangle \; \Bigg\vert \; A, B, C \in \Lambda, \; 0 \leq i < k < j \leq n \Bigg\}  \\
+      &\quad\cup \Bigg\{ \Big\langle \{ w_i \}, (A, i, i+1) \Big\rangle \; \Bigg\vert \; A \in \Lambda, \; 0 \leq i < n \Bigg\}  \\
+  \end{align*}
+
+  Figure \ref{fig:hypergraph} shows a fragment of such a hypergraph for an example sentence. Finally, a weighted hypergraph is a hypergraph equided with a fuction $\omega : E \to \reals$ that assigns a weight to each edge; in our case this is the function $\Psi$.
 
 \begin{figure}[h]
   \center
