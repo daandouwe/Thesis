@@ -1,20 +1,21 @@
 \begin{table}[h]
-\footnotesize
-\begin{tabular}{r|l|l|l}
-  & Stack & Terminals & Action  \\ \hline
-  0 &  &  & \open(S) \\
-  1 & (S & & \open(NP) \\
-  2 & (S\,|\,(NP  & & \gen(\textit{The}) \\
-  3 & (S\,|\,(NP\,|\,\textit{The} & \textit{The} & \gen(\textit{hungry}) \\
-  4 & (S\,|\,(NP\,|\,\textit{The}\,|\,\textit{hungry} & \textit{The}\,|\,\textit{hungry} & \gen(\textit{cat}) \\
-  5 & (S\,|\,(NP\,|\,\textit{The}\,|\,\textit{hungry}\,|\,\textit{cat} & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat} & \reduce \\
-  6 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat}) & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat} & \open(VP) \\
-  7 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,|\,(VP & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat} & \gen(\textit{meows}) \\
-  8 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,|\,(VP\,|\,\textit{meows} & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat}\,|\,\textit{meows} & \reduce \\
-  9 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,|\,(VP\,\textit{meows}) & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat}\,|\,\textit{meows} & \gen(\textit{.}) \\
-  10 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,|\,(VP \textit{meows})\,|\,. & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat}\,|\,\textit{meows}\,|\,. & \reduce \\
-  11 & (S\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,(VP\,\textit{meows})\,.) & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat}\,|\,\textit{meows}\,|\,. &  \\ \hline
-\end{tabular}
-\caption{Generative transition sequences that \textit{generates} a sentence together with its constituency structures.}
-\label{tab:gen-trans}
+\center
+\scriptsize
+  \begin{tabular}{r|l|l|l}
+    & Stack & Terminals & Action  \\ \hline
+    0 &  &  & \open(S) \\
+    1 & (S & & \open(NP) \\
+    2 & (S\,|\,(NP  & & \gen(\textit{The}) \\
+    3 & (S\,|\,(NP\,|\,\textit{The} & \textit{The} & \gen(\textit{hungry}) \\
+    4 & (S\,|\,(NP\,|\,\textit{The}\,|\,\textit{hungry} & \textit{The}\,|\,\textit{hungry} & \gen(\textit{cat}) \\
+    5 & (S\,|\,(NP\,|\,\textit{The}\,|\,\textit{hungry}\,|\,\textit{cat} & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat} & \reduce \\
+    6 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat}) & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat} & \open(VP) \\
+    7 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,|\,(VP & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat} & \gen(\textit{meows}) \\
+    8 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,|\,(VP\,|\,\textit{meows} & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat}\,|\,\textit{meows} & \reduce \\
+    9 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,|\,(VP\,\textit{meows}) & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat}\,|\,\textit{meows} & \gen(\textit{.}) \\
+    10 & (S\,|\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,|\,(VP \textit{meows})\,|\,. & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat}\,|\,\textit{meows}\,|\,. & \reduce \\
+    11 & (S\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,(VP\,\textit{meows})\,.) & \textit{The}\,|\,\textit{hungry}\,|\,\textit{cat}\,|\,\textit{meows}\,|\,. &  \\ \hline
+  \end{tabular}
+% \caption{Generative transition sequences that \textit{generates} a sentence together with its constituency structures.}
+% \label{tab:gen-trans}
 \end{table}

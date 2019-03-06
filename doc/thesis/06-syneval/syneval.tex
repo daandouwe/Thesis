@@ -1,17 +1,17 @@
 % \bibliography{../src/bibliography.bib}
 
-Language models are typically evaluated by the perplexity they assign on held out data. And thus did we evaluate our language models in the previous chapters. In this chapter we look at alternatives. In particular, we look at evaluation that specifically probes the syntactic abilities of a language model. To this end we take the dataset introduced by \citet{linzen2018targeted}, which presents a comprehensive set of syntactic challenges, and evaluate the models presented thus far against them. The dataset consists of constructed sentence pairs that differ in only one word, where one sentence is grammatical and the other is not, and the task is to assign higher probability to the grammatical sentence. We can think of this task as soliciting comparative \textit{acceptability judgements}, which is a key concept in linguistics. We will refer to this dataset as $\syneval$, for \textit{syntactic evaluation}.
+Language models are typically evaluated by the perplexity they assign on held out data, and thus did we evaluate our language models in the previous chapters. In this chapter we look at alternatives. In particular, we look at evaluation that specifically probes the syntactic abilities of a language model. To this end we take the dataset introduced by \citet{linzen2018targeted}, which presents a comprehensive set of syntactic challenges, and evaluate the models presented thus far against them. The dataset consists of constructed sentence pairs that differ in only one word, where one sentence is grammatical and the other is not, and the task is to assign higher probability to the grammatical sentence. We can think of this task as soliciting comparative \textit{acceptability judgements}, which is a key concept in linguistics. We will refer to this dataset as Syneval, for \textit{syntactic evaluation}.
 
 \paragraph{Organization}
-The chapter is organized as follows. First, I introduce the $\syneval$ dataset and describe syntactic phenomena that it tests, and review how this dataset relates to other work on syntactic evaluation. I then describe multitask learning as an approach already suggested to improve language models for this task, and introduce a novel multitask model based on span labeling. Finally I evaluate all the models introduced in this thesis on this dataset and discuss the results.
+The chapter is organized as follows. First, I introduce the Syneval dataset and describe syntactic phenomena that it tests, and review how this dataset relates to other work on syntactic evaluation. I then describe multitask learning as an approach already suggested to improve language models for this task, and introduce a novel multitask model based on span labeling. Finally I evaluate all the models introduced in this thesis on this dataset and discuss the results.
 
 \section{Syntactic evaluation}
 A shortcoming of perplexity is that the metric conflates various sources of succes \citep{linzen2018targeted}. A language model can make use of many aspects of language to predict the probability of a sequence of words. And although we would like the probability of a sentence to depend on high-level phenomena such as syntactic well-formedness or global semantic coherence, a language model can also focus on lower hanging fruit such as collocations and other semantic relations predicted from local context. Syntax is especially difficult to evaluate given that most sentences in a corpus are grammatically simple \citep{linzen2018targeted}. Arguably, this conflation is also the appeal: perplexity is a one size fits all metric. But for a fine-grained analysis we must resort to a fine-grained metric.
 
-Recently, a series of papers has introduced tasks that specifically evaluate the syntactic abilities of language models \citep{linzen2016syntax,gulordava2018colorless,linzen2018targeted}. And such tasks can be very revealing. The task introduced by \citet{linzen2016syntax} is to predict the correct conjugation of a verb given an earlier occuring subject---especially in the precense of distracting subjects that intervene\footnote{E.g. \textit{Parts} of the river valley \textit{have}/\textit{has}.}. This task has revealed that lower perplexity does not imply greater succes on this task \citep{tran2018recurrent}, and that an explicitly syntactic model like the RNNG significanlty outperforms purely sequential models, especially with increasing distance between the subject and the verb \citep{kuncoro2018learn}. This type of agreement is one of the phenomena evaluated in $\syneval$.
+Recently, a series of papers has introduced tasks that specifically evaluate the syntactic abilities of language models \citep{linzen2016syntax,gulordava2018colorless,linzen2018targeted}. And such tasks can be very revealing. The task introduced by \citet{linzen2016syntax} is to predict the correct conjugation of a verb given an earlier occuring subject---especially in the precense of distracting subjects that intervene\footnote{E.g. \textit{Parts} of the river valley \textit{have}/\textit{has}.}. This task has revealed that lower perplexity does not imply greater succes on this task \citep{tran2018recurrent}, and that an explicitly syntactic model like the RNNG significanlty outperforms purely sequential models, especially with increasing distance between the subject and the verb \citep{kuncoro2018learn}. This type of agreement is one of the phenomena evaluated in Syneval.
 
 \paragraph{Dataset}
-The $\syneval$ dataset consists of contrastive sentence pairs that differ in only one word. Let $(\x, \x')$ be this minimal pair, with grammatical sentence $\x$ and an ungrammatical sentence $\x'$. Then a language model $p$ makes a correct prediction on this pair if $p(\x) > p(\x')$.
+The Syneval dataset consists of contrastive sentence pairs that differ in only one word. Let $(\x, \x')$ be this minimal pair, with grammatical sentence $\x$ and an ungrammatical sentence $\x'$. Then a language model $p$ makes a correct prediction on this pair if $p(\x) > p(\x')$.
 
 The classification is based on the probability of the entire sequence. This makes the task applicable to grammatical phenomena that involve interaction between multiple words, or where the word of contention does not have any left context. This contrasts with the task introduced in \citet{linzen2016syntax}. This approach is also more natural for a model like the RNNG, where the probability of the sentence is computed by marginalizing over all latent structures, whereas individual word probabilities can only be obtained when conditioning on a single structure---for example a predicted parse---as is done in \cite{kuncoro2018learn}.
 
@@ -25,126 +25,7 @@ The dataset contains constructions of increasing difficulty for each of these ca
 
 The dataset is constructed automatically using handcrafted context-free grammars. The lexical rules are finegrained so that the resulting sentences reasonably coherent semantically. In particular there are rules for animate and innanimate objects so a sentence like \textit{The apple laughs} cannot be constructed. The total dataset consists of around 350,000 sentence pairs.
 
-% \begin{enumerate}
-%   \item \textbf{Simple agreement}:  \\
-%     The farmer \textit{smiles}/*\textit{smile}.
-%   \item \textbf{Agreement in a sentential complement}:  \\
-%     The mechanics said the author \textit{laughs}/*\textit{laugh}.
-%   \item \textbf{Agreement in short VP coordination}:  \\
-%     The authors laugh and \textit{swim}/*\textit{swims}.
-%   \item \textbf{Agreement in long VP coordination}:  \\
-%     The author knows many different foreign languages and \textit{enjoys}/*\textit{enjoy} playing tennis with colleagues.
-%   \item \textbf{Agreement across a prepositional phrase}:  \\
-%     The author next to the guards \textit{smiles}/*\textit{smile}.
-%   \item \textbf{Agreement across a subject relative clause}:  \\
-%     The author that likes the security guards \textit{laughs}/*\textit{laugh}.
-%   \item \textbf{Agreement across an object relative}:  \\
-%     The movies that the guard likes \textit{are}/*\textit{is} good.
-%   \item \textbf{Agreement in an object relative}:  \\
-%     The movies that the guard \textit{likes}/*\textit{like} are good.
-%   \item \textbf{Simple reflexive anaphora}:  \\
-%     The author injured \textit{himself}/*\textit{themselves}.
-%   \item \textbf{Reflexive in sentential complement}:  \\
-%     The mechanics said the author hurt \textit{himself}/*\textit{themselves}.
-%   \item \textbf{Reflexive across a relative clause}:  \\
-%     The author that the guards like injured \textit{himself}/*\textit{themselves}.
-%   \item \textbf{Simple NPI}:  \\
-%     \textit{No}/*\textit{most} authors have ever been famous.
-%   \item \textbf{NPI across a relative clause}:  \\
-%     No authors that the guards like have ever been famous.
-%   \item \textbf{NPI across a relative clause (the)}:  \\
-%     The authors that no guards like have ever been famous.
-% \end{enumerate}
-
-\paragraph{Categories} The following list is the complete set of categories that are evaulated in the $\syneval$ dataset, taken from \citet{linzen2018targeted} with slight .\footnote{There is a slight confusion in the }
-\begin{enumerate}[noitemsep]
-  \item \textbf{Simple agreement}:
-    \begin{enumerate}
-      \item The farmer \textit{smiles}.
-      \item *The farmer \textit{smile}.
-    \end{enumerate}
-  \item \textbf{Agreement in a sentential complement}:
-    \begin{enumerate}
-      \item The mechanics said the author \textit{laughs}.
-      \item *The mechanics said the author \textit{laugh}.
-    \end{enumerate}
-  \item \textbf{Agreement in short VP coordination}:
-    \begin{enumerate}
-      \item The authors laugh and \textit{swim}.
-      \item *The authors laugh and \textit{swims}.
-    \end{enumerate}
-  \item \textbf{Agreement in long VP coordination}:
-    \begin{enumerate}
-      \item The author knows many different foreign languages and \textit{enjoys} playing tennis with colleagues.
-      \item *The author knows many different foreign languages and \textit{enjoy} playing tennis with colleagues.
-    \end{enumerate}
-  \item \textbf{Agreement across a prepositional phrase}:
-    \begin{enumerate}
-      \item The author next to the guards \textit{smiles}.
-      \item *The author next to the guards \textit{smile}.
-    \end{enumerate}
-  \item \textbf{Agreement across a subject relative clause}:
-    \begin{enumerate}
-      \item The author that likes the security guards \textit{laughs}.
-      \item *The author that likes the security guards \textit{laugh}.
-    \end{enumerate}
-  \item \textbf{Agreement across an object relative}:
-    \begin{enumerate}
-      \item The movies that the guard likes \textit{are} good.
-      \item *The movies that the guard likes \textit{is} good.
-    \end{enumerate}
-  \item \textbf{Agreement across an object relative (no \textit{that})}:
-    \begin{enumerate}
-      \item The movies the guard likes \textit{are} good.
-      \item *The movies the guard likes \textit{is} good.
-    \end{enumerate}
-  \item \textbf{Agreement in an object relative}:
-    \begin{enumerate}
-      \item The movies that the guard \textit{likes} are good.
-      \item *The movies that the guard \textit{like} are good.
-    \end{enumerate}
-  \item \textbf{Agreement in an object relative (no \textit{that})}:
-    \begin{enumerate}
-      \item The movies the guard \textit{likes} are good.
-      \item *The movies the guard \textit{like} are good.
-    \end{enumerate}
-  \item \textbf{Simple reflexive anaphora}:
-    \begin{enumerate}
-      \item The author injured \textit{himself}.
-      \item *The author injured \textit{themselves}.
-    \end{enumerate}
-  \item \textbf{Reflexive in sentential complement}:
-    \begin{enumerate}
-      \item The mechanics said the author hurt \textit{himself}.
-      \item *The mechanics said the author hurt \textit{themselves}.
-    \end{enumerate}
-  \item \textbf{Reflexive across a relative clause}:
-    \begin{enumerate}
-      \item The author that the guards like injured \textit{himself}.
-      \item *The author that the guards like injured \textit{themselves}.
-    \end{enumerate}
-  \item \textbf{Simple NPI}:
-    \begin{enumerate}
-      \item \textit{No} authors have ever been famous.
-      \item *\textit{Most} authors have ever been famous.
-    \end{enumerate}
-  \item \textbf{Simple NPI (the)}:
-    \begin{enumerate}
-      \item \textit{No} authors have ever been popular.
-      \item *\textit{The} authors have ever been popular.
-    \end{enumerate}
-  \item \textbf{NPI across a relative clause}:
-    \begin{enumerate}
-      \item \textit{No} authors that \textit{the} guards like have ever been famous.
-      \item *\textit{Most} authors that \textit{no} guards like have ever been famous.
-    \end{enumerate}
-  \item \textbf{NPI across a relative clause (the)}:
-    \begin{enumerate}
-      \item \textit{No} authors that \textit{the} guards like have ever been famous.
-      \item *\textit{The} authors that \textit{no} guards like have ever been famous.
-    \end{enumerate}
-\end{enumerate}
-For the full list of lexical items used in the constructions we refer the reader to \citet{linzen2018targeted}.
+\paragraph{Categories} For the full list of categories that are evaulated in the Syneval dataset we refer the reader to appendix \ref{A5-syneval}.
 
 \paragraph{Related work} There has been a surge recently of work on syntactic evaluation. \citet{linzen2016syntax} introduce the task of long distance subject-verb agreement and \citet{gulordava2018colorless} make this test more challenging by turning the sentences nonsensical while keeping them grammatical. Both datasets are extracted from a wikipedia corpus based on properties of their predicted dependency parse. To make the sentences nonsensical, \citet{gulordava2018colorless} randomly substitute words from the same grammatical category.\footnote{An approach inspired by Chomsky's (in)famous sentence \textit{Colorless green ideas sleep furiously} that is both grammatical and nonsensical.} \citet{warstadt2018acceptability} fine-tune neural models to learn to immitate grammatical acceptability judgments gathered from linguistics textbooks.
 \citet{mccoy2018revisiting} Train a neural machine translation model to learn how to turn a declarative sentence into a question. Linguist have argued that the transformations required to generate one from the other provide strong evidence for the existence of hierarchical structure in language \cite{everaert2015structures}.\footnote{These pairs play a central role as empirical evidence in the argument---known as the \textit{argument from the poverty of the stimulus}---that humans have an innate predisposition for generalizations that rely on hierarchical structure rather than linear order \citep{chomsky1980rules}. Sequence-to-sequence neural machine translation, on the other hand, is a fully sequential model that involves no hierarchical structure or transformations.} Finally, targeted evaluation has been introduced previously for semantic comprehension by \citet{zweig2011microsoft} in a sentence completion task, and minimal contrastive sentence pairs have been used to evaluate neural machine translation by \citet{sennrich2017grammatical}.
@@ -164,23 +45,18 @@ In our case we combine a language model $p$ with a syntactic model $q$, and opti
 with respect to the parameters $\theta$, $\lambda$ and $\xi$. The key feature of multitask learning is that the two models $p$ and $q$ share the set of parameters $\theta$ and that in objective \ref{eq:multitask-objective} these parameters will thus be optimized to fit \textit{both} the models well. The parameters in $\lambda$ and $\xi$ are optimized for their respective objectives separately. The proportion and the nature of the parameters that belong to $\theta$ is a choice of the modeller and determines how both objectives influence one another. In the following paragraphs we specify this parametrization.
 
 \paragraph{Language model}
-The main model $p$ is a regular RNN language model on sentences $\x = (x_1, \dots, x_n)$:
+The main model $p$ is a regular RNN language model on sentences $\x$:
 \begin{align*}
   \log p_{\theta, \lambda} = \sum_{i=1}^n \log p_{\theta, \lambda}(x_i \mid \x_{<i}),
 \end{align*}
-where the probabilities are computed by linear regression on a feature vector $\fw_{i-1}$ as
+where the conditional probabilities are computed by linear regression on the vector $\fw_{i-1}$ as
 \begin{align*}
-  % p_{\theta, \lambda}( x_i \mid x_1, \dots, x_{i-1}) &\propto \Big[ \exp ( \vecW^{\top} \fw_{i-1} + \vecb ) \Big]_{x_i}.
-  p_{\theta, \lambda}( x \mid \x_{<i}) &\propto \exp \Big[ \vecW^{\top} \fw_{i-1} + \vecb \Big]_{x_i}.
+  p_{\theta, \lambda}( x \mid \x_{<i}) &\propto \exp \Big[ \vecW^{\top} \fw_{i-1} + \vecb \Big]_{x}.
 \end{align*}
-where the parameters $\xi = \{ \vecW, \vecb \}$ are specific to the language model. The features $\fw_i$ are computed using a forward \rnn parametrized by $\theta$,
-\begin{align*}
-  [ \fw_1, \dots, \fw_n ] = \rnn_{\theta}^f( \x ).
-\end{align*}
-These features are also used in the side objective, and it is in this precise sense that the parameters $\theta$ are shared between $p$ and $q$.
+The parameters $\xi = \{ \vecW, \vecb \}$ are specific to the language model, and the vectors $\fw_i$ are computed using a forward RNN parametrized by $\theta$. The vectors $\fw$ are used in the side objective as well, and it is in this precise sense that the parameters $\theta$ are shared between $p$ and $q$.
 
 \paragraph{Word labeling}
-This side objective is taken from \citet{enguehard2017multitask} and is the side objective that is used in the multitask model of \citet{linzen2018targeted}. Let $\y = ( y_1, \dots, y_n )$ be a sequence of CCG supertags for the sentence \x, with one tag for each word. The side model is then a simple greedy tagging model:
+Let $\y = ( y_1, \dots, y_n )$ be a sequence of CCG supertags for the sentence \x, with one tag for each word. The side model is then a simple greedy tagging model:
 \begin{align*}
   \log q_{\theta, \xi}(\y \mid \x)
     &= \sum_{i=1}^n \log q_{\theta, \xi}( y_i \mid \x).  \\
@@ -189,23 +65,24 @@ The probability over tags for position $i$ are computed from $\fw_i$ using a fee
 \begin{align*}
   q_{\theta, \xi}( y_i \mid \x) &\propto \exp \Big[ \ff_{\xi}( \fw_{i} ) \Big]_{y_i}.
 \end{align*}
+This side objective is taken from \citet{enguehard2017multitask} and is the side objective that is used in the multitask model of \citet{linzen2018targeted}.
 
 \paragraph{Span labeling}
-This side objective is inspired by the label scoring function of the CRF parser, and is novel as a multitask objective, as far as I know. Let $\y$ be a sequence of labeled spans $\y_k = (\ell_k, i_k, j_k)$ that are obtained from a gold parse tree for $\x$. Then the side model $q$ predicts a label $\ell$ for a sentence $\x$ given span endpoints $i$ and $j$:
+Let $\y$ be a sequence of labeled spans $\y_k = (\ell_k, i_k, j_k)$ that are obtained from a gold parse tree for $\x$. Given span endpoints $i$ and $j$ and the sentence $x$, the side model $q$ predicts a label $\ell$:
 \begin{align*}
   \log q_{\theta, \xi}(\y \mid \x)
     &= \sum_{k=1}^K \log q_{\theta, \xi}( \y_k \mid \x)  \\
     &= \sum_{k=1}^K \log q_{\theta, \xi}( \ell_k \mid \x, i_k, j_k).
 \end{align*}
-We define a span feature as in the CRF parser
+The representation for the span is defined as in the CRF parser as
 \begin{align*}
-  \vecs_{ij} = \fw_j - \fw_i
+  \vecs_{ij} = \fw_j - \fw_i,
 \end{align*}
-and compute a distribution over labels using a feedforward network parametrized by $\xi$
+and the distribution over labels is computed using a feedforward network parametrized by $\xi$ as
 \begin{align*}
   q_{\theta, \xi}( \ell \mid \x, i, j) &\propto \exp \Big[ \ff_{\xi}( \vecs_{ij} ) \Big]_{\ell}.
 \end{align*}
-This model differs from the supertagging model in the interaction between features that follows from the definition of $vecs_{ij}$. This simple definition puts significant strain on the features, which is precisely what we want.
+This model differs from the supertagging model in the interaction of the vectors $\fw$ in the definition of $vecs_{ij}$. This linear defintion puts significant restriction on the endocings, which is precisely what we want. This side objective is inspired by the label scoring function of the CRF parser, and is novel as a multitask objective, as far as I know.
 
 % \begin{itemize}
 %   \item I hypothesize a bit about their comparative (dis)advantages. In particular the subject argument structure that is encoded in CCG tags that is not in the CFG spans.
@@ -232,7 +109,7 @@ evaluate a number of models on the examples and also provide results of human ju
 \subsection{Setup}
 \begin{itemize}
   \item Following the example of \citet{linzen2018targeted} we train a regular LSTM language model, and a multitask LSTM language model with CCG supertagging. We additionally train
-  \item For the language train 10 independent runs of each model and report means and standard deviations of their accuracy on the $\syneval$ dataset.
+  \item For the language train 10 independent runs of each model and report means and standard deviations of their accuracy on the Syneval dataset.
   \
 \end{itemize}
 

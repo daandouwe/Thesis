@@ -1,8 +1,6 @@
-\bibliography{../src/bibliography}
+% \bibliography{../src/bibliography}
 
-This chapter introduces a neural Conditional Random Field (CRF) parser that can be used as an alternative proposal distribution for the approximate marginalization of the RNNG. The model is a span-factored CRF that independently predicts scores for labeled spans over the sentence using neural networks. The scores then interact in a chart-based dynamic program, giving a compact description of the probability distribution over parses.
-
-This approach combines the efficient exact inference of chart-based parsing, the rich nonlinear features of neural networks, and the global training of a CRF. The chart-based approach allows efficient exact inference alowing for exact decoding and global sampling while the neural features can be complex and can condition on the entire sentence. The CRF training objective [...something about receiving information about all substructures...]. The parser is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} to global CRF training. The original is trained with a margin-based objective. Our interest in in this model is as a proposal distribution, which requires probabilistical training.
+This chapter introduces a neural Conditional Random Field (CRF) parser that can be used as an alternative proposal distribution for the approximate marginalization of the RNNG. The model is a span-factored CRF that independently predicts scores for labeled spans over the sentence using neural networks. The scores then interact in a chart-based dynamic program, giving a compact description of the probability distribution over parses. This approach combines the efficient exact inference of chart-based parsing, the rich nonlinear features of neural networks, and the global training of a CRF. The chart-based approach allows efficient exact inference alowing for exact decoding and global sampling while the neural features can be complex and can condition on the entire sentence. The CRF training objective [...something about receiving information about all substructures...]. The parser is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} to global CRF training. The original is trained with a margin-based objective. Our interest in in this model is as a proposal distribution, which requires probabilistical training.
 
 In this chapter:
 \begin{itemize}
@@ -14,7 +12,7 @@ In this chapter:
 
 
 \section{Model}
-The model is a CRF factored over the labeled spans that form a tree. We write $\y_a = (i, j, \ell) }$ for a labeled span and consider a tree $\y = \{ \y_a \}_{a=1}^A$ as a collection of these. We define the score of a tree as the product of nonnegative local potentials $\Psi(\x, \y_a) \geq 0$. The function $\Psi$ scores each span seperately, conditional on the entire sentence. The probability of a tree is the globally normalized score of the tree:
+The model is a CRF factored over the labeled spans that form a tree. We write $\y_a = (i, j, \ell) }$ for a labeled span and consider a tree as a collection $\y = \{ \y_a \}_{a=1}^A$. We define the score of a tree as the product of nonnegative local potentials $\Psi(\x, \y_a) \geq 0$. The function $\Psi$ scores each span seperately, conditional on the entire sentence. The probability of a tree is the globally normalized score of the tree:
 \begin{align}
   \label{eq:crf-model}
   p(\y \mid \x) &= \frac{1}{Z(\x)} \prod_{a=1}^A \Psi(\x, \y_a),
@@ -27,7 +25,7 @@ is the normalizing constant that sums over all the possible parse trees and make
 
 By factorizing a tree over labeled spans we make an even stronger assumption than that typically made by factorizating over anchored context-free rules\footnote{\cf table \ref{tab:spans-rules} for the different conceptions.}. This way, the potential function has no access to information about the direct substructure under the node, such as the child nodes and their split point. The function can thus rely less on the local tree structure and must thus rely more on the surface features of input sentence. This factorization will, however, greatly reduce the size of the state-space of the dynamic programs, speeding up training and inference, and the burden of the feature function will be carried by a rich neural network parametrization. Together, this will make the parser fast and very effective.
 
-\subsection{Features}
+\subsection{Parametrization}
 The scoring function $\Psi$ is implemented with neural networks following the design of the minimal scoring function of \citet{stern2017minimal}. The local potentials can only make minimal use of structural information, as we argued above, but they can depend on the entire sentence. This suggest the use of $\rnn$ encodings. The representation of a span $(i, j)$ is the concatenation of the difference between forward and backward vectors computed by a bidirectional $\rnn$
 \begin{align}
   \label{eq:potential-function}
@@ -99,31 +97,24 @@ The entropy of the distribution over parses can be computed using the node margi
 \paragraph{Parse}
 The best parse can be obtained with the Viterbi algoritm, which is an instance of the inside algorithm. The viterbi algorithm replaces the sum operator of the inside algorithmm with $\max$: at each node this selects the best substructure instead of summing over all of them.
 
-\subsection{Notation}
-I introduce the following notation for termporary reasons because I cannot make up my mind about how to write these things. Let $\y_a = (i, j, \ell)$, then:
-\begin{align*}
-  A &= \ell  \\
-  \psi(A, i, j) &= \Psi(\x, \y_a)
-\end{align*}
-
-In the following derivations I use some of the notation from semiring parsing \citep{goodman1999semiring,eisner2009semirings} and some notions from weighted hypergraphs \citep{gallo1993directed,klein2004parsing}. In particular I use the notion of a semiring
-\begin{align*}
-  \mathcal{K} = \langle \mathbb{K}, \oplus, \otimes, \bar{0}, \bar{1} \rangle,
-\end{align*}
-an algebraic structure over a field $\mathbb{K}$, with additive and multiplicative operations $\oplus$ and $\otimes$, and additive and multiplicative identities $\bar{1}$ and $\bar{0}$. In fact, a semiring  is equivalent to ring\footnote{The real numbers with regular addition and multiplication is an example of a ring.}, without the requirement of an additive inverse for each element.
-
-I also use the notion of a hypergraph as a compact representation of the collection of all possible trees for a sentence. In particular, a directed B-hypergraph (a \textit{backwards} hypergraph) is a pair $G = (V, E)$ consisting of nodes $V$ connected by hyperedges $E = V* \times V$. In our case the nodes are labeled spans $(A, i, j)$, and the set of hyperedges is $E = (V \times V) \times V$ with elements $(\langle (B, i, k), (C, k, j) \rangle )$
-
-
-
-
 \subsection{Inside recursion}
-  The inside algorithm computes the quantities $\alpha(A,i,j)$ for all labels $A \in N$ and all spans $0 \leq i < j \leq n$. At the leaves, the sum is defined as
+  The inside algorithm computes the quantities $\alpha(A,i,j)$ for all labels $A \in N$ and all spans $0 \leq i < j \leq n$. From the hypergraph perspecive this is the total weight under the node $v = (A, i, j)$---the sum of the weights of all directed paths incoming at $v$. This sum can be computed using the \textit{inside recursion} \citep{goodman1999semiring}:
+  % \begin{align}
+  %   \alpha(v) =
+  %     \begin{cases}
+  %       1, & \text{if} BS(v) = \varnothing \\
+  %       \bigoplus_{e \in BS(v)} \omega(e) \bigotimes_{\u \in T(e)}, & \text{otherwise}.
+  %   \end{cases}
+  % \end{align}
+
+  At the nodes that span one word, the inside value is just the weight of the unary edge
   \begin{align}
       \label{eq:inside-base}
       \alpha(A, i, i+1) = \psi(A, i, i+1)
   \end{align}
-  for $A \in N$, for all $0 \leq i < n$. To compute $\alpha(A, i, j)$ in the general case we need to sum over all possible binary expansions $(A \to B C, i, k, j)$ for $A, B \in N$ and $i \leq k \leq j$. This corresponds to the following recursive expression that uses the inside values of the subparts:
+  for $A \in N$, for all $0 \leq i < n$.
+
+  To compute $\alpha(A, i, j)$ in the general case we need to sum over all possible binary expansions $(A \to B C, i, k, j)$ for $A, B \in N$ and $i \leq k \leq j$. This corresponds to the following recursive expression that uses the inside values of the subparts:
   \begin{align*}
   \label{eq:inside}
     \alpha(A, i, j)
@@ -170,7 +161,6 @@ I also use the notion of a hypergraph as a compact representation of the collect
       S(i, j) &= \bigoplus_{A \in N} \alpha(A, i, j) \\
       S'(i, j) &= \bigoplus_{A \in N} \psi(A, i, j) \beta(A, i, j)
   \end{align*}
-
 
 % \subsection{Inside recursion}
 % In this derivation we will use $\y_a = (i, j, \ell)$ interchangeably.
@@ -297,13 +287,13 @@ We perform three types of experiments with the CRF parser:
   \item We evauluate `how good the model is' as a sampler.
 \end{itemize}
 
-\paragraph{Supervised model} We investigate the following.
+\subsection{Supervised model} We investigate the following.
 \begin{itemize}
   \item We have some optimization and hyperparameter choices here. The original paper uses Adam with 0.001 and a LSTM of dimension 250, which gives the model around 2.5 million parameters. For the discriminative RRNG we use SGD with 0.1, and hidden sizes of 128 gives the model around 800,000 parameters.
   \item I suggest two experiments: (1) use the default setting from \citep{stern2017minimal} and (2) use the settings for the RNNG with a hidden size to match the 800,000 parameters.
 \end{itemize}
 
-\paragraph{Proposal model} We investigate the following:
+\subsection{Proposal model} We investigate the following:
 \begin{itemize}
   \item We evaluate validation F-score and perplexity.
   \item We evaluate F-score with 100 samples (as many proposal trees as possible).
@@ -311,7 +301,7 @@ We perform three types of experiments with the CRF parser:
   \item  We perform learning rate decay and model selection based on a development score computed with the samples from the discriminative RNNG. Undecided: should we train a separate joint RNNG with CRF samples?
 \end{itemize}
 
-\paragraph{Sampler} We investigate the following:
+\subsection{Sampler} We investigate the following:
 \begin{itemize}
   \item We asses the conditional entropy of the model. This is most quantitative. Recall that conditional entropy is defined as
   \begin{equation}
@@ -338,9 +328,9 @@ Here I describe related work, and in particular earlier approaches to (neural) C
 \subsection{Motivation}
 The model regards a constituency tree as a collection of \textit{labeled spans} over a sentence. Earlier CRF models for constituency parsing, both log-linear and neural, factorize trees over \textit{anchored rules} \citep{finkel2008crf,klein2015crf}. This puts most of the expressiveness of the model in the state space of the dynamic program, modelling interactions between subparts of the trees through their interaction in the rules, instead of at the feature level. The model in \citet{stern2017minimal} removes part of this structure, and puts more expressiveness in the input space by using rich neural feature representations conditioning on the entire sentence. The discrete interaction between the local scores remains only at level of labeled spans. This dramatically improves the speed of this model, which will become evident in the next section.
 
-Chart based parsing shows a move from grammar to features. The work of \citet{hall2014less} shows how the log-linear CRF model of \cite{finkel2008crf} can work with bare unnanotated grammars when relying more on surface features of the sentence, and \citet{klein2015crf} show how these surface features can be replaced with dense neural features. The work of \citep{stern2017minimal} moves one step further: the grammar is dispensed with altogether, making the model span-factored, and the scoring function is given the full power of neural networks.
+Chart based parsing has moved from grammar to features: the work of \citet{hall2014less} shows how the log-linear CRF model of \cite{finkel2008crf} can work with bare unnanotated grammars, when relying more on the surface features of the sentence, and \citet{klein2015crf} show how these surface features can be replaced with dense neural features. The work of \citep{stern2017minimal} moves one step further: the grammar is dispensed with altogether, making the model span-factored, and the scoring function is given the full power of neural networks.
 
-Contrast this with generative parsing based on treebank grammars, where features are not available because the models are not conditional. Instead, these models rely entirely on detailed rule information. Basic treebank grammars do not parse well because the rules provide too little context, and good results can only be obtained by enriching grammars. Hence the independence assumptions in the grammar are typically weakened, not strengtehened. Such approaches lexicalize rules \citep{collins2003head}, annotate the rule with parent and sibling labels \citep{klein2003accurate}, or automatically learn refinements of nonterminal categories \citep{petrov2006learning}.
+Contrast this with generative parsing based on treebank grammars, where features are not available because the models are not conditional. Instead, these models rely entirely on detailed rule information: basic treebank grammars do not parse well because the rules provide too little context, and good results can only be obtained by enriching grammars. The independence assumptions in the grammar are thus typically weakened, not strengtehened. Such approaches lexicalize rules \citep{collins2003head}, annotate the rule with parent and sibling labels \citep{klein2003accurate}, or automatically learn refinements of nonterminal categories \citep{petrov2006learning}.
 
 The closest predecessor to our model is the neural CRF parser of \citet{klein2015crf}, which predicts local potential for anchored rules using a feedfoward network. This differs from our approach in two ways. Their method requires a grammar, extracted from a treebank beforehand, whereas our approach implictly assumes all rules are possible rules in the grammar. Secondly, their scoring function conditions only on the parts of the sentence directly under the rule, dictated by the use of a feedforward network, whereas our scoring function computes a score bassed on representations computed from the entire sequence.
 
@@ -354,34 +344,3 @@ discarding the rest of the span information. The function is then defined as
   \log\psi(A, i, j) &\defeq s(i, j, A),
 \end{align}
 Note that the potential function as defined in \ref{eq:rule-score} disregards most of the information in a binary rule. In particular we see that $B$, $C$ and $k$, the labels and split-point of the children, are discarded.
-
-
-
-% \section{Semiring formulation}
-% So yeah, the highlights are: an edge connects three nodes, a parent and two \textsc{children}, each node is a labelled \textsc{span}; you need to identify the scoring function for an edge, let’s call it $w(e)$,  in this case we have
-% \begin{align}
-%     w(e) = f(\textsc{head}(e)) \bigotimes_{c \in \textsc{children}(e)} g(\textsc{span}(c))
-% \end{align}
-% where $f$ and $g$ are parametric functions; then you can compute the Inside recursion for a node v
-% \begin{align}
-%     I(v) = \bigoplus_{e \in BS(v)} w(e) \otimes \bigotimes_{c \in \textsc{children}(e)} I(c)
-% \end{align}
-% where I’m using $BS(v)$ to denote the set of edges incoming to $v$; note that BS here basically enumerates the different ways to segment the string under $(i,j)$ into two adjacent parts and the different labels of each child \textsc{span} (let’s call these $a$ and $b$, each an element in the labelset $L$), thus we can write
-% \begin{align}
-% I(v=[i,j,l]) = \bigoplus_{ \substack{ e=[i,j,l,k,a,b]: \\ a \in L, \\ b \in L, \\ k \in \{i+1,...,j-1\} } } w(e) \otimes I([i,k,a]) \otimes I([k+1,j,b])
-% \end{align}
-% Now the key is to realise that $w(e)$ factorises and therefore we can rewrite this as
-% \begin{align}
-%     I(v=[i,j,l]) = f(i,j,l) &\otimes \bigoplus_{k=i+1}^{j-1} g(i,k) \otimes g(k+1,j) \\
-%         &\otimes \bigoplus_{a \in L}  I([i,k,a]) \\
-%         &\otimes \bigoplus_{b\in L} I([k+1,j,b])
-% \end{align}
-% and this finally motivates having an inside table for the \textsc{span}s (with labels summed out), let’s call that
-% \begin{align}
-%     S(i,j) = \bigoplus_{l \in L} I(i,j,l)
-% \end{align}
-% and then we have the result
-% \begin{align}
-% \label{eq:inside-semiring}
-%     I(i,j,l) = f(i,j,l)\otimes \bigoplus_{k=i+1}^{j-1} g(i,k)\otimes g(k+1,j) \otimes S(i,k) \otimes S(k+1,j).
-% \end{align}

@@ -1,6 +1,6 @@
 # Fdb version 3
-["pdflatex"] 1549308752 "background.tex" "background.pdf" "background" 1549308752
-  "../figures/trees/binary.tex" 1548932836 382 736d406323f3cde62871b5992a9d9902 ""
+["pdflatex"] 1551649958 "background.tex" "background.pdf" "background" 1551649958
+  "../figures/trees/binary.tex" 1551612531 382 736d406323f3cde62871b5992a9d9902 ""
   "../figures/trees/original.tex" 1548932835 237 6471d3580ab6215efed6e8ea6f0048f7 ""
   "../figures/trees/simplified.tex" 1548932834 182 a01293ad9acf73e3e2d21381f1602c9f ""
   "../figures/trees/spans.tex" 1548932839 513 435a994e3b5afb09286483a512c51b50 ""
@@ -12,7 +12,7 @@
   "/usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt" 1485894833 3873397 68ff021935db8719c30e28db2297c232 ""
   "/usr/local/texlive/2016/texmf.cnf" 1463979140 577 2938757e76f31531e65cc647e3507693 ""
   "background.aux" 1548674712 8 a94a2480d3289e625eea47cd1b285758 ""
-  "background.tex" 1549308750 15374 10e4b2c9ac5bdd8c79b688898d75894b ""
+  "background.tex" 1551649957 21457 483efc5652f1ff9a8cb119ec3a9b9627 ""
   (generated)
-  "background.pdf"
   "background.log"
+  "background.pdf"

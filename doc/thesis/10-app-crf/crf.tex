@@ -1,1 +1,69 @@
-In this appendix I describe CRF's for factor graphs, together with the message passing algorithms from which forward-backward and inside-outside are derived.
+In the derrivation of the inference algorithms I make use of the notion of a \textit{weighted hypergraph} as a compact representation of all parses and their scores \citep{gallo1993directed,klein2004parsing}. I also use some of the ideas and notation of semiring parsing \citep{goodman1999semiring,eisner2009semirings}.
+
+I also introduce the following notation for termporary reasons because I cannot make up my mind about how to write these things. Let $\y_a = (i, j, \ell)$, then:
+\begin{align*}
+  A &= \ell  \\
+  \psi(A, i, j) &= \Psi(\x, \y_a)
+\end{align*}
+
+\section{Hypergraph}
+  A backward-hypergraph \citep{gallo1993directed}, or simply \textit{hypergraph} is a pair $G = (V, E)$, consisting of a set of nodes $V$, and a set of directed hyperedges $E \subseteq V^{+} \times V$ that connect a \textit{set} of nodes at the \textit{tail} of the arrow to a single node at the \textit{head} of the arrow. In our case we let the set $V$ consists of all posible labeled spans over a sentence of length $n$, together with the words
+  \begin{align*}
+    V = \{ (A, i, j) \mid A \in N \text{ and } 0 \leq i < j \leq n \} \cup \{ (\textsc{root}, 0, n) \} \cup \{ w_1, \dots, \w_n \}
+  \end{align*}
+  Because we (implicitly) use a normal form containing all possible productions, the set of hyperedges is particularly regular: $E$ contains all edges $((u, w), v)$ connecting nodes $u = (B, i, k)$ and $w = (C, k, j)$ at the tail with $v = (A, i, j)$ at the head for all $A, B, C \in N$ and $1 \leq i < k < j \leq n$, and all edges $(w_i, v)$ where $w_i$ is the $i$-th word and $v = (A, i, i+1)$ for $0 \leq i \leq n$. Figure \ref{fig:hypergraph} shows a fragment of such a hypergraph for an example sentence. Finally, a weighted hypergraph is a hypergraph equided with a fuction $\omega : E \to \reals$ that assigns a weight to each edge; in our case this is the function $\Psi$.
+
+\begin{figure}[h]
+  \center
+  \begin{tikzpicture}[scale=.6]
+    \input{../figures/hypergraph/hypergraph.tex}
+  \end{tikzpicture}
+  \caption{A fraction of a parse hypergraph showing two possible parses.}
+  \label{fig:hypergraph}
+\end{figure}
+
+
+\section{Semiring}
+  A semiring is an algebraic structure
+  \begin{align*}
+    \mathcal{K} = \langle \mathbb{K}, \oplus, \otimes, \bar{0}, \bar{1} \rangle,
+  \end{align*}
+  over a field $\mathbb{K}$, with additive and multiplicative operations $\oplus$ and $\otimes$, and additive and multiplicative identities $\bar{0}$ and $\bar{1}$. A semiring  is equivalent to a ring\footnote{The real numbers with regular addition and multiplication is an example of a ring.}, without the requirement of an additive inverse for each element. We use semirings to compute the quanitites over the weighted hypergraph by defining the function $\omega$ over its field $\mathbb{K}$ and by accumulating these weights with the binary operations. In particular we will accumulate quantities in logarithmic domain, and use the \textit{log semiring}
+  \begin{align}
+    \langle \reals \cup \{ -\infty \}, \text{logaddexp}, +, -\infty, 0 \rangle
+  \end{align}
+  to accumulate log-potentials, and the \textit{viterbi semiring}
+  \begin{align}
+    \langle \reals \cup \{ -\infty \}, \max, +, -\infty, 0 \rangle
+  \end{align}
+  to compute the weight of the highest scoring tree.
+
+
+  % \section{Semiring formulation}
+  % So yeah, the highlights are: an edge connects three nodes, a parent and two \textsc{children}, each node is a labelled \textsc{span}; you need to identify the scoring function for an edge, let’s call it $w(e)$,  in this case we have
+  % \begin{align}
+  %     w(e) = f(\textsc{head}(e)) \bigotimes_{c \in \textsc{children}(e)} g(\textsc{span}(c))
+  % \end{align}
+  % where $f$ and $g$ are parametric functions; then you can compute the Inside recursion for a node v
+  % \begin{align}
+  %     I(v) = \bigoplus_{e \in BS(v)} w(e) \otimes \bigotimes_{c \in \textsc{children}(e)} I(c)
+  % \end{align}
+  % where I’m using $BS(v)$ to denote the set of edges incoming to $v$; note that BS here basically enumerates the different ways to segment the string under $(i,j)$ into two adjacent parts and the different labels of each child \textsc{span} (let’s call these $a$ and $b$, each an element in the labelset $L$), thus we can write
+  % \begin{align}
+  % I(v=[i,j,l]) = \bigoplus_{ \substack{ e=[i,j,l,k,a,b]: \\ a \in L, \\ b \in L, \\ k \in \{i+1,...,j-1\} } } w(e) \otimes I([i,k,a]) \otimes I([k+1,j,b])
+  % \end{align}
+  % Now the key is to realise that $w(e)$ factorises and therefore we can rewrite this as
+  % \begin{align}
+  %     I(v=[i,j,l]) = f(i,j,l) &\otimes \bigoplus_{k=i+1}^{j-1} g(i,k) \otimes g(k+1,j) \\
+  %         &\otimes \bigoplus_{a \in L}  I([i,k,a]) \\
+  %         &\otimes \bigoplus_{b\in L} I([k+1,j,b])
+  % \end{align}
+  % and this finally motivates having an inside table for the \textsc{span}s (with labels summed out), let’s call that
+  % \begin{align}
+  %     S(i,j) = \bigoplus_{l \in L} I(i,j,l)
+  % \end{align}
+  % and then we have the result
+  % \begin{align}
+  % \label{eq:inside-semiring}
+  %     I(i,j,l) = f(i,j,l)\otimes \bigoplus_{k=i+1}^{j-1} g(i,k)\otimes g(k+1,j) \otimes S(i,k) \otimes S(k+1,j).
+  % \end{align}

@@ -1,0 +1,74 @@
+\documentclass[11pt]{article}
+\usepackage[upright]{fourier}
+\usepackage{tikz}
+\usepackage{amsmath,amssymb,amsfonts}
+
+\usetikzlibrary{arrows,calc}
+
+% \newcommand{\boundellipse}[3]% center, x rad, y rad
+% {(#1) ellipse [x radius=#2,y radius=#3]
+% }
+
+\begin{document}
+
+% \tikzstyle{every node}=[circle, draw, inner sep=0pt, minimum size=13mm,
+% node distance =1 cm and 1cm ]
+
+\begin{tikzpicture}
+  \node(a){\textit{The}} ;
+  \node(b) at ($(a)+(2,0)$){\textit{very}} ;
+  \node(c) at ($(b)+(2,0)$){\textit{hungry}} ;
+  \node(d) at ($(c)+(2,0)$){\textit{cat}} ;
+  \node(e) at ($(d)+(2,0)$){\textit{meows}} ;
+  \node(f) at ($(e)+(2,0)$){\textit{.}} ;
+
+  \node(A) at ($(a)+(0,1.5)$){$\varnothing_{0,1}$} ;
+  \node(B) at ($(A)+(2,0)$){$\varnothing_{1,2}$} ;
+  \node(C) at ($(B)+(2,0)$){$\varnothing_{2,3}$} ;
+  \node(D) at ($(C)+(2,0)$){$\varnothing_{3,4}$} ;
+  \node(E) at ($(D)+(2,0)$){$VP_{4,5}$} ;
+  \node(F) at ($(E)+(2,0)$){$\varnothing_{5,6}$} ;
+
+  \node(ADJP) at ($(B)+(0.1,2.5)$){$ADJP_{1,3}$} ;
+  \node(EMPTY0) at ($(D)+(-0.1,2.5)$){$\varnothing_{2,4}$} ;
+
+  \node(EMPTY1) at ($(ADJP)+(2,2)$){$\varnothing_{1,4}$} ;
+
+  \node(NP2) at ($(A)+(2,7)$){$NP_{0,4}$} ;
+
+  \node(EMPTY2) at ($(c)+(0,11)$){$\varnothing_{0,5}$} ;
+
+  \node(S) at ($(d)+(0,13)$){$S_{0,6}$} ;
+
+
+  \draw[->] (a) to [in=-90,out=90](A);
+  \draw[->] (b) to [in=-90,out=90](B);
+  \draw[->] (c) to [in=-90,out=90](C);
+  \draw[->] (d) to [in=-90,out=90](D);
+  \draw[->] (e) to [in=-90,out=90](E);
+  \draw[->] (f) to [in=-90,out=90](F);
+
+  \draw[->] (B) to [in=-90,out=90](ADJP);
+  \draw[->] (C) to [in=-90,out=90](ADJP);
+
+  \draw[dashed,->] (C) to [in=-90,out=90](EMPTY0);
+  \draw[dashed,->] (D) to [in=-90,out=90](EMPTY0);
+
+  \draw[->] (ADJP) to [in=-90,out=90](EMPTY1);
+  \draw[->] (D) to [in=-90,out=90](EMPTY1);
+
+  \draw[dashed,->] (EMPTY0) to [in=-90,out=90](EMPTY1);
+  \draw[dashed,->] (B) to [in=-90,out=90](EMPTY1);
+
+  \draw[->] (A) to [in=-90,out=90](NP2) ;
+  \draw[->] (EMPTY1) to [in=-90,out=90](NP2) ;
+
+  \draw[->] (NP2) to [in=-90,out=90](EMPTY2);
+  \draw[->] (E) to [in=-90,out=90](EMPTY2);
+
+  \draw[->] (EMPTY2) to [in=-90,out=90](S);
+  \draw[->] (F) to [in=-90,out=90](S);
+
+\end{tikzpicture}
+
+\end{document}

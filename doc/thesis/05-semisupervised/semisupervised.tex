@@ -27,7 +27,7 @@ This objective is optimized as usual using stochastic gradient estimates:
   \nabla_{\theta} \mathcal{L}_{S}(\theta)
     &\approx \frac{N}{K} \sum_{(\x, \y) \in \mathcal{B}} \nabla_{\theta} \log \ptheta (\x, \y), \\
 \end{align*}
-where $\mathcal{B} \subseteq \mathcal{D}_U$ is a mini-batch of size $K$ sampled uniformly from the dataset. We rely on automatic differentiation to compute $\nabla_{\theta} \log \ptheta(\x, \y)$ \citep{baydin2017automatic}.
+where $\mathcal{B} \subseteq \mathcal{D}_U$ is a mini-batch of size $K$ sampled uniformly from the dataset. We rely on automatic differentiation to compute $\nabla_{\theta} \log \ptheta(\x, \y)$ \citep{baydin2018automatic}.
 
 \paragraph{Unsupervised objective}
 We define the unsupervised objective $\mathcal{L}_{U}(\theta, \lambda)$ as

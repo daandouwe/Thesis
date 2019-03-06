@@ -4,11 +4,11 @@ INPUT /usr/local/texlive/2016/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt
 INPUT crf-parser.tex
 OUTPUT crf-parser.log
-INPUT crf-parser.bbl
-INPUT crf-parser.bbl
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/map/fontname/texfonts.map
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmcsc10.tfm
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
+INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/base/omscmr.fd
+INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/base/omscmr.fd
 OUTPUT crf-parser.pdf
 INPUT /usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map

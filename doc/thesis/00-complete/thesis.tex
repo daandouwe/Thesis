@@ -21,6 +21,9 @@
 % \usepackage{linguex}
 % \newsavebox{\partbox}
 
+\usetikzlibrary{arrows,calc}
+
+
 \graphicspath{{../figures/}}
 
 % a few definitions that are *not* needed in general:
@@ -30,12 +33,14 @@
 \newcommand{\cf}{\emph{cf.}}
 
 % neural network functions
-\newcommand{\ff}{\textsc{ff}}
-\newcommand{\rnn}{\textsc{rnn}}
-\newcommand{\lstm}{\textsc{Lstm}}
-\newcommand{\rnng}{\textsc{Rnng}}
-\newcommand{\birnn}{\textsc{BiRnn}}
-\newcommand{\bilstm}{\textsc{BiLstm}}
+\newcommand{\embed}{\textsc{E}}
+\newcommand{\ff}{\textsc{Ffn}}
+\newcommand{\rnn}{\textsc{Rnn}}
+
+% \newcommand{\embed}{E}
+% \newcommand{\ff}{FFN}
+% \newcommand{\rnn}{RNN}
+
 
 % RNNG actions
 \newcommand{\reduce}{\textsc{reduce}}
@@ -56,13 +61,20 @@
 \newcommand{\qlambda}{q_{\lambda}}  % sentence
 
 %% math symbols
-\newcommand{\reals}{\ensuremath{\mathbf{R}}}  % real numbers
+% \newcommand{\reals}{\ensuremath{\mathbf{R}}}  % real numbers
+\newcommand{\reals}{\ensuremath{\mathbb{R}}}  % real numbers
 \newcommand{\dataset}{\ensuremath{\mathcal{D}}}  % dataset
 
 \newcommand{\defeq}{\ensuremath{\triangleq}}  % define something with an equation
 
-\newcommand{\x}{\ensuremath{\mathbf{x}}}  % sentence
-\newcommand{\y}{\ensuremath{\mathbf{y}}}  % tree
+% \newcommand{\x}{\ensuremath{\mathbf{x}}}  % sentence
+% \newcommand{\y}{\ensuremath{\mathbf{y}}}  % tree
+
+\newcommand{\x}{\ensuremath{x}}  % sentence
+\newcommand{\y}{\ensuremath{y}}  % tree
+
+\newcommand{\vecx}{\ensuremath{\mathbf{x}}}  % sentence
+\newcommand{\vecy}{\ensuremath{\mathbf{y}}}  % tree
 \newcommand{\h}{\ensuremath{\mathbf{h}}}  % hidden vector
 \newcommand{\fw}{\ensuremath{\mathbf{f}}}  % forward lstm feature
 \newcommand{\bw}{\ensuremath{\mathbf{b}}}  % backward lstm feature
@@ -87,10 +99,15 @@
 
 % \DeclareMathOperator{\expect}{E} % expectation
 % \DeclareMathOperator{\expect}{\rm I\kern-.3em E} % expectation (thicker letter)
-\DeclareMathOperator{\expect}{\mathbf{E}} % expectation
-\DeclareMathOperator{\var}{\mathbf{var}} % variance
-\DeclareMathOperator{\cov}{\mathbf{cov}} % covariance
-\DeclareMathOperator{\corr}{\mathbf{corr}} % covariance
+% \DeclareMathOperator{\expect}{\mathbf{E}} % expectation
+% \DeclareMathOperator{\var}{\mathbf{var}} % variance
+% \DeclareMathOperator{\cov}{\mathbf{cov}} % covariance
+% \DeclareMathOperator{\corr}{\mathbf{corr}} % covariance
+
+\DeclareMathOperator{\expect}{\mathbb{E}} % expectation
+\DeclareMathOperator{\var}{Var} % variance
+\DeclareMathOperator{\cov}{Cov} % covariance
+\DeclareMathOperator{\corr}{corr} % covariance
 
 \DeclareMathOperator{\objective}{\mathcal{L}}  % objective function
 \DeclareMathOperator{\elbo}{\mathcal{E}}  % elbo objective
@@ -196,14 +213,19 @@ I find that:
 \input{../09-app-implementation/implementation.tex}
 
 
-\chapter{Conditional Random Fields}
+\chapter{Semiring parsing}
 \label{A3-crf}
 \input{../10-app-crf/crf.tex}
 
 
-\chapter{Variational Inference}
+\chapter{Variational inference}
 \label{A4-vi}
 \input{../11-app-vi/vi.tex}
+
+
+\chapter{Syneval dataset}
+\label{A5-syneval}
+\input{../12-app-syneval/syneval.tex}
 
 
 \printbibliography
