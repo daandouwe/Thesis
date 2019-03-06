@@ -1,13 +1,13 @@
 % \bibliography{../src/bibliography}
 
-This chapter introduces a neural Conditional Random Field (CRF) parser that can be used as an alternative proposal distribution for the approximate marginalization of the RNNG. The model is a span-factored CRF that independently predicts scores for labeled spans over the sentence using neural networks. The scores then interact in a chart-based dynamic program, giving a compact description of the probability distribution over parses. This approach combines the efficient exact inference of chart-based parsing, the rich nonlinear features of neural networks, and the global training of a CRF. The chart-based approach allows efficient exact inference alowing for exact decoding and global sampling while the neural features can be complex and can condition on the entire sentence. The CRF training objective [...something about receiving information about all substructures...]. The parser is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} to global CRF training. The original is trained with a margin-based objective. Our interest in in this model is as a proposal distribution, which requires probabilistical training.
+This chapter introduces a neural Conditional Random Field (CRF) parser that can be used as an alternative proposal distribution for the approximate marginalization of the RNNG. The model is a span-factored CRF that independently predicts scores for labeled spans over the sentence using neural networks. The scores then interact in a chart-based dynamic program, giving a compact description of the probability distribution over parses. This approach combines the efficient exact inference of chart-based parsing, the rich nonlinear features of neural networks, and the global training of a CRF. The chart-based approach allows efficient exact inference alowing for exact decoding and global sampling while the neural features can be complex and can condition on the entire sentence. The CRF training objective [...something about receiving information about all substructures...]. The parser is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} to global CRF training. \citet{stern2017minimal} train the model with a margin-based objective, but our interest primary in this model is as a proposal distribution, which requires probabilistical training.
 
 In this chapter:
 \begin{itemize}
-  \item I present the parser and describe how it is an adaptation of earlier (neural) crf parsing and the maximum margin trained parser of \citet{stern2017minimal}.
+  \item I present the parser and describe how it is an adaptation of earlier log-linear and neural crf parsing \citep{finkel2008crf,klein2015crf} and the maximum margin trained parser of \citet{stern2017minimal}.
   \item I show how the several inference problems of interest can be solved exactly: prediction, entropy, sampling.
   \item We train the parser in a supervised fashion and show it's adequacy as a parser.
-  \item We invesitage how samples are obtained from this parser.
+  \item We invesitage the kind of samples that are obtained from this parser, and evaluate how they affect the approximate inference in the RNNG.
 \end{itemize}
 
 
@@ -26,7 +26,7 @@ is the normalizing constant that sums over all the possible parse trees and make
 By factorizing a tree over labeled spans we make an even stronger assumption than that typically made by factorizating over anchored context-free rules\footnote{\cf table \ref{tab:spans-rules} for the different conceptions.}. This way, the potential function has no access to information about the direct substructure under the node, such as the child nodes and their split point. The function can thus rely less on the local tree structure and must thus rely more on the surface features of input sentence. This factorization will, however, greatly reduce the size of the state-space of the dynamic programs, speeding up training and inference, and the burden of the feature function will be carried by a rich neural network parametrization. Together, this will make the parser fast and very effective.
 
 \subsection{Parametrization}
-The scoring function $\Psi$ is implemented with neural networks following the design of the minimal scoring function of \citet{stern2017minimal}. The local potentials can only make minimal use of structural information, as we argued above, but they can depend on the entire sentence. This suggest the use of $\rnn$ encodings. The representation of a span $(i, j)$ is the concatenation of the difference between forward and backward vectors computed by a bidirectional $\rnn$
+The scoring function $\Psi$ is implemented with neural networks following the design of the minimal scoring function of \citet{stern2017minimal}. The local potentials can only make minimal use of structural information, as we argued above, but they can depend on the entire sentence. This suggest the use of RNN encodings. The representation of a span $(i, j)$ is the concatenation of the difference between forward and backward vectors
 \begin{align}
   \label{eq:potential-function}
   \vecs_{ij} = [\fw_j - \fw_i; \bw_i - \bw_j],
@@ -143,7 +143,7 @@ The best parse can be obtained with the Viterbi algoritm, which is an instance o
   \begin{align*}
     \beta(A, 0, n) =
     \begin{cases}
-      0, & \text{if}\ A = \textsc{root} \\
+      0, & \text{ if } A = \textsc{root} \\
       1, & \text{otherwise}.
     \end{cases}
   \end{align*}

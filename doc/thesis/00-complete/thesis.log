@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  6 MAR 2019 12:19
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  6 MAR 2019 16:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1472,6 +1472,12 @@ File: english.lbx 2016/05/14 v3.4 biblatex localization (PK/JW/AB)
 
 (./thesis.aux
 
+LaTeX Warning: Label `eq:disc-model' multiply defined.
+
+
+LaTeX Warning: Label `eq:disc-model' multiply defined.
+
+
 LaTeX Warning: Label `eq:lowerbound' multiply defined.
 
 )
@@ -1731,14 +1737,14 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
  [3
 
 ]
-[4] [5]) [6]
+[4]) [5]
 Chapter 2.
 (../02-background/background.tex
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <9> on input line 10.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 10.
- [7
+ [6
 
 ]
 ! Missing number, treated as zero.
@@ -1762,9 +1768,9 @@ To recover gracefully from this error, it's best to
 delete the erroneous units; e.g., type `2' to delete
 two letters. (See Chapter 27 of The TeXbook.)
 
-[8]
+[7]
 
-LaTeX Warning: Reference `eq:bird-brackets' on page 9 undefined on input line 4
+LaTeX Warning: Reference `eq:bird-brackets' on page 8 undefined on input line 4
 5.
 
 ! Missing number, treated as zero.
@@ -1788,7 +1794,7 @@ To recover gracefully from this error, it's best to
 delete the erroneous units; e.g., type `2' to delete
 two letters. (See Chapter 27 of The TeXbook.)
 
-[9] <../figures/trees/npi-licensed.pdf, id=248, 526.77112pt x 259.41167pt>
+[8] <../figures/trees/npi-licensed.pdf, id=232, 526.77112pt x 259.41167pt>
 File: ../figures/trees/npi-licensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-licensed.pdf>
@@ -1796,7 +1802,7 @@ Package pdftex.def Info: ../figures/trees/npi-licensed.pdf used on input line 7
 1.
 (pdftex.def)             Requested size: 151.08308pt x 74.40016pt.
 
-<../figures/trees/npi-unlicensed.pdf, id=249, 482.62106pt x 256.61702pt>
+<../figures/trees/npi-unlicensed.pdf, id=233, 482.62106pt x 256.61702pt>
 File: ../figures/trees/npi-unlicensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-unlicensed.pdf>
@@ -1808,19 +1814,19 @@ Overfull \hbox (2.43332pt too wide) in paragraph at lines 70--76
 [][] [] 
  []
 
-[10 <../figures/trees/npi-licensed.pdf> <../figures/trees/npi-unlicensed.pdf>]
-[11] [12] (../figures/trees/original.tex) (../figures/trees/simplified.tex)
+[9 <../figures/trees/npi-licensed.pdf> <../figures/trees/npi-unlicensed.pdf>]
+[10] [11] (../figures/trees/original.tex) (../figures/trees/simplified.tex)
 (../figures/trees/binary.tex) (../figures/trees/spans.tex)
 
-LaTeX Warning: Float too large for page by 51.18155pt on input line 179.
+LaTeX Warning: Float too large for page by 51.18155pt on input line 170.
 
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 186.
+(Font)              <10> on input line 177.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 186.
-[13] [14] [15]
+(Font)              <7> on input line 177.
+[12] [13] [14]
 ! Undefined control sequence.
-l.228 ...nce length for normal form trees \footnot
+l.219 ...nce length for normal form trees \footnot
                                                   {And slower for trees that...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1828,28 +1834,34 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[16] [17] [18] [19]
+
+Overfull \hbox (10.53613pt too wide) in paragraph at lines 219--220
+[]\T1/lmr/m/n/10.95 (-20) Either method have their ad-van-tages and dis-ad-van-
+tages. The transition-
+ []
+
+[15] [16] [17] [18] [19]
 Package microtype Info: Character `029' is missing
 (microtype)             in font `T1/lmr/m/sc/10.95'.
 (microtype)             Ignoring protrusion settings for this character.
- [20]) [21]
+) [20]
 Chapter 3.
-(../03-rnng/rnng.tex [22
+(../03-rnng/rnng.tex [21
 
 ] (../tables/disc-transitions.tex
 Package microtype Info: Character `029' is missing
 (microtype)             in font `T1/lmr/m/sc/7'.
 (microtype)             Ignoring protrusion settings for this character.
-) [23]
-(../tables/gen-transitions.tex) [24] [25] [26] [27] [28] [29] [30]
-Overfull \hbox (3.13356pt too wide) in paragraph at lines 216--217
+) [22]
+(../tables/gen-transitions.tex) [23] [24] [25] [26] [27] [28] [29] [30]
+Overfull \hbox (3.13356pt too wide) in paragraph at lines 244--245
 []\T1/lmr/m/n/10.95 (-20) We eval-u-ate per-plex-ity with vary-ing num-ber of s
 am-ples: 1 (argmax),
  []
 
-[31] [32]) [33]
+[31]) [32]
 Chapter 4.
-(../04-crf-parser/crf-parser.tex [34
+(../04-crf-parser/crf-parser.tex [33
 
 ]
 ! Extra }, or forgotten $.
@@ -1861,7 +1873,7 @@ you forgot something else, as in `\hbox{$x}'. In such cases
 the way to recover is to insert both the forgotten and the
 deleted material, e.g., by typing `I$}'.
 
-[35] <../figures/span-encoding.pdf, id=746, 464.0005pt x 150.49072pt>
+[34] <../figures/span-encoding.pdf, id=751, 464.0005pt x 150.49072pt>
 File: ../figures/span-encoding.pdf Graphic file (type pdf)
 
 <use ../figures/span-encoding.pdf>
@@ -1870,10 +1882,10 @@ Package pdftex.def Info: ../figures/span-encoding.pdf used on input line 42.
 Package microtype Info: Character `029' is missing
 (microtype)             in font `T1/lmr/m/sc/9'.
 (microtype)             Ignoring protrusion settings for this character.
- [36] [37 <../figures/span-encoding.pdf>]
-[38]
+ [35] [36 <../figures/span-encoding.pdf>]
+[37]
 
-LaTeX Warning: Reference `eq:inside' on page 39 undefined on input line 129.
+LaTeX Warning: Reference `eq:inside' on page 38 undefined on input line 129.
 
 
 ! Package amsmath Error: Multiple \label's: label 'eq:inside' will be lost.
@@ -1888,12 +1900,12 @@ Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-[39]
+[38]
 Overfull \hbox (18.35712pt too wide) in paragraph at lines 158--158
 [] 
  []
 
-[40]
+[39]
 
 ! Package amsmath Error: Multiple \label's: label 'eq:inside-simplified' will b
 e lost.
@@ -1944,26 +1956,26 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[41]
+[40]
 Overfull \hbox (3.13356pt too wide) in paragraph at lines 300--301
 []\T1/lmr/m/n/10.95 (-20) We eval-u-ate per-plex-ity with vary-ing num-ber of s
 am-ples: 1 (argmax),
  []
 
-[42] [43] [44]
+[41] [42] [43]
 
-LaTeX Warning: Reference `eq:rule-score' on page 45 undefined on input line 346
+LaTeX Warning: Reference `eq:rule-score' on page 44 undefined on input line 346
 .
 
-) [45]
+) [44]
 Chapter 5.
-(../05-semisupervised/semisupervised.tex [46
+(../05-semisupervised/semisupervised.tex [45
 
-] [47] [48] [49] [50]) [51]
+] [46] [47] [48] [49]) [50]
 Chapter 6.
-(../06-syneval/syneval.tex [52
+(../06-syneval/syneval.tex [51
 
-] [53] [54]
+] [52] [53]
 ! Undefined control sequence.
 l.37 ...ntroduced in chapter \ref{04-crf}.\foonote
                                                   {This is similar to an app...
@@ -1973,7 +1985,7 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[55] [56] [57]
+[54] [55] [56]
 
 ! LaTeX Error: Lonely \item--perhaps a missing list environment.
 
@@ -2042,19 +2054,19 @@ Underfull \hbox (badness 10000) detected at line 107
 [][]
  []
 
-[58]) [59]
+[57]) [58]
 Chapter 7.
-(../07-conclusion/conclusion.tex) [60
+(../07-conclusion/conclusion.tex) [59
 
-] [61
+] [60
 
 ]
 Appendix A.
-(../08-app-figures/figures.tex [62
+(../08-app-figures/figures.tex [61
 
-]) [63]
+]) [62]
 Appendix B.
-(../09-app-implementation/implementation.tex [64
+(../09-app-implementation/implementation.tex [63
 
 ]
 LaTeX Font Info:    Try loading font information for T1+lmtt on input line 13.
@@ -2066,7 +2078,7 @@ Package microtype Info: Loading generic settings for font family
 (microtype)             `lmtt' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
- [65] [66] [67]
+ [64] [65] [66]
 
 ! LaTeX Error: Lonely \item--perhaps a missing list environment.
 
@@ -2287,7 +2299,7 @@ l.53 \end{itemize}
                   
 Things are pretty mixed up, but I think the worst is over.
 
-) [68]
+) [67]
 Appendix C.
 (../10-app-crf/crf.tex
 ! Undefined control sequence.
@@ -2317,13 +2329,13 @@ Overfull \hbox (10.26213pt too wide) in paragraph at lines 13--13
 [] 
  []
 
-[69
+[68
 
 ] (../figures/hypergraph/hypergraph.tex)
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [70])
-[71]
+ [69])
+[70]
 Appendix D.
 (../11-app-vi/vi.tex
 Overfull \hbox (0.74757pt too wide) in paragraph at lines 10--11
@@ -2331,39 +2343,39 @@ Overfull \hbox (0.74757pt too wide) in paragraph at lines 10--11
 , for non-conjugate
  []
 
-[72
+[71
 
 ]
 Overfull \hbox (9.49663pt too wide) in paragraph at lines 38--38
 [] 
  []
 
-[73] [74] [75]
+[72] [73] [74]
 Overfull \hbox (49.76526pt too wide) in paragraph at lines 131--131
 [] 
  []
 
-[76] [77] <../figures/control-variate.pdf, id=1302, 344.73216pt x 173.3124pt>
+[75] [76] <../figures/control-variate.pdf, id=1307, 344.73216pt x 173.3124pt>
 File: ../figures/control-variate.pdf Graphic file (type pdf)
 
 <use ../figures/control-variate.pdf>
 Package pdftex.def Info: ../figures/control-variate.pdf used on input line 205.
 
 (pdftex.def)             Requested size: 235.01872pt x 118.15762pt.
-) [78] [79 <../figures/control-variate.pdf>]
+) [77] [78 <../figures/control-variate.pdf>]
 Appendix E.
-(../12-app-syneval/syneval.tex [80
+(../12-app-syneval/syneval.tex [79
 
-] [81]) [82] [83
+] [80]) [81] [82
 
-] [84] [85] [86] [87]
+] [83] [84] [85] [86]
 Overfull \hbox (38.92006pt too wide) in paragraph at lines 232--232
 \T1/lmr/m/n/10.95 (-20) ``Ex-plor-ing the lim-its of lan-guage mod-el-ing''. \T
 1/lmr/m/it/10.95 (-20) arXiv preprint arXiv:1602.02410\T1/lmr/m/n/10.95 (-20) .
  
  []
 
-[88] [89] [90]
+[87] [88] [89]
 
 ! Package inputenc Error: Unicode char ỳ (U+1EF3)
 (inputenc)                not set up for use with LaTeX.
@@ -2378,7 +2390,7 @@ Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-[91]
+[90]
 ! Misplaced alignment tab character &.
 <argument> Computer Speech &
                              Language
@@ -2391,7 +2403,7 @@ up above has ended a previous alignment prematurely,
 you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
-[92] [93] [94] 
+[91] [92] [93] 
 AED: lastpage setting LastPage
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 238.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 238.
@@ -2418,17 +2430,17 @@ Package logreq Info: Writing requests to 'thesis.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 32559 strings out of 493014
- 595745 string characters out of 6133351
- 1072329 words of memory out of 5000000
- 34651 multiletter control sequences out of 15000+600000
- 190787 words of font info for 254 fonts, out of 8000000 for 9000
+ 32574 strings out of 493014
+ 596020 string characters out of 6133351
+ 1073464 words of memory out of 5000000
+ 34657 multiletter control sequences out of 15000+600000
+ 191225 words of font info for 258 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 62i,16n,72p,1828b,1277s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 62i,16n,72p,1828b,1279s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/
-texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/20
-16/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2016/texmf-dist/
-fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2016/texmf-dist/fonts/enc/
+texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2016/t
+exmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2016/texmf-dist/
+fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/2016/texmf-dist/fonts/enc/
 dvips/lm/lm-mathex.enc}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/a
 msfonts/cm/cmbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/ams
@@ -2442,39 +2454,37 @@ cmssi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/
 cmssi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/c
 msy10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cm
 sy8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></
-usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx8.pfb></usr/local/t
-exlive/2016/texmf-dist/fonts/type1/public/lm/lmbx9.pfb></usr/local/texlive/2016
-/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb></usr/local/texlive/2016/texmf-di
-st/fonts/type1/public/lm/lmcsc10.pfb></usr/local/texlive/2016/texmf-dist/fonts/
-type1/public/lm/lmex10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/publ
-ic/lm/lmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi
-6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi8.pfb></usr
-/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi9.pfb></usr/local/texl
-ive/2016/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/2016/te
-xmf-dist/fonts/type1/public/lm/lmr6.pfb></usr/local/texlive/2016/texmf-dist/fon
-ts/type1/public/lm/lmr7.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/pub
-lic/lm/lmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr9.
-pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri10.pfb></usr/
-local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri7.pfb></usr/local/texli
-ve/2016/texmf-dist/fonts/type1/public/lm/lmri9.pfb></usr/local/texlive/2016/tex
-mf-dist/fonts/type1/public/lm/lmss10.pfb></usr/local/texlive/2016/texmf-dist/fo
-nts/type1/public/lm/lmss12.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/
-public/lm/lmssbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/l
-m/lmsso10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy10.
-pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy6.pfb></usr/l
-ocal/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></usr/local/texliv
-e/2016/texmf-dist/fonts/type1/public/lm/lmsy9.pfb></usr/local/texlive/2016/texm
-f-dist/fonts/type1/public/lm/lmtt10.pfb></usr/local/texlive/2016/texmf-dist/fon
-ts/type1/public/lm/lmtt9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/pu
-blic/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type
-1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2016/texmf-dist/fonts/
-type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/ur
-w/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/ut
-mr8a.pfb>
-Output written on thesis.pdf (98 pages, 1435492 bytes).
+usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx9.pfb></usr/local/t
+exlive/2016/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb></usr/local/texlive/20
+16/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb></usr/local/texlive/2016/texmf-
+dist/fonts/type1/public/lm/lmex10.pfb></usr/local/texlive/2016/texmf-dist/fonts
+/type1/public/lm/lmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/pub
+lic/lm/lmmi6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi
+8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi9.pfb></usr
+/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texl
+ive/2016/texmf-dist/fonts/type1/public/lm/lmr6.pfb></usr/local/texlive/2016/tex
+mf-dist/fonts/type1/public/lm/lmr7.pfb></usr/local/texlive/2016/texmf-dist/font
+s/type1/public/lm/lmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/publ
+ic/lm/lmr9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri10
+.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri7.pfb></usr/
+local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri9.pfb></usr/local/texli
+ve/2016/texmf-dist/fonts/type1/public/lm/lmss10.pfb></usr/local/texlive/2016/te
+xmf-dist/fonts/type1/public/lm/lmss12.pfb></usr/local/texlive/2016/texmf-dist/f
+onts/type1/public/lm/lmssbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/typ
+e1/public/lm/lmsso10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public
+/lm/lmsy10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy8.
+pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy9.pfb></usr/l
+ocal/texlive/2016/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/local/texli
+ve/2016/texmf-dist/fonts/type1/public/lm/lmtt9.pfb></usr/local/texlive/2016/tex
+mf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016
+/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/
+2016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/tex
+mf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fo
+nts/type1/urw/times/utmr8a.pfb>
+Output written on thesis.pdf (97 pages, 1419543 bytes).
 PDF statistics:
- 1868 PDF objects out of 2073 (max. 8388607)
- 1654 compressed objects within 17 object streams
- 506 named destinations out of 1000 (max. 500000)
+ 1867 PDF objects out of 2073 (max. 8388607)
+ 1656 compressed objects within 17 object streams
+ 507 named destinations out of 1000 (max. 500000)
  48065 words of extra memory for PDF output out of 51595 (max. 10000000)
 

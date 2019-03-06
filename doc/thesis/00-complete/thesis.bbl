@@ -491,6 +491,33 @@
       \field{title}{Constituent Structure}
       \field{year}{2010}
     \endentry
+    \entry{caruana1997multitask}{article}{}
+      \name{author}{1}{}{%
+        {{hash=599c5251d489b92dc7856277d56cb1a9}{%
+           family={Caruana},
+           family_i={C\bibinitperiod},
+           given={Rich},
+           given_i={R\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{599c5251d489b92dc7856277d56cb1a9}
+      \strng{fullhash}{599c5251d489b92dc7856277d56cb1a9}
+      \field{sortinit}{C}
+      \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
+      \field{labelyear}{1997}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Machine learning}
+      \field{number}{1}
+      \field{title}{Multitask learning}
+      \field{volume}{28}
+      \field{year}{1997}
+      \field{pages}{41\bibrangedash 75}
+      \range{pages}{35}
+    \endentry
     \entry{chelba2000structured}{article}{}
       \name{author}{2}{}{%
         {{hash=6a68ed902b1be827862f051c9ec5573c}{%

@@ -67,31 +67,59 @@ and
 \end{align*}
 
 We are now in the position to write down the exact models. Let $a$ be a sequence from $\discactions^T$. Then the model for the discrminative RNNG is
+% \begin{align}
+%   \label{eq:disc-model}
+%   p(\y \mid \x)
+%     &= p(a \mid \x)  \\
+%     &= \prod_{t=1}^T p(a_t \mid \x, a_{<t}) p(n_{\mu(t)} \mid \x, a_{<t} )^{ \indicator_{ \{ a_t \, = \, \open \} } }.
+% \end{align}
 \begin{align}
   \label{eq:disc-model}
-  p(\y \mid \x)
-    &= p(a \mid \x)  \\
-    &= \prod_{t=1}^T p(a_t \mid \x, a_{<t}) p(n_{\mu(t)} \mid \x, a_{<t} )^{ \indicator_{ \{ a_t \, = \, \open \} } }.
+  p(\y \mid \x) = p(a \mid \x) = \prod_{t=1}^T p( a_t \mid \x, a_{<t}),
 \end{align}
+where
+\begin{equation}
+  \label{eq:disc-model}
+  p( a_t \mid \x, a_{<t}) =
+  \begin{cases}
+    p( n_{ a_t } \mid \x, a_{<t} ) p( n_{ \mu(t) } \mid \x, a_{<t} ) & \text{if } a_t = \open  \\
+    p( n_{ a_t } \mid \x, a_{<t} ) & \text{otherwise.}  \\
+  \end{cases}
+\end{equation}
+
 Let $a$ be a sequence from $\genactions^T$, which include the actions that generate words\footnote{Note that under this action set $p(a_t \mid a_{<t}, \x_{<t}) = p(a_t \mid a_{<t})$, given the fact that the words in $\x_{<t}$ are contained in $a_{<t}$.}, then the model for the generative RNNG is
+% \begin{align}
+%   \label{eq:gen-model}
+%   p(\x, \y)
+%     &= p(a)  \\
+%     &= \prod_{t=1}^T p(a_t \mid a_{<t}) p(n_{\mu(t)} \mid   a_{<t})^{ \indicator_{ \{ a_t \, = \, \open \} } } p(x_{\nu(t)} \mid a_{<t})^{ \indicator_{ \{ a_t \, = \, \gen \} } }.
+% \end{align}
 \begin{align}
-  \label{eq:gen-model}
-  p(\x, \y)
-    &= p(a)  \\
-    &= \prod_{t=1}^T p(a_t \mid a_{<t}) p(n_{\mu(t)} \mid   a_{<t})^{ \indicator_{ \{ a_t \, = \, \open \} } } p(x_{\nu(t)} \mid a_{<t})^{ \indicator_{ \{ a_t \, = \, \gen \} } }.
+  \label{eq:disc-model}
+  p(\y \mid \x) = p(a) = \prod_{t=1}^T p( a_t \mid a_{<t}),
 \end{align}
+where
+\begin{equation}
+  \label{eq:gen-model}
+  p( a_t \mid a_{<t} ) =
+  \begin{cases}
+    p( a_t \mid a_{<t} ) p(n_{ \mu(t) } \mid a_{<t} ) & \text{if } a_t = \open  \\
+    p( a_t \mid a_{<t} ) p(x_{ \nu(t) } \mid a_{<t} ) & \text{if } a_t = \gen  \\
+    p( a_t \mid a_{<t} ) & \text{otherwise.}  \\
+  \end{cases}
+\end{equation}
 
 The probabilities over next actions at time step $t$ are given by classifiers on a vector $\vecu_t$\footnote{For brevity we omit the conditioning on $\x$, which was redundant already in the case of the generative model.}, which represents the parser configuration at that timestep:
 \begin{align}
   \label{eq:action-regression}
-  p(a_t \mid a_{<t})
-    &\propto \exp \ff_{\alpha}( \vecu_t )  \\
-  p(n_{\mu(t)} \mid a_{<t})
-    &\propto \exp \ff_{\beta}( \vecu_t )  \\
-  p(x_{\nu(t)} \mid a_{<t})
-    &\propto \exp \ff_{\gamma}( \vecu_t )
+  &p(a_t \mid a_{<t})
+    \propto \exp \ff_{\alpha}( \vecu_t )  \\
+  &p(n_{\mu(t)} \mid a_{<t})
+    \propto \exp \ff_{\beta}( \vecu_t )  \\
+  &p(x_{\nu(t)} \mid a_{<t})
+    \propto \exp \ff_{\gamma}( \vecu_t )
 \end{align}
-where $\{\alpha, \beta, \gamma\}$ are separate parameters. The computation of the vector $\vecu_t$ is described in the next section.
+where $\{\alpha, \beta, \gamma\}$ are separate sets of parameters. The computation of the vector $\vecu_t$ is described in the next section.
 
 \begin{remark} We could have defined the actions as
   \begin{align*}

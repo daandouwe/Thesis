@@ -1,18 +1,18 @@
 [0] Config.pm:343> INFO - This is Biber 2.5
 [0] Config.pm:346> INFO - Logfile is 'thesis.blg'
-[56] biber-darwin:290> INFO - === Wed Mar  6, 2019, 12:19:43
-[99] Biber.pm:351> INFO - Reading 'thesis.bcf'
-[209] Biber.pm:776> INFO - Found 115 citekeys in bib section 0
-[223] Biber.pm:3493> INFO - Processing section 0
-[254] Biber.pm:3657> INFO - Looking for bibtex format file '../src/bibliography.bib' for section 0
-[265] bibtex.pm:1187> INFO - Decoding LaTeX character macros into UTF-8
-[277] bibtex.pm:1048> INFO - Found BibTeX data source '../src/bibliography.bib'
-[283] Utils.pm:149> WARN - Duplicate entry key: 'kuncoro2017syntax' in file '../src/bibliography.bib', skipping ...
-[430] Utils.pm:149> WARN - I didn't find a database entry for 'baydin2017automatic' (section 0)
-[568] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[569] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[569] Biber.pm:3306> INFO - Sorting list 'nyt/global/' of type 'entry' with scheme 'nyt' and locale 'en-US'
-[569] Biber.pm:3310> INFO - No sort tailoring available for locale 'en-US'
-[759] bbl.pm:526> INFO - Writing 'thesis.bbl' with encoding 'UTF-8'
-[776] bbl.pm:619> INFO - Output to thesis.bbl
-[776] Biber.pm:108> INFO - WARNINGS: 2
+[50] biber-darwin:290> INFO - === Wed Mar  6, 2019, 16:35:08
+[89] Biber.pm:351> INFO - Reading 'thesis.bcf'
+[192] Biber.pm:776> INFO - Found 116 citekeys in bib section 0
+[205] Biber.pm:3493> INFO - Processing section 0
+[234] Biber.pm:3657> INFO - Looking for bibtex format file '../src/bibliography.bib' for section 0
+[244] bibtex.pm:1187> INFO - Decoding LaTeX character macros into UTF-8
+[256] bibtex.pm:1048> INFO - Found BibTeX data source '../src/bibliography.bib'
+[262] Utils.pm:149> WARN - Duplicate entry key: 'kuncoro2017syntax' in file '../src/bibliography.bib', skipping ...
+[397] Utils.pm:149> WARN - I didn't find a database entry for 'baydin2017automatic' (section 0)
+[533] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[533] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[534] Biber.pm:3306> INFO - Sorting list 'nyt/global/' of type 'entry' with scheme 'nyt' and locale 'en-US'
+[534] Biber.pm:3310> INFO - No sort tailoring available for locale 'en-US'
+[695] bbl.pm:526> INFO - Writing 'thesis.bbl' with encoding 'UTF-8'
+[710] bbl.pm:619> INFO - Output to thesis.bbl
+[710] Biber.pm:108> INFO - WARNINGS: 2
