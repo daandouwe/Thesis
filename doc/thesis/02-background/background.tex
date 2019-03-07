@@ -85,7 +85,7 @@ Theoretical syntax is rife with controversy, and wildly differing viewpoints exi
 
 \begin{itemize}
 
-  \item Work in dependency grammar and other word-based grammar formalisms depart from the idea tha word-word relations are more fundamental than constituents \citep{tesniere1959elements,nivre2005dependency,hudson2010introduction}, and dispenses with the notion of constituents altogether.
+  \item Work in dependency grammar and other word-based grammar formalisms depart from the idea that lexical relations between individual words are more fundamental than constituents and their hierarchical organization \citep{tesniere1959elements,nivre2005dependency,hudson2010introduction}, and dispenses with the notion of constituents altogether.
 
   \item A recurring cause of controversy is the question whether hierarchical structure needs to be invoked in linguistic explanation. That is, whether the kind of analysis in figure \ref{fig:bird-tree}, with embedded constituents, is really fundamental to language. \citet{frank2012hierarchical} argue that a shallow analysis of sentences into immediate constituants with linear order but no hierachical structure\footnote{A structure reminiscent of that predicted in the task of \textit{chunking}, or shallow parsing.} is sufficient for syntactic theories, a claim that is vehemently rejected by \citet{everaert2015structures}.
 
@@ -194,7 +194,7 @@ This research, however, takes a pragmatic position with respect to such question
   \subsection{Models}
     The probabilistic model of a parser can be \textit{discriminative}, describing the conditional probability distribution $p(\y \mid \x)$, or \textit{generative}, describing the joint distribution $p(\x, \y)$. The form that the model takes is largely dictated by the algorithm used to build the parses.
 
-    Transition-based methods formulate the process by a sequence of actions that incrementally builds a tree in a stack datastructure. The design of the transition system determines whether the tree is constructed bottom-up, top-down, or left-corner, and determines whether the trees need to be in normal form. The probabilistic model is defined over the sequences of actions, and the probability distribution typically factorizes as the product of conditional distributions over the next action given the previous actions. This makes it a directed model that is \textit{locally normalized}.\footnote{With the exception of those approaches that instead define a Conditional Random Field over the action sequences \citep{andor2016globally}, in which case the model is defined over the globally normalized action sequences.}
+    Transition-based methods formulate parsing as a sequence of shift-reduce decisions made by a push-down automaton that incrementally builds a tree. The design of the transition system determines whether the tree is constructed bottom-up, top-down, or otherwise\footnote{Post-order and pre-order tarversal, respectively.}, and determines whether the trees need to be in normal form. The probabilistic model is defined over the sequences of actions, and the probability distribution typically factorizes as the product of conditional distributions over the next action given the previous actions. This makes it a directed model that is \textit{locally normalized}.\footnote{With the exception of those approaches that instead define a Conditional Random Field over the action sequences \citep{andor2016globally}, in which case the model is defined over the globally normalized action sequences.}
     \begin{definition}{}
       A probalistic model $p(\x)$ over sequences $\x \in \mathcal{X}^n$ is \textit{locally normalized} if
       \begin{align*}
@@ -237,7 +237,7 @@ This research, however, takes a pragmatic position with respect to such question
     \begin{align*}
       P = \frac{|\mathcal{R} \cap \mathcal{S}|}{|\mathcal{S}|}.
     \end{align*}
-    The cannonical implementation of the Parseval metric is evalb \citep{sekine1997evalb}.
+    The cannonical implementation of the Parseval metric is \verb!EVALB! \citep{sekine1997evalb}.
 
 
 \section{Language models}

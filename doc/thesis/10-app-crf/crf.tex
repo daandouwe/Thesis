@@ -1,29 +1,40 @@
 % \bibliography{../src/bibliography}
 
-In the derrivation of the inference algorithms I make use of the notion of a \textit{weighted hypergraph} as a compact representation of all parses and their scores \citep{gallo1993directed,klein2004parsing}. I also use some of the ideas and notation of semiring parsing \citep{goodman1999semiring,eisner2009semirings}.
+The derivation of the inference algorithms in chapter \ref{04-crf} makes use of the notion of a \textit{weighted hypergraph} as a compact representation of all parses and their scores \citep{gallo1993directed,klein2004parsing}, and also makes use some of the ideas and notation of semiring parsing \citep{goodman1999semiring,eisner2009semirings}.
 
-I also introduce the following notation for termporary reasons because I cannot make up my mind about how to write these things. Let $\y_a = (i, j, \ell)$, then:
-\begin{align*}
-  A &= \ell  \\
-  \psi(A, i, j) &= \Psi(\x, \y_a)
-\end{align*}
 
 \section{Hypergraph}
-  A backward-hypergraph \citep{gallo1993directed}, or simply \textit{hypergraph} is a pair $G = (V, E)$, consisting of a set of nodes $V$, and a set of directed hyperedges $E \subseteq 2^V \times V$ that connect a \textit{set} of nodes at the \textit{tail} of the arrow to a single node at the \textit{head} of the arrow.
+  We use a \textit{backward hypegraph} to compactly represent all possible trees over a sentence under a grammar, an idea introduced in \citet{klein2004parsing}. We call such hypergraph a parse forest.
 
-  In our case the hypegraph represents all the possible derivations of a sentence under a grammar. The $V$ consists of the invidual words of a sentence $x$, together with the all posible labeled spans over that sentence:
-  \begin{align*}
-    V = \Big\{ \x_1, \dots, \x_n \Big\} \cup \Big\{ (A, i, j) \mid A \in \Lambda, 0 \leq i < j \leq n \Big\} \cup \Big\{ (S^{\dagger}, 0, n) \Big\}.
-  \end{align*}
-  The edge set describes all the ways adjacent constituents can be combined to form a larger constituent. Because we (implicitly) use a normal form grammar containing all possible productions, the set of hyperedges is particularly regular: $E$ contains all edges that connect nodes $(B, i, k)$ and $(C, k, j)$ at the tail with $(A, i, j)$ at the head for all $0 \leq i < k < j \leq n$, and all edges that connect $w_i$ to $(A, i, i+1)$:
+  \begin{definition}{}
+    A \textit{directed hypergraph} is a pair $G = (V, E)$, consisting of a set of nodes $V$, and a set of directed hyperedges $E \subseteq 2^V \times 2^V$ that connect a set of nodes at the \textit{tail} of the arrow to a set of node at the \textit{head} of the arrow.
+  \end{definition}
 
-  \begin{align*}
-    E
-      &= \Bigg\{ \Big\langle \Big\{ (B, i, k), (C, k, j) \Big\},  (A, i, j) \Big\rangle \; \Bigg\vert \; A, B, C \in \Lambda, \; 0 \leq i < k < j \leq n \Bigg\}  \\
-      &\quad\cup \Bigg\{ \Big\langle \{ w_i \}, (A, i, i+1) \Big\rangle \; \Bigg\vert \; A \in \Lambda, \; 0 \leq i < n \Bigg\}  \\
-  \end{align*}
+  \begin{definition}{}
+    A \textit{backward-hypergraph} is a directed hypergraph where the hyperedges $E \subseteq 2^V \times V$ connect to a single node. For a node $v \in V$ the set $I(v) \subseteq E$ denotes the set of edges incoming at $v$ and the set $O(v) \subseteq E$ denotes the set of edges outgoing from $v$, $\ie$ the edges for which $v$ is in the tail. For an edge $e$ we write $T(e) \subseteq V$ for the set of nodes in the tail of $e$, and define $H(e) \in V$ as the node at the head of the edge.
+  \end{definition}
 
-  Figure \ref{fig:hypergraph} shows a fragment of such a hypergraph for an example sentence. Finally, a weighted hypergraph is a hypergraph equided with a fuction $\omega : E \to \reals$ that assigns a weight to each edge; in our case this is the function $\Psi$.
+  \begin{definition}{}
+     A \textit{weighted hypergraph} is any hypergraph $G$ equided with a weight function $\omega : E \to K$ that to each edge assigns a weight from a weight-set $K$. Typically $K$ the set of real numbers, or the set of integers.
+  \end{definition}
+
+  \begin{example}{}
+    The hypergraph specified by the CRF parser in chapter \ref{04-crf} has the following structure. Let the set $V$ consists of the invidual words of a sentence $x$, together with the all posible labeled spans over that sentence:
+    \begin{align*}
+      V = \Big\{ \x_i \; \Bigg\vert \; 1 \leq i \leq n \Big\} \cup \Big\{ (A, i, j) \; \Bigg\vert \; A \in \Lambda, 0 \leq i < j \leq n \Big\} \cup \Big\{ (S^{\dagger}, 0, n) \Big\}.
+    \end{align*}
+    The edge set $E$ will specify all the ways that adjacent constituents can be combined to form a larger constituent, under a particular grammar. Because we (implicitly) use a normal form grammar that contains \textit{all} possible productions, the set of hyperedges is particularly regular: the set $E$ contains all edges that connect nodes $(B, i, k)$ and $(C, k, j)$ at the tail with $(A, i, j)$ at the head for all $0 \leq i < k < j \leq n$, all edges that connect $w_i$ to $(A, i, i+1)$, and all nodes can function as top nodes:
+    \begin{align*}
+      E
+        &= \Bigg\{ \Big\langle \Big\{ (B, i, k), (C, k, j) \Big\},  (A, i, j) \Big\rangle \; \Bigg\vert \; A, B, C \in \Lambda, \; 0 \leq i < k < j \leq n \Bigg\}  \\
+        &\quad\cup \Bigg\{ \Big\langle \{ w_i \}, (A, i-1, i) \Big\rangle \; \Bigg\vert \; A \in \Lambda, \; 1 \leq i \leq n \Bigg\}  \\
+        &\quad\cup \Bigg\{ \Big\langle \{ (A, 0, n) \}, (S^{\dagger}, 0, n) \Big\rangle \; \Bigg\vert \; A \in \Lambda \Bigg\}
+    \end{align*}
+    Figure \ref{fig:hypergraph} shows a fragment of this hypergraph for an example sentence.
+
+  \end{example}
+
+  The edges that direct to the special node $(S^{\dagger}, 0, n)$ make the hypergraph \textit{rooted}: each \textit{hyperpath} with the set of all words at the source ends at this one node. Formally defining a hyperpath from a set of nodes $W \subseteq V$ to a node $v \in V$ is a little cumbersome, but informally, a hyperpath is a set of edges otained by the following recursive procedure: starting at $v$, follow a single incoming hyperarc $e$ backwards, and repeat this for all nodes in $T(e)$; stop when all nodes in $W$ have been passed.
 
 \begin{figure}[h]
   \center
@@ -36,46 +47,125 @@ I also introduce the following notation for termporary reasons because I cannot 
 
 
 \section{Semiring}
-  A semiring is an algebraic structure
+  We use \textit{semirings} to compute various quantities of interest over a weighted hypergraph.
+
+  \begin{definition}{}
+    A \textit{semiring} is an algebraic structure
+    \begin{align*}
+      \mathcal{K} = \langle \mathbb{K}, \oplus, \otimes, \bar{0}, \bar{1} \rangle,
+    \end{align*}
+    over a field $\mathbb{K}$, with additive and multiplicative operations $\oplus$ and $\otimes$, and additive and multiplicative identities $\bar{0}$ and $\bar{1}$. A semiring is equivalent to a ring\footnote{Perhaps the most common algebraic structure around: the real numbers with regular addition and multiplication form a ring.}, without the requirement of an additive inverse for each element.
+  \end{definition}
+
+  Some of the semirings relevant to our discussion are the following:
+  \begin{example}{}
+    The \textit{real semiring},
+    \begin{align*}
+      \langle \reals_{\geq 0}, +, \times, 0, 1 \rangle,
+    \end{align*}
+    defined over the nonnegative reals, with regular addition and multiplication is a semiring. Note that the additive inverse is missing for all elements ($\ie$ the negative reals).
+  \end{example}
+
+  \begin{example}{}
+    The \textit{boolean semiring},
+    \begin{align*}
+      \langle \{ \top, \bot \}, \vee, \wedge, \top, \bot  \rangle
+    \end{align*}
+    defined over truth values $\top$ (True, or 1), and $\bot$ (False, or 0).
+  \end{example}
+
+  \begin{example}{}
+    The \textit{log-real semiring},
+    \begin{align*}
+      \langle \reals \cup \{ \infty \}, \oplus, +, -\infty, 0 \rangle,
+    \end{align*}
+    defined over the reals extended including $\infty$, with addition defined as the logarithmic sum\footnote{Also known as \textit{log-sum-exp}, or \textit{log-add-exp}.}
+    \begin{align*}
+      a \oplus b = \log( e^{a} + e^{b} ),
+    \end{align*}
+   and multiplication is defined as regular addition.
+  \end{example}
+
+  \begin{example}{}
+    The \textit{max-tropical semiring}, or \textit{Viterbi} semiring\footnote{This naming will become clear.}
+    \begin{align*}
+      \langle \reals_{\geq 0} \cup \{ \infty \}, \max, +, -\infty, 0 \rangle,
+    \end{align*}
+    is the log-real semiring that uses the $\max$ operator for addition.
+  \end{example}
+
+\subsection{Semiring parsing}
+  A semiring $\mathcal{K}$ can be connected to a weighted hypergraph by defining the function $\omega$ over its field $\mathbb{K}$, and by accumulating the weights with its binary operations. When the hypergraph represents a parse forest, we are in the realm of \textit{semiring parsing} \citep{goodman1999semiring}.
+
+  The key observation is that these quantities of can be computed by the one recursion, instantiated by a different semiring.
+
+  \begin{definition}{} Let $G = (V, E, \omega)$ be a weighted hypergraph, with $\omega$ defined over a semiring $\mathcal{K}$. We define the weight of the derrivation $D \subseteq E$ as the product of the weights of the edges:
   \begin{align*}
-    \mathcal{K} = \langle \mathbb{K}, \oplus, \otimes, \bar{0}, \bar{1} \rangle,
+    \bigotimes_{e \in D} \omega(e).
   \end{align*}
-  over a field $\mathbb{K}$, with additive and multiplicative operations $\oplus$ and $\otimes$, and additive and multiplicative identities $\bar{0}$ and $\bar{1}$. A semiring  is equivalent to a ring\footnote{The real numbers with regular addition and multiplication is an example of a ring.}, without the requirement of an additive inverse for each element. We use semirings to compute the quanitites over the weighted hypergraph by defining the function $\omega$ over its field $\mathbb{K}$ and by accumulating these weights with the binary operations. In particular we will accumulate quantities in logarithmic domain, and use the \textit{log semiring}
+  Let $\mathcal{D} \subseteq 2^E$ be the set of all derivations in the hypergraph $G$. Then the total weight of the hypergraph under $\omega$ is defined as the sum of the weights of all the derrivations in it
+  \begin{align*}
+    \bigoplus_{D \in \mathcal{D}} \bigotimes_{e \in D} \omega(e).
+  \end{align*}
+  \end{definition}
+
+  The function $\omega$ assigns a weights to the derrivations encoded by factoring over the edges that make up those derivations. In the CRF parser, the weight function $\omega$ corresponds to the local potential function $\Psi$; the weight of a derivation is the product of those weights; and the set $\mathcal{D}$ corresponds to the set of admissible trees $\yieldx$ for a sentence $\x$.
+
+  The following definitions follow \citet{eisner2009semirings}.
+  \begin{definition}{} The \textit{inside value} $\alpha(v)$ at a node $v \in V$ accumulates the weight of all the paths that converge at that node. The accumulation is relative to a semiring, and is defined as
+  \begin{align*}
+    \alpha(v) =
+      \begin{cases}
+        \hat{1}  &  \mbox{if } I(v) = \varnothing  \\
+        \displaystyle\bigoplus_{e \in I(v)} \omega(e) \otimes \displaystyle\bigotimes_{u \in T(e)} \alpha(u)  & \mbox{otherwise.}
+      \end{cases}
+  \end{align*}
+  The value $\alpha(v)$ at the root node $v$ is the sum of the weight of all the derivations in the hypergraph. The recursion can solved by visiting the nodes in $V$ in topological order.
+  \end{definition}
+
+  \begin{definition}{} The \textit{outside value} $\beta(v)$ at a node $v \in V$ accumulates over the weights of all the paths that head out from $v$. The accumulation is relative to a semiring, and is defined as:
+  \begin{align*}
+    \beta(v) =
+      \begin{cases}
+        \hat{1}  & \mbox{if } O(v) = \varnothing \\
+        \displaystyle\bigoplus_{e \in O(v)} \omega(w) \otimes \beta(H(e)) \otimes \displaystyle\bigotimes_{ \substack{ w \in T(e) \\ w \neq u } } \alpha(w)  & \mbox{otherwise.}
+      \end{cases}
+  \end{align*}
+  The recursion can solved by visiting the nodes in $V$ in reverse topological order.
+  \end{definition}
+
+  When the parse forest is highly regular these equations simplify somewhat:
   \begin{align}
-    \langle \reals \cup \{ -\infty \}, \text{logaddexp}, +, -\infty, 0 \rangle
+    \alpha(v) =
+      \begin{cases}
+        \hat{1}  &  \mbox{if } I(v) = \varnothing  \\
+        \displaystyle\bigoplus_{e \in I(v)} \omega(e) \otimes \displaystyle\bigotimes_{u \in T(e)} \alpha(u)  & \mbox{otherwise.}
+      \end{cases}
   \end{align}
-  to accumulate log-potentials, and the \textit{viterbi semiring}
-  \begin{align}
-    \langle \reals \cup \{ -\infty \}, \max, +, -\infty, 0 \rangle
-  \end{align}
-  to compute the weight of the highest scoring tree.
+  The value $\alpha(v)$ at the root node $v$ is the sum of the weight of all the derivations in the hypergraph. The recursion can solved by visiting the nodes in $V$ in topological order.
+  \end{definition}
+
+  \begin{definition}{} The \textit{outside value} $\beta(v)$ at a node $v \in V$ accumulates over the weights of all the paths that head out from $v$. The accumulation is relative to a semiring, and is defined as:
+  \begin{align*}
+    \beta(v) =
+      \begin{cases}
+        \hat{1}  & \mbox{if } O(v) = \varnothing \\
+        \displaystyle\bigoplus_{e \in O(v)} \omega(w) \otimes \beta(H(e)) \otimes \displaystyle\bigotimes_{ \substack{ w \in T(e) \\ w \neq u } } \alpha(w)  & \mbox{otherwise.}
+      \end{cases}
+  \end{align*}
+  The recursion can solved by visiting the nodes in $V$ in reverse topological order.
+  \end{definition}
 
 
-  % \section{Semiring formulation}
-  % So yeah, the highlights are: an edge connects three nodes, a parent and two \textsc{children}, each node is a labelled \textsc{span}; you need to identify the scoring function for an edge, let’s call it $w(e)$,  in this case we have
-  % \begin{align}
-  %     w(e) = f(\textsc{head}(e)) \bigotimes_{c \in \textsc{children}(e)} g(\textsc{span}(c))
-  % \end{align}
-  % where $f$ and $g$ are parametric functions; then you can compute the Inside recursion for a node v
-  % \begin{align}
-  %     I(v) = \bigoplus_{e \in BS(v)} w(e) \otimes \bigotimes_{c \in \textsc{children}(e)} I(c)
-  % \end{align}
-  % where I’m using $BS(v)$ to denote the set of edges incoming to $v$; note that BS here basically enumerates the different ways to segment the string under $(i,j)$ into two adjacent parts and the different labels of each child \textsc{span} (let’s call these $a$ and $b$, each an element in the labelset $L$), thus we can write
-  % \begin{align}
-  % I(v=[i,j,l]) = \bigoplus_{ \substack{ e=[i,j,l,k,a,b]: \\ a \in L, \\ b \in L, \\ k \in \{i+1,...,j-1\} } } w(e) \otimes I([i,k,a]) \otimes I([k+1,j,b])
-  % \end{align}
-  % Now the key is to realise that $w(e)$ factorises and therefore we can rewrite this as
-  % \begin{align}
-  %     I(v=[i,j,l]) = f(i,j,l) &\otimes \bigoplus_{k=i+1}^{j-1} g(i,k) \otimes g(k+1,j) \\
-  %         &\otimes \bigoplus_{a \in L}  I([i,k,a]) \\
-  %         &\otimes \bigoplus_{b\in L} I([k+1,j,b])
-  % \end{align}
-  % and this finally motivates having an inside table for the \textsc{span}s (with labels summed out), let’s call that
-  % \begin{align}
-  %     S(i,j) = \bigoplus_{l \in L} I(i,j,l)
-  % \end{align}
-  % and then we have the result
-  % \begin{align}
-  % \label{eq:inside-semiring}
-  %     I(i,j,l) = f(i,j,l)\otimes \bigoplus_{k=i+1}^{j-1} g(i,k)\otimes g(k+1,j) \otimes S(i,k) \otimes S(k+1,j).
-  % \end{align}
+By instanstiating these algorithms with different semirings we solve a whole number of problems:
+\begin{itemize}
+
+    \item When we intantiate the inside recursion and the outside recursion with the \textit{real semiring}, the algorithms recude to the classical inside-outside algorithm \citep{baker1979trainable}, and the values $\alpha(v)$ and $\beta(v)$ are the inside and outside values. In particular, the value at the root is the normalizer $Z(\x)$. In the CRF, the function $\omega$ is given by the nonnegative function $\Psi$.
+
+    \item When we are concerned with numerical stability, or we only need the logarithm of the quantities of interest, we can use the \textit{log-real semiring}. The values $\alpha(v)$ and $\beta(v)$ now give the log-inside and log-outside values respectively. In particular, the value $\alpha$ at the root now gives the lognormalizer $\log Z(\x)$. In the CRF, the function $\omega$ is given by the logarithm of $\Psi$.
+
+    \item When we intantiate the inside recursion with the \textit{max-tropical semiring} we get the recursion that computes the weight of the derrivation with the maximum weight. This tree is, of course, the Viterbi tree\footnote{Hence the name \textit{Viterbi semiring}}.
+
+    \item The Viterbi semiring derives the \textit{weight} of the best tree. Replacing the max in the Viterbi semiring with an argmax derives the best tree itself. Roughly spearking, because although this idea can be made precise by a constructing the \textit{Viterbi-derivation semiring} \citep{goodman1999semiring} it is a litle more complicated than that\footnote{And most of all, a bit cumbersome.}.
+
+\end{itemize}

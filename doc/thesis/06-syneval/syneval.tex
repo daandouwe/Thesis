@@ -28,7 +28,7 @@ The dataset is constructed automatically using handcrafted context-free grammars
 \paragraph{Categories} For the full list of categories that are evaulated in the Syneval dataset we refer the reader to appendix \ref{A5-syneval}.
 
 \paragraph{Related work} There has been a surge recently of work on syntactic evaluation. \citet{linzen2016syntax} introduce the task of long distance subject-verb agreement and \citet{gulordava2018colorless} make this test more challenging by turning the sentences nonsensical while keeping them grammatical. Both datasets are extracted from a wikipedia corpus based on properties of their predicted dependency parse. To make the sentences nonsensical, \citet{gulordava2018colorless} randomly substitute words from the same grammatical category.\footnote{An approach inspired by Chomsky's (in)famous sentence \textit{Colorless green ideas sleep furiously} that is both grammatical and nonsensical.} \citet{warstadt2018acceptability} fine-tune neural models to learn to immitate grammatical acceptability judgments gathered from linguistics textbooks.
-\citet{mccoy2018revisiting} Train a neural machine translation model to learn how to turn a declarative sentence into a question. Linguist have argued that the transformations required to generate one from the other provide strong evidence for the existence of hierarchical structure in language \cite{everaert2015structures}.\footnote{These pairs play a central role as empirical evidence in the argument---known as the \textit{argument from the poverty of the stimulus}---that humans have an innate predisposition for generalizations that rely on hierarchical structure rather than linear order \citep{chomsky1980rules}. Sequence-to-sequence neural machine translation, on the other hand, is a fully sequential model that involves no hierarchical structure or transformations.} Finally, targeted evaluation has been introduced previously for semantic comprehension by \citet{zweig2011microsoft} in a sentence completion task, and minimal contrastive sentence pairs have been used to evaluate neural machine translation by \citet{sennrich2017grammatical}.
+\citet{mccoy2018revisiting} train a neural machine translation that turns a declarative sentence into a question, a kind of transformation that linguists have argued requires the existence of hierarchical structure in language \citep{everaert2015structures}.\footnote{Such declarative-question pairs play a central role as empirical evidence in the argument---known as the \textit{argument from the poverty of the stimulus}---that humans have an innate predisposition for generalizations that rely on hierarchical structure rather than linear order \citep{chomsky1980rules}. Sequence-to-sequence neural machine translation, on the other hand, is a fully sequential model that involves no hierarchical structure or transformations.} Finally, targeted evaluation has been introduced previously for semantic comprehension by \citet{zweig2011microsoft} in a sentence completion task, and minimal contrastive sentence pairs have been used to evaluate neural machine translation by \citet{sennrich2017grammatical}.
 
 
 \section{Multitask learning}
@@ -95,22 +95,20 @@ This model differs from the supertagging model in the interaction of the vectors
 
 In this section we report the results on the dataset.
 
+\subsection{Baselines}
+\citet{linzen2018targeted} provide a number of baselines:
 \begin{itemize}
-  \item \citet{linzen2018targeted} provide results with a number of
-  \item To provide baselines we also train
-\end{itemize}
-
-evaluate a number of models on the examples and also provide results of human judgements gathered.
   \item Human evaluation via amazon mechanical turk.
   \item N-gram language model with kneser ney smoothing.
   \item RNN language model (LSTM).
   \item RNN language model with multitask learning.
+\end{itemize}
+We reproduce the RNN language model and the RNN multitask language model,
 
 \subsection{Setup}
 \begin{itemize}
   \item Following the example of \citet{linzen2018targeted} we train a regular LSTM language model, and a multitask LSTM language model with CCG supertagging. We additionally train
   \item For the language train 10 independent runs of each model and report means and standard deviations of their accuracy on the Syneval dataset.
-  \
 \end{itemize}
 
 Details about training can be found in appendix \ref{A2-implementation}

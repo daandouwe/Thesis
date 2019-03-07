@@ -25,7 +25,7 @@ is the normalizing constant that sums over all the possible parse trees and make
 
 By factorizing a tree over labeled spans we make an even stronger assumption than that typically made by factorizating over anchored context-free rules\footnote{\cf table \ref{tab:spans-rules} for the different conceptions.}. This way, the potential function has no access to information about the direct substructure under the node, such as the child nodes and their split point. The function can thus rely less on the local tree structure and must thus rely more on the surface features of input sentence. This factorization will, however, greatly reduce the size of the state-space of the dynamic programs, speeding up training and inference, and the burden of the feature function will be carried by a rich neural network parametrization. Together, this will make the parser fast and very effective.
 
-\subsection{Parametrization}
+\section{Parametrization}
 The scoring function $\Psi$ is implemented with neural networks following the design of the minimal scoring function of \citet{stern2017minimal}. The local potentials can only make minimal use of structural information, as we argued above, but they can depend on the entire sentence. This suggest the use of RNN encodings. The representation of a span $(i, j)$ is the concatenation of the difference between forward and backward vectors
 \begin{align}
   \label{eq:potential-function}
@@ -98,14 +98,7 @@ The entropy of the distribution over parses can be computed using the node margi
 The best parse can be obtained with the Viterbi algoritm, which is an instance of the inside algorithm. The viterbi algorithm replaces the sum operator of the inside algorithmm with $\max$: at each node this selects the best substructure instead of summing over all of them.
 
 \subsection{Inside recursion}
-  The inside algorithm computes the quantities $\alpha(A,i,j)$ for all labels $A \in N$ and all spans $0 \leq i < j \leq n$. From the hypergraph perspecive this is the total weight under the node $v = (A, i, j)$---the sum of the weights of all directed paths incoming at $v$. This sum can be computed using the \textit{inside recursion} \citep{goodman1999semiring}:
-  % \begin{align}
-  %   \alpha(v) =
-  %     \begin{cases}
-  %       1, & \text{if} BS(v) = \varnothing \\
-  %       \bigoplus_{e \in BS(v)} \omega(e) \bigotimes_{\u \in T(e)}, & \text{otherwise}.
-  %   \end{cases}
-  % \end{align}
+  The inside algorithm computes the quantities $\alpha(A,i,j)$ for all labels $A \in N$ and all spans $0 \leq i < j \leq n$. From the hypergraph perspecive this is the total weight under the node $v = (A, i, j)$---the sum of the weights of all directed paths incoming at $v$. This sum can be computed using the \textit{inside recursion} \citep{goodman1999semiring}.
 
   At the nodes that span one word, the inside value is just the weight of the unary edge
   \begin{align}

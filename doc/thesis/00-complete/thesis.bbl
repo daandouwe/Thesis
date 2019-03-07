@@ -82,6 +82,33 @@
       \field{pages}{2442\bibrangedash 2452}
       \range{pages}{11}
     \endentry
+    \entry{baker1979trainable}{article}{}
+      \name{author}{1}{}{%
+        {{hash=d44a63cb4939c00e77c83bb33af3b832}{%
+           family={Baker},
+           family_i={B\bibinitperiod},
+           given={James\bibnamedelima K},
+           given_i={J\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {ASA}%
+      }
+      \strng{namehash}{d44a63cb4939c00e77c83bb33af3b832}
+      \strng{fullhash}{d44a63cb4939c00e77c83bb33af3b832}
+      \field{sortinit}{B}
+      \field{sortinithash}{4ecbea03efd0532989d3836d1a048c32}
+      \field{labelyear}{1979}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{The Journal of the Acoustical Society of America}
+      \field{number}{S1}
+      \field{title}{Trainable grammars for speech recognition}
+      \field{volume}{65}
+      \field{year}{1979}
+      \field{pages}{S132\bibrangedash S132}
+      \range{pages}{-1}
+    \endentry
     \entry{ballesteros2016exploration}{inproceedings}{}
       \name{author}{4}{}{%
         {{hash=ef2e5cd61947a3ce7719b5ce1450d9f0}{%

@@ -2483,23 +2483,27 @@
     <bcf:citekey order="163">klein2004parsing</bcf:citekey>
     <bcf:citekey order="164">goodman1999semiring</bcf:citekey>
     <bcf:citekey order="164">eisner2009semirings</bcf:citekey>
-    <bcf:citekey order="165">gallo1993directed</bcf:citekey>
-    <bcf:citekey order="166">jordan1999vi</bcf:citekey>
-    <bcf:citekey order="166">jordan2008graphical</bcf:citekey>
-    <bcf:citekey order="166">blei2016vi</bcf:citekey>
-    <bcf:citekey order="167">kingma2014vae</bcf:citekey>
-    <bcf:citekey order="167">rezende2014dgm</bcf:citekey>
-    <bcf:citekey order="168">maddison2017concrete</bcf:citekey>
-    <bcf:citekey order="168">jang2017gumbel</bcf:citekey>
-    <bcf:citekey order="169">kucukelbir2017automatic</bcf:citekey>
-    <bcf:citekey order="170">ranganath2014black</bcf:citekey>
-    <bcf:citekey order="171">baydin2017automatic</bcf:citekey>
-    <bcf:citekey order="172">schulman2015gradient</bcf:citekey>
-    <bcf:citekey order="173">paisley2012viss</bcf:citekey>
-    <bcf:citekey order="174">ross2006simulation</bcf:citekey>
-    <bcf:citekey order="175">ross2006simulation</bcf:citekey>
-    <bcf:citekey order="176">linzen2018targeted</bcf:citekey>
-    <bcf:citekey order="177">linzen2018targeted</bcf:citekey>
+    <bcf:citekey order="165">klein2004parsing</bcf:citekey>
+    <bcf:citekey order="166">goodman1999semiring</bcf:citekey>
+    <bcf:citekey order="167">eisner2009semirings</bcf:citekey>
+    <bcf:citekey order="168">baker1979trainable</bcf:citekey>
+    <bcf:citekey order="169">goodman1999semiring</bcf:citekey>
+    <bcf:citekey order="170">jordan1999vi</bcf:citekey>
+    <bcf:citekey order="170">jordan2008graphical</bcf:citekey>
+    <bcf:citekey order="170">blei2016vi</bcf:citekey>
+    <bcf:citekey order="171">kingma2014vae</bcf:citekey>
+    <bcf:citekey order="171">rezende2014dgm</bcf:citekey>
+    <bcf:citekey order="172">maddison2017concrete</bcf:citekey>
+    <bcf:citekey order="172">jang2017gumbel</bcf:citekey>
+    <bcf:citekey order="173">kucukelbir2017automatic</bcf:citekey>
+    <bcf:citekey order="174">ranganath2014black</bcf:citekey>
+    <bcf:citekey order="175">baydin2017automatic</bcf:citekey>
+    <bcf:citekey order="176">schulman2015gradient</bcf:citekey>
+    <bcf:citekey order="177">paisley2012viss</bcf:citekey>
+    <bcf:citekey order="178">ross2006simulation</bcf:citekey>
+    <bcf:citekey order="179">ross2006simulation</bcf:citekey>
+    <bcf:citekey order="180">linzen2018targeted</bcf:citekey>
+    <bcf:citekey order="181">linzen2018targeted</bcf:citekey>
   </bcf:section>
   <bcf:sortlist section="0" name="nyt/global/" type="entry" sortscheme="nyt" sortnamekeyscheme="global" labelprefix="">
   <bcf:sorting>
