@@ -22,7 +22,7 @@ The derivation of the inference algorithms in chapter \ref{04-crf} makes use of 
     A \textit{hyperpath} in a backward-hypergraph is a set of edges that connects a single node $v \in V$ at the sink to a set of nodes $W \subseteq V$ upstream. Formally defining a hyperpath is a little cumbersome, but informally, a hyperpath is a set of edges obtained by the following recursive procedure: starting at $v$, follow a single incoming hyperarc $e$ backwards, save the edge and repeat this for all nodes in $T(e)$; stop when all nodes in $W$ have been encountered. In the context of parsing we also call a hyperpath from the root node to the set of words $\{ x_1, \dots, \x_n \}$ a \textit{derivation}: this hyperpath represents a single tree for the sentence.
   \end{definition}
 
-  \begin{example}{\textbf{(CRF parser})
+  \begin{example}{(CRF parser)
     \label{ex:crf}
     The hypergraph specified by the CRF parser in chapter \ref{04-crf} has the following structure. Let the set $V$ consists of the invidual words of a sentence $x$, together with the all posible labeled spans over that sentence:
     \begin{align*}
@@ -118,7 +118,7 @@ The derivation of the inference algorithms in chapter \ref{04-crf} makes use of 
 
   The key result derived by \citet{goodman1999semiring} is that many quantities of interest can be computed by a single recursion but over different semirings. First, we establish the relation between the weight function and the structures encoded in the hypergraph by defining the weight of a derivation and the weight of an entire hypergraph.
 
-  \begin{definition}{\textbf{(Hypergraph weights)} Let $G_{\omega} = (V, E, \omega)}$ be a weighted hypergraph, with $\omega$ defined over a semiring $\mathcal{K}$. We define the weight of the derrivation $D \subseteq E$ as the product of the weights of the edges:
+  \begin{definition}{(Hypergraph weights)} Let $G_{\omega} = (V, E, \omega)$ be a weighted hypergraph, with $\omega$ defined over a semiring $\mathcal{K}$. We define the weight of the derrivation $D \subseteq E$ as the product of the weights of the edges:
   \begin{align}
     \label{eq:derivation-weight}
     \bigotimes_{e \in D} \omega(e).
@@ -130,7 +130,7 @@ The derivation of the inference algorithms in chapter \ref{04-crf} makes use of 
   \end{align}
   \end{definition}
 
-  \begin{example}{\textbf{(CRF parser)}}
+  \begin{example}{(CRF parser)}
     The CRF parser assigns a score $\Psi(\x, \y) \geq 0$ by factorizing over parts of $\y = \{ \y_a \}_{a=1}^{A}$ as a product of potentials $\psi(\x, \y_a) \geq 0$ of the parts. The parts $\y_a$ are the edges in the hyperpath that create the derivation $\y$. In our CRF, thus, the weight function $\omega$ is given by the function $\psi$; the function $\Psi$ is equivalent to equation \ref{eq:derivation-weight}; and the sum over $\yieldx$ is equivalent to equation \ref{eq:hypergraph-weight}.
   \end{example}
 
@@ -183,7 +183,7 @@ The derivation of the inference algorithms in chapter \ref{04-crf} makes use of 
 
 By instanstiating the inside and outside recursions with different semirings we solve a whole range of problems.
 
-\begin{example}{\textbf{(Inside and outside values)}}
+\begin{example}{(Inside and outside values)}
   When we intantiate the inside recursion and the outside recursion with the \textit{real semiring}, the algorithms recude to the classical inside-outside algorithm \citep{baker1979trainable}. The values $\alpha(v)$ and $\beta(v)$ are the inside and outside values. In particular, the value $\alpha$ at the root is the normalizer:
   \begin{align*}
     \alpha(\text{S}^{\dagger}, 0, n) = Z(\x).
@@ -191,7 +191,7 @@ By instanstiating the inside and outside recursions with different semirings we 
   In our CRF parser, the function $\omega$ is given by the nonnegative function $\Psi$.
 \end{example}
 
-\begin{example}{\textbf{(Logartihmic domain)}}
+\begin{example}{(Logartihmic domain)}
   When we are concerned with numerical stability, or we only need the logarithm of the quantities of interest, we can use the \textit{log-real semiring}. The values $\alpha(v)$ and $\beta(v)$ now give the log-inside and log-outside values respectively. In particular, the value $\alpha$ at the root now gives the lognormalizer:
   \begin{align*}
     \alpha(\text{S}^{\dagger}, 0, n) = \log Z(\x).
@@ -204,7 +204,7 @@ By instanstiating the inside and outside recursions with different semirings we 
   In the CRF, the function $\omega$ is given by the composed function $\log \circle \Psi$.
 \end{example}
 
-\begin{example}{\textbf{(Viterbi weight)}}
+\begin{example}{(Viterbi weight)}
   When we intantiate the inside recursion with the \textit{max-tropical semiring} we get the recursion that computes at each node the subtree of maximum weight. The value $\alpha$ at the root is the weight of the derrivation with the maximum weight
   \begin{align*}
     \alpha(\text{S}^{\dagger}, 0, n) = \log \Psi(\x, \hat{\y}),
@@ -216,7 +216,7 @@ By instanstiating the inside and outside recursions with different semirings we 
   Hence the alternative name \textit{Viterbi semiring}.
 \end{example}
 
-\begin{example}{\textbf{(Viterbi derivation)}}
+\begin{example}{(Viterbi derivation)}
   The Viterbi semiring derives the \textit{weight} of the best tree. Replacing the max in the Viterbi semiring with an argmax derives the best tree itself:
   \begin{align*}
     \alpha(\text{S}^{\dagger}, 0, n) = \hat{\y}, \qquad \hat{\y} \defeq \argmax_{\y \in \yieldx} p(\y \mid \x).
@@ -224,7 +224,7 @@ By instanstiating the inside and outside recursions with different semirings we 
   Roughly spearking, because although this idea can be made precise by a constructing the \textit{Viterbi-derivation semiring} \citep{goodman1999semiring} over the set of possible derrivations, with corresponding binary operations and set-typed identity elements $\hat{0}$ and $\hat{1}$, it is a litle more complicated than that\footnote{And most of all, a bit cumbersome.}.
 \end{example}
 
-\begin{example}{\textbf{(Recognition)}}
+\begin{example}{(Recognition)}
   When we intantiate the inside recursion with the \textit{boolean semiring} we get the recursion that recognizes whether the sentence is parsed by the grammar $G$ that was used to construct the parse forest, $\ie$ whether the sentence $\x$ is in the language $L(G)$ generated by $G$:
   \begin{align*}
     \alpha(\text{S}^{\dagger}, 0, n) &= \begin{cases}

@@ -12,36 +12,35 @@ In this chapter:
 
 
 \section{Model}
-The model is a CRF factored over the labeled spans that form a tree. We write $\y_a = (A, i, j) }$ for a span $\langle x_{i+1}, \dots, \x_j \rangle$ labeled by  and $A$, and consider a tree $\y$ as a collection of these parts:
-\begin{align}
-  \y = \{ \y_a \}_{a=1}^A.
-\end{align}
-We define the score $\Psix, \y)$ of tree as the product of nonnegative local potentials $\psi(\x, \y_a) \geq 0$:
-\begin{align}
-  \Psi(\x, \y) = \prod_{a=1}^A \psi(\x, \y_a).
-\end{align}
- The function $\psi$ scores each span seperately, but conditional on the entire sentence. The probability of a tree is the globally normalized score of the tree:
+The model is a CRF factored over the labeled spans that form a tree. Let $x$ be a sentence, and $y$ a tree from $\yieldx$. We define a function $\Psi$ that assings nonnegative scores $\Psi(\x, \y)$ and let the probability of a tree be its globally normalized score
 \begin{align}
   \label{eq:crf-model}
-  p(\y \mid \x) &= \frac{1}{Z(\x)} \prod_{a=1}^A \psi(\x, \y_a),
+  p(\y \mid \x) &= \frac{\Psi(\x, \y)}{Z(\x)},
 \end{align}
 where
 \begin{align*}
-  Z(\x) = \sum_{ \y \in \yieldx } \prod_{a=1}^A \psi(\x, \y_a)
+  Z(\x) = \sum_{ \y \in \yieldx } \Psi(\x, \y).
 \end{align*}
-is the normalizing constant that sums over all the possible parse trees that ensures that the probability distribution sums to 1. This normalizing constant can be computed efficiently with the inside algorithm.
+is the normalizer, or partition function, that sums over the exponential number of trees availlable for $\x$.
 
-By factorizing a tree over labeled spans we make an even stronger assumption than that typically made by factorizating over anchored context-free rules\footnote{\cf table \ref{tab:spans-rules} for the different conceptions.}. This way, the potential function has no access to information about the direct substructure under the node, such as the child nodes and their split point. The function can thus rely less on the local tree structure and must thus rely more on the surface features of input sentence. This factorization will, however, greatly reduce the size of the state-space of the dynamic programs, speeding up training and inference, and the burden of the feature function will be carried by a rich neural network parametrization. Together, this will make the parser fast and very effective.
+To allow efficient computation of the normalizer, we let the scoring function $\Psi$ factorize over the parts of $\y$. We consider a tree as a set of labeled spans $\y_a = (A, i, j)$, thus $\y = \{ \y_a \}_{a=1}^A$, where $(A, i, j)$ indicates that $\y$ contains a label $A$ spanning the words $\langle x_{i+1}, \dots, \x_j \rangle$. The value $\Psi(\x, \y)$ is then defined as the product of the nonnegative potentials $\psi(\x, \y_a)$ of the parts of $\y$
+\begin{align}
+  \Psi(\x, \y) = \prod_{a=1}^A \psi(\x, \y_a).
+\end{align}
+The function $\psi$ thus scores each labeled span $\y_a$ seperately, but conditional on the entire sentence.
+
+The above model is your typical constituency parsing CRF \citep{finkel2008crf,klein2015crf}, but the factorization over labeled spans, however, was first introduced by \citet{stern2017minimal}. By factorizing a tree over labeled spans we make an even stronger assumption than that typically made by factorizating over anchored context-free rules\footnote{\cf table \ref{tab:spans-rules} for the different conceptions.}, such as is done in \citet{finkel2008crf,klein2015crf}. By factorizing over labeled spans, the potential function has no access to information about the direct substructure under the node, such as the child nodes and their split point. The function can thus rely less on the local tree structure and must thus rely more on the surface features of input sentence. This factorization will, however, greatly reduce the size of the state-space of the dynamic programs, speeding up training and inference, and the burden of the feature function will be carried by a rich neural network parametrization. Together, this will make the parser fast and very effective.
 
 \section{Parametrization}
-The scoring function $\psi$ is implemented with neural networks following the design of the minimal scoring function of \citet{stern2017minimal}. The local potentials can only make minimal use of structural information, as we argued above, but they can depend on the entire sentence. This suggest the use of RNN encodings. The representation of a span $(i, j)$ is the concatenation of the difference between forward and backward vectors
+The scoring function $\psi$ is implemented with neural networks following \citet{stern2017minimal}. The local potentials can only make minimal use of structural information, as we argued above, but they can depend on the entire sentence. This suggest the use of RNN encodings. We let the representation of a span $(i, j)$ be the concatenation of the difference between forward and backward vectors
 \begin{align}
-  \label{eq:potential-function}
+  \label{eq:span-feature}
   \vecs_{ij} = [\fw_j - \fw_i; \bw_i - \bw_j],
 \end{align}
-illustrated in figure \ref{fig:span-feature}. The score for a label $A$ is computed from this vector using a feedforward network.
+illustrated in figure \ref{fig:span-feature}. The score for a label $A$ then, is computed from this vector using a feedforward network:
 \begin{align}
-  \log \psi(\x, \y_a) = \Big[ \ff( \vecs_{ij} ) \Big]_{A}.
+  \label{eq:potential-function}
+  \log \psi(\x, \y_a) = [ \ff( \vecs_{ij} ) ]_{A}.
 \end{align}
 This architecture is rightly called minimal, but it works surprisingly well: \citet{stern2017minimal} experiment with more elaborate functions based on concatenation of vectors (a strict superset of the minus approach) and biaffine scoring (inspired by \citep{dozat2016deep}), but these function improve marginally, if they do at all.
 
@@ -54,56 +53,61 @@ This architecture is rightly called minimal, but it works surprisingly well: \ci
 \section{Inference}
 Because the model is span-factored it allows efficient inference. In this section we describe efficient solutions to four related problems:
 \begin{itemize}
-  \item Find the best parse $\hat{ \y } = \arg \max_{\y } p(\y  \mid \x)$
   \item Compute the normalizer $Z(\x) = \sum_{ \y \in \yieldx } \prod_{ a=1 }^{ A } \psi( \x, \y_a )$.
+  \item Find the best parse $\hat{ \y } = \arg \max_{\y } p(\y  \mid \x)$
   \item Obtain a sample $y \sim p(\cdot \mid \x)$.
-  \item Compute the entropy $H(\y \mid \x)$ conditional on $\x$.
+  \item Compute the entropy $H(P(Y \mid X = x))$ over parses for $\x$.
 \end{itemize}
 These problems are solved by variants of the inside and outside algorithms. We first describe how the quantities computed by these algorithms will be used to solve these problems, and then how these are computed.
 
 \subsection{Quantities}
-For each labeled span $(A, i, j)$, we define the inside value $\alpha(A, i, j)$ as the sum of potentials of all trees that are rooted in node $A$ with leaves $x_{i+1} \dots x_j$. We define the outside value $\beta(A, i, j)$ as the sum over potentials of all trees with leaves $x_1 \dots x_i A x_{j+1} \dots x_n$, where the nonterminal $A$ is treated as a leaf that is not expanded. These values sum over complementary sets that together make up all parses of $\x$.
+  For each labeled span $(A, i, j)$, we define the inside value $\alpha(A, i, j)$ as the sum of potentials of all trees that are rooted in node $A$ with leaves $x_{i+1} \dots x_j$. We define the outside value $\beta(A, i, j)$ as the sum over potentials of all trees with leaves $x_1 \dots x_i A x_{j+1} \dots x_n$, where the nonterminal $A$ is treated as a leaf that is not expanded. These values sum over complementary sets that together make up all parses of $\x$.
 
-% This can best be illustrated by figure \ref{fig:inside-tree} that introduces the notion of an \textit{inside tree} and an \textit{outside tree}. The inside value is the sum over the potentials of inside trees, and the outside value is the sum over all outside trees.
+  % We then define the quantity $\mu(A, i, j)$ as the sum of all parses of $\x$ that contain nonterminal $\y_a = (A, i, j)$:
+  % \begin{align*}
+  %   \mu(i, j, \ell)
+  %     &\defeq \sum_{ \substack{ \y \in \yieldx \\ \y_a \in \y } } \psi(\x, \y_a),
+  % \end{align*}
+  % and note that under this these definition we have the result
+  % \begin{align}
+  %   \mu(A, i, j) &= \alpha(A, i, j) \beta(A, i, j).
+  % \end{align}
+  % Given these quantities, we can directly solve three problems described above.
 
-We then define the quantity $\mu(A, i, j)$ as the sum of all parses of $\x$ that contain nonterminal $\y_a = (A, i, j)$:
-\begin{align*}
-  \mu(i, j, \ell)
-    &\defeq \sum_{ \substack{ \y \in \yieldx \\ \y_a \in \y } } \psi(\x, \y_a),
-\end{align*}
-and note that under this these definition we have the result
-\begin{align}
-  \mu(A, i, j) &= \alpha(A, i, j) \beta(A, i, j).
-\end{align}
-Given these quantities, we can directly solve three problems described above.
+  \paragraph{Normalizer}
+    The normalizer is the inside value at the root node
+    \begin{align}
+      Z(\x) = \alpha(\text{S}^{\dagger}, 0, n),
+    \end{align}
+    which follows from the definition of the inside algorithm: $\alpha(\text{S}^{\dagger}, 0, n)$ is the sum of potentials of all trees rooted in $\text{S}^{\dagger}$ that span words $x_1 \dots x_n$.
 
-\paragraph{Normalizer}
-The normalizer is the inside value at the root node
-\begin{align}
-  Z(\x) = \alpha(\text{S}^{\dagger}, 0, n).
-\end{align}
-This follows from the definition of the inside algorithm: $\alpha(\text{S}^{\dagger}, 0, n)$ is the sum of potentials of all trees rooted in $\text{S}^{\dagger}$ that span words $x_1 \dots x_n$.
+  \paragraph{Marginals}
+    The posterior marginal is the probability that a labeled span $\y_a$ occurs in a tree $\y$ for the sentence $\x$ as governed by the distribution $p$. We can write this as
+    \begin{align}
+      P(Y_a = \y_a \mid X = \x)
+        &= \expect[ \indicator_{ \{ \y_a \in Y \} } ]  \\
+        &= \sum_{ \y \in \yieldx } p(\y \mid \x) \indicator_{ \{ \y_a \in Y \} }
+    \end{align}
+    and abbreviate this probability mnemonically as $\mu(\y_a \mid \x)$. A clasical result is that
+    \begin{align}
+      \mu(\y_a \mid \x) = \frac{\alpha(A, i, j) \cdot \beta(A, i, j)}{Z(\x)},
+    \end{align}
+    which can be seen by noting that $\alpha(A, i, j) \cdot \beta(A, i, j)$ is the sum over all trees that contain the node $\y_a$, and $Z(\x)$ the sum over all trees in general.
 
-\paragraph{Node marginals}
-Suppose we are sampling parses $\y$ for $\x$ from the model $p$. The probability that the parse contains labeled span $\y_a = (A, i, j)$ is called the marginal probability of $\y_a$, and is computed as
-\begin{align}
-  P( (A, i, j) \in Y \mid X = \x ) = \frac{\alpha(A, i, j) \cdot \beta(A, i, j)}{Z(\x)}.
-\end{align}
+  \paragraph{Entropy}
+    The entropy of the distribution over parses can be computed efficiently using the node marginals. We derive
+    \begin{align*}
+      H(P_{Y \vert X = x})
+        &= - \sum_{ \y \in \yieldx } p(\y \mid \x) \log p(\y \mid \x)  \\
+        &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{\y_a \in \y} \log \psi(\x, \y_a)  \\
+        &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{ a \in \mathcal{A}(x) } \indicator_{ \{ \y_a \in Y \} } \log \psi(\x, a)  \\
+        &= \log Z(\x) - \sum_{ a \in \mathcal{A}(x) } \log \psi(\x, a)  \sum_{ \y \in \yieldx } \indicator_{ \{ \y_a \in Y \} } p(\y \mid \x)  \\
+        &= \log Z(\x) - \sum_{ a \in \mathcal{A}(x) } \log \psi(\x, a)  \mu(a \mid \x)  \\
+        &=  \log Z(\x) - \expect_{ \mu } \Big[ \log \psi(\x, a) \Big]  \\
+    \end{align*}
 
-\paragraph{Entropy}
-The entropy of the distribution over parses can be computed efficiently, using the node marginals. We derive
-\begin{align*}
-  H(P_{Y \vert X = x})
-    &= - \sum_{ \y \in \yieldx } p(\y \mid \x) \log p(\y \mid \x)  \\
-    &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{\y_a \in \y} \log \psi(\x, \y_a)  \\
-    &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{ a \in \mathcal{A}(x) } \indicator_{\y}(a) \log \psi(\x, a)  \\
-    &= \log Z(\x) - \sum_{ a \in \mathcal{A}(x) } \log \psi(\x, a)  \sum_{ \y \in \yieldx } \indicator_{\y}(a) p(\y \mid \x)  \\
-    &= \log Z(\x) - \sum_{ a \in \mathcal{A}(x) } \log \psi(\x, a)  \mu(a \mid \x)  \\
-    &=  \log Z(\x) - \expect_{ \mu } \Big[ \log \psi(\x, a) \Big]  \\
-\end{align*}
-
-\paragraph{Parse}
-The best parse can be obtained with the Viterbi algoritm, which is an instance of the inside algorithm. The viterbi algorithm replaces the sum operator of the inside algorithmm with $\max$: at each node this selects the best substructure instead of summing over all of them.
+  \paragraph{Parse}
+    The best parse can be obtained with the Viterbi algoritm, which is an instance of the inside algorithm. The viterbi algorithm replaces the sum operator of the inside algorithmm with $\max$: at each node this selects the best substructure instead of summing over all of them.
 
 \subsection{Inside recursion}
   The inside algorithm computes the quantities $\alpha(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. From the hypergraph perspecive this is the total weight under the node $v = (A, i, j)$---the sum of the weights of all directed paths incoming at $v$. This sum can be computed using the \textit{inside recursion} \citep{goodman1999semiring}.
@@ -117,7 +121,7 @@ The best parse can be obtained with the Viterbi algoritm, which is an instance o
 
   To compute $\alpha(A, i, j)$ in the general case we need to sum over all possible binary expansions $(A \to B C, i, k, j)$ for $A, B \in \Lambda$ and $i \leq k \leq j$. This corresponds to the following recursive expression that uses the inside values of the subparts:
   \begin{align*}
-  \label{eq:inside}
+    \label{eq:inside}
     \alpha(A, i, j)
       &= \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=i+1}^{j-1} \psi(A, i, j) \otimes \alpha(B,i,k) \otimes \alpha(C,k,j) \\
       &= \psi(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \bigoplus_{B \in \Lambda} \alpha(B,i,k) \otimes \bigoplus_{C \in \Lambda} \alpha(C,k,j) \\
@@ -129,7 +133,7 @@ The best parse can be obtained with the Viterbi algoritm, which is an instance o
   \end{align*}
   Looking at \ref{eq:inside} we can see the marginalized values $S(i, j)$ are all that are needed for the recursion. This suggest simplifying the recursion even further as
   \begin{align*}
-  \label{eq:inside-simplified}
+    \label{eq:inside-simplified}
     S(i, j)
       &= \bigoplus_{A \in \Lambda} \alpha(A,i,j) \\
       % &=  \bigoplus_{A \in \Lambda} \psi(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} S(i,k) \otimes S(k,j) \\
@@ -144,8 +148,8 @@ The best parse can be obtained with the Viterbi algoritm, which is an instance o
   \begin{align*}
     \beta(A, 0, n) =
     \begin{cases}
-      0, & \text{ if } A = \text{S}^{\dagger}  \\
-      1, & \text{otherwise}.
+      \hat{1}, & \text{ if } A = \text{S}^{\dagger}  \\
+      \hat{0}, & \text{otherwise}.
     \end{cases}
   \end{align*}
   To compute $\beta(A, i, j)$ in the general case we need to sum over all possible upward binary expansions that $A$ can be a part of, recursively making use of the outside values already computed. This means we sum over expansions $(B \to C \; A, k, i, j)$ for all labels $B$ and $C$ and left endpoints $1 \leq k < i$, and sum over expansions $(B \to A \; C, i, j, k)$ for all labels $B$ and $C$ and right endpoints $j < k \leq n$. This corresponds to the following recursive expression that uses the outside values of the superparts:
@@ -164,71 +168,70 @@ The best parse can be obtained with the Viterbi algoritm, which is an instance o
   \end{align*}
 
 \subsection{Viterbi recursion}
-Obtaining the viterbi tree and its probability is a matter of using the inside recursion with maximization instead of a sum. The score of the best tree is  computed by replacing the sum with the $\max$ in equation
-\begin{align*}
-\label{eq:viterbi-score}
-  \nu(i,j)
-    &= [ \max_{A \in \Lambda} \tilde{s}(i, j, A) ] \cdot [\max_{ k \in \{ i+1, \dots, j-1 \} } \nu(i,k) \cdot  \nu(k,j) ].
-\end{align*}
-Since these maximization over label and over split point is independent, we can find them seprately
-\begin{align*}
-\label{eq:viterbi-tree}
-  \hat{A} &= \argmax_{ A \in \Lambda } \tilde{s}(i, j, A)  \\
-  \hat{k} &= \argmax_{ k \in \{ i+1, \dots, j-1 \} } \nu(i, k) \cdot \nu(k, j)
-\end{align*}
-The best tree is then found by following back the best splits an labels from the root.
+  To ontain the viterbi tree and its probability we use the Viterbi semirings. The score of the best tree is computed by replacing the sum with the $\max$ in equation
+  \begin{align}
+  \label{eq:viterbi-score}
+    \nu(i,j)
+      &= \max_{A} [ \psi(A, i, j) ] \cdot \max_{k} [\nu(i,k) \cdot \nu(k,j)].
+  \end{align}
+  Since these maximization over label and over split point is independent, we can find them seprately
+  \begin{align}
+  \label{eq:viterbi-tree}
+    \hat{A} &= \argmax_{ A  } \psi(A, i, j)  \\
+    \hat{k} &= \argmax_{ k } \nu(i, k) \cdot \nu(k, j)
+  \end{align}
+  The best tree is then found by following back the best splits an labels from the root.
 
-\subparagraph{Numerical concerns}
-The above recursion computes the result of exponentially many additions and multiplications. This will soon run into the problem of numerical underflow and overflow. Instead, we compute these quantities in the logarithmic domain, defining the $\oplus$ as
-\begin{align*}
-  a \osum b = \log(e^{a} + e^{b}),
-\end{align*}
-and $\otimes$ as
-\begin{align*}
-  a \otimes b = a + b.
-\end{align*}
-The definition of $\oplus$ is made numerically stable by writing
-\begin{align*}
-  \log(e^{a} + e^{b} = a + \log(1 + e^{b-a}) = b + \log(1 + e^{a-b})
-\end{align*}
-and choosing expression with the smaller exponent.
-
+% \subparagraph{Numerical concerns}
+%   The above recursion computes the result of exponentially many additions and multiplications. This will soon run into the problem of numerical underflow and overflow. Instead, we compute these quantities in the logarithmic domain, defining the $\oplus$ as
+%   \begin{align*}
+%     a \osum b = \log(e^{a} + e^{b}),
+%   \end{align*}
+%   and $\otimes$ as
+%   \begin{align*}
+%     a \otimes b = a + b.
+%   \end{align*}
+%   The definition of $\oplus$ is made numerically stable by writing
+%   \begin{align*}
+%     \log(e^{a} + e^{b} = a + \log(1 + e^{b-a}) = b + \log(1 + e^{a-b})
+%   \end{align*}
+%   and choosing expression with the smaller exponent.
 
 \section{Experiments}
-We perform three types of experiments with the CRF parser:
-\begin{itemize}
-  \item We show that the model is a good supervised parser. We train the model supervised on the PTB and show the f-score on the PTB test set.
-  \item We evaluate the joint RNNG with samples from the CRF parser. We compare the perplexity and fscore with RNNG case.
-  \item We evauluate `how good the model is' as a sampler.
-\end{itemize}
+  We perform three types of experiments with the CRF parser:
+  \begin{itemize}
+    \item We show that the model is a good supervised parser. We train the model supervised on the PTB and show the f-score on the PTB test set.
+    \item We evaluate the joint RNNG with samples from the CRF parser. We compare the perplexity and fscore with RNNG case.
+    \item We evauluate `how good the model is' as a sampler.
+  \end{itemize}
 
 \subsection{Supervised model} We investigate the following.
-\begin{itemize}
-  \item We have some optimization and hyperparameter choices here. The original paper uses Adam with 0.001 and a LSTM of dimension 250, which gives the model around 2.5 million parameters. For the discriminative RRNG we use SGD with 0.1, and hidden sizes of 128 gives the model around 800,000 parameters.
-  \item I suggest two experiments: (1) use the default setting from \citep{stern2017minimal} and (2) use the settings for the RNNG with a hidden size to match the 800,000 parameters.
-\end{itemize}
+  \begin{itemize}
+    \item We have some optimization and hyperparameter choices here. The original paper uses Adam with 0.001 and a LSTM of dimension 250, which gives the model around 2.5 million parameters. For the discriminative RRNG we use SGD with 0.1, and hidden sizes of 128 gives the model around 800,000 parameters.
+    \item I suggest two experiments: (1) use the default setting from \citep{stern2017minimal} and (2) use the settings for the RNNG with a hidden size to match the 800,000 parameters.
+  \end{itemize}
 
 \subsection{Proposal model} We investigate the following:
-\begin{itemize}
-  \item We evaluate validation F-score and perplexity.
-  \item We evaluate F-score with 100 samples (as many proposal trees as possible).
-  \item We evaluate perplexity with varying number of samples: 1 (argmax), 10, 20, 50, 100 (default). The peplexity evaluation with the argmax prediction gives an impression of the uncertaty in the model \citep{buys2018exact}.
-  \item  We perform learning rate decay and model selection based on a development score computed with the samples from the discriminative RNNG. Undecided: should we train a separate joint RNNG with CRF samples?
-\end{itemize}
+  \begin{itemize}
+    \item We evaluate validation F-score and perplexity.
+    \item We evaluate F-score with 100 samples (as many proposal trees as possible).
+    \item We evaluate perplexity with varying number of samples: 1 (argmax), 10, 20, 50, 100 (default). The peplexity evaluation with the argmax prediction gives an impression of the uncertaty in the model \citep{buys2018exact}.
+    \item  We perform learning rate decay and model selection based on a development score computed with the samples from the discriminative RNNG. Undecided: should we train a separate joint RNNG with CRF samples?
+  \end{itemize}
 
 \subsection{Sampler} We investigate the following:
-\begin{itemize}
-  \item We asses the conditional entropy of the model. This is most quantitative. Recall that conditional entropy is defined as
-  \begin{equation}
-    \text{H}(Y|X) = \sum_{x \in \mathcal{X}} p_X(x)\text{H}(Y|X = x),
-  \end{equation}
-  where
-  \begin{equation}
-    \text{H}(Y|X = x) = - \sum_{y \in \mathcal{Y}} p_{Y|X}(y|x) \log p_{Y|X}(y|x).
-  \end{equation}
-  The quantity $\text{H}(Y|X = x)$ can computed exactly with the CRF parser. We estimate the quantity $\text{H}(Y|X)$ by a sum over the development dataset. For the probabilities $p_X(x)$ we use the marginalized probabilities of the joint RNNG (with samples from the CRF parser $p_{Y|X}$).
-  \item We asses for some cherry picked sentences. This is more qualitative. These sentences should be difficult or ambiguous. Or they can be ungramatical when taken from the syneval dataset. We can evaluate their entropy, and the diversity of samples, for example to see if there are clear modes. We can make violinplots of the probabilities of the samples. We can compute the f-scores of the samples compared with the argmax tree.
-\end{itemize}
+  \begin{itemize}
+    \item We asses the conditional entropy of the model. This is most quantitative. Recall that conditional entropy is defined as
+    \begin{equation}
+      \text{H}(Y|X) = \sum_{x \in \mathcal{X}} p_X(x)\text{H}(Y|X = x),
+    \end{equation}
+    where
+    \begin{equation}
+      \text{H}(Y|X = x) = - \sum_{y \in \mathcal{Y}} p_{Y|X}(y|x) \log p_{Y|X}(y|x).
+    \end{equation}
+    The quantity $\text{H}(Y|X = x)$ can computed exactly with the CRF parser. We estimate the quantity $\text{H}(Y|X)$ by a sum over the development dataset. For the probabilities $p_X(x)$ we use the marginalized probabilities of the joint RNNG (with samples from the CRF parser $p_{Y|X}$).
+    \item We asses for some cherry picked sentences. This is more qualitative. These sentences should be difficult or ambiguous. Or they can be ungramatical when taken from the syneval dataset. We can evaluate their entropy, and the diversity of samples, for example to see if there are clear modes. We can make violinplots of the probabilities of the samples. We can compute the f-scores of the samples compared with the argmax tree.
+  \end{itemize}
 
 \section{Related work}
 Here I describe related work, and in particular earlier approaches to (neural) CRF-parsing.

@@ -12,7 +12,8 @@
     $\mathbb{R}$  & The set of real numbers.   \\
     $\mathbf{a}, \mathbf{b}$, \dots  & Vectors over the reals, \textit{i.e.} $\mathbf{a} \in \mathbb{R}^m$.  \\
     $\mathbf{A}, \mathbf{B}$, \dots & Matrices over the reals, \textit{i.e.} $\mathbf{A} \in \mathbb{R}^{m \times n}$.   \\
-    $[\mathbf{a}; \mathbf{b}]$  & Vector concatenation, $\mathbf{a} \in \mathbb{R}^{m}$ and $\mathbf{b} \in \mathbb{R}^{n}$, $[\mathbf{a}; \mathbf{b}] \in \mathbb{R}^{m+n}$.  \\
+    $[\mathbf{a}]_i$ & Vector indexing, $[\mathbf{a}]_i \in \mathbb{R}$ for $1 \leq i \leq m$. \\
+    $[\mathbf{a}; \mathbf{b}]$ & Vector concatenation, $\mathbf{a} \in \mathbb{R}^{m}$ and $\mathbf{b} \in \mathbb{R}^{n}$, $[\mathbf{a}; \mathbf{b}] \in \mathbb{R}^{m+n}$.  \\
     $[\mathbf{a}, \mathbf{b}]$  & Vertical vector stacking, $\mathbf{a}, \mathbf{b} \in \mathbb{R}^{m}$, $[\mathbf{a}, \mathbf{b}] \in \mathbb{R}^{m \times 2}$.  \\
     & \\
 
@@ -23,7 +24,7 @@
     $x$ & A word from vocabulary $\mathcal{X}$, an outcome of random variable $X$.   \\
     $y$ & A tree from $\mathcal{Y}(x)$, an outcome of random variable $Y$.  \\
     $x_1^m$, $x$ & A sequence of words $\langle x_1, \dots, x_m \rangle$ from $\mathcal{X}^m$ (shorthand: $x$), \\ & the outcome of the sequence of random variables $X_1, X_2, \dots, X_m$.   \\
-    $x_{<j}$ & The sequence $x_{1}^{j-1}$, the part of sequence $x_1^m$ preceding word $x_j$.   \\
+    $x_{<j}$ & The sequence $x_{1}^{j-1}$, the part of sequence $x_1^m$ preceding word $x_j$.  \\
     & \\
 
     % Distributions
@@ -33,7 +34,7 @@
     %
     % $P_{X, Y}$, $p_{X, Y}$, $p$ & Joint probability distribution of $X, Y$, and typical \\ & shorthand $p$ for the probability mass function. \\
 
-    $P_X$, $P_{Y \mid X}$, $P_{X, Y}$ & Discrete probability distributions of random variable $X$, \\ & conditional $X \vert Y$ and joint $X, Y$ \\
+    $P_X$, $P_{Y \mid X}$, $P_{X, Y}$ & Discrete probability distributions of random variables $X$, \\ & conditional $X \vert Y$ and joint $X, Y$ \\
 
     $p_{X}$, $p_{Y \mid X}$, $p_{Y \mid X}$ & Probability mass functions of distributions $P_X$, $P_{Y \mid X}$, \\ & and $P_{X, Y}$. \\
 
@@ -42,7 +43,6 @@
     $p_{\theta}$, $q_{\lambda}$ & Probability mass functions with emphasis on the parameters \\ & that specify them, and with random variables clear from context.  \\
 
     $\mathbb{E}[g(X)]$ & Expectation of $g(X)$ with respect to distribution $P$, \\ & for some function $g: \mathbb{R} \to \mathbb{R}$. \\
-    & \\
 
     $H(P_X)$ & Entropy of random variable $X$ with distribution $P$ \\
     & \\

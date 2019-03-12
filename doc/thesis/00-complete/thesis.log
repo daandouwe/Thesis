@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  12 MAR 2019 16:54
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  12 MAR 2019 19:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1470,7 +1470,38 @@ File: english.lbx 2016/05/14 v3.4 biblatex localization (PK/JW/AB)
 \@quotelevel=\count355
 \@quotereset=\count356
 
-(./thesis.aux)
+(./thesis.aux
+
+LaTeX Warning: Label `eq:disc-model' multiply defined.
+
+
+LaTeX Warning: Label `eq:disc-model' multiply defined.
+
+
+LaTeX Warning: Label `eq:lowerbound' multiply defined.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.1143 w
+        eig2011microsoft}{nyt/global/}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+! Extra }, or forgotten \endgroup.
+l.1143 weig2011microsoft}
+                         {nyt/global/}
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+)
 \openout1 = `thesis.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 134.
@@ -1628,6 +1659,11 @@ Package microtype Info: Loading generic settings for font family
 (microtype)             `lmss' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
+ [1{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
+
+] [2
+
+]
 LaTeX Font Info:    Calculating math sizes for size <13> on input line 134.
 LaTeX Font Info:    Try loading font information for OT1+lmr on input line 134.
 
@@ -1688,21 +1724,14 @@ LaTeX Font Warning: Font shape `U/lasy/m/n' in size <13> not available
 LaTeX Font Warning: Font shape `U/lasy/m/n' in size <6.5> not available
 (Font)              size <6> substituted on input line 134.
 
-[1
-
-
-{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+[1]
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <10.95> on input line 134.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <8> on input line 134.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input lernal font `lmex10' loaded for size
-(Font)              <8> on input line 134.
-LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <6> on input line 134.
-
-(./thesis.toc [2
+ (./thesis.toc [2
 
 
 ] [3])
@@ -1718,9 +1747,19 @@ File: omslmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `OMS/lmr/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 143.
- [1
+pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
+been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.156 \begin{acknowledgements}
+                               [1
 
-] [2
+]pdfTeX warning (ext4): destination with the same identifier (name{page.2}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.160 \chapter
+              {Introduction} [2
 
 ]
 Chapter 1.
@@ -1787,7 +1826,7 @@ To recover gracefully from this error, it's best to
 delete the erroneous units; e.g., type `2' to delete
 two letters. (See Chapter 27 of The TeXbook.)
 
-[8] <../figures/trees/npi-licensed.pdf, id=236, 526.77112pt x 259.41167pt>
+[8] <../figures/trees/npi-licensed.pdf, id=244, 526.77112pt x 259.41167pt>
 File: ../figures/trees/npi-licensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-licensed.pdf>
@@ -1795,7 +1834,7 @@ Package pdftex.def Info: ../figures/trees/npi-licensed.pdf used on input line 7
 1.
 (pdftex.def)             Requested size: 151.08308pt x 74.40016pt.
 
-<../figures/trees/npi-unlicensed.pdf, id=237, 482.62106pt x 256.61702pt>
+<../figures/trees/npi-unlicensed.pdf, id=245, 482.62106pt x 256.61702pt>
 File: ../figures/trees/npi-unlicensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-unlicensed.pdf>
@@ -1867,43 +1906,23 @@ am-ples: 1 (argmax),
 Chapter 4.
 (../04-crf-parser/crf-parser.tex [34
 
-]
-! Extra }, or forgotten $.
-l.15 ... form a tree. We write $\y_a = (A, i, j) }
-                                                  $ for a span $\langle x_{i...
-I've deleted a group-closing symbol because it seems to be
-spurious, as in `$x}$'. But perhaps the } is legitimate and
-you forgot something else, as in `\hbox{$x}'. In such cases
-the way to recover is to insert both the forgotten and the
-deleted material, e.g., by typing `I$}'.
-
-! Undefined control sequence.
-<recently read> \Psix 
-                      
-l.19 We define the score $\Psix
-                               , \y)$ of tree as the product of nonnegative ...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-[35] <../figures/span-encoding.pdf, id=769, 464.0005pt x 150.49072pt>
+] [35] [36]
+<../figures/span-encoding.pdf, id=788, 464.0005pt x 150.49072pt>
 File: ../figures/span-encoding.pdf Graphic file (type pdf)
 
 <use ../figures/span-encoding.pdf>
-Package pdftex.def Info: ../figures/span-encoding.pdf used on input line 49.
+Package pdftex.def Info: ../figures/span-encoding.pdf used on input line 48.
 (pdftex.def)             Requested size: 335.74251pt x 108.89745pt.
 Package microtype Info: Character `029' is missing
 (microtype)             in font `T1/lmr/m/sc/9'.
 (microtype)             Ignoring protrusion settings for this character.
- [36] [37 <../figures/span-encoding.pdf>]
+ [37 <../figures/span-encoding.pdf>]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [38]
 [39]
 
-LaTeX Warning: Reference `eq:inside' on page 40 undefined on input line 130.
+LaTeX Warning: Reference `eq:inside' on page 40 undefined on input line 134.
 
 
 ! Package amsmath Error: Multiple \label's: label 'eq:inside' will be lost.
@@ -1912,14 +1931,14 @@ See the amsmath package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.137   \end{align*}
+l.141   \end{align*}
                     
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
 [40]
-Overfull \hbox (14.94873pt too wide) in paragraph at lines 159--159
+Overfull \hbox (14.94873pt too wide) in paragraph at lines 163--163
 [] 
  []
 
@@ -1931,58 +1950,21 @@ See the amsmath package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.172 \end{align*}
-                  
+l.176   \end{align}
+                   
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-
-! Package amsmath Error: Multiple \label's: label 'eq:viterbi-score' will be lo
-st.
-
-See the amsmath package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.178 \end{align*}
-                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-[41]
-! Undefined control sequence.
-<argument>  a \osum 
-                    b = \log (e^{a} + e^{b}), 
-l.185 \end{align*}
-                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument>  a \osum 
-                    b = \log (e^{a} + e^{b}), 
-l.185 \end{align*}
-                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-[42]
-Overfull \hbox (3.13356pt too wide) in paragraph at lines 215--216
+[41] [42]
+Overfull \hbox (3.13356pt too wide) in paragraph at lines 218--219
 []\T1/lmr/m/n/10.95 (-20) We eval-u-ate per-plex-ity with vary-ing num-ber of s
 am-ples: 1 (argmax),
  []
 
 [43] [44] [45]
 
-LaTeX Warning: Reference `eq:rule-score' on page 46 undefined on input line 261
+LaTeX Warning: Reference `eq:rule-score' on page 46 undefined on input line 264
 .
 
 ) [46]
@@ -2271,36 +2253,7 @@ my insertion and my current dilemma will both disappear.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[72] [73]
-! Extra }, or forgotten $.
-l.121 ...ights)} Let $G_{\omega} = (V, E, \omega)}
-                                                  $ be a weighted hypergraph...
-I've deleted a group-closing symbol because it seems to be
-spurious, as in `$x}$'. But perhaps the } is legitimate and
-you forgot something else, as in `\hbox{$x}'. In such cases
-the way to recover is to insert both the forgotten and the
-deleted material, e.g., by typing `I$}'.
-
-[74]
-! Missing } inserted.
-<inserted text> 
-                }
-l.131   \end{definition}
-                        
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-
-Overfull \hbox (1.4969pt too wide) in paragraph at lines 133--135
-[][]\T1/lmss/bx/n/10.95 Example C.6. []\T1/lmr/bx/n/10.95 (CRF parser) \T1/lmr/
-m/n/10.95 (-20) The CRF parser as-signs a score $\OT1/lmr/m/n/10.95 (-20) 	(\OM
-L/lmm/m/it/10.95 x; y\OT1/lmr/m/n/10.95 (-20) ) \OMS/lmsy/m/n/10.95 ^^U
- []
-
-[75]
+[72] [73] [74] [75]
 ! Undefined control sequence.
 l.199   The semiring addition $a \osum
                                        b = \log(e^{a} + e^{b})$ is made nume...
@@ -2353,7 +2306,7 @@ Overfull \hbox (49.76526pt too wide) in paragraph at lines 131--131
 [] 
  []
 
-[82] [83] <../figures/control-variate.pdf, id=1398, 344.73216pt x 173.3124pt>
+[82] [83] <../figures/control-variate.pdf, id=1412, 344.73216pt x 173.3124pt>
 File: ../figures/control-variate.pdf Graphic file (type pdf)
 
 <use ../figures/control-variate.pdf>
@@ -2424,127 +2377,65 @@ Package logreq Info: Writing requests to 'thesis.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 32661 strings out of 493014
- 597186 string characters out of 6133351
- 1073880 words of memory out of 5000000
- 34690 multiletter control sequences out of 15000+600000
- 191521 words of font info for 261 fonts, out of 8000000 for 9000
+ 32662 strings out of 493014
+ 597223 string characters out of 6133351
+ 1073983 words of memory out of 5000000
+ 34693 multiletter control sequences out of 15000+600000
+ 194123 words of font info for 260 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  62i,19n,72p,1799b,1279s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/
 texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/20
 16/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2016/texmf-dist/
 fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2016/texmf-dist/fonts/enc/
-dvips/lm/lm-mathex.enc}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/am
-sfonts/cm/cmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmmi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfo
-nts/cm/cmr10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmss10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmss9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mssbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/
-cmssi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/
-cmssi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/c
-msy10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-sy8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/latxfon
-t/lcircle1.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx10
-.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx9.pfb></usr/
-local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb></usr/local/tex
-live/2016/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb></usr/local/texlive/2016
-/texmf-dist/fonts/type1/public/lm/lmex10.pfb></usr/local/texlive/2016/texmf-dis
-t/fonts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/ty
-pe1/public/lm/lmmi6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/
-lm/lmmi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi9.pf
-b></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/loc
-al/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr6.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/public/lm/lmr7.pfb></usr/local/texlive/2016/texmf-di
-st/fonts/type1/public/lm/lmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/typ
-e1/public/lm/lmr9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm
-/lmri10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri7.pfb
-></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri9.pfb></usr/loca
-l/texlive/2016/texmf-dist/fonts/type1/public/lm/lmss10.pfb></usr/local/texlive/
-2016/texmf-dist/fonts/type1/public/lm/lmss12.pfb></usr/local/texlive/2016/texmf
--dist/fonts/type1/public/lm/lmssbx10.pfb></usr/local/texlive/2016/texmf-dist/fo
-nts/type1/public/lm/lmsso10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1
-/public/lm/lmsy10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm
-/lmsy6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy8.pfb>
-</usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy9.pfb></usr/local
-/texlive/2016/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/public/lm/lmtt9.pfb></usr/local/texlive/2016/texmf-d
-ist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/tex
-mf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2016
-/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texmf-d
-ist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/
-type1/urw/times/utmr8a.pfb>
-Output written on thesis.pdf (104 pages, 1452238 bytes).
+dvips/lm/lm-mathex.enc}{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/cm-s
+uper/cm-super-t1.enc}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsf
+onts/cm/cmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmmi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmss10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mss9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cms
+sbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+ssi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+ssi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cms
+y10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
+8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/latxfont/
+lcircle1.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx10.p
+fb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx9.pfb></usr/lo
+cal/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb></usr/local/texli
+ve/2016/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb></usr/local/texlive/2016/t
+exmf-dist/fonts/type1/public/lm/lmex10.pfb></usr/local/texlive/2016/texmf-dist/
+fonts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type
+1/public/lm/lmmi6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm
+/lmmi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi9.pfb>
+</usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local
+/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr6.pfb></usr/local/texlive/201
+6/texmf-dist/fonts/type1/public/lm/lmr7.pfb></usr/local/texlive/2016/texmf-dist
+/fonts/type1/public/lm/lmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1
+/public/lm/lmr9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/l
+mri10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri7.pfb><
+/usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri9.pfb></usr/local/
+texlive/2016/texmf-dist/fonts/type1/public/lm/lmss10.pfb></usr/local/texlive/20
+16/texmf-dist/fonts/type1/public/lm/lmss12.pfb></usr/local/texlive/2016/texmf-d
+ist/fonts/type1/public/lm/lmssbx10.pfb></usr/local/texlive/2016/texmf-dist/font
+s/type1/public/lm/lmsso10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/p
+ublic/lm/lmsy10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/l
+msy6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></
+usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy9.pfb></usr/local/t
+exlive/2016/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/local/texlive/201
+6/texmf-dist/fonts/type1/public/lm/lmtt9.pfb></usr/local/texlive/2016/texmf-dis
+t/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/texmf
+-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2016/t
+exmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2016/tex
+mf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texmf-dist/
+fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type
+1/urw/times/utmr8a.pfb>
+Output written on thesis.pdf (106 pages, 1468595 bytes).
 PDF statistics:
- 1979 PDF objects out of 2073 (max. 8388607)
- 1757 compressed objects within 18 object streams
- 551 named destinations out of 1000 (max. 500000)
- 48081 words of extra memory for PDF output out of 51595 (max. 10000000)
-
-ml'.
-
- ) 
-Here is how much of TeX's memory you used:
- 32306 strings out of 493014
- 593003 string characters out of 6133351
- 1060794 words of memory out of 5000000
- 34339 multiletter control sequences out of 15000+600000
- 191521 words of font info for 261 fonts, out of 8000000 for 9000
- 1141 hyphenation exceptions out of 8191
- 62i,19n,72p,1799b,1279s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/
-texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/20
-16/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2016/texmf-dist/
-fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2016/texmf-dist/fonts/enc/
-dvips/lm/lm-mathex.enc}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/am
-sfonts/cm/cmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmmi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfo
-nts/cm/cmr10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmss10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmss9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mssbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/
-cmssi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/
-cmssi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/c
-msy10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-sy8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/latxfon
-t/lcircle1.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx10
-.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx9.pfb></usr/
-local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb></usr/local/tex
-live/2016/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb></usr/local/texlive/2016
-/texmf-dist/fonts/type1/public/lm/lmex10.pfb></usr/local/texlive/2016/texmf-dis
-t/fonts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/ty
-pe1/public/lm/lmmi6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/
-lm/lmmi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi9.pf
-b></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/loc
-al/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr6.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/public/lm/lmr7.pfb></usr/local/texlive/2016/texmf-di
-st/fonts/type1/public/lm/lmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/typ
-e1/public/lm/lmr9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm
-/lmri10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri7.pfb
-></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri9.pfb></usr/loca
-l/texlive/2016/texmf-dist/fonts/type1/public/lm/lmss10.pfb></usr/local/texlive/
-2016/texmf-dist/fonts/type1/public/lm/lmss12.pfb></usr/local/texlive/2016/texmf
--dist/fonts/type1/public/lm/lmssbx10.pfb></usr/local/texlive/2016/texmf-dist/fo
-nts/type1/public/lm/lmsso10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1
-/public/lm/lmsy10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm
-/lmsy6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy8.pfb>
-</usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy9.pfb></usr/local
-/texlive/2016/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/public/lm/lmtt9.pfb></usr/local/texlive/2016/texmf-d
-ist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/tex
-mf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2016
-/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texmf-d
-ist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/
-type1/urw/times/utmr8a.pfb>
-Output written on thesis.pdf (102 pages, 1441524 bytes).
-PDF statistics:
- 1865 PDF objects out of 2073 (max. 8388607)
- 1648 compressed objects within 17 object streams
- 549 named destinations out of 1000 (max. 500000)
- 48081 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 1998 PDF objects out of 2073 (max. 8388607)
+ 1773 compressed objects within 18 object streams
+ 553 named destinations out of 1000 (max. 500000)
+ 48593 words of extra memory for PDF output out of 51595 (max. 10000000)
 

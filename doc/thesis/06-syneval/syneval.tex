@@ -32,7 +32,7 @@ The dataset is constructed automatically using handcrafted context-free grammars
 
 
 \section{Multitask learning}
-One method that makes language models perform better in the tasks described in this chapter is to provide stronger syntactic supervision by using multitask learning \citep{enguehard2017multitask,linzen2018targeted}. Multitask learning is a simple yet effective way of providing additional supervision to neural network models by combining multiple tasks in one single objective while sharing parameters \citep{caruana1997multitask}, and has been succcesfully applied in natural language processing \cite{collobert2008unified,collobert2011natural,zhang2016multitask,goldberg2016multitask}. By combining objectives that share parameters the model is encouraged to learn representations that are useful in all the tasks.
+One method that makes language models perform better in the tasks described in this chapter is to provide stronger syntactic supervision by using multitask learning \citep{enguehard2017multitask,linzen2018targeted}. Multitask learning is a simple yet effective way of providing additional supervision to neural network models by combining multiple tasks in a single objective while sharing parameters \citep{caruana1997multitask}, and has been succcesfully applied in natural language processing \citep{collobert2008unified,collobert2011natural,zhang2016multitask,goldberg2016multitask}. By combining objectives that share parameters the model is encouraged to learn representations that are useful in all the tasks.
 
 In this section I describe two simple baselines for the syntactic evaluation task that are based on multitask learning. Both methods are based on language modelling with a syntactic side objective. The first side objective is to predict combinatory categorical grammar (CCG) supertags \citep{bangalore1999supertagging} for each word in the sentence, and is proposed in \citep{enguehard2017multitask}. The second side objective is to label spans of words with their category. This objective is inspired by the label scoring function in the CRF parser introduced in chapter \ref{04-crf}.\foonote{This is similar to an approach found in recent work on semantic parsing where a similar side-objective is used and where it is called a `syntactic scaffold' \citep{swayamdipta2018scaffold}. The exact form of our side-objective is novel, as far as the author is aware of, and is parametrized in a considerably simpler way.} Both objectives are challenging and should require representations that encode a fair amount of syntactic information.
 
@@ -47,9 +47,9 @@ with respect to the parameters $\theta$, $\lambda$ and $\xi$. The key feature of
 \paragraph{Language model}
 The main model $p$ is a regular RNN language model on sentences $\x$:
 \begin{align*}
-  \log p_{\theta, \lambda} = \sum_{i=1}^n \log p_{\theta, \lambda}(x_i \mid \x_{<i}),
+  \log p_{\theta, \lambda}(x) = \sum_{i=1}^n \log p_{\theta, \lambda}(x_i \mid \x_{<i}),
 \end{align*}
-where the conditional probabilities are computed by linear regression on the vector $\fw_{i-1}$ as
+where the conditional probabilities of $x_i$ are computed by linear regression on forward RNN vectors $\fw_{i-1}$ as
 \begin{align*}
   p_{\theta, \lambda}( x \mid \x_{<i}) &\propto \exp \Big[ \vecW^{\top} \fw_{i-1} + \vecb \Big]_{x}.
 \end{align*}
