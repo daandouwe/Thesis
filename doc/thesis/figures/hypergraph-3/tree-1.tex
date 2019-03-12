@@ -1,0 +1,35 @@
+\documentclass[11pt]{article}
+\usepackage{tikz,qtree}
+\usepackage{amsmath,amssymb,amsfonts}
+
+
+\begin{document}
+
+\Tree [.S
+        [.$\varnothing$ [.NP [.$\varnothing$ The ] [.$\varnothing$
+          [.$\varnothing$ very ] [.$\varnothing$
+            [.$\varnothing$ hungry ] [.$\varnothing$ cat ] ] ] ]
+        [.VP [.$\varnothing$ meows ] ] ]
+        [.$\varnothing$ . ]
+      ]
+
+\Tree [.S
+        [.$\varnothing$ [.NP [.$\varnothing$ The ]
+          [.$\varnothing$ [.ADJP [.$\varnothing$ very ] [.$\varnothing$ hungry ] ] [.$\varnothing$ cat ] ] ]
+        [.VP [.$\varnothing$ meows ] ] ]
+        [.$\varnothing$ . ]
+      ]
+
+\Tree [.S
+        [.NP The very hungry cat ]
+        [.VP meows ]
+        $.$
+      ]
+
+\Tree [.S
+        [.NP The [.ADJP very hungry ] cat ]
+        [.VP meows ]
+        $.$
+      ]
+
+\end{document}

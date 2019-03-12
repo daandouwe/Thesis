@@ -12,29 +12,36 @@ In this chapter:
 
 
 \section{Model}
-The model is a CRF factored over the labeled spans that form a tree. We write $\y_a = (i, j, \ell) }$ for a labeled span and consider a tree as a collection $\y = \{ \y_a \}_{a=1}^A$. We define the score of a tree as the product of nonnegative local potentials $\Psi(\x, \y_a) \geq 0$. The function $\Psi$ scores each span seperately, conditional on the entire sentence. The probability of a tree is the globally normalized score of the tree:
+The model is a CRF factored over the labeled spans that form a tree. We write $\y_a = (A, i, j) }$ for a span $\langle x_{i+1}, \dots, \x_j \rangle$ labeled by  and $A$, and consider a tree $\y$ as a collection of these parts:
+\begin{align}
+  \y = \{ \y_a \}_{a=1}^A.
+\end{align}
+We define the score $\Psix, \y)$ of tree as the product of nonnegative local potentials $\psi(\x, \y_a) \geq 0$:
+\begin{align}
+  \Psi(\x, \y) = \prod_{a=1}^A \psi(\x, \y_a).
+\end{align}
+ The function $\psi$ scores each span seperately, but conditional on the entire sentence. The probability of a tree is the globally normalized score of the tree:
 \begin{align}
   \label{eq:crf-model}
-  p(\y \mid \x) &= \frac{1}{Z(\x)} \prod_{a=1}^A \Psi(\x, \y_a),
+  p(\y \mid \x) &= \frac{1}{Z(\x)} \prod_{a=1}^A \psi(\x, \y_a),
 \end{align}
 where
 \begin{align*}
-  Z(\x) = \sum_{ \y \in \yieldx } \prod_{a=1}^A \Psi(\x, \y_a)
+  Z(\x) = \sum_{ \y \in \yieldx } \prod_{a=1}^A \psi(\x, \y_a)
 \end{align*}
-is the normalizing constant that sums over all the possible parse trees and makes sures that the probability distribution sums to 1. This normalizing constant can be computed efficiently with the inside algorithm.
+is the normalizing constant that sums over all the possible parse trees that ensures that the probability distribution sums to 1. This normalizing constant can be computed efficiently with the inside algorithm.
 
 By factorizing a tree over labeled spans we make an even stronger assumption than that typically made by factorizating over anchored context-free rules\footnote{\cf table \ref{tab:spans-rules} for the different conceptions.}. This way, the potential function has no access to information about the direct substructure under the node, such as the child nodes and their split point. The function can thus rely less on the local tree structure and must thus rely more on the surface features of input sentence. This factorization will, however, greatly reduce the size of the state-space of the dynamic programs, speeding up training and inference, and the burden of the feature function will be carried by a rich neural network parametrization. Together, this will make the parser fast and very effective.
 
 \section{Parametrization}
-The scoring function $\Psi$ is implemented with neural networks following the design of the minimal scoring function of \citet{stern2017minimal}. The local potentials can only make minimal use of structural information, as we argued above, but they can depend on the entire sentence. This suggest the use of RNN encodings. The representation of a span $(i, j)$ is the concatenation of the difference between forward and backward vectors
+The scoring function $\psi$ is implemented with neural networks following the design of the minimal scoring function of \citet{stern2017minimal}. The local potentials can only make minimal use of structural information, as we argued above, but they can depend on the entire sentence. This suggest the use of RNN encodings. The representation of a span $(i, j)$ is the concatenation of the difference between forward and backward vectors
 \begin{align}
   \label{eq:potential-function}
   \vecs_{ij} = [\fw_j - \fw_i; \bw_i - \bw_j],
 \end{align}
-illustrated in figure \ref{fig:span-feature}. The score for a label is computed from this vector using a feedforward network:
+illustrated in figure \ref{fig:span-feature}. The score for a label $A$ is computed from this vector using a feedforward network.
 \begin{align}
-   % s(i, j, \ell) = s(i, j) = \Big[ \ff( \vecs_{ij} ) \Big]_{\ell}.
-  \log \Psi(\x, \y_a) = \Big[ \ff( \vecs_{ij} ) \Big]_{\ell}.
+  \log \psi(\x, \y_a) = \Big[ \ff( \vecs_{ij} ) \Big]_{A}.
 \end{align}
 This architecture is rightly called minimal, but it works surprisingly well: \citet{stern2017minimal} experiment with more elaborate functions based on concatenation of vectors (a strict superset of the minus approach) and biaffine scoring (inspired by \citep{dozat2016deep}), but these function improve marginally, if they do at all.
 
@@ -48,210 +55,125 @@ This architecture is rightly called minimal, but it works surprisingly well: \ci
 Because the model is span-factored it allows efficient inference. In this section we describe efficient solutions to four related problems:
 \begin{itemize}
   \item Find the best parse $\hat{ \y } = \arg \max_{\y } p(\y  \mid \x)$
-  \item Compute the normalizer $Z(\x) = \sum_{ \y  } \prod_{ a=1 }^{ A } \Psi( \x, \y_a )$.
-  \item Obtain a sample $y \sim p(\y  \mid \x)$.
+  \item Compute the normalizer $Z(\x) = \sum_{ \y \in \yieldx } \prod_{ a=1 }^{ A } \psi( \x, \y_a )$.
+  \item Obtain a sample $y \sim p(\cdot \mid \x)$.
   \item Compute the entropy $H(\y \mid \x)$ conditional on $\x$.
 \end{itemize}
 These problems are solved by variants of the inside and outside algorithms. We first describe how the quantities computed by these algorithms will be used to solve these problems, and then how these are computed.
 
 \subsection{Quantities}
-For each labeled span $(i, j, \ell)$, we define the inside value $\alpha(i, j, \ell)$ as the sum of potentials of all trees that are rooted in node $\ell$ with leaves $w_{i+1} \dots w_j$. We define the outside value $\beta(i, j, \ell)$ as the sum over potentials of all trees with leaves $w_1 \dots w_i \,\ell\, w_{j+1} \dots w_n$, where the nonterminal $\ell$ is treated as a leaf that is not expanded. These values sum over complementary sets that together make up all parses of $\x$.
+For each labeled span $(A, i, j)$, we define the inside value $\alpha(A, i, j)$ as the sum of potentials of all trees that are rooted in node $A$ with leaves $x_{i+1} \dots x_j$. We define the outside value $\beta(A, i, j)$ as the sum over potentials of all trees with leaves $x_1 \dots x_i A x_{j+1} \dots x_n$, where the nonterminal $A$ is treated as a leaf that is not expanded. These values sum over complementary sets that together make up all parses of $\x$.
 
 % This can best be illustrated by figure \ref{fig:inside-tree} that introduces the notion of an \textit{inside tree} and an \textit{outside tree}. The inside value is the sum over the potentials of inside trees, and the outside value is the sum over all outside trees.
 
-We then define the quantity $\mu(i, j, \ell)$ as the sum of all parses of $\x$ that contain nonterminal $\y_a = (i, j, \ell)$:
+We then define the quantity $\mu(A, i, j)$ as the sum of all parses of $\x$ that contain nonterminal $\y_a = (A, i, j)$:
 \begin{align*}
   \mu(i, j, \ell)
-    &\defeq \sum_{ \substack{ \y \in \yieldx \\ (i, j, \ell) \in \y } } \Psi(\x, \y_a),
+    &\defeq \sum_{ \substack{ \y \in \yieldx \\ \y_a \in \y } } \psi(\x, \y_a),
 \end{align*}
 and note that under this these definition we have the result
-\begin{align*}
-  \mu(i, j, \ell) &= \alpha(i, j, \ell) \beta(i, j, \ell).
-\end{align*}
+\begin{align}
+  \mu(A, i, j) &= \alpha(A, i, j) \beta(A, i, j).
+\end{align}
 Given these quantities, we can directly solve three problems described above.
 
 \paragraph{Normalizer}
 The normalizer is the inside value at the root node
-\begin{align*}
-  Z(\x) = \alpha(\textsc{root}, 1, n).
-\end{align*}
-This follows from the definition of the inside algorithm: $\alpha(\textsc{root}, 1, n)$ is the sum of potentials of all trees rooted in $\textsc{root}$ that span words $w_1 \dots w_n$.
+\begin{align}
+  Z(\x) = \alpha(\text{S}^{\dagger}, 0, n).
+\end{align}
+This follows from the definition of the inside algorithm: $\alpha(\text{S}^{\dagger}, 0, n)$ is the sum of potentials of all trees rooted in $\text{S}^{\dagger}$ that span words $x_1 \dots x_n$.
 
 \paragraph{Node marginals}
-Suppose we are sampling parses $\y$ for $\x$ from the model $p$. The probability that this parse contains labeled span $\y_a = (i, j, \ell)$ is called the marginal probability, and is computed as
-\begin{align*}
-  \frac{\alpha(i, j, \ell) \cdot \beta(i, j, \ell)}{Z(\x)}.
-\end{align*}
+Suppose we are sampling parses $\y$ for $\x$ from the model $p$. The probability that the parse contains labeled span $\y_a = (A, i, j)$ is called the marginal probability of $\y_a$, and is computed as
+\begin{align}
+  P( (A, i, j) \in Y \mid X = \x ) = \frac{\alpha(A, i, j) \cdot \beta(A, i, j)}{Z(\x)}.
+\end{align}
 
 \paragraph{Entropy}
-The entropy of the distribution over parses can be computed using the node marginals by noting that we can write the expectation as
+The entropy of the distribution over parses can be computed efficiently, using the node marginals. We derive
 \begin{align*}
-  H(\y \mid \x)
-    &= - \expect_{p} \Big[ \log p(\y \mid \x) \Big]  \\
-    &= - \expect_{p} \Big[ \sum_{a=1}^A \log \Psi(\x, \y_a) \Big] + \log Z(\x)  \\
-    % &= - \sum_{a=1}^A \expect_{p} \Big[ \log \Psi(\x, \y_a) \Big] + \log Z(\x)   \\
-    &= - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{a=1}^A \log \Psi(\x, \y_a) - \log Z(\x)  \\
-    &= - \sum_{ \y \in \yieldx } \frac{ \Psi(\x, \y_a) }{ Z(\x) } \sum_{a=1}^A \log \Psi(\x, \y_a) - \log Z(\x)  \\
+  H(P_{Y \vert X = x})
+    &= - \sum_{ \y \in \yieldx } p(\y \mid \x) \log p(\y \mid \x)  \\
+    &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{\y_a \in \y} \log \psi(\x, \y_a)  \\
+    &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{ a \in \mathcal{A}(x) } \indicator_{\y}(a) \log \psi(\x, a)  \\
+    &= \log Z(\x) - \sum_{ a \in \mathcal{A}(x) } \log \psi(\x, a)  \sum_{ \y \in \yieldx } \indicator_{\y}(a) p(\y \mid \x)  \\
+    &= \log Z(\x) - \sum_{ a \in \mathcal{A}(x) } \log \psi(\x, a)  \mu(a \mid \x)  \\
+    &=  \log Z(\x) - \expect_{ \mu } \Big[ \log \psi(\x, a) \Big]  \\
 \end{align*}
 
 \paragraph{Parse}
 The best parse can be obtained with the Viterbi algoritm, which is an instance of the inside algorithm. The viterbi algorithm replaces the sum operator of the inside algorithmm with $\max$: at each node this selects the best substructure instead of summing over all of them.
 
 \subsection{Inside recursion}
-  The inside algorithm computes the quantities $\alpha(A,i,j)$ for all labels $A \in N$ and all spans $0 \leq i < j \leq n$. From the hypergraph perspecive this is the total weight under the node $v = (A, i, j)$---the sum of the weights of all directed paths incoming at $v$. This sum can be computed using the \textit{inside recursion} \citep{goodman1999semiring}.
+  The inside algorithm computes the quantities $\alpha(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. From the hypergraph perspecive this is the total weight under the node $v = (A, i, j)$---the sum of the weights of all directed paths incoming at $v$. This sum can be computed using the \textit{inside recursion} \citep{goodman1999semiring}.
 
   At the nodes that span one word, the inside value is just the weight of the unary edge
   \begin{align}
       \label{eq:inside-base}
       \alpha(A, i, i+1) = \psi(A, i, i+1)
   \end{align}
-  for $A \in N$, for all $0 \leq i < n$.
+  for $A \in \Lambda$, for all $0 \leq i < n$.
 
-  To compute $\alpha(A, i, j)$ in the general case we need to sum over all possible binary expansions $(A \to B C, i, k, j)$ for $A, B \in N$ and $i \leq k \leq j$. This corresponds to the following recursive expression that uses the inside values of the subparts:
+  To compute $\alpha(A, i, j)$ in the general case we need to sum over all possible binary expansions $(A \to B C, i, k, j)$ for $A, B \in \Lambda$ and $i \leq k \leq j$. This corresponds to the following recursive expression that uses the inside values of the subparts:
   \begin{align*}
   \label{eq:inside}
     \alpha(A, i, j)
-      &= \bigoplus_{B \in N} \bigoplus_{C \in N} \bigoplus_{k=i+1}^{j-1} \psi(A, i, j) \otimes \alpha(B,i,k) \otimes \alpha(C,k,j) \\
-      &= \psi(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \bigoplus_{B \in N} \alpha(B,i,k) \otimes \bigoplus_{C \in N} \alpha(C,k,j) \\
+      &= \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=i+1}^{j-1} \psi(A, i, j) \otimes \alpha(B,i,k) \otimes \alpha(C,k,j) \\
+      &= \psi(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \bigoplus_{B \in \Lambda} \alpha(B,i,k) \otimes \bigoplus_{C \in \Lambda} \alpha(C,k,j) \\
       &= \psi(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} S(i,k) \otimes S(k,j)
   \end{align*}
   where we've introduced the notational abbreviation
   \begin{align*}
-      S(i,j) &= \bigoplus_{A \in N} \alpha(A,i,j).
+      S(i,j) &= \bigoplus_{A \in \Lambda} \alpha(A,i,j).
   \end{align*}
   Looking at \ref{eq:inside} we can see the marginalized values $S(i, j)$ are all that are needed for the recursion. This suggest simplifying the recursion even further as
   \begin{align*}
   \label{eq:inside-simplified}
     S(i, j)
-      &= \bigoplus_{A \in N} \alpha(A,i,j) \\
-      % &=  \bigoplus_{A \in N} \psi(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} S(i,k) \otimes S(k,j) \\
-      &= \Bigg[ \bigoplus_{A \in N} \psi(A, i, j) \Bigg] \otimes \Bigg[\bigoplus_{k=i+1}^{j-1} S(i,k) \otimes  S(k,j) \Bigg],
+      &= \bigoplus_{A \in \Lambda} \alpha(A,i,j) \\
+      % &=  \bigoplus_{A \in \Lambda} \psi(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} S(i,k) \otimes S(k,j) \\
+      &= \Bigg[ \bigoplus_{A \in \Lambda} \psi(A, i, j) \Bigg] \otimes \Bigg[\bigoplus_{k=i+1}^{j-1} S(i,k) \otimes  S(k,j) \Bigg],
   \end{align*}
   where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting.
 
   This recursion can be solved by computing the inside value of the nodes $(i, j, A)$ in topological order, so that the values of the subparts are availlable to compute the inside values higher up.
 
 \subsection{Outside recursion}
-  The outside algorithm computes the quantities $\beta(A,i,j)$ for all labels $A \in N$ and all spans $0 \leq i < j \leq n$. For the labels spanning the entire sentence, the outside value is defined as
+  The outside algorithm computes the quantities $\beta(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. For the labels spanning the entire sentence, the outside value is defined as
   \begin{align*}
     \beta(A, 0, n) =
     \begin{cases}
-      0, & \text{ if } A = \textsc{root} \\
+      0, & \text{ if } A = \text{S}^{\dagger}  \\
       1, & \text{otherwise}.
     \end{cases}
   \end{align*}
   To compute $\beta(A, i, j)$ in the general case we need to sum over all possible upward binary expansions that $A$ can be a part of, recursively making use of the outside values already computed. This means we sum over expansions $(B \to C \; A, k, i, j)$ for all labels $B$ and $C$ and left endpoints $1 \leq k < i$, and sum over expansions $(B \to A \; C, i, j, k)$ for all labels $B$ and $C$ and right endpoints $j < k \leq n$. This corresponds to the following recursive expression that uses the outside values of the superparts:
   \begin{align*}
     \beta(A, i, j)
-      &= \bigoplus_{B \in N} \bigoplus_{C \in N} \bigoplus_{k=1}^{i-1} \psi(B, k, j) \otimes \alpha(C, k, i-1) \otimes \beta(B, k, j) \\
-        &\qquad \oplus \bigoplus_{B \in N} \bigoplus_{C \in N} \bigoplus_{k=j+1}^{n} \psi(B, i, k) \otimes \beta(B, i, k) \otimes \alpha(C, j+1, k) \\
-      &=  \bigoplus_{k=1}^{i-1}  \Bigg[ \bigoplus_{B \in N} \psi(B, k, j)  \otimes \beta(B, k, j) \Bigg] \otimes \Bigg[ \bigoplus_{C \in N} \alpha(C, k, i-1) \Bigg] \\
-        &\qquad \oplus \bigoplus_{k=j+1}^{n}  \Bigg[ \bigoplus_{B \in N}  \psi(B, i, k) \otimes \beta(B, i, k) \Bigg] \otimes  \Bigg[  \bigoplus_{C \in N} \alpha(C, j+1, k) \Bigg] \\
+      &= \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=1}^{i-1} \psi(B, k, j) \otimes \alpha(C, k, i-1) \otimes \beta(B, k, j) \\
+        &\qquad \oplus \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=j+1}^{n} \psi(B, i, k) \otimes \beta(B, i, k) \otimes \alpha(C, j+1, k) \\
+      &=  \bigoplus_{k=1}^{i-1}  \Bigg[ \bigoplus_{B \in \Lambda} \psi(B, k, j)  \otimes \beta(B, k, j) \Bigg] \otimes \Bigg[ \bigoplus_{C \in \Lambda} \alpha(C, k, i-1) \Bigg] \\
+        &\qquad \oplus \bigoplus_{k=j+1}^{n}  \Bigg[ \bigoplus_{B \in \Lambda}  \psi(B, i, k) \otimes \beta(B, i, k) \Bigg] \otimes  \Bigg[  \bigoplus_{C \in \Lambda} \alpha(C, j+1, k) \Bigg] \\
       &=  \bigoplus_{k=1}^{i-1}  S'(k, j) \otimes S(k, i-1) \oplus \bigoplus_{k=j+1}^{n} S'(i, k) \otimes  S(j+1, k) \\
   \end{align*}
   where
   \begin{align*}
-      S(i, j) &= \bigoplus_{A \in N} \alpha(A, i, j) \\
-      S'(i, j) &= \bigoplus_{A \in N} \psi(A, i, j) \beta(A, i, j)
+      S(i, j) &= \bigoplus_{A \in \Lambda} \alpha(A, i, j) \\
+      S'(i, j) &= \bigoplus_{A \in \Lambda} \psi(A, i, j) \beta(A, i, j)
   \end{align*}
-
-% \subsection{Inside recursion}
-% In this derivation we will use $\y_a = (i, j, \ell)$ interchangeably.
-%
-% \begin{align*}
-% \label{eq:inside}
-%   \alpha(A,i,j) &= \sum_{B \in N} \sum_{C \in N} \sum_{k=i+1}^{j-1} \tilde{s}(i, j, A) \cdot \alpha(B,i,k) \cdot \alpha(C,k,j) \\
-%     &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} \sum_{B \in N} \alpha(B,i,k) \cdot \sum_{C \in N} \alpha(C,k,j) \\
-%     &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j)
-% \end{align*}
-%
-% where we've introduced a number of notational abbreviations
-% \begin{align*}
-%   \tilde{s}(i, j, A)
-%     &= \exp( s(i, j, A) ) \\
-%     S(i,j) &= \sum_{A \in N} \alpha(A,i,j)
-% \end{align*}
-%
-% From equation \ref{eq:inside} we can deduce that we in fact do even need to store the values $\alpha(i, j, A)$ but that it suffices to only store the marginalized values $S(i, j)$. In this case, the recursion simplifies even further:
-% \begin{align*}
-%     S(i, j) &= \sum_{A \in N} \alpha(A,i,j) \\
-%         &=  \sum_{A \in N} \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \\
-%         &= \Bigg[ \sum_{A \in N} \tilde{s}(i, j, A) \Bigg] \cdot \Bigg[\sum_{k=i+1}^{j-1} S(i,k) \cdot  S(k,j) \Bigg]
-% \end{align*}
-% where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting.
-
-% \subsection{Inside recursion}
-  % In this derivation we follow Michael Collins notes on the Inside-Outside Algorithm.\footnote{\url{http://www.cs.columbia.edu/~mcollins/io.pdf}} We have the following general result for the inside value $\alpha$. For all $A \in N$, for all $0 \leq i < n$
-  % \begin{align}
-  %     \label{eq:collins-inside-base}
-  %     \alpha(A,i,i+1) = \psi(A, i, i+1)
-  % \end{align}
-  % and for all $(i, j)$ such that $1 \leq i < j \leq n$:
-  % \begin{align}
-  %     \label{eq:collins-inside-general}
-  %     \alpha(A,i,j) = \sum_{A \to B C} \sum_{k=i+1}^{j-1} \psi(A \to B \;C, i, k, j) \cdot \alpha(B,i,k) \cdot \alpha(C,k,j)
-  % \end{align}
-  % Note that we are considering a CFG in which the rule set is complete, i.e.
-  % \begin{align}
-  %   \langle A \to B \;C \rangle \in R \text{ for each } (A, B, C) \in N^3,
-  % \end{align}
-  % and recall that the labels $B$ and $C$ do not appear in the scoring functions in \ref{eq:rule-score}. These facts will allow us to simplify the expression in formula \ref{eq:collins-inside-general} as
-  % \begin{subequations}
-  % \begin{align*}
-  %     \alpha(A,i,j) &= \sum_{B \in N} \sum_{C \in N} \sum_{k=i+1}^{j-1} \tilde{s}(i, j, A) \cdot \alpha(B,i,k) \cdot \alpha(C,k,j) \\
-  %         &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} \sum_{B \in N} \alpha(B,i,k) \cdot \sum_{C \in N} \alpha(C,k,j) \\
-  %         &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \label{eq:final-inside}
-  % \end{align*}
-  % \end{subequations}
-  % where we've introduced a number of notational abbreviations
-  % \begin{align*}
-  %   \tilde{s}(i, j, A)
-  %     &= \exp( s(i, j, A) ) \\
-  %     S(i,j) &= \sum_{A \in N} \alpha(A,i,j)
-  % \end{align*}
-  % Note that this is the exact same formula as \ref{eq:inside-semiring}.
-  %
-  % From equation \ref{eq:final-inside} we can deduce that we in fact do even need to store the values $\alpha(i, j, A)$ but that it suffices to only store the marginalized values $S(i, j)$. In this case, the recursion simplifies even further:
-  % \begin{subequations}
-  % \begin{align*}
-  %     S(i, j) &= \sum_{A \in N} \alpha(A,i,j) \\
-  %         &=  \sum_{A \in N} \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \\
-  %         &= \Bigg[ \sum_{A \in N} \tilde{s}(i, j, A) \cdot \Bigg] \Bigg[\sum_{k=i+1}^{j-1} S(i,k) \cdot  S(k,j) \Bigg]
-  % \end{align*}
-  % \end{subequations}
-  % where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting. We can now recognize this as the `inside' equivalent of the expression from the paper\footnote{I believe there is actually an error in this equation: it should read  $s(i, j, \ell) + s_{span}(i, j)$ instead of just $s(i, j, \ell)$. This is implied by the score for a single node, which is given by equation \ref{eq:rule-score}, taken directly from the paper.}
-  % \begin{align}
-  %     s_{best}(i, j) = \max_{\ell} [s(i, j, \ell)] + \max_{k}[ s_{split}(i, k, j)].
-  % \end{align}
-  % The recursions are the same; the semirings are different. The viterbi recursion given above is in the \textsc{ViterbiSemiring}, which uses the $\max$ operator as $\oplus$; the inside recursion given in \ref{eq:final-inside} has standard addition (+) instead.
-
-% \subsection{Outside recursion}
-%   \begin{align*}
-%       \beta(A, i, j) &= \sum_{B \to C A \in R} \sum_{k=1}^{i-1} \psi(B \to C A, k, i-1, j) \cdot \alpha(C, k, i-1) \cdot \beta(B, k, j) \\
-%               &\qquad + \sum_{B \to A C \in R} \sum_{k=j+1}^{n} \psi(B \to A, C, i, j, k) \cdot \alpha(C, j+1, k) \cdot \beta(B, i, k) \\
-%           &= \sum_{B \in N} \sum_{C \in N} \sum_{k=1}^{i-1} \psi(B, k, j) \cdot \alpha(C, k, i-1) \cdot \beta(B, k, j) \\
-%               &\qquad + \sum_{B \in N} \sum_{C \in N} \sum_{k=j+1}^{n} \psi(B, i, k) \cdot \alpha(C, j+1, k) \cdot \beta(B, i, k) \\
-%           &=  \sum_{k=1}^{i-1}  \Bigg[ \sum_{B \in N} \psi(B, k, j)  \cdot \beta(B, k, j) \Bigg] \cdot \Bigg[ \sum_{C \in N} \alpha(C, k, i-1) \Bigg] \\
-%               &\qquad + \sum_{k=j+1}^{n}  \Bigg[ \sum_{B \in N}  \psi(B, i, k) \cdot \beta(B, i, k) \Bigg] \cdot  \Bigg[ \sum_{C \in N} \alpha(C, j+1, k) \Bigg] \\
-%           &=  \sum_{k=1}^{i-1}  S'(k, j) \cdot S(k, i-1) + \sum_{k=j+1}^{n} S'(i, k) \cdot  S(j+1, k) \\
-%   \end{align*}
-%   where
-%   \begin{align*}
-%       S(i, j) &= \sum_{A \in N} \alpha(A, i, j) \\
-%       S'(i, j) &= \sum_{A \in N} \psi(A, i, j) \beta(A, i, j)
-%   \end{align*}
 
 \subsection{Viterbi recursion}
 Obtaining the viterbi tree and its probability is a matter of using the inside recursion with maximization instead of a sum. The score of the best tree is  computed by replacing the sum with the $\max$ in equation
 \begin{align*}
 \label{eq:viterbi-score}
   \nu(i,j)
-    &= [ \max_{A \in N} \tilde{s}(i, j, A) ] \cdot [\max_{ k \in \{ i+1, \dots, j-1 \} } \nu(i,k) \cdot  \nu(k,j) ].
+    &= [ \max_{A \in \Lambda} \tilde{s}(i, j, A) ] \cdot [\max_{ k \in \{ i+1, \dots, j-1 \} } \nu(i,k) \cdot  \nu(k,j) ].
 \end{align*}
 Since these maximization over label and over split point is independent, we can find them seprately
 \begin{align*}
 \label{eq:viterbi-tree}
-  \hat{A} &= \argmax_{ A \in N } \tilde{s}(i, j, A)  \\
+  \hat{A} &= \argmax_{ A \in \Lambda } \tilde{s}(i, j, A)  \\
   \hat{k} &= \argmax_{ k \in \{ i+1, \dots, j-1 \} } \nu(i, k) \cdot \nu(k, j)
 \end{align*}
 The best tree is then found by following back the best splits an labels from the root.
@@ -337,3 +259,90 @@ discarding the rest of the span information. The function is then defined as
   \log\psi(A, i, j) &\defeq s(i, j, A),
 \end{align}
 Note that the potential function as defined in \ref{eq:rule-score} disregards most of the information in a binary rule. In particular we see that $B$, $C$ and $k$, the labels and split-point of the children, are discarded.
+
+
+% \subsection{Inside recursion}
+% In this derivation we will use $\y_a = (i, j, \ell)$ interchangeably.
+%
+% \begin{align*}
+% \label{eq:inside}
+%   \alpha(A,i,j) &= \sum_{B \in N} \sum_{C \in N} \sum_{k=i+1}^{j-1} \tilde{s}(i, j, A) \cdot \alpha(B,i,k) \cdot \alpha(C,k,j) \\
+%     &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} \sum_{B \in N} \alpha(B,i,k) \cdot \sum_{C \in N} \alpha(C,k,j) \\
+%     &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j)
+% \end{align*}
+%
+% where we've introduced a number of notational abbreviations
+% \begin{align*}
+%   \tilde{s}(i, j, A)
+%     &= \exp( s(i, j, A) ) \\
+%     S(i,j) &= \sum_{A \in N} \alpha(A,i,j)
+% \end{align*}
+%
+% From equation \ref{eq:inside} we can deduce that we in fact do even need to store the values $\alpha(i, j, A)$ but that it suffices to only store the marginalized values $S(i, j)$. In this case, the recursion simplifies even further:
+% \begin{align*}
+%     S(i, j) &= \sum_{A \in N} \alpha(A,i,j) \\
+%         &=  \sum_{A \in N} \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \\
+%         &= \Bigg[ \sum_{A \in N} \tilde{s}(i, j, A) \Bigg] \cdot \Bigg[\sum_{k=i+1}^{j-1} S(i,k) \cdot  S(k,j) \Bigg]
+% \end{align*}
+% where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting.
+%
+% \subsection{Inside recursion}
+% In this derivation we follow Michael Collins notes on the Inside-Outside Algorithm.\footnote{\url{http://www.cs.columbia.edu/~mcollins/io.pdf}} We have the following general result for the inside value $\alpha$. For all $A \in N$, for all $0 \leq i < n$
+% \begin{align}
+%     \label{eq:collins-inside-base}
+%     \alpha(A,i,i+1) = \psi(A, i, i+1)
+% \end{align}
+% and for all $(i, j)$ such that $1 \leq i < j \leq n$:
+% \begin{align}
+%     \label{eq:collins-inside-general}
+%     \alpha(A,i,j) = \sum_{A \to B C} \sum_{k=i+1}^{j-1} \psi(A \to B \;C, i, k, j) \cdot \alpha(B,i,k) \cdot \alpha(C,k,j)
+% \end{align}
+% Note that we are considering a CFG in which the rule set is complete, i.e.
+% \begin{align}
+%   \langle A \to B \;C \rangle \in R \text{ for each } (A, B, C) \in N^3,
+% \end{align}
+% and recall that the labels $B$ and $C$ do not appear in the scoring functions in \ref{eq:rule-score}. These facts will allow us to simplify the expression in formula \ref{eq:collins-inside-general} as
+% \begin{subequations}
+% \begin{align*}
+%     \alpha(A,i,j) &= \sum_{B \in N} \sum_{C \in N} \sum_{k=i+1}^{j-1} \tilde{s}(i, j, A) \cdot \alpha(B,i,k) \cdot \alpha(C,k,j) \\
+%         &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} \sum_{B \in N} \alpha(B,i,k) \cdot \sum_{C \in N} \alpha(C,k,j) \\
+%         &= \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \label{eq:final-inside}
+% \end{align*}
+% \end{subequations}
+% where we've introduced a number of notational abbreviations
+% \begin{align*}
+%   \tilde{s}(i, j, A)
+%     &= \exp( s(i, j, A) ) \\
+%     S(i,j) &= \sum_{A \in N} \alpha(A,i,j)
+% \end{align*}
+% Note that this is the exact same formula as \ref{eq:inside-semiring}.
+%
+% From equation \ref{eq:final-inside} we can deduce that we in fact do even need to store the values $\alpha(i, j, A)$ but that it suffices to only store the marginalized values $S(i, j)$. In this case, the recursion simplifies even further:
+% \begin{subequations}
+% \begin{align*}
+%     S(i, j) &= \sum_{A \in N} \alpha(A,i,j) \\
+%         &=  \sum_{A \in N} \tilde{s}(i, j, A) \cdot \sum_{k=i+1}^{j-1} S(i,k) \cdot S(k,j) \\
+%         &= \Bigg[ \sum_{A \in N} \tilde{s}(i, j, A) \cdot \Bigg] \Bigg[\sum_{k=i+1}^{j-1} S(i,k) \cdot  S(k,j) \Bigg]
+% \end{align*}
+% \end{subequations}
+% where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting. We can now recognize this as the `inside' equivalent of the expression from the paper\footnote{I believe there is actually an error in this equation: it should read  $s(i, j, \ell) + s_{span}(i, j)$ instead of just $s(i, j, \ell)$. This is implied by the score for a single node, which is given by equation \ref{eq:rule-score}, taken directly from the paper.}
+% \begin{align}
+%     s_{best}(i, j) = \max_{\ell} [s(i, j, \ell)] + \max_{k}[ s_{split}(i, k, j)].
+% \end{align}
+% The recursions are the same; the semirings are different. The viterbi recursion given above is in the \textsc{ViterbiSemiring}, which uses the $\max$ operator as $\oplus$; the inside recursion given in \ref{eq:final-inside} has standard addition (+) instead.
+%
+% \subsection{Outside recursion}
+%   \begin{align*}
+%       \beta(A, i, j) &= \sum_{B \to C A \in R} \sum_{k=1}^{i-1} \psi(B \to C A, k, i-1, j) \cdot \alpha(C, k, i-1) \cdot \beta(B, k, j) \\
+%               &\qquad + \sum_{B \to A C \in R} \sum_{k=j+1}^{n} \psi(B \to A, C, i, j, k) \cdot \alpha(C, j+1, k) \cdot \beta(B, i, k) \\
+%           &= \sum_{B \in N} \sum_{C \in N} \sum_{k=1}^{i-1} \psi(B, k, j) \cdot \alpha(C, k, i-1) \cdot \beta(B, k, j) \\
+%               &\qquad + \sum_{B \in N} \sum_{C \in N} \sum_{k=j+1}^{n} \psi(B, i, k) \cdot \alpha(C, j+1, k) \cdot \beta(B, i, k) \\
+%           &=  \sum_{k=1}^{i-1}  \Bigg[ \sum_{B \in N} \psi(B, k, j)  \cdot \beta(B, k, j) \Bigg] \cdot \Bigg[ \sum_{C \in N} \alpha(C, k, i-1) \Bigg] \\
+%               &\qquad + \sum_{k=j+1}^{n}  \Bigg[ \sum_{B \in N}  \psi(B, i, k) \cdot \beta(B, i, k) \Bigg] \cdot  \Bigg[ \sum_{C \in N} \alpha(C, j+1, k) \Bigg] \\
+%           &=  \sum_{k=1}^{i-1}  S'(k, j) \cdot S(k, i-1) + \sum_{k=j+1}^{n} S'(i, k) \cdot  S(j+1, k) \\
+%   \end{align*}
+%   where
+%   \begin{align*}
+%       S(i, j) &= \sum_{A \in N} \alpha(A, i, j) \\
+%       S'(i, j) &= \sum_{A \in N} \psi(A, i, j) \beta(A, i, j)
+%   \end{align*}

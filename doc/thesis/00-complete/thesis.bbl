@@ -1749,6 +1749,38 @@
       \field{pages}{3149\bibrangedash 3157}
       \range{pages}{9}
     \endentry
+    \entry{hochreiter1997long}{article}{}
+      \name{author}{2}{}{%
+        {{hash=41b31e29fb2bdbf9f5c9c1b0d5b3e815}{%
+           family={Hochreiter},
+           family_i={H\bibinitperiod},
+           given={Sepp},
+           given_i={S\bibinitperiod}}}%
+        {{hash=288bdbcfe1b91ad7484d7a24f74f99ed}{%
+           family={Schmidhuber},
+           family_i={S\bibinitperiod},
+           given={Jürgen},
+           given_i={J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {MIT Press}%
+      }
+      \strng{namehash}{4c2e1e2e1ac91e1df9d4f7b85ebe39b4}
+      \strng{fullhash}{4c2e1e2e1ac91e1df9d4f7b85ebe39b4}
+      \field{sortinit}{H}
+      \field{sortinithash}{82012198d5dfa657b8c4a168793268a6}
+      \field{labelyear}{1997}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Neural computation}
+      \field{number}{8}
+      \field{title}{Long short-term memory}
+      \field{volume}{9}
+      \field{year}{1997}
+      \field{pages}{1735\bibrangedash 1780}
+      \range{pages}{46}
+    \endentry
     \entry{hockenmaier2007ccgbank}{article}{}
       \name{author}{2}{}{%
         {{hash=8f50d484fe9aa72236fb5a3585d3048b}{%
@@ -1861,6 +1893,28 @@
       \field{journaltitle}{ICLR}
       \field{title}{Categorical reparameterization with gumbel-softmax}
       \field{year}{2017}
+    \endentry
+    \entry{jelinek1997information}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=48d2d6e25183229596dbf23cf956498e}{%
+           family={Jelinek},
+           family_i={J\bibinitperiod},
+           given={Frederick},
+           given_i={F\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {MIT Press}%
+      }
+      \strng{namehash}{48d2d6e25183229596dbf23cf956498e}
+      \strng{fullhash}{48d2d6e25183229596dbf23cf956498e}
+      \field{sortinit}{J}
+      \field{sortinithash}{ec3950a647c092421b9fcca6d819504a}
+      \field{labelyear}{1997}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Information Extraction From Speech And Text, chapter 8}
+      \field{year}{1997}
     \endentry
     \entry{jordan1999vi}{article}{}
       \name{author}{4}{}{%
@@ -2924,6 +2978,36 @@
       \field{pages}{1367\bibrangedash 1374}
       \range{pages}{8}
     \endentry
+    \entry{pauls2012treelets}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{hash=01d23ee6c109414c8e9866437ca8d896}{%
+           family={Pauls},
+           family_i={P\bibinitperiod},
+           given={Adam},
+           given_i={A\bibinitperiod}}}%
+        {{hash=9fb237891a1517d36109c68767dd6fae}{%
+           family={Klein},
+           family_i={K\bibinitperiod},
+           given={Dan},
+           given_i={D\bibinitperiod}}}%
+      }
+      \list{organization}{1}{%
+        {Association for Computational Linguistics}%
+      }
+      \strng{namehash}{51e18dd079fae9b2934243ad0bc59944}
+      \strng{fullhash}{51e18dd079fae9b2934243ad0bc59944}
+      \field{sortinit}{P}
+      \field{sortinithash}{c0a4896d0e424f9ca4d7f14f2b3428e7}
+      \field{labelyear}{2012}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 50th Annual Meeting of the Association for Computational Linguistics: Long Papers-Volume 1}
+      \field{title}{Large-scale syntactic language modeling with treelets}
+      \field{year}{2012}
+      \field{pages}{959\bibrangedash 968}
+      \range{pages}{10}
+    \endentry
     \entry{peters2018elmo}{inproceedings}{}
       \name{author}{7}{}{%
         {{hash=61666d93fdd15da4e32bc0fb460bedb1}{%
@@ -3286,6 +3370,26 @@
       \field{year}{2017}
       \field{pages}{376\bibrangedash 382}
       \range{pages}{7}
+    \endentry
+    \entry{smith2012adversarial}{article}{}
+      \name{author}{1}{}{%
+        {{hash=9a7134e1e77eb89fe5582543a3025f2a}{%
+           family={Smith},
+           family_i={S\bibinitperiod},
+           given={Noah\bibnamedelima A},
+           given_i={N\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+      }
+      \strng{namehash}{9a7134e1e77eb89fe5582543a3025f2a}
+      \strng{fullhash}{9a7134e1e77eb89fe5582543a3025f2a}
+      \field{sortinit}{S}
+      \field{sortinithash}{fd1e7c5ab79596b13dbbb67f8d70fb5a}
+      \field{labelyear}{2012}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:1207.0245}
+      \field{title}{Adversarial evaluation for models of natural language}
+      \field{year}{2012}
     \endentry
     \entry{goldberg2016multitask}{inproceedings}{}
       \name{author}{2}{}{%
