@@ -102,7 +102,7 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {4.3.4}Solutions}{41}{subsection.4.3.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Normalizer}{41}{paragraph*.19}
+\contentsline {paragraph}{Normalizer}{42}{paragraph*.19}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{Parse}{42}{paragraph*.20}
 \defcounter {refsection}{0}\relax 
@@ -110,7 +110,7 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{Entropy}{43}{paragraph*.22}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {4.4}Experiments}{43}{section.4.4}
+\contentsline {section}{\numberline {4.4}Experiments}{44}{section.4.4}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {4.4.1}Supervised model}{44}{subsection.4.4.1}
 \defcounter {refsection}{0}\relax 

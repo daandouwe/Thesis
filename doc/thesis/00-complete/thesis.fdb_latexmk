@@ -1,15 +1,15 @@
 # Fdb version 3
-["biber thesis"] 1552491493 "thesis.bcf" "thesis.bbl" "thesis" 1552491493
+["biber thesis"] 1552495896 "thesis.bcf" "thesis.bbl" "thesis" 1552495896
   "../src/bibliography.bib" 1552405507 44188 45c8c84bc476f8a4364c6a1012d41ecf ""
-  "thesis.bcf" 1552491487 114370 bac5132f6ca5597f1a11530ddc373f8f ""
+  "thesis.bcf" 1552495874 114309 9478e5d6f67b955a99d74f8b5c6bb160 ""
   (generated)
   "thesis.bbl"
   "thesis.blg"
-["pdflatex"] 1552491495 "thesis.tex" "thesis.pdf" "thesis" 1552491495
+["pdflatex"] 1552495898 "thesis.tex" "thesis.pdf" "thesis" 1552495898
   "../01-introduction/introduction.tex" 1551880436 5096 18ba29c7fcaa1edb1c670f407a9a4ecc ""
-  "../02-background/background.tex" 1552472151 33990 7d9dec9c945d61c7de082c9b1ca4ee73 ""
+  "../02-background/background.tex" 1552495870 34010 4c4856a1415b6e816354cad353476811 ""
   "../03-rnng/rnng.tex" 1551890720 21338 4fdff77fe28f2bf96c8c63148ff242d4 ""
-  "../04-crf-parser/crf-parser.tex" 1552491271 35889 d3c8d133119499992f07fb0ad5248745 ""
+  "../04-crf-parser/crf-parser.tex" 1552495896 26815 e1851d4a0027d5351b6dcbf2dafa077a ""
   "../05-semisupervised/semisupervised.tex" 1551880211 9099 5be8a3112964a4e255f9a8fe5d25700b ""
   "../06-syneval/syneval.tex" 1552410170 14737 3eb479496da6c793257cf4d4cc3b121c ""
   "../07-conclusion/conclusion.tex" 1548932928 550 543f16222542faf1298ac7bee1ad71fd ""
@@ -338,15 +338,15 @@
   "thesis-nowechapter.tex" 1548685768 61 7bd141af929d76273e2e62931a8e29df ""
   "thesis-nowplain.tex" 1548685768 58 8a953d607b2073696ab83f6456752d36 ""
   "thesis-nowsample.tex" 1548756964 59 9d6b59b0a9e2970d1a157f1cd8cd2cd8 ""
-  "thesis.aux" 1552491487 49126 7a285025aaeeda1b40b3bb7fd7a2a26c ""
-  "thesis.bbl" 1552491495 154973 6131450a8275d0f378213bb046d6573e "biber thesis"
-  "thesis.run.xml" 1552491487 2368 b5ba601ff9366262ee01b2eba99f19c4 ""
-  "thesis.tex" 1552491493 6294 568573d336dfc8fe6dbc7a264a367b86 ""
-  "thesis.toc" 1552491487 14213 5413128b7138b8c4af45e101d543246a ""
+  "thesis.aux" 1552495874 49017 104d125b47c0d225dd407c8f3f329def ""
+  "thesis.bbl" 1552495898 154973 6131450a8275d0f378213bb046d6573e "biber thesis"
+  "thesis.run.xml" 0 -1 0 ""
+  "thesis.tex" 1552495896 6308 dad33f1ef63dd021fbf45e2d597f9763 ""
+  "thesis.toc" 0 -1 0 ""
   (generated)
   "thesis.log"
+  "thesis.bcf"
+  "thesis.toc"
   "thesis.pdf"
   "thesis.run.xml"
-  "thesis.toc"
   "thesis.aux"
-  "thesis.bcf"
