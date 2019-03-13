@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1552410605 "notation.tex" "notation.pdf" "notation" 1552415071
+["pdflatex"] 1552478820 "notation.tex" "notation.pdf" "notation" 1552478821
   "/usr/local/texlive/2016/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -45,9 +45,9 @@
   "/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1485894775 1888048 f2c5faed5981a516f406b2ccc20bff71 ""
   "/usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt" 1485894833 3873397 68ff021935db8719c30e28db2297c232 ""
   "/usr/local/texlive/2016/texmf.cnf" 1463979140 577 2938757e76f31531e65cc647e3507693 ""
-  "notation.aux" 1552410605 8 a94a2480d3289e625eea47cd1b285758 ""
-  "notation.tex" 1552415071 3282 a408f464d74351adfae8c117f09b00ea ""
+  "notation.aux" 1552478821 8 a94a2480d3289e625eea47cd1b285758 ""
+  "notation.tex" 1552478821 3282 6342a8e97355cd187f11d726157469e4 ""
   (generated)
-  "notation.pdf"
-  "notation.aux"
   "notation.log"
+  "notation.aux"
+  "notation.pdf"

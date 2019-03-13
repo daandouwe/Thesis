@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  12 MAR 2019 19:36
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  13 MAR 2019 13:40
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1480,27 +1480,6 @@ LaTeX Warning: Label `eq:disc-model' multiply defined.
 
 LaTeX Warning: Label `eq:lowerbound' multiply defined.
 
-
-! LaTeX Error: Missing \begin{document}.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.1143 w
-        eig2011microsoft}{nyt/global/}
-You're in trouble here.  Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
-
-! Extra }, or forgotten \endgroup.
-l.1143 weig2011microsoft}
-                         {nyt/global/}
-I've deleted a group-closing symbol because it seems to be
-spurious, as in `$x}$'. But perhaps the } is legitimate and
-you forgot something else, as in `\hbox{$x}'. In such cases
-the way to recover is to insert both the forgotten and the
-deleted material, e.g., by typing `I$}'.
-
 )
 \openout1 = `thesis.aux'.
 
@@ -1659,11 +1638,6 @@ Package microtype Info: Loading generic settings for font family
 (microtype)             `lmss' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
- [1{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
-
-] [2
-
-]
 LaTeX Font Info:    Calculating math sizes for size <13> on input line 134.
 LaTeX Font Info:    Try loading font information for OT1+lmr on input line 134.
 
@@ -1724,14 +1698,18 @@ LaTeX Font Warning: Font shape `U/lasy/m/n' in size <13> not available
 LaTeX Font Warning: Font shape `U/lasy/m/n' in size <6.5> not available
 (Font)              size <6> substituted on input line 134.
 
-[1]
+[1
+
+
+{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <10.95> on input line 134.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <8> on input line 134.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <6> on input line 134.
- (./thesis.toc [2
+
+(./thesis.toc [2
 
 
 ] [3])
@@ -1747,19 +1725,9 @@ File: omslmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `OMS/lmr/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 143.
-pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
-been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.156 \begin{acknowledgements}
-                               [1
+ [1
 
-]pdfTeX warning (ext4): destination with the same identifier (name{page.2}) has
- been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.160 \chapter
-              {Introduction} [2
+] [2
 
 ]
 Chapter 1.
@@ -1826,7 +1794,7 @@ To recover gracefully from this error, it's best to
 delete the erroneous units; e.g., type `2' to delete
 two letters. (See Chapter 27 of The TeXbook.)
 
-[8] <../figures/trees/npi-licensed.pdf, id=244, 526.77112pt x 259.41167pt>
+[8] <../figures/trees/npi-licensed.pdf, id=236, 526.77112pt x 259.41167pt>
 File: ../figures/trees/npi-licensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-licensed.pdf>
@@ -1834,7 +1802,7 @@ Package pdftex.def Info: ../figures/trees/npi-licensed.pdf used on input line 7
 1.
 (pdftex.def)             Requested size: 151.08308pt x 74.40016pt.
 
-<../figures/trees/npi-unlicensed.pdf, id=245, 482.62106pt x 256.61702pt>
+<../figures/trees/npi-unlicensed.pdf, id=237, 482.62106pt x 256.61702pt>
 File: ../figures/trees/npi-unlicensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-unlicensed.pdf>
@@ -1907,64 +1875,51 @@ Chapter 4.
 (../04-crf-parser/crf-parser.tex [34
 
 ] [35] [36]
-<../figures/span-encoding.pdf, id=788, 464.0005pt x 150.49072pt>
+<../figures/span-encoding.pdf, id=780, 464.0005pt x 150.49072pt>
 File: ../figures/span-encoding.pdf Graphic file (type pdf)
 
 <use ../figures/span-encoding.pdf>
-Package pdftex.def Info: ../figures/span-encoding.pdf used on input line 48.
+Package pdftex.def Info: ../figures/span-encoding.pdf used on input line 47.
 (pdftex.def)             Requested size: 335.74251pt x 108.89745pt.
 Package microtype Info: Character `029' is missing
 (microtype)             in font `T1/lmr/m/sc/9'.
 (microtype)             Ignoring protrusion settings for this character.
- [37 <../figures/span-encoding.pdf>]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [38]
-[39]
-
-LaTeX Warning: Reference `eq:inside' on page 40 undefined on input line 134.
 
 
-! Package amsmath Error: Multiple \label's: label 'eq:inside' will be lost.
+LaTeX Warning: Reference `10-app-crf' on page 37 undefined on input line 61.
 
-See the amsmath package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.141   \end{align*}
-                    
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-[40]
-Overfull \hbox (14.94873pt too wide) in paragraph at lines 163--163
+[37 <../figures/span-encoding.pdf>]
+Overfull \hbox (4.67328pt too wide) in paragraph at lines 67--67
 [] 
  []
 
 
-! Package amsmath Error: Multiple \label's: label 'eq:inside-simplified' will b
-e lost.
+Overfull \hbox (7.82234pt too wide) in paragraph at lines 74--74
+[] 
+ []
 
-See the amsmath package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.176   \end{align}
-                   
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
+(../figures/edges/edges.tex)
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[38] [39]
+
+LaTeX Warning: Reference `eq:inside' on page 40 undefined on input line 171.
+
+[40]
+Overfull \hbox (14.94873pt too wide) in paragraph at lines 197--197
+[] 
+ []
 
 [41] [42]
-Overfull \hbox (3.13356pt too wide) in paragraph at lines 218--219
+Overfull \hbox (3.13356pt too wide) in paragraph at lines 252--253
 []\T1/lmr/m/n/10.95 (-20) We eval-u-ate per-plex-ity with vary-ing num-ber of s
 am-ples: 1 (argmax),
  []
 
 [43] [44] [45]
 
-LaTeX Warning: Reference `eq:rule-score' on page 46 undefined on input line 264
+LaTeX Warning: Reference `eq:rule-score' on page 46 undefined on input line 298
 .
 
 ) [46]
@@ -2263,29 +2218,6 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-
-! LaTeX Error: Command \circle invalid in math mode.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.204 ...en by the composed function $\log \circle
-                                                   \Psi$.
-Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
-
-! Dimension too large.
-\@circle ...th \maxdimen \@tempdimb #1\unitlength 
-                                                  \ifdim \@tempdimb >15.5\p@...
-l.204 ... the composed function $\log \circle \Psi
-                                                  $.
-I can't work with sizes bigger than about 19 feet.
-Continue and I'll use the largest value I can.
-
-
-LaTeX Warning: \oval, \circle, or \line size unavailable on input line 204.
-
 [76]) [77]
 Appendix D.
 (../11-app-vi/vi.tex
@@ -2306,7 +2238,7 @@ Overfull \hbox (49.76526pt too wide) in paragraph at lines 131--131
 [] 
  []
 
-[82] [83] <../figures/control-variate.pdf, id=1412, 344.73216pt x 173.3124pt>
+[82] [83] <../figures/control-variate.pdf, id=1409, 344.73216pt x 173.3124pt>
 File: ../figures/control-variate.pdf Graphic file (type pdf)
 
 <use ../figures/control-variate.pdf>
@@ -2377,65 +2309,62 @@ Package logreq Info: Writing requests to 'thesis.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 32662 strings out of 493014
- 597223 string characters out of 6133351
- 1073983 words of memory out of 5000000
- 34693 multiletter control sequences out of 15000+600000
- 194123 words of font info for 260 fonts, out of 8000000 for 9000
+ 32674 strings out of 493014
+ 597400 string characters out of 6133351
+ 1074201 words of memory out of 5000000
+ 34701 multiletter control sequences out of 15000+600000
+ 194372 words of font info for 263 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 62i,19n,72p,1799b,1279s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 62i,19n,72p,1975b,1279s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/
 texlive/2016/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/20
 16/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2016/texmf-dist/
 fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2016/texmf-dist/fonts/enc/
-dvips/lm/lm-mathex.enc}{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/cm-s
-uper/cm-super-t1.enc}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfo
-nts/cm/cmmi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmr10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/
-cm/cmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/
-cmss10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mss9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cms
-sbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-ssi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-ssi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cms
-y10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
-8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/latxfont/
-lcircle1.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx10.p
-fb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx9.pfb></usr/lo
-cal/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb></usr/local/texli
-ve/2016/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb></usr/local/texlive/2016/t
-exmf-dist/fonts/type1/public/lm/lmex10.pfb></usr/local/texlive/2016/texmf-dist/
-fonts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type
-1/public/lm/lmmi6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm
-/lmmi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi9.pfb>
-</usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local
-/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr6.pfb></usr/local/texlive/201
-6/texmf-dist/fonts/type1/public/lm/lmr7.pfb></usr/local/texlive/2016/texmf-dist
-/fonts/type1/public/lm/lmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1
-/public/lm/lmr9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/l
-mri10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri7.pfb><
-/usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri9.pfb></usr/local/
-texlive/2016/texmf-dist/fonts/type1/public/lm/lmss10.pfb></usr/local/texlive/20
-16/texmf-dist/fonts/type1/public/lm/lmss12.pfb></usr/local/texlive/2016/texmf-d
-ist/fonts/type1/public/lm/lmssbx10.pfb></usr/local/texlive/2016/texmf-dist/font
-s/type1/public/lm/lmsso10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/p
-ublic/lm/lmsy10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/l
-msy6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></
-usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy9.pfb></usr/local/t
-exlive/2016/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/local/texlive/201
-6/texmf-dist/fonts/type1/public/lm/lmtt9.pfb></usr/local/texlive/2016/texmf-dis
-t/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/texmf
--dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2016/t
-exmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2016/tex
-mf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texmf-dist/
-fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type
-1/urw/times/utmr8a.pfb>
-Output written on thesis.pdf (106 pages, 1468595 bytes).
+dvips/lm/lm-mathex.enc}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmmi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmr10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmss10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmss9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mssbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmssi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmssi8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/c
+msy10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+sy8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></
+usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmbx9.pfb></usr/local/t
+exlive/2016/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb></usr/local/texlive/20
+16/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb></usr/local/texlive/2016/texmf-
+dist/fonts/type1/public/lm/lmex10.pfb></usr/local/texlive/2016/texmf-dist/fonts
+/type1/public/lm/lmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/pub
+lic/lm/lmmi6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi
+8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmmi9.pfb></usr
+/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texl
+ive/2016/texmf-dist/fonts/type1/public/lm/lmr6.pfb></usr/local/texlive/2016/tex
+mf-dist/fonts/type1/public/lm/lmr7.pfb></usr/local/texlive/2016/texmf-dist/font
+s/type1/public/lm/lmr8.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/publ
+ic/lm/lmr9.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri10
+.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri7.pfb></usr/
+local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmri9.pfb></usr/local/texli
+ve/2016/texmf-dist/fonts/type1/public/lm/lmss10.pfb></usr/local/texlive/2016/te
+xmf-dist/fonts/type1/public/lm/lmss12.pfb></usr/local/texlive/2016/texmf-dist/f
+onts/type1/public/lm/lmssbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/typ
+e1/public/lm/lmsso10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public
+/lm/lmsy10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy6.
+pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></usr/l
+ocal/texlive/2016/texmf-dist/fonts/type1/public/lm/lmsy9.pfb></usr/local/texliv
+e/2016/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/local/texlive/2016/tex
+mf-dist/fonts/type1/public/lm/lmtt9.pfb></usr/local/texlive/2016/texmf-dist/fon
+ts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/texmf-dist
+/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2016/texmf-
+dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texmf-dist/fon
+ts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/u
+rw/times/utmr8a.pfb>
+Output written on thesis.pdf (104 pages, 1451960 bytes).
 PDF statistics:
- 1998 PDF objects out of 2073 (max. 8388607)
- 1773 compressed objects within 18 object streams
- 553 named destinations out of 1000 (max. 500000)
+ 1987 PDF objects out of 2073 (max. 8388607)
+ 1765 compressed objects within 18 object streams
+ 549 named destinations out of 1000 (max. 500000)
  48593 words of extra memory for PDF output out of 51595 (max. 10000000)
 

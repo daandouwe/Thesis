@@ -1,6 +1,6 @@
 % \bibliography{../src/bibliography}
 
-The derivation of the inference algorithms in chapter \ref{04-crf} makes use of the notion of a \textit{weighted hypergraph} as a compact representation of all parses and their scores \citep{gallo1993directed,klein2004parsing}, and also makes use some of the ideas and notation of semiring parsing \citep{goodman1999semiring,eisner2009semirings}.
+The derivation of the inference algorithms in chapter \ref{04-crf} makes use of the notion of a \textit{weighted hypergraph} as a compact representation of all parses and their scores \citep{gallo1993directed,klein2004parsing}, and also makes use some of the ideas and notation of \textit{semiring parsing} \citep{goodman1999semiring,eisner2009semirings}.
 
 
 \section{Hypergraph}
@@ -35,7 +35,7 @@ The derivation of the inference algorithms in chapter \ref{04-crf} makes use of 
         &\quad\cup \Bigg\{ \Big\langle \{ \x_i \}, (A, i-1, i) \Big\rangle \; \Bigg\vert \; A \in \Lambda, \; 1 \leq i \leq n \Bigg\}  \\
         &\quad\cup \Bigg\{ \Big\langle \{ (A, 0, n) \}, (S^{\dagger}, 0, n) \Big\rangle \; \Bigg\vert \; A \in \Lambda \Bigg\}
     \end{align*}
-    This set of edges is illusrated in figure \ref{fig:edges} and figure \ref{fig:hypergraph} shows a fragment of this hypergraph for an example sentence. Shown are the two hyperpaths corresponding to the two (overlapping) derivations
+    The three kind of edges in $E$ are illusrated in figure \ref{fig:edges} and figure \ref{fig:hypergraph} shows a fragment of this hypergraph for an example sentence. Shown are the two hyperpaths corresponding to the two (overlapping) derivations
     \begin{align}
       % &\text{(S (NP \textit{The very hungry cat}) (VP \textit{meows}) .)}  \\
       &\text{(S (NP \textit{The} (ADJP \textit{very hungry}) \textit{cat}) (VP \textit{meows}) .)}  \\
@@ -200,8 +200,7 @@ By instanstiating the inside and outside recursions with different semirings we 
   \begin{align*}
     \log(e^{a} + e^{b}) = a + \log(1 + e^{b-a}) = b + \log(1 + e^{a-b})
   \end{align*}
-  and choosing expression with the smaller exponent.
-  In the CRF, the function $\omega$ is given by the composed function $\log \circle \Psi$.
+  and choosing the expression with the smaller exponent. In the CRF, the function $\omega$ is given by the composed function $\log \circ \Psi$.
 \end{example}
 
 \begin{example}{(Viterbi weight)}
