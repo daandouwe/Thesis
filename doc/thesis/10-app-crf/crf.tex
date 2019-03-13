@@ -184,7 +184,7 @@ The derivation of the inference algorithms in chapter \ref{04-crf} makes use of 
 By instanstiating the inside and outside recursions with different semirings we solve a whole range of problems.
 
 \begin{example}{(Inside and outside values)}
-  When we intantiate the inside recursion and the outside recursion with the \textit{real semiring}, the algorithms recude to the classical inside-outside algorithm \citep{baker1979trainable}. The values $\alpha(v)$ and $\beta(v)$ are the inside and outside values. In particular, the value $\alpha$ at the root is the normalizer:
+  When we intantiate the inside recursion and the outside recursion with the \textit{real semiring}, the algorithms recude to the classical inside-outside algorithm \citep{baker1979trainable}. The values $\alpha(v)$ and $\beta(v)$ are the inside and outside values. In particular, the value of $\alpha$ at the root is the normalizer:
   \begin{align*}
     \alpha(\text{S}^{\dagger}, 0, n) = Z(\x).
   \end{align*}
@@ -204,6 +204,7 @@ By instanstiating the inside and outside recursions with different semirings we 
 \end{example}
 
 \begin{example}{(Viterbi weight)}
+  \label{ex:vit-weight}
   When we intantiate the inside recursion with the \textit{max-tropical semiring} we get the recursion that computes at each node the subtree of maximum weight. The value $\alpha$ at the root is the weight of the derrivation with the maximum weight
   \begin{align*}
     \alpha(\text{S}^{\dagger}, 0, n) = \log \Psi(\x, \hat{\y}),
@@ -216,6 +217,7 @@ By instanstiating the inside and outside recursions with different semirings we 
 \end{example}
 
 \begin{example}{(Viterbi derivation)}
+  \label{ex:vit-derivation}
   The Viterbi semiring derives the \textit{weight} of the best tree. Replacing the max in the Viterbi semiring with an argmax derives the best tree itself:
   \begin{align*}
     \alpha(\text{S}^{\dagger}, 0, n) = \hat{\y}, \qquad \hat{\y} \defeq \argmax_{\y \in \yieldx} p(\y \mid \x).

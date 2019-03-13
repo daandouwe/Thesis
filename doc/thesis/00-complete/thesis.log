@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  13 MAR 2019 13:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  13 MAR 2019 16:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1478,6 +1478,9 @@ LaTeX Warning: Label `eq:disc-model' multiply defined.
 LaTeX Warning: Label `eq:disc-model' multiply defined.
 
 
+LaTeX Warning: Label `eq:inside-simplified' multiply defined.
+
+
 LaTeX Warning: Label `eq:lowerbound' multiply defined.
 
 )
@@ -1794,7 +1797,7 @@ To recover gracefully from this error, it's best to
 delete the erroneous units; e.g., type `2' to delete
 two letters. (See Chapter 27 of The TeXbook.)
 
-[8] <../figures/trees/npi-licensed.pdf, id=236, 526.77112pt x 259.41167pt>
+[8] <../figures/trees/npi-licensed.pdf, id=234, 526.77112pt x 259.41167pt>
 File: ../figures/trees/npi-licensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-licensed.pdf>
@@ -1802,7 +1805,7 @@ Package pdftex.def Info: ../figures/trees/npi-licensed.pdf used on input line 7
 1.
 (pdftex.def)             Requested size: 151.08308pt x 74.40016pt.
 
-<../figures/trees/npi-unlicensed.pdf, id=237, 482.62106pt x 256.61702pt>
+<../figures/trees/npi-unlicensed.pdf, id=235, 482.62106pt x 256.61702pt>
 File: ../figures/trees/npi-unlicensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-unlicensed.pdf>
@@ -1875,7 +1878,7 @@ Chapter 4.
 (../04-crf-parser/crf-parser.tex [34
 
 ] [35] [36]
-<../figures/span-encoding.pdf, id=780, 464.0005pt x 150.49072pt>
+<../figures/span-encoding.pdf, id=778, 464.0005pt x 150.49072pt>
 File: ../figures/span-encoding.pdf Graphic file (type pdf)
 
 <use ../figures/span-encoding.pdf>
@@ -1902,35 +1905,31 @@ Overfull \hbox (7.82234pt too wide) in paragraph at lines 74--74
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[38] [39]
-
-LaTeX Warning: Reference `eq:inside' on page 40 undefined on input line 171.
-
-[40]
-Overfull \hbox (14.94873pt too wide) in paragraph at lines 197--197
+[38] [39] [40]
+Overfull \hbox (14.94873pt too wide) in paragraph at lines 196--196
 [] 
  []
 
-[41] [42]
-Overfull \hbox (3.13356pt too wide) in paragraph at lines 252--253
+[41] [42] [43]
+Overfull \hbox (3.13356pt too wide) in paragraph at lines 282--283
 []\T1/lmr/m/n/10.95 (-20) We eval-u-ate per-plex-ity with vary-ing num-ber of s
 am-ples: 1 (argmax),
  []
 
-[43] [44] [45]
+[44] [45] [46]
 
-LaTeX Warning: Reference `eq:rule-score' on page 46 undefined on input line 298
+LaTeX Warning: Reference `eq:rule-score' on page 47 undefined on input line 328
 .
 
-) [46]
+) [47]
 Chapter 5.
-(../05-semisupervised/semisupervised.tex [47
+(../05-semisupervised/semisupervised.tex [48
 
-] [48] [49] [50] [51]) [52]
+] [49] [50] [51] [52]) [53]
 Chapter 6.
-(../06-syneval/syneval.tex [53
+(../06-syneval/syneval.tex [54
 
-] [54] [55]
+] [55] [56]
 ! Undefined control sequence.
 l.37 ...ntroduced in chapter \ref{04-crf}.\foonote
                                                   {This is similar to an app...
@@ -1940,21 +1939,21 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[56] [57] [58] [59]) [60]
+[57] [58] [59] [60]) [61]
 Chapter 7.
-(../07-conclusion/conclusion.tex) [61
+(../07-conclusion/conclusion.tex) [62
 
-] [62
+] [63
 
 ]
 Appendix A.
-(../08-app-figures/figures.tex [63
+(../08-app-figures/figures.tex [64
 
-]) [64]
+]) [65]
 Appendix B.
-(../09-app-implementation/implementation.tex [65
+(../09-app-implementation/implementation.tex [66
 
-] [66] [67] [68]
+] [67] [68] [69]
 
 ! LaTeX Error: Lonely \item--perhaps a missing list environment.
 
@@ -2175,9 +2174,9 @@ l.53 \end{itemize}
                   
 Things are pretty mixed up, but I think the worst is over.
 
-) [69]
+) [70]
 Appendix C.
-(../10-app-crf/crf.tex [70
+(../10-app-crf/crf.tex [71
 
 ]
 Overfull \hbox (4.67328pt too wide) in paragraph at lines 30--30
@@ -2192,7 +2191,7 @@ Overfull \hbox (7.82234pt too wide) in paragraph at lines 37--37
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [71]
+ [72]
 ! Missing } inserted.
 <inserted text> 
                 }
@@ -2208,7 +2207,7 @@ my insertion and my current dilemma will both disappear.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[72] [73] [74] [75]
+[73] [74] [75] [76]
 ! Undefined control sequence.
 l.199   The semiring addition $a \osum
                                        b = \log(e^{a} + e^{b})$ is made nume...
@@ -2218,7 +2217,7 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[76]) [77]
+[77]) [78]
 Appendix D.
 (../11-app-vi/vi.tex
 Overfull \hbox (0.74757pt too wide) in paragraph at lines 10--11
@@ -2226,39 +2225,39 @@ Overfull \hbox (0.74757pt too wide) in paragraph at lines 10--11
 , for non-conjugate
  []
 
-[78
+[79
 
 ]
 Overfull \hbox (9.49663pt too wide) in paragraph at lines 38--38
 [] 
  []
 
-[79] [80] [81]
+[80] [81] [82]
 Overfull \hbox (49.76526pt too wide) in paragraph at lines 131--131
 [] 
  []
 
-[82] [83] <../figures/control-variate.pdf, id=1409, 344.73216pt x 173.3124pt>
+[83] [84] <../figures/control-variate.pdf, id=1425, 344.73216pt x 173.3124pt>
 File: ../figures/control-variate.pdf Graphic file (type pdf)
 
 <use ../figures/control-variate.pdf>
 Package pdftex.def Info: ../figures/control-variate.pdf used on input line 205.
 
 (pdftex.def)             Requested size: 235.01872pt x 118.15762pt.
-) [84] [85 <../figures/control-variate.pdf>]
+) [85] [86 <../figures/control-variate.pdf>]
 Appendix E.
-(../12-app-syneval/syneval.tex [86
+(../12-app-syneval/syneval.tex [87
 
-] [87]) [88] [89
+] [88]) [89] [90
 
-] [90] [91] [92] [93]
+] [91] [92] [93] [94]
 Overfull \hbox (38.92006pt too wide) in paragraph at lines 222--222
 \T1/lmr/m/n/10.95 (-20) ``Ex-plor-ing the lim-its of lan-guage mod-el-ing''. \T
 1/lmr/m/it/10.95 (-20) arXiv preprint arXiv:1602.02410\T1/lmr/m/n/10.95 (-20) .
  
  []
 
-[94] [95] [96]
+[95] [96] [97]
 
 ! Package inputenc Error: Unicode char ỳ (U+1EF3)
 (inputenc)                not set up for use with LaTeX.
@@ -2273,7 +2272,7 @@ Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-[97]
+[98]
 ! Misplaced alignment tab character &.
 <argument> Computer Speech &
                              Language
@@ -2286,7 +2285,7 @@ up above has ended a previous alignment prematurely,
 you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
-[98] [99] [100] 
+[99] [100] [101] 
 AED: lastpage setting LastPage
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 228.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 228.
@@ -2304,15 +2303,19 @@ LaTeX Warning: There were undefined references.
 
 LaTeX Warning: There were multiply-defined labels.
 
+
+Package biblatex Warning: Please rerun LaTeX.
+(biblatex)                Page breaks have changed.
+
 Package logreq Info: Writing requests to 'thesis.run.xml'.
 \openout1 = `thesis.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 32674 strings out of 493014
- 597400 string characters out of 6133351
- 1074201 words of memory out of 5000000
- 34701 multiletter control sequences out of 15000+600000
+ 32326 strings out of 493014
+ 593311 string characters out of 6133351
+ 1071095 words of memory out of 5000000
+ 34344 multiletter control sequences out of 15000+600000
  194372 words of font info for 263 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  62i,19n,72p,1975b,1279s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -2361,10 +2364,10 @@ ts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/texmf-dist
 dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texmf-dist/fon
 ts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/u
 rw/times/utmr8a.pfb>
-Output written on thesis.pdf (104 pages, 1451960 bytes).
+Output written on thesis.pdf (105 pages, 1456654 bytes).
 PDF statistics:
- 1987 PDF objects out of 2073 (max. 8388607)
- 1765 compressed objects within 18 object streams
- 549 named destinations out of 1000 (max. 500000)
+ 2005 PDF objects out of 2073 (max. 8388607)
+ 1782 compressed objects within 18 object streams
+ 558 named destinations out of 1000 (max. 500000)
  48593 words of extra memory for PDF output out of 51595 (max. 10000000)
 

@@ -50,15 +50,15 @@ In this chapter:
   \end{figure}
 
 \section{Inference}
-\label{sect:inference}
-Because the model is span-factored it allows efficient inference. In this section we describe efficient solutions to four related problems:
-\begin{itemize}
-  \item Compute the normalizer $Z(\x) = \sum_{ \y \in \yieldx } \prod_{ a=1 }^{ A } \psi( \x, \y_a )$.
-  \item Find the best parse $\hat{ \y } = \arg \max_{\y } p(\y  \mid \x)$
-  \item Sample a tree $Y \sim P(Y \mid X = x)$. %(\cdot \mid \x)$.
-  \item Compute the entropy $H(P(Y \mid X = x))$ over parses for $\x$.
-\end{itemize}
-These problems can be solved by instants of the \textit{inside algorithm} and \textit{outside algorithm} \citep{baker1979trainable}, an insight we take from semiring parsing \citep{goodman1999semiring}. In the following derivations we will make use of the notion of a \textit{weighted hypergraph} as a compact representation of all parses and their scores \citep{gallo1993directed,klein2004parsing}, and use some of the ideas and notation of semiring parsing \citep{goodman1999semiring,eisner2009semirings}. First we describe the structure of the parse forest specified by our CRF parser, and then derrive the particular form of the inside and outside recursions for this hypergraph from the general formulations. We refer the reader to appendix \ref{10-app-crf} for background on these ideas, and the introduction of the notation.
+  \label{sect:inference}
+  Because the model is span-factored it allows efficient inference. In this section we describe efficient solutions to four related problems:
+  \begin{itemize}
+    \item Compute the normalizer $Z(\x) = \sum_{ \y \in \yieldx } \prod_{ a=1 }^{ A } \psi( \x, \y_a )$.
+    \item Find the best parse $\hat{ \y } = \arg \max_{\y } p(\y  \mid \x)$
+    \item Sample a tree $Y \sim P(Y \mid X = x)$. %(\cdot \mid \x)$.
+    \item Compute the entropy $H(P(Y \mid X = x))$ over parses for $\x$.
+  \end{itemize}
+  These problems can be solved by instants of the \textit{inside algorithm} and \textit{outside algorithm} \citep{baker1979trainable}, an insight we take from semiring parsing \citep{goodman1999semiring}. In the following derivations we will make use of the notion of a \textit{weighted hypergraph} as a compact representation of all parses and their scores \citep{gallo1993directed,klein2004parsing}, and use some of the ideas and notation of semiring parsing \citep{goodman1999semiring,eisner2009semirings}. First we describe the structure of the parse forest specified by our CRF parser, and then derrive the particular form of the inside and outside recursions for this hypergraph from the general formulations. We refer the reader to appendix \ref{10-app-crf} for background on these ideas, and the introduction of the notation.
 
 \subsection{Weighted parse forest}
   The hypergraph $G = (V, E)$ specified by the CRF parser has the following structure. The set $V$ consists of the invidual words of a sentence $x$, together with all posible labeled spans over that sentence:
@@ -83,9 +83,9 @@ These problems can be solved by instants of the \textit{inside algorithm} and \t
   \end{figure}
   We connect a semiring $\mathcal{K}$ to the hypergraph by defining the the weight function as $\omega: E \to \mathbb{K}$, and by accumulating the weights with its binary operations. The function $\omega$ that asigns weights to the edges will be given either by the function $\psi$ or $\log \circ \psi$, depending on the semiring used. Because of the factorization that we assumed, the function $\omega$ has a very particular property: the function only depends on the \textit{head} of the edge. Let $e$ be an edge of the form $\langle \{ (B, i, k), (C, k, j) \},  (A, i, j) \rangle$, for example, then
   \begin{align}
-    \omega(e) = \omega(\langle \{ (B, i, k), (C, k, j) \},  (A, i, j) \rangle) = \omega((A, i, j)).
+    \omega(e) = \omega(\langle \{ (B, i, k), (C, k, j) \},  (A, i, j) \rangle) = \omega((A, i, j)),
   \end{align}
-  For simplicity, we will write $\omega(A,i,j)$. This fact will allow us to greatly rewrite the recursion that follow.
+  which we write as $\omega(A,i,j)$ for simplicity. This fact will allow us to greatly rewrite the recursion that follow.
 
 % \subsection{Quantities}
 %   For each labeled span $(A, i, j)$, we define the inside value $\alpha(A, i, j)$ as the sum of potentials of all trees that are rooted in node $A$ with leaves $x_{i+1} \dots x_j$. We define the outside value $\beta(A, i, j)$ as the sum over potentials of all trees with leaves $x_1 \dots x_i A x_{j+1} \dots x_n$, where the nonterminal $A$ is treated as a leaf that is not expanded. These values sum over complementary sets that together make up all parses of $\x$.
@@ -135,7 +135,6 @@ These problems can be solved by instants of the \textit{inside algorithm} and \t
 %
 %   \paragraph{Parse}
 %     The best parse can be obtained with the Viterbi algoritm, which is an instance of the inside algorithm. The viterbi algorithm replaces the sum operator of the inside algorithmm with $\max$: at each node this selects the best substructure instead of summing over all of them.
-
 
 \subsection{Inside recursion}
   The inside recursion computes quantities $\alpha(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. The quantity computed depends on the semiring used. In this section we derive the inside recursion specific to our hypergraph from the general result given. What we will show in particular is that the factorization over labeled spans allows the formula to simplify greatly, speeding up the computation significantly.
@@ -201,35 +200,66 @@ These problems can be solved by instants of the \textit{inside algorithm} and \t
       \sigma'(i, j) &= \bigoplus_{A \in \Lambda} \psi(A, i, j) \beta(A, i, j)
   \end{align*}
 
-\subsection{Viterbi recursion}
-  To ontain the viterbi tree and its probability we use the Viterbi semirings. The score of the best tree is computed by replacing the sum with the $\max$ in equation
-  \begin{align}
-  \label{eq:viterbi-score}
-    \nu(i,j)
-      &= \max_{A} [ \psi(A, i, j) ] + \max_{k} [\nu(i,k) + \nu(k,j)].
-  \end{align}
-  Since these maximization over label and over split point is independent, we can find them seprately
-  \begin{align}
-  \label{eq:viterbi-tree}
-    \hat{A} &= \argmax_{ A  } \psi(A, i, j)  \\
-    \hat{k} &= \argmax_{ k } \nu(i, k) \cdot \nu(k, j)
-  \end{align}
-  The best tree is then found by following back the best splits an labels from the root.
+\subsection{Solutions}
+  Equiped with the above two recursions and a range of semirings we can provide the solutions promised at the outset of this section.
 
-% \subparagraph{Numerical concerns}
-%   The above recursion computes the result of exponentially many additions and multiplications. This will soon run into the problem of numerical underflow and overflow. Instead, we compute these quantities in the logarithmic domain, defining the $\oplus$ as
-%   \begin{align*}
-%     a \osum b = \log(e^{a} + e^{b}),
-%   \end{align*}
-%   and $\otimes$ as
-%   \begin{align*}
-%     a \otimes b = a + b.
-%   \end{align*}
-%   The definition of $\oplus$ is made numerically stable by writing
-%   \begin{align*}
-%     \log(e^{a} + e^{b} = a + \log(1 + e^{b-a}) = b + \log(1 + e^{a-b})
-%   \end{align*}
-%   and choosing expression with the smaller exponent.
+  \paragraph{Normalizer}
+    When we intantiate the inside recursion with the real semiring, the value of $\alpha$ at the root is the normalizer:
+    \begin{align*}
+      \alpha(\text{S}^{\dagger}, 0, n) = Z(\x),
+    \end{align*}
+    and when we instantiate the inside recursion with the log-real semiring we obtain the log-normalizer
+    \begin{align*}
+      \alpha(\text{S}^{\dagger}, 0, n) = \log Z(\x).
+    \end{align*}
+
+  \paragraph{Parse}
+    To find the viterbi tree $\hat{ \y } = \arg \max_{\y } p(\y  \mid \x)$ and its probability $p(\hat{\y} \mid \x)$ we use the Viterbi semirings ($\cf$ examples \ref{ex:vit-weight} and \ref{ex:vit-derivation} in appendix \ref{A3-crf}). We take equation \label{eq:inside-simplified} and substitute the Viterbi semiring operations to derive that the value of the best subtree spanning words $i$ to $j$ is given by
+    \begin{align}
+      \label{eq:viterbi-score}
+      \nu(i,j)
+        &= \max_{A} [ \log \psi(A, i, j) ] + \max_{k} [\nu(i,k) + \nu(k,j)].
+    \end{align}
+    The value $\log p(\hat{\y} \mid \x)$ is then given by $\mu(0, n)$. The best label and splitpoint $\hat{A}$ and $\hat{k}$ for the span $(i, j)$ are obtained by using the argmax:
+    \begin{align}
+      \label{eq:viterbi-tree}
+      \hat{A} &= \argmax_{ A  } \log \psi(A, i, j)  \\
+      \hat{k} &= \argmax_{ k } \nu(i, k) + \nu(k, j),
+    \end{align}
+    and the best tree $\hat{y}$ is found by following back from the root down to the leaves the best splits and labels.
+
+  \paragraph{Sample}
+    Samples can be obtained by recursively sampling edges, starting at the root node $(S^{\dagger}, 0, n)$. The probability of an edges is proportional to the weight under that edge: this is precicely the inside value $\alpha$ computed in the real-semiring. We thus sample an edge $e = \langle \{ (B, i, k), (C, k, j) \},  (A, i, j) \rangle$ with probability
+    \begin{align}
+      \label{eq:sample}
+      P(e)
+        &\propto \omega(e) \otimes \displaystyle\bigotimes_{u \in T(e)} \alpha(u)  \nonumber  \\
+        &= \psi(A, i, j) \, \alpha(B, i, k) \, \alpha(C, k, j)  \nonumber  \\
+        &\propto \alpha(B, i, k) \, \alpha(C, k, j),
+    \end{align}
+    where the edge-weight $\psi(A, i, j)$ is absorbed into the normalizing constant because it is the same for all edges.
+
+  \paragraph{Entropy}
+    To compute the entropy $H(P(Y \mid X = x))$ over parses for the sentence $\x$ we first introduce the notion of the \textit{maginal probablity} of a node, the first and only quantity on we will encounter that also requires the values $\beta$ computed by the outside recursion. The posterior marginal of a node $v = (A, i, j)$ in a hypergraph $G$ is the probability that it occurs in a tree $\y$ for the sentence $\x$ as governed by the distribution $p$. We introduce therandom variable $V$, with the hypergraph nodes $\mathcal{V}$ as sample space, and define
+    \begin{align}
+      P(V = v \mid X = \x)
+        &\defeq \expect_Y[ \indicator_{ \{ v \in Y \} } ]  \nonumber \\
+        &= \sum_{ \y \in \yieldx } p(\y \mid \x) \indicator_{ \{ v \in y \} }.
+    \end{align}
+    The marginals can be computed from the inside and outside values computed in the real semiring as \citep{baker1979trainable,goodman1999semiring}
+    \begin{align}
+      P(V = v \mid X = \x) = \frac{\alpha(A, i, j) \, \beta(A, i, j)}{Z(\x)},
+    \end{align}
+    which can be seen by noting that the product of $\alpha(A, i, j)$ and $\beta(A, i, j)$ is the sum over all trees that contain the node $v$, and $Z(\x)$ the sum over all trees in general. Using the marginals, the entropy of the distribution over parses can be written as
+    \begin{align}
+      H(P(Y \mid X = x))
+        &= - \sum_{ \y \in \yieldx } p(\y \mid \x) \log p(\y \mid \x)  \nonumber \\
+        &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{v \in \y} \log \psi(\x, v)  \nonumber \\
+        &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{ v \in V } \indicator_{ \{ v \in y \} } \log \psi(\x, v)  \nonumber \\
+        &= \log Z(\x) - \sum_{ v \in \mathcal{V} } \log \psi(\x, v)  \sum_{ \y \in \yieldx } \indicator_{ \{ v \in y \} } p(\y \mid \x)  \nonumber \\
+        &= \log Z(\x) - \sum_{ v \in \mathcal{V} } \log \psi(\x, v)  P(V = v \mid X = \x)  \nonumber \\
+        &=  \log Z(\x) - \expect_V [ \log \psi(\x, V) ].
+    \end{align}
 
 \section{Experiments}
   We perform three types of experiments with the CRF parser:

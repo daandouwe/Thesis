@@ -494,6 +494,8 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmcsc10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmcsc10.tfm
 INPUT ../figures/edges/edges.tex
 INPUT ../figures/edges/edges.tex
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmri8.tfm
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmri7.tfm
 INPUT ../05-semisupervised/semisupervised.tex
 INPUT ../05-semisupervised/semisupervised.tex
 INPUT ../06-syneval/syneval.tex
@@ -506,8 +508,6 @@ INPUT ../08-app-figures/figures.tex
 INPUT ../09-app-implementation/implementation.tex
 INPUT ../09-app-implementation/implementation.tex
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmtt9.tfm
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmri8.tfm
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/lm/ec-lmri7.tfm
 INPUT ../10-app-crf/crf.tex
 INPUT ../10-app-crf/crf.tex
 INPUT ../figures/edges/edges.tex
