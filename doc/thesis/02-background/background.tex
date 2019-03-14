@@ -5,67 +5,69 @@ This thesis provides background for the four topics that are combined in this th
 [A litle bit more outline...]
 
 \section{Syntax}
-This section introduces some concepts about syntax that are relevant for this thesis. In particular we introduce the concept of constituents, and their hierarchical organization in a sentence as described by phrase-structure grammars. The aim is to provide a succinct and compelling answer to the question: \textit{Why should we care about constituency structure?}
+This section introduces some concepts from syntax that are relevant for this thesis. In particular, we introduce the notion of a \textit{constituent}, and the hierarchical organization of constituents in a sentence as described by phrase-structure grammars. The aim is to provide a succinct and compelling answer to the question: \textit{Why should we care about constituency structure when modelling language?}
 
-The following exposition primarily follows \citet{huddleston2002grammar}, a well established reference grammar of the English language that is relatively agnostic with respect to theoretical framework, with some excursions into \citet{carnie2010constituent} and \citet{everaert2015structures}, which are more rooted in a particular theoretical framework\footnote{Broadly subsumable under the name \textit{generative grammar}.}, but less language-specific.
+The exposition primarily follows \citet{huddleston2002grammar}, a well established reference grammar of the English language that is relatively agnostic with respect to theoretical framework, with some excursions into \citet{carnie2010constituent} and \citet{everaert2015structures}, which are less language-specific but rooted more in a particular theoretical framework\footnote{Broadly subsumable under the name \textit{generative grammar}.}.
 
-The following three principles from \citet{huddleston2002grammar} guide our discussion.
-\begin{definition}{(Phrase structure) }
-  \begin{enumerate}
+We take the following three principles from \citet{huddleston2002grammar} as guiding and to each principle dedicate a separate section.
+\begin{definition}{(Phrase structure, following \citep{huddleston2002grammar})}
+  \begin{enumerate}[noitemsep]
     \item \textit{Sentences consist of parts that may themselves have parts.}
     \item \textit{These parts belong to a limited range of types.}
     \item \textit{The constituents have specific roles in the larger parts they belong to.}
   \end{enumerate}
 \end{definition}
-We now describe each principle in more detail.
 
-\subsection{Constituents} Sentences consist of parts that may themselves have parts. The parts are groups of words that function as units and are called \textit{constituents}. Consider the simple sentence \textit{A bird hit the car.} The immediate constituents are \textit{a bird} (the subject) and \textit{hit the car} (the predicate). The phrase \textit{hit the car} can be analyzed further as containing the constituent \textit{the car}. The ultimate constituents of a sentence are the atomic words, and the entire analysis is called the constituent structure of the sentence. This structure can be indicated succinctly with the use of brackets, or less succinctly as a tree diagram in figure \ref{fig:bird-tree}.
+
+\subsection{Constituents}
+Sentences consist of parts that may themselves have parts. The parts are groups of words that function as units and are called \textit{constituents}. Consider the simple sentence \textit{A bird hit the car.} The immediate constituents are \textit{a bird} (the subject) and \textit{hit the car} (the predicate). The phrase \textit{hit the car} can be analyzed further as containing the constituent \textit{the car}. The ultimate constituents of a sentence are the atomic words, and the entire analysis is called the constituent structure of the sentence. This structure can be indicated succinctly with the use of brackets
+\begin{exe}
+  \ex \verb![ [A bird] [hit [the car] ] ]!
+\end{exe}
+or less succinctly as a tree diagram in figure.
 \begin{figure}[h]{\textwidth}
   \center
-  \begin{subfigure}[b]{0.4\textwidth}
-    [ [A bird] [hit [the car] ] ]
-  \end{subfigure}
-  \begin{subfigure}[b]{0.4\textwidth}
-    \begin{tikzpicture}[scale=.8]
-      \Tree [.$\cdot$ [.$\cdot$ A bird ] [.$\cdot$ hit [.$\cdot$ the car ] ] ]
-    \end{tikzpicture}
-  \end{subfigure}
-  \caption{A grammatical analysis as bracketed sentence, and as tree.}
+  \begin{tikzpicture}[scale=.8]
+    \Tree [.$\cdot$ [.$\cdot$ A bird ] [.$\cdot$ hit [.$\cdot$ the car ] ] ]
+  \end{tikzpicture}
   \label{fig:bird-tree}
 \end{figure}
 Evidence for the existence of such constituents can be provided by examples such as the following, which are called constituent tests \citep{carnie2010constituent}. Consider inserting the adverb \textit{apparently} into our example sentence, indicating the alleged status of the event described in the sentence. In principle there are six positions available for the placement of \textit{apparently} (including before, and after the sentence). However, only three of these placements are actually permissible\footnote{We use an asterisk `*' to indicate a sentence that is judged ungrammatical, as is customary in linguistics.}:
-\begin{enumerate}[noitemsep]
-  \item \textit{Apparently} a bird hit the car.
-  \item *An \textit{apparently} bird hit the car.
-  \item A bird \textit{apparently} hit the car.
-  \item *A bird hit \textit{apparently} the car.
-  \item *A bird hit the \textit{apparently} car.
-  \item A bird hit the car, \textit{apparently}.
-\end{enumerate}
+\begin{exe}
+  \ex \begin{xlist}
+    \ex \textit{Apparently} a bird hit the car.
+    \ex *An \textit{apparently} bird hit the car.
+    \ex A bird \textit{apparently} hit the car.
+    \ex *A bird hit \textit{apparently} the car.
+    \ex *A bird hit the \textit{apparently} car.
+    \ex A bird hit the car, \textit{apparently}.
+  \end{xlist}
+\end{exe}
 Based on the bracketing in \ref{eq:bird-brackets} we can formulate a general constraint: the adverb must not interrupt any constituent. Indeed, this explains why \textit{actually} cannot be placed anywhere inside \textit{hit the car} and not between \textit{a} and \textit{bird}. For full support, typically results from many more such test are gathered, and in general these tests can be much more controversial than in our simple example \citep{carnie2010constituent}.
 
-\subsection{Syntactic categories} The constituents of a sentence belong to a limited range of types that form the set of syntactic categories. Two types of categories are distinguished: lexical and phrasal. The lexical categories are also known as part-of-speech tags. The tree in figure \ref{fig:bird-tree} can be represented in more detail by adding syntactic categories, see figure \ref{fig:bird-tree-labeled}.
+\subsection{Categories}
+The constituents of a sentence belong to a limited range of types that form the set of syntactic categories. Two types of categories are distinguished: lexical and phrasal. The lexical categories are also known as part-of-speech tags. A tree can be represented in more detail by adding lexical (D, N, V) and phrasal categories (S, NP, VP):
 \begin{figure}[h]{\textwidth}
   \center
   \begin{tikzpicture}[scale=.8]
     \Tree [.S [.NP [.D A ] [.N bird ]] [.VP [.V hit ] [.NP [.D the ] [.N car ] ] ] ]
   \end{tikzpicture}
-  \caption{A tee specified with lexical (D, N, V) and phrasal categories (S, NP, VP).}
-  \label{fig:bird-tree-labeled}
 \end{figure}
 For example, the noun (N) \textit{car} is the head of the noun phrase (NP) \textit{the car}, while the head of the larger phrase \textit{hit the car} is the verb (V) \textit{hit}, making this larger constituent a \textit{verb phrase} (VP). The whole combined forms a sentence (S).
 
-\subsection{Hierarchical structure} The constituents have specific roles in the larger parts they belong to. And this structure provides constraints that are not explainable from the linear order of the words themselves \citep{everaert2015structures}. Consider an example about the syntactic behaviour of \textit{negative polarity items} (NPIs). A negative polarity item is, to first approximation, a word or group of words that is restricted to negative context \citep{everaert2015structures}.\footnote{Or, more generaly, they are words that need to be licensed by a specific \textit{licencing context} \citep{giannakidou2011npi}.} Take the behaviour of the word \textit{anybody}:
-\begin{enumerate}[noitemsep]
-  \item The book that I bought did \textit{not} appeal to \textit{anybody}.
-  \item *The book that I bought appealed to \textit{anybody}.
-\end{enumerate}
+\subsection{Hierarchy}
+The constituents have specific roles in the larger parts they belong to. This structure provides constraints that are not explainable from the linear order of the words themselves \citep{everaert2015structures}. Consider an example about the syntactic behaviour of \textit{negative polarity items} (NPIs) from \citet{everaert2015structures}. A negative polarity item is, to first approximation, a word or group of words that is restricted to negative context \citep{everaert2015structures}.\footnote{More generaly, they are words that need to be licensed by a specific \textit{licencing context} \citep{giannakidou2011npi}.} Take the behaviour of the word \textit{anybody}:
+\begin{exe}
+  \ex \begin{xlist}
+    \ex The book that I bought did \textit{not} appeal to \textit{anybody}.
+    \ex *The book that I bought appealed to \textit{anybody}.
+  \end{xlist}
+\end{exe}
 From this example we might formulate the hypothesis that the word \textit{not} must linearly precede the word \textit{anybody}, but a counter example refutes this hypothesis: the sentence
-\begin{enumerate}
-  \item *The book I did \textit{not} buy appealed to \textit{anybody},
-\end{enumerate}
+\begin{exe}
+  \ex *The book I did \textit{not} buy appealed to \textit{anybody},
+\end{exe}
 is also not grammatical.
-
 \begin{figure}[h]
   \begin{subfigure}[b]{0.5\textwidth}
 		\includegraphics[width=0.9\textwidth]{trees/npi-licensed.pdf}
@@ -76,7 +78,6 @@ is also not grammatical.
 \caption{Hierarchical dependance of negative polarity items. Left shows the word \textit{anybody} in the licensing context of \textit{not}, while right shows the ungrammatical sentence where the word is not. Figure taken without permission from \cite{everaert2015structures}.}
 \label{fig:trees-npi}
 \end{figure}
-
 Instead, it is argued, the constraints that govern this particular pattern depend on hierarchical structure: the word \textit{not} must `structurally precede' the word \textit{anybody} \citep{everaert2015structures}. Figure \label{ref:trees-npi} shows the constituent structure of both sentences. The explanation goes as follows (put this in my own words): \say{In sentence \ref{fig:trees-npi} (a) the hierarchical structure dominating \textit{not} also immediately dominates the hierarchical structure containing \textit{anybody}. In sentence \ref{fig:trees-npi} (b), by contrast, \textit{not} sequentially precedes \textit{anybody}, but the triangle dominating \textit{not} fails to also dominate the structure containing \textit{anybody}.}
 
 
@@ -84,37 +85,13 @@ Instead, it is argued, the constraints that govern this particular pattern depen
 Theoretical syntax is rife with controversy, and wildly differing viewpoints exist. In fact, for each point made in our short discussion, the exact opposite point has been made as well:
 
 \begin{itemize}
-
   \item Work in dependency grammar and other word-based grammar formalisms depart from the idea that lexical relations between individual words are more fundamental than constituents and their hierarchical organization \citep{tesniere1959elements,nivre2005dependency,hudson2010introduction}, and dispenses with the notion of constituents altogether.
 
   \item A recurring cause of controversy is the question whether hierarchical structure needs to be invoked in linguistic explanation. That is, whether the kind of analysis in figure \ref{fig:bird-tree}, with embedded constituents, is really fundamental to language. \citet{frank2012hierarchical} argue that a shallow analysis of sentences into immediate constituants with linear order but no hierachical structure\footnote{A structure reminiscent of that predicted in the task of \textit{chunking}, or shallow parsing.} is sufficient for syntactic theories, a claim that is vehemently rejected by \citet{everaert2015structures}.
 
   \item Research in cognitive neuroscience and psycholinguistics shows that human sentence processing is hierachical, giving evidence that processing crucially depends on the kind of structures introduced in the sections above \citep{hale2001earley,levy2008expectation,brennan2016abstract}. However, research also exists that shows that purely linear predictors are sufficient for modeling sentence comprehension, thus showing the exact opposite to be true \citep{conway2008neurocognitive,gillespie2011hierarchy,christiansen2012similar,gillespie2013against,frank2012hierarchical}.
-
 \end{itemize}
-
-This research, however, takes a pragmatic position with respect to such questions: syntax, we assume, is whatever our dataset says it is. Whether language is hierachical or linear is a question that this thesis engages with from a statistical and computational standpoint.
-
-% \begin{figure}
-%   \begin{subfigure}[b]{\textwidth}
-%     \center
-%     \begin{tikzpicture}[scale=.6]
-% 		  \input{../figures/trees/npi-licensed.tex}
-%     \end{tikzpicture}
-% 		\label{fig:tree-npi-licensed}
-%   \end{subfigure}
-%
-%   \begin{subfigure}[b]{\textwidth}
-%     \center
-%     \begin{tikzpicture}[scale=.6]
-% 		  \input{../figures/trees/npi-unlicensed.tex}
-%     \end{tikzpicture}
-% 		\label{fig:tree-npi-unlicenced}
-%   \end{subfigure}
-%
-% \caption{Negative Polarity.}
-% \label{fig:trees-npi}
-% \end{figure}
+Our work, however, takes a pragmatic position with respect to such questions: syntax, we assume, is whatever our dataset says it is. Whether language is hierachical or linear is a question that this thesis engages with from a statistical and computational standpoint.
 
 \section{Parsing}
   Parsing is the task of predicting a tree $\y$ for a sentence $\x$. Probabilitic parsers solve this problem by learning a probabilistic model $p$ that describes a probability distribution over \textit{all} the possible parses $\y$ of sentences $\x$. This distribution quantifies the uncertainty over the syntactic analyses of the sentence, and can be used to make predictions by finding the trees with highest probability. A further benefit of the probabilistic formulation is that the uncertainty over the parses can be determined quantitatively by computing the entropy of the distribution, and qualitatively by obtaining samples from the distribution. This section describes the form that such probabilistic models take, and the data from which they are estimated.
@@ -179,10 +156,8 @@ This research, however, takes a pragmatic position with respect to such question
         \hline
         (S, 0, 10)     & (S $\to$ SBAR $\varnothing$, 0, 3, 10)  \\
         (SBAR, 0, 3)   & (SBAR $\to$ WHNP S+VP, 0, 1, 3)  \\
-        % (VP, 1, 3)     & (S+VP $\to$ $\varnothing$ NP, 1, 2, 3)  \\
         (WHNP, 0, 1)     & (WHNP $\to$ \textit{What}, 0, 1)  \\
         $\qquad\vdots$ & $\qquad\vdots$  \\
-        % (NP, 7, 9)     & (NP $\to$ $\varnothing$ $\varnothing$, 7, 8, 9)  \\
         ($\varnothing$, 9, 10)     & ($\varnothing$ $\to$ ., 9, 10)  \\
       \end{tabular}
       \caption{Two conceptions of the tree in \ref{fig:tree-cnf-spans}.}
@@ -216,7 +191,7 @@ This research, however, takes a pragmatic position with respect to such question
     \end{definition}
     Generative chart-based models, instead, estimate rule probabilities directly from a treebank. The probability of a tree is computed directly as the product of the probabilities of the rules that generate it, thus requiring no normalization.\footnote{In fact, this makes generative chart-based models directed, locally normalized models: they generate trees top-down by expanding localized normally rules.}.
 
-    Either method have their advantages and disadvantages. The transition-based methods are fast, running in time linear in the sequence length, and allow arbitrary features that can condition on the entire sentence and the partially constructed derrivation. However, directed models with local normalization are known to suffer from the problem of label-bias \citep{lafferty2001crf}, and conditioning on large parts of the partial derivations prohibits exact inference, so that decoding can be done only approximately, either with greedy decoding or with beam search. The chart based methods, on the other hand, allow efficient exact inference, and the global training of the discriminative models [...something about learning from all substructures...]. The method is much slower, however, running in time cubic in the sentence length for normal form trees \footnot{And slower for trees that are not in normal form.}, and linear in the size of the grammar\footnote{Giving a total time complexity of $O(n^3|G|)$.}, and the strong factorization of the structure, which makes the exact inference tractable, also means that features can condition only on small parts instead of large substructures.
+    Either method have their advantages and disadvantages. The transition-based methods are fast, running in time linear in the sequence length, and allow arbitrary features that can condition on the entire sentence and the partially constructed derrivation. However, directed models with local normalization are known to suffer from the problem of label-bias \citep{lafferty2001crf}, and conditioning on large parts of the partial derivations prohibits exact inference, so that decoding can be done only approximately, either with greedy decoding or with beam search. The chart based methods, on the other hand, allow efficient exact inference, and the global training of the discriminative models [...something about learning from all substructures...]. The method is much slower, however, running in time cubic in the sentence length for normal form trees \footnote{And slower for trees that are not in normal form.} and linear in the size of the grammar\footnote{Giving a total time complexity of $O(n^3|G|)$.}, and the strong factorization of the structure, which makes the exact inference tractable, also means that features can condition only on small parts instead of large substructures.
 
     A general challenge for greedy transition is that their training is highly local: they are only exposed to the individual paths that generate the example tree, which is a mere fraction of all the possible paths that the model is defined over.\footnote{One way to answer to this challenge is to use use a dynamic oracle during training \citep{goldberg2013dynamic}, also called exploration \citep{ballesteros2016exploration,stern2017minimal}, which allow the model to explore paths that deviate from the single gold path in a principled way. The approach can be considered an instance of imitation learning \citep{vlachos2012imitation,he2012imitation}. In constituency parsing, dynamic oracles can produce substantial improvements performance \citep{ballesteros2016exploration}, but they must be custom designed for each transition system \citep{klein2018reinforce}. However, we do not consider this directions in this thesis.} Compare this with a globally normalized model, where the factorization over parts lets the model learn from an example tree about all the trees that share substructure.
 
@@ -254,7 +229,7 @@ This research, however, takes a pragmatic position with respect to such question
     \begin{align*}
       p(x_i \mid x_{<i}) = p(x_i \mid x_{i-j-1}^{i-1}).
     \end{align*}
-    This is the approach taken by $n$-gram language models. The lower order conditionals can be estimated directly by smoothing occurence counts \citep{chen1999empirical,kneser1995improved}, or they can be estimated by locally normalized scores $\Psi(x_{i-j-1}^{i-1}, x_i)$, given by a parametrized function $\Psi$. This function can be log-linear or a non-linear neural network \citep{rosenfeld1996loglinear,bengio2003neural}. The lower order approximation can also be dispensed with, making the model more epressive, but the estimation problem much harder. Language models based on recurrent neural networks (RNNs) follow this approach by using functions that compute scores $\Psi(x_{<i}, x_i)$ based on the entire history\citep{mikolov2010recurrent}. These models, an in particular the approaches based on the LSTM variant of the RNN, have shown to be remarkably effective and substantially improve over the above methods to give the current state of the art \citep{zaremba2014recurrent,jozefowicz2016exploring}.\footnote{Although recent work shows that the effective memory depth of RNN models is much smaller than the unbounded history suggests: \citet{chelba2017n} show that, in the perplexity they assign to test data, an RNN with unbounded history can be approximated very well by an RNN with bounded history. To be precise: a neural $n$-gram language model, with the fixed-size history encoded by a bidirectional RNN, is equivalent to an RNN with unbounded history for $n=13$, and to an RNN that is reset at the start of sentences for $n=9$. This finding is consistent accross dataset sizes.} Other neural network architectures based on convolutions \citep{kalchbrenner2014convolutional} and stacked feedforward networks with `self-attention' \citep{vaswani2017attention} have been succesfully applied to language modelling with unbounded histories as well.
+    This is the approach taken by $n$-gram language models. The lower order conditionals can be estimated directly by smoothing occurence counts \citep{chen1999empirical,kneser1995improved}, or they can be estimated by locally normalized scores $\Psi(x_{i-j-1}^{i-1}, x_i)$, given by a parametrized function $\Psi$. This function can be log-linear or a non-linear neural network \citep{rosenfeld1996loglinear,bengio2003neural}. The lower order approximation can also be dispensed with, making the model more epressive, but the estimation problem much harder. Language models based on recurrent neural networks (RNNs) follow this approach by using functions that compute scores $\Psi(x_{<i}, x_i)$ based on the entire history \citep{mikolov2010recurrent}. These models, and in particular the approaches based on the LSTM variant of the RNN, have shown to be remarkably effective and substantially improve over the above methods to give the current state of the art \citep{zaremba2014recurrent,jozefowicz2016exploring}.\footnote{Although recent work shows that the effective memory depth of RNN models is much smaller than the unbounded history suggests: \citet{chelba2017n} show that, in the perplexity they assign to test data, an RNN with unbounded history can be approximated very well by an RNN with bounded history. To be precise: a neural $n$-gram language model, with the fixed-size history encoded by a bidirectional RNN, is equivalent to an RNN with unbounded history for $n=13$, and to an RNN that is reset at the start of sentences for $n=9$. This finding is consistent accross dataset sizes.} Other neural network architectures based on convolutions \citep{kalchbrenner2014convolutional} and stacked feedforward networks with `self-attention' \citep{vaswani2017attention} have been succesfully applied to language modelling with unbounded histories as well.
 
     Alternatively, a language model can be obtained by marginalizing a structured latent variable $h$ in a joint model $p(\x, h)$:
     \begin{align}

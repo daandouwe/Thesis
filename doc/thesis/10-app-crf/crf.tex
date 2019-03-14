@@ -22,48 +22,56 @@ The derivation of the inference algorithms in chapter \ref{04-crf} makes use of 
     A \textit{hyperpath} in a backward-hypergraph is a set of edges that connects a single node $v \in V$ at the sink to a set of nodes $W \subseteq V$ upstream. Formally defining a hyperpath is a little cumbersome, but informally, a hyperpath is a set of edges obtained by the following recursive procedure: starting at $v$, follow a single incoming hyperarc $e$ backwards, save the edge and repeat this for all nodes in $T(e)$; stop when all nodes in $W$ have been encountered. In the context of parsing we also call a hyperpath from the root node to the set of words $\{ x_1, \dots, \x_n \}$ a \textit{derivation}: this hyperpath represents a single tree for the sentence.
   \end{definition}
 
-  \begin{example}{(CRF parser)
-    \label{ex:crf}
-    The hypergraph specified by the CRF parser in chapter \ref{04-crf} has the following structure. Let the set $V$ consists of the invidual words of a sentence $x$, together with the all posible labeled spans over that sentence:
-    \begin{align*}
-      V = \Big\{ \x_i \; \Big\vert \; 1 \leq i \leq n \Big\} \cup \Big\{ (A, i, j) \; \Big\vert \; A \in \Lambda, 0 \leq i < j \leq n \Big\} \cup \Big\{ (S^{\dagger}, 0, n) \Big\}.
-    \end{align*}
-    The edge set $E$ will specify all the ways that adjacent constituents can be combined to form a larger constituent, under a particular grammar. Because we (implicitly) use a normal form grammar that contains \textit{all} possible productions, the set of hyperedges is particularly regular: the set $E$ contains all edges that connect nodes $(B, i, k)$ and $(C, k, j)$ at the tail with $(A, i, j)$ at the head for all $0 \leq i < k < j \leq n$, all edges that connect $\x_i$ to $(A, i, i+1)$, and all nodes can function as top nodes:
-    \begin{align*}
-      E
-        &= \Bigg\{ \Big\langle \Big\{ (B, i, k), (C, k, j) \Big\},  (A, i, j) \Big\rangle \; \Bigg\vert \; A, B, C \in \Lambda, \; 0 \leq i < k < j \leq n \Bigg\}  \\
-        &\quad\cup \Bigg\{ \Big\langle \{ \x_i \}, (A, i-1, i) \Big\rangle \; \Bigg\vert \; A \in \Lambda, \; 1 \leq i \leq n \Bigg\}  \\
-        &\quad\cup \Bigg\{ \Big\langle \{ (A, 0, n) \}, (S^{\dagger}, 0, n) \Big\rangle \; \Bigg\vert \; A \in \Lambda \Bigg\}
-    \end{align*}
-    The three kind of edges in $E$ are illusrated in figure \ref{fig:edges} and figure \ref{fig:hypergraph} shows a fragment of this hypergraph for an example sentence. Shown are the two hyperpaths corresponding to the two (overlapping) derivations
+  % \begin{example}{(CRF parser)
+  %   \label{ex:crf}
+  %   The hypergraph specified by the CRF parser in chapter \ref{04-crf} has the following structure. Let the set $V$ consists of the invidual words of a sentence $x$, together with the all posible labeled spans over that sentence:
+  %   \begin{align*}
+  %     V = \Big\{ \x_i \; \Big\vert \; 1 \leq i \leq n \Big\} \cup \Big\{ (A, i, j) \; \Big\vert \; A \in \Lambda, 0 \leq i < j \leq n \Big\} \cup \Big\{ (S^{\dagger}, 0, n) \Big\}.
+  %   \end{align*}
+  %   The edge set $E$ will specify all the ways that adjacent constituents can be combined to form a larger constituent, under a particular grammar. Because we (implicitly) use a normal form grammar that contains \textit{all} possible productions, the set of hyperedges is particularly regular: the set $E$ contains all edges that connect nodes $(B, i, k)$ and $(C, k, j)$ at the tail with $(A, i, j)$ at the head for all $0 \leq i < k < j \leq n$, all edges that connect $\x_i$ to $(A, i, i+1)$, and all nodes can function as top nodes:
+  %   \begin{align*}
+  %     E
+  %       &= \Bigg\{ \Big\langle \Big\{ (B, i, k), (C, k, j) \Big\},  (A, i, j) \Big\rangle \; \Bigg\vert \; A, B, C \in \Lambda, \; 0 \leq i < k < j \leq n \Bigg\}  \\
+  %       &\quad\cup \Bigg\{ \Big\langle \{ \x_i \}, (A, i-1, i) \Big\rangle \; \Bigg\vert \; A \in \Lambda, \; 1 \leq i \leq n \Bigg\}  \\
+  %       &\quad\cup \Bigg\{ \Big\langle \{ (A, 0, n) \}, (S^{\dagger}, 0, n) \Big\rangle \; \Bigg\vert \; A \in \Lambda \Bigg\}
+  %   \end{align*}
+  %   The three kind of edges in $E$ are illusrated in figure \ref{fig:edges} and figure \ref{fig:hypergraph} shows a fragment of this hypergraph for an example sentence. Shown are the two hyperpaths corresponding to the two (overlapping) derivations
+  %   \begin{align}
+  %     % &\text{(S (NP \textit{The very hungry cat}) (VP \textit{meows}) .)}  \\
+  %     &\text{(S (NP \textit{The} (ADJP \textit{very hungry}) \textit{cat}) (VP \textit{meows}) .)}  \\
+  %     &\text{(S (NP \textit{The} (NP (ADJP \textit{very hungry}) \textit{cat})) (VP \textit{meows}) .)}
+  %   \end{align}
+  %   after collapsing the empty nodes $\varnothing$.
+  % \end{example}
+  %
+  % \begin{figure}[h]
+  %   \center
+  %   \begin{tikzpicture}[scale=.6]
+  %     \input{../figures/edges/edges.tex}
+  %   \end{tikzpicture}
+  %   \caption{The three types of edges making up the hypergraph of example \ref{ex:crf}.}
+  %   \label{fig:edges}
+  % \end{figure}
+  %
+  % In the above example, the edges that direct to the special node $(S^{\dagger}, 0, n)$ make the hypergraph \textit{rooted}: each \textit{hyperpath} with the set of all words at the source ends at this one node.
+
+  \begin{example}{(Parse forest)}
+    Figure \ref{fig:hypergraph} shows a fragment of a hypergraph that represents the parse forest over an example sentence. Shown are the two hyperpaths corresponding to the two partially overlapping derivations
     \begin{align}
       % &\text{(S (NP \textit{The very hungry cat}) (VP \textit{meows}) .)}  \\
       &\text{(S (NP \textit{The} (ADJP \textit{very hungry}) \textit{cat}) (VP \textit{meows}) .)}  \\
       &\text{(S (NP \textit{The} (NP (ADJP \textit{very hungry}) \textit{cat})) (VP \textit{meows}) .)}
     \end{align}
-    after collapsing the empty nodes $\varnothing$.
+    after collapsing the empty nodes $\varnothing$. The edges that direct to the special node $(S^{\dagger}, 0, n)$ make the hypergraph \textit{rooted}: each \textit{hyperpath} with the set of all words at the source ends at this one node.
+    \begin{figure}[h]
+      \center
+      \begin{tikzpicture}[scale=.6]
+        \input{../figures/hypergraph/hypergraph.tex}
+      \end{tikzpicture}
+      \caption{A fraction of a parse hypergraph showing two possible parses.}
+      \label{fig:hypergraph}
+    \end{figure}
   \end{example}
-
-  \begin{figure}[h]
-    \center
-    \begin{tikzpicture}[scale=.6]
-      \input{../figures/edges/edges.tex}
-    \end{tikzpicture}
-    \caption{The three types of edges making up the hypergraph of example \ref{ex:crf}.}
-    \label{fig:edges}
-  \end{figure}
-
-  In the above example, the edges that direct to the special node $(S^{\dagger}, 0, n)$ make the hypergraph \textit{rooted}: each \textit{hyperpath} with the set of all words at the source ends at this one node.
-
-\begin{figure}[h]
-  \center
-  \begin{tikzpicture}[scale=.6]
-    \input{../figures/hypergraph/hypergraph.tex}
-  \end{tikzpicture}
-  \caption{A fraction of a parse hypergraph showing two possible parses.}
-  \label{fig:hypergraph}
-\end{figure}
-
 
 \section{Semiring}
   We use \textit{semirings} to compute various quantities of interest over a weighted hypergraph.

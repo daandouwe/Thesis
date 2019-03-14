@@ -27,7 +27,7 @@
   \next}
 
 % use 'book' as a base class
-\PassOptionsToClass{letterpaper,11pt,twoside,onecolumn,final}{book}
+\PassOptionsToClass{a4,11pt,twoside,onecolumn,final}{book}
 
 \newif\if@nowfntbook
 \newcommand\nowfnt@bookstate{0}

@@ -1,7 +1,7 @@
-\documentclass[11pt]{article}
-\usepackage{amsmath,amssymb,amsfonts}
-
-\begin{document}
+% \documentclass[11pt]{article}
+% \usepackage{amsmath,amssymb,amsfonts}
+%
+% \begin{document}
 
 \begin{table}[h]
 \center
@@ -9,48 +9,46 @@
   \begin{tabular}{l|l}
     \hline\hline
     % Real numbers and vectors
-    $\mathbb{R}$  & The set of real numbers.   \\
+    % $\mathbb{R}$  & The set of real numbers.   \\
     $\mathbf{a}, \mathbf{b}$, \dots  & Vectors over the reals, \textit{i.e.} $\mathbf{a} \in \mathbb{R}^m$.  \\
     $\mathbf{A}, \mathbf{B}$, \dots & Matrices over the reals, \textit{i.e.} $\mathbf{A} \in \mathbb{R}^{m \times n}$.   \\
-    $[\mathbf{a}]_i$ & Vector indexing, $[\mathbf{a}]_i \in \mathbb{R}$ for $1 \leq i \leq m$. \\
-    $[\mathbf{a}; \mathbf{b}]$ & Vector concatenation, $\mathbf{a} \in \mathbb{R}^{m}$ and $\mathbf{b} \in \mathbb{R}^{n}$, $[\mathbf{a}; \mathbf{b}] \in \mathbb{R}^{m+n}$.  \\
-    $[\mathbf{a}, \mathbf{b}]$  & Vertical vector stacking, $\mathbf{a}, \mathbf{b} \in \mathbb{R}^{m}$, $[\mathbf{a}, \mathbf{b}] \in \mathbb{R}^{m \times 2}$.  \\
+    $[\mathbf{a}]_i$ & Vector indexing: $[\mathbf{a}]_i \in \mathbb{R}$ for $1 \leq i \leq m$. \\
+    $[\mathbf{a}; \mathbf{b}]$ & Vector concatenation: $\mathbf{a} \in \mathbb{R}^{m}$, $\mathbf{b} \in \mathbb{R}^{n}$, $[\mathbf{a}; \mathbf{b}] \in \mathbb{R}^{m+n}$.  \\
+    $[\mathbf{a}, \mathbf{b}]$  & Vertical vector stacking: $\mathbf{a}, \mathbf{b} \in \mathbb{R}^{m}$, $[\mathbf{a}, \mathbf{b}] \in \mathbb{R}^{m \times 2}$.  \\
     & \\
 
     % Random variables and sample spaces
     $\mathcal{X}$ & Finite vocabulary of words $x$. \\
     $\mathcal{Y}(x)$ & Finite set of trees $y$ that are compatible with $x$.  \\
+    $\mathcal{V}(x)$ & Finite set of labeled spans $v$ over $x$.  \\
     $X, Y, \dots$ & Random variables with sample spaces $\mathcal{X}, \mathcal{Y}, \dots$  \\
-    $x$ & A word from vocabulary $\mathcal{X}$, an outcome of random variable $X$.   \\
-    $y$ & A tree from $\mathcal{Y}(x)$, an outcome of random variable $Y$.  \\
-    $x_1^m$, $x$ & A sequence of words $\langle x_1, \dots, x_m \rangle$ from $\mathcal{X}^m$ (shorthand: $x$), the \\ & outcome of the sequence of random variables $X_1, X_2, \dots, X_m$.   \\
-    $x_{<i}$ & The sequence $x_{1}^{i-1}$, the part of sequence $x_1^m$ preceding word $x_i$.  \\
+    $x$ & A word from $\mathcal{X}$, outcome of random variable $X$.   \\
+    $y$ & A tree from $\mathcal{Y}(x)$, outcome of random variable $Y$.  \\
+    $x_1^m$ & A sequence of words $\langle x_1, \dots, x_m \rangle$ from $\mathcal{X}^m$. \\
+    % the \\ & outcome of the sequence of random variables $X_1, X_2, \dots, X_m$.   \\
+    $x_{<i}$ & The sequence $x_{1}^{i-1}$ preceding $x_i$.  \\
     & \\
 
     % Distributions
-    % $P_X$, $p_X$, $p$ & Discrete probability distribution of random variable $X$, and typical \\ & shorthand $p$ for the probability mass function.  \\
-    %
-    % $P_{Y \mid X}$, $p_{Y \mid X}$, $q$ & Conditional probability distribution  of $Y \mid X$, and typical \\ & shorthand $q$ for the probability mass function. \\
-    %
-    % $P_{X, Y}$, $p_{X, Y}$, $p$ & Joint probability distribution of $X, Y$, and typical \\ & shorthand $p$ for the probability mass function. \\
+    % $P_X$, $P_{Y \mid X}$, $P_{X, Y}$ & Probability distributions.  \\
+    $P_X$ & Probability distribution.  \\
 
-    $P_X$, $P_{Y \mid X}$, $P_{X, Y}$ & Discrete probability distributions of random variables $X$, \\ & conditional $X \vert Y$ and joint $X, Y$ \\
+    % $p_{X}$, $p_{Y \mid X}$, $p_{X, Y}$ & Probability mass functions. \\
+    $p_{X}$ & Probability mass function. \\
 
-    $p_{X}$, $p_{Y \mid X}$, $p_{Y \mid X}$ & Probability mass functions of distributions $P_X$, $P_{Y \mid X}$, \\ & and $P_{X, Y}$. \\
+    % $p(x)$, $p(y \mid x)$, $p(x, y)$ & Probabilities with random variables clear from context. \\
+    $p(x)$ & Probability $P(X = x)$. \\
 
-    $p(x)$, $p(y \mid x)$, $p(x, y)$ & Shorthands for probabilities $P_{X}(X = x)$, $P_{X \mid Y}(Y = y \mid X = x)$, \\ & and $P_{X, Y}(X = x, Y = y)$. \\
+    $p_{\theta}$, $q_{\lambda}$ & Probability mass functions emphasizing parameters.   \\
 
-    $p_{\theta}$, $q_{\lambda}$ & Probability mass functions with emphasis on the parameters that \\ & specify them, and with random variables clear from context.  \\
-
-    $\mathbb{E}[g(X)]$ & Expectation of $g(X)$ with respect to distribution $P_X$, \\ & for some real-valued function $g$. \\
+    $\mathbb{E}[g(X)]$ & Expectation of $g(X)$ with respect to distribution $P_X$.  \\
 
     $H(P_X)$ & Entropy of random variable $X$ with distribution $P$ \\
     & \\
 
-
     % Miscelaneous
-    $\Lambda$ & Finite set of nonterminal labels in a context-free grammar.  \\
-    $A, B, C, \dots$ & Nonterminal labels from $\Lambda$.  \\
+    $\Lambda$ & Finite set of nonterminal labels.  \\
+    $A, B, \dots$ & Nonterminal labels from $\Lambda$.  \\
     $S^{\dagger}$ & Special root label not in $\Lambda$.  \\
 
 
@@ -60,4 +58,4 @@
 
 \end{table}
 
-\end{document}
+% \end{document}

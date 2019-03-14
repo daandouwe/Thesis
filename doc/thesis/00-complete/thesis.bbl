@@ -3501,35 +3501,6 @@
       \field{pages}{1695\bibrangedash 1700}
       \range{pages}{6}
     \endentry
-    \entry{sutton2012crf}{article}{}
-      \name{author}{2}{}{%
-        {{hash=fd59f6a0549332a54ac82d8840ea6ff1}{%
-           family={Sutton},
-           family_i={S\bibinitperiod},
-           given={Charles},
-           given_i={C\bibinitperiod}}}%
-        {{hash=17d73a3a5be48993791cbe4db8855331}{%
-           family={McCallum},
-           family_i={M\bibinitperiod},
-           given={Andrew},
-           given_i={A\bibinitperiod}}}%
-      }
-      \strng{namehash}{f905b154485825d6d675e8d2dd385452}
-      \strng{fullhash}{f905b154485825d6d675e8d2dd385452}
-      \field{sortinit}{S}
-      \field{sortinithash}{fd1e7c5ab79596b13dbbb67f8d70fb5a}
-      \field{labelyear}{2012}
-      \field{datelabelsource}{}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Found. Trends Mach. Learn.}
-      \field{number}{4}
-      \field{title}{An Introduction to Conditional Random Fields}
-      \field{volume}{4}
-      \field{year}{2012}
-      \field{pages}{267\bibrangedash 373}
-      \range{pages}{107}
-    \endentry
     \entry{swayamdipta2018scaffold}{inproceedings}{}
       \name{author}{6}{}{%
         {{hash=17a53fd167ccca7245cb9e8082ccb3a7}{%
