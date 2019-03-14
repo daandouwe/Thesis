@@ -80,7 +80,7 @@ The representation for the span is defined as in the CRF parser as
 \end{align*}
 and the distribution over labels is computed using a feedforward network parametrized by $\xi$ as
 \begin{align*}
-  q_{\theta, \xi}( \ell \mid \x, i, j) &\propto \exp \Big[ \ff_{\xi}( \vecs_{ij} ) \Big]_{\ell}.
+  q_{\theta, \xi}( \ell \mid \x, i, j) &\propto \exp [ \ff_{\xi}( \vecs_{ij} ) ]_{\ell}.
 \end{align*}
 This model differs from the supertagging model in the interaction of the vectors $\fw$ in the definition of $vecs_{ij}$. This linear defintion puts significant restriction on the endocings, which is precisely what we want. This side objective is inspired by the label scoring function of the CRF parser, and is novel as a multitask objective, as far as I know.
 

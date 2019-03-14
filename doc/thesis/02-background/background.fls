@@ -17,3 +17,6 @@ INPUT ../figures/trees/binary.tex
 INPUT ../figures/trees/binary.tex
 INPUT ../figures/trees/spans.tex
 INPUT ../figures/trees/spans.tex
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmbx7.tfm
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmbx5.tfm

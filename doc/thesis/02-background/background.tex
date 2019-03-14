@@ -1,30 +1,25 @@
 % \bibliography{../src/bibliography}
 
-This thesis provides background for the four topics that are combined in this thesis: syntax, parsing, language modelling, neural network
-
-[A litle bit more outline...]
+This section provides background on the four topics that are combined in this thesis: syntax, parsing, language modelling, and neural networks.
 
 \section{Syntax}
 This section introduces some concepts from syntax that are relevant for this thesis. In particular, we introduce the notion of a \textit{constituent}, and the hierarchical organization of constituents in a sentence as described by phrase-structure grammars. The aim is to provide a succinct and compelling answer to the question: \textit{Why should we care about constituency structure when modelling language?}
 
 The exposition primarily follows \citet{huddleston2002grammar}, a well established reference grammar of the English language that is relatively agnostic with respect to theoretical framework, with some excursions into \citet{carnie2010constituent} and \citet{everaert2015structures}, which are less language-specific but rooted more in a particular theoretical framework\footnote{Broadly subsumable under the name \textit{generative grammar}.}.
 
-We take the following three principles from \citet{huddleston2002grammar} as guiding and to each principle dedicate a separate section.
-\begin{definition}{(Phrase structure, following \citep{huddleston2002grammar})}
-  \begin{enumerate}[noitemsep]
-    \item \textit{Sentences consist of parts that may themselves have parts.}
-    \item \textit{These parts belong to a limited range of types.}
-    \item \textit{The constituents have specific roles in the larger parts they belong to.}
-  \end{enumerate}
-\end{definition}
-
+We take the following three principles from \citet{huddleston2002grammar} as guiding:
+\begin{enumerate}[noitemsep]
+  \item \textit{Sentences consist of parts that may themselves have parts.}
+  \item \textit{These parts belong to a limited range of types.}
+  \item \textit{The constituents have specific roles in the larger parts they belong to.}
+\end{enumerate}
+To each principle we now dedicate a separate section.
 
 \subsection{Constituents}
 Sentences consist of parts that may themselves have parts. The parts are groups of words that function as units and are called \textit{constituents}. Consider the simple sentence \textit{A bird hit the car.} The immediate constituents are \textit{a bird} (the subject) and \textit{hit the car} (the predicate). The phrase \textit{hit the car} can be analyzed further as containing the constituent \textit{the car}. The ultimate constituents of a sentence are the atomic words, and the entire analysis is called the constituent structure of the sentence. This structure can be indicated succinctly with the use of brackets
-\begin{exe}
-  \ex \verb![ [A bird] [hit [the car] ] ]!
-\end{exe}
-or less succinctly as a tree diagram in figure.
+\exi. [ [ A bird ] [ hit [ the car ] ] ]
+
+or less succinctly as a tree diagram
 \begin{figure}[h]{\textwidth}
   \center
   \begin{tikzpicture}[scale=.8]
@@ -32,42 +27,33 @@ or less succinctly as a tree diagram in figure.
   \end{tikzpicture}
   \label{fig:bird-tree}
 \end{figure}
-Evidence for the existence of such constituents can be provided by examples such as the following, which are called constituent tests \citep{carnie2010constituent}. Consider inserting the adverb \textit{apparently} into our example sentence, indicating the alleged status of the event described in the sentence. In principle there are six positions available for the placement of \textit{apparently} (including before, and after the sentence). However, only three of these placements are actually permissible\footnote{We use an asterisk `*' to indicate a sentence that is judged ungrammatical, as is customary in linguistics.}:
-\begin{exe}
-  \ex \begin{xlist}
-    \ex \textit{Apparently} a bird hit the car.
-    \ex *An \textit{apparently} bird hit the car.
-    \ex A bird \textit{apparently} hit the car.
-    \ex *A bird hit \textit{apparently} the car.
-    \ex *A bird hit the \textit{apparently} car.
-    \ex A bird hit the car, \textit{apparently}.
-  \end{xlist}
-\end{exe}
-Based on the bracketing in \ref{eq:bird-brackets} we can formulate a general constraint: the adverb must not interrupt any constituent. Indeed, this explains why \textit{actually} cannot be placed anywhere inside \textit{hit the car} and not between \textit{a} and \textit{bird}. For full support, typically results from many more such test are gathered, and in general these tests can be much more controversial than in our simple example \citep{carnie2010constituent}.
+Evidence for the existence of such constituents can be provided by examples such as the following, which are called constituent tests \citep{carnie2010constituent}. Consider inserting the adverb \textit{apparently} into our example sentence, indicating the alleged status of the event described in the sentence. In principle there are six positions available for the placement of \textit{apparently} (including before, and after the sentence). However, only three of these placements are actually permissible:\footnote{We use an asterisk * to indicate a sentence that is judged ungrammatical, as is customary in linguistics.}
+\exi.\a. \textit{Apparently} a bird hit the car.
+  \b. *An \textit{apparently} bird hit the car.
+  \c. A bird \textit{apparently} hit the car.
+  \d. *A bird hit \textit{apparently} the car.
+  \e. *A bird hit the \textit{apparently} car.
+  \f. A bird hit the car, \textit{apparently}.
+
+Based on the bracketing that we proposed for this sentence we can formulate a general constraint: the adverb must not interrupt any constituent. Indeed, this would explain why \textit{actually} cannot be placed anywhere inside \textit{hit the car} and not between \textit{a} and \textit{bird}. For full support, typically, results from many more such test are gathered, and in general these tests can be much more controversial than in our simple example \citep{carnie2010constituent}.
 
 \subsection{Categories}
-The constituents of a sentence belong to a limited range of types that form the set of syntactic categories. Two types of categories are distinguished: lexical and phrasal. The lexical categories are also known as part-of-speech tags. A tree can be represented in more detail by adding lexical (D, N, V) and phrasal categories (S, NP, VP):
+The constituents of a sentence belong to a limited range of types that form the set of syntactic categories. Two types of categories are distinguished: lexical and phrasal. The lexical categories are also known as part-of-speech tags. A tree can be represented in more detail by adding lexical (D, N, V) and phrasal categories (S, NP, VP).
 \begin{figure}[h]{\textwidth}
   \center
   \begin{tikzpicture}[scale=.8]
     \Tree [.S [.NP [.D A ] [.N bird ]] [.VP [.V hit ] [.NP [.D the ] [.N car ] ] ] ]
   \end{tikzpicture}
 \end{figure}
-For example, the noun (N) \textit{car} is the head of the noun phrase (NP) \textit{the car}, while the head of the larger phrase \textit{hit the car} is the verb (V) \textit{hit}, making this larger constituent a \textit{verb phrase} (VP). The whole combined forms a sentence (S).
+In this example, the noun (N) \textit{car} is the head of the noun phrase (NP) \textit{the car}, while the head of the larger phrase \textit{hit the car} is the verb (V) \textit{hit}, making this larger constituent a \textit{verb phrase} (VP). The whole combined forms a sentence (S).
 
 \subsection{Hierarchy}
 The constituents have specific roles in the larger parts they belong to. This structure provides constraints that are not explainable from the linear order of the words themselves \citep{everaert2015structures}. Consider an example about the syntactic behaviour of \textit{negative polarity items} (NPIs) from \citet{everaert2015structures}. A negative polarity item is, to first approximation, a word or group of words that is restricted to negative context \citep{everaert2015structures}.\footnote{More generaly, they are words that need to be licensed by a specific \textit{licencing context} \citep{giannakidou2011npi}.} Take the behaviour of the word \textit{anybody}:
-\begin{exe}
-  \ex \begin{xlist}
-    \ex The book that I bought did \textit{not} appeal to \textit{anybody}.
-    \ex *The book that I bought appealed to \textit{anybody}.
-  \end{xlist}
-\end{exe}
-From this example we might formulate the hypothesis that the word \textit{not} must linearly precede the word \textit{anybody}, but a counter example refutes this hypothesis: the sentence
-\begin{exe}
-  \ex *The book I did \textit{not} buy appealed to \textit{anybody},
-\end{exe}
-is also not grammatical.
+\exi.\a. The talk I gave did \textit{not} appeal to \textit{anybody}.
+     \b. *The talk I gave appealed to \textit{anybody}.
+     \c. *The talk I did \textit{not} give appealed to \textit{anybody}.
+
+From sentences (a) and (b) we might formulate the hypothesis that the word \textit{not} must linearly precede the word \textit{anybody}, but a counter example refutes this hypothesis: sentence (c) is also not grammatical.
 \begin{figure}[h]
   \begin{subfigure}[b]{0.5\textwidth}
 		\includegraphics[width=0.9\textwidth]{trees/npi-licensed.pdf}
@@ -94,7 +80,7 @@ Theoretical syntax is rife with controversy, and wildly differing viewpoints exi
 Our work, however, takes a pragmatic position with respect to such questions: syntax, we assume, is whatever our dataset says it is. Whether language is hierachical or linear is a question that this thesis engages with from a statistical and computational standpoint.
 
 \section{Parsing}
-  Parsing is the task of predicting a tree $\y$ for a sentence $\x$. Probabilitic parsers solve this problem by learning a probabilistic model $p$ that describes a probability distribution over \textit{all} the possible parses $\y$ of sentences $\x$. This distribution quantifies the uncertainty over the syntactic analyses of the sentence, and can be used to make predictions by finding the trees with highest probability. A further benefit of the probabilistic formulation is that the uncertainty over the parses can be determined quantitatively by computing the entropy of the distribution, and qualitatively by obtaining samples from the distribution. This section describes the form that such probabilistic models take, and the data from which they are estimated.
+  Parsing is the task of predicting a tree $\y$ for a sentence $\x$. Probabilitic parsers solve this problem by learning a probabilistic model $p$ that describes a probability distribution over \textit{all} the possible parses $\y$ of a sentence $\x$. This distribution quantifies the uncertainty over the syntactic analyses of the sentence, and can be used to make predictions by finding the trees with highest probability. A further benefit of the probabilistic formulation is that the uncertainty over the parses can be determined quantitatively by computing the entropy of the distribution, and qualitatively by obtaining samples from the distribution. This section describes the form that such probabilistic models take, and the data from which they are estimated.
 
   \subsection{Treebank}
     A treebank is a collection of sentences annotated with their grammatical structure that allows the estimation of statistical parsings models. The Penn Treebank \citep{marcus1993penn} is such a collection, consisting of sentences annotated with their constituency structure. Figure \ref{fig:tree-original} shows an example tree from this dataset and figure \ref{fig:tree-simplified} shows the tree after basic processing\footnote{This removes the functional tags and annotation of argument structure introduced in version 2 of the Penn Treebank \citep{marcus1994annotating}.}. Some of the models in this work require trees to be in \textit{normal form}: fully binary, but with unary branches at the terminals. Figure \ref{fig:tree-cnf} show the result of this (invertible) normalization, that is obtained by introduction of an empty dummy label $\varnothing$. Annotating the labels with left and right endpoints of the words they span results in the tree in figure \ref{fig:tree-cnf-spans}.
@@ -169,7 +155,7 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
   \subsection{Models}
     The probabilistic model of a parser can be \textit{discriminative}, describing the conditional probability distribution $p(\y \mid \x)$, or \textit{generative}, describing the joint distribution $p(\x, \y)$. The form that the model takes is largely dictated by the algorithm used to build the parses.
 
-    Transition-based methods formulate parsing as a sequence of shift-reduce decisions made by a push-down automaton that incrementally builds a tree. The design of the transition system determines whether the tree is constructed bottom-up, top-down, or otherwise\footnote{Post-order and pre-order tarversal, respectively.}, and determines whether the trees need to be in normal form. The probabilistic model is defined over the sequences of actions, and the probability distribution typically factorizes as the product of conditional distributions over the next action given the previous actions. This makes it a directed model that is \textit{locally normalized}.\footnote{With the exception of those approaches that instead define a Conditional Random Field over the action sequences \citep{andor2016globally}, in which case the model is defined over the globally normalized action sequences.}
+    Transition-based methods formulate parsing as a sequence of shift-reduce decisions made by a push-down automaton that incrementally builds a tree. The design of the transition system determines whether the tree is constructed bottom-up, top-down,\footnote{Post-order and pre-order, respectively.} or otherwise, and determines whether the trees need to be in normal form. The probabilistic model is defined over the sequences of actions, and the probability distribution typically factorizes as the product of conditional distributions over the next action given the previous actions. This makes it a directed model that is \textit{locally normalized}.\footnote{With the exception of those approaches that instead define a Conditional Random Field over the action sequences \citep{andor2016globally}, in which case the model is defined over the globally normalized action sequences.}
     \begin{definition}{}
       A probalistic model $p(\x)$ over sequences $\x \in \mathcal{X}^n$ is \textit{locally normalized} if
       \begin{align*}
