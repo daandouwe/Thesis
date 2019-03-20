@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J disc
-#SBATCH -o lisa/out/disc.out
+#SBATCH -J crf-big
+#SBATCH -o lisa/out/crf-big.out
 #SBATCH -t 5-00:00:00
 
 # send an e-mail when the job starts
@@ -26,13 +26,14 @@ for seed in {1..10}; do
   sleep 5
 
   lisa/train.sh ${seed} ${OUTPUT_DIR} \
-      --model-path-base models/disc-rnng \
+      --dynet-mem 2500 \
+      --model-path-base models/crf-big \
       --max-time $((5 * 20 * 3600)) \
       --max-epochs 100 \
       --dynet-autobatch 1 \
       @src/configs/data/supervised.txt \
-      @src/configs/model/disc-rnng.txt \
-      @src/configs/training/sgd.txt \
+      @src/configs/model/crf-big.txt \
+      @src/configs/training/adam.txt \
       &
 done
 

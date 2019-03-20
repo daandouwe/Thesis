@@ -3,7 +3,7 @@
 #SBATCH -p normal
 #SBATCH -J crf
 #SBATCH -o lisa/out/crf.out
-#SBATCH -t 3-00:00:00
+#SBATCH -t 5-00:00:00
 
 # send an e-mail when the job starts
 echo "Job $SLURM_JOB_NAME started at `date`" | mail $USER -s "Started job $SLURM_JOB_NAME"
@@ -28,7 +28,7 @@ for seed in {1..10}; do
   lisa/train.sh ${seed} ${OUTPUT_DIR} \
       --dynet-mem 2500 \
       --model-path-base models/crf \
-      --max-time $((3 * 22 * 3600)) \
+      --max-time $((5 * 20 * 3600)) \
       --max-epochs 100 \
       --dynet-autobatch 1 \
       @src/configs/data/supervised.txt \

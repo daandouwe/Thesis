@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J disc
-#SBATCH -o lisa/out/disc.out
+#SBATCH -J lm-multitask-ccg
+#SBATCH -o lisa/out/lm-multitask-ccg.out
 #SBATCH -t 5-00:00:00
 
 # send an e-mail when the job starts
@@ -17,23 +17,28 @@ cd ${HOME}/thesis
 
 source lisa/lisa-cpu.sh
 
+# create supervised vocab
+python src/main.py build @src/configs/vocab/supervised.txt
+
 # we can run training runs in parallel, each on a different processor (16 in total)
 # with a different seed, and we tell each script which seed
 # all other arguments are passed to the parser
 for seed in {1..10}; do
 
-  # do not conflate the timestamped foldernames
   sleep 5
 
   lisa/train.sh ${seed} ${OUTPUT_DIR} \
-      --model-path-base models/disc-rnng \
-      --max-time $((5 * 20 * 3600)) \
-      --max-epochs 100 \
-      --dynet-autobatch 1 \
-      @src/configs/data/supervised.txt \
-      @src/configs/model/disc-rnng.txt \
-      @src/configs/training/sgd.txt \
-      &
+    --dynet-autobatch 1 \
+    --dynet-mem 2500 \
+    --model-path-base models/lm-multitask-ccg  \
+    --max-time $((5 * 23 * 3600)) \
+    --max-epochs 300 \
+    @src/configs/vocab/supervised.txt \
+    @src/configs/data/supervised-ccg.txt \
+    @src/configs/model/lm-multitask-ccg.txt \
+    @src/configs/training/sgd.txt \
+    &
+
 done
 
 # this waits until all sub-jobs finish

@@ -15,7 +15,7 @@ mkdir -p ${OUTPUT_DIR}
 # always run from the main directory
 cd ${HOME}/thesis
 
-source lisa/lisa-setup.sh
+source lisa/lisa-cpu.sh
 
 # create supervised vocab
 python src/main.py build @src/configs/vocab/semisupervised.txt
@@ -32,10 +32,10 @@ for seed in {1..10}; do
       --dynet-autobatch 1 \
       --dynet-mem 2500 \
       --model-path-base models/gen-rnng_data=silver-gold \
-      --max-time $((5 * 23 * 3600)) \
+      --max-time $((5 * 21 * 3600)) \
       --max-epochs 100 \
-      --eval-every-epochs 4 \
-      --lr-decay-patience 8 \
+      --eval-every-epochs 2 \
+      --lr-decay-patience 4 \
       @src/configs/vocab/semisupervised.txt \
       @src/configs/data/supervised-silver.txt \
       @src/configs/model/gen-rnng.txt \

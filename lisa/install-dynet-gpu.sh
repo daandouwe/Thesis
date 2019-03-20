@@ -7,6 +7,7 @@
 
 # This assumes you already run install-dynet-cpu.sh (downloaded dynet and eigen)
 
+# These are necessary!
 module load Python/3.6.3-foss-2017b
 module load CUDA/9.0.176
 

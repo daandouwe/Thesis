@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J syneval-lm
-#SBATCH -o lisa/out/syneval-lm.out
+#SBATCH -J syneval-lm-multitask-span
+#SBATCH -o lisa/out/syneval-lm-multitask-span.out
 #SBATCH -t 0-24:00:00
 
 # as not to tred on each other's toes
@@ -12,7 +12,7 @@ export MKL_NUM_THREADS=1
 echo "Job $SLURM_JOB_NAME started at `date` for the models $PATHS" | mail $USER -s "Started job $SLURM_JOB_NAME"
 
 # gather all lm paths to be evaluated
-PATHS=$(ls ${HOME}/thesis/models | grep '^lm_*')
+PATHS=$(ls ${HOME}/thesis/models | grep '^lm-multitask-span_*')
 
 # write sterr and stout of each experiment here
 OUTPUT_DIR=${HOME}/thesis/lisa/out/${SLURM_JOB_NAME}

@@ -15,7 +15,7 @@ mkdir -p ${OUTPUT_DIR}
 # always run from the main directory
 cd ${HOME}/thesis
 
-source lisa/lisa-setup.sh
+source lisa/lisa-cpu.sh
 
 # create supervised vocab
 python src/main.py build @src/configs/vocab/supervised.txt
@@ -29,19 +29,19 @@ for seed in {1..10}; do
   sleep 5
 
   lisa/train.sh ${seed} ${OUTPUT_DIR} \
-      --dynet-autobatch 1 \
-      --dynet-mem 2500 \
-      --model-path-base models/gen-rnng \
-      --max-time $((5 * 23 * 3600)) \
-      --max-epochs 100 \
-      --eval-every-epochs 4 \
-      --lr-decay-patience 8 \
-      @src/configs/vocab/supervised.txt \
-      @src/configs/data/supervised.txt \
-      @src/configs/model/gen-rnng.txt \
-      @src/configs/proposals/rnng.txt \
-      @src/configs/training/sgd.txt \
-      &
+    --dynet-autobatch 1 \
+    --dynet-mem 2500 \
+    --model-path-base models/gen-rnng \
+    --max-time $((5 * 20 * 3600)) \
+    --max-epochs 100 \
+    --eval-every-epochs 4 \
+    --lr-decay-patience 8 \
+    @src/configs/vocab/supervised.txt \
+    @src/configs/data/supervised.txt \
+    @src/configs/model/gen-rnng.txt \
+    @src/configs/proposals/rnng.txt \
+    @src/configs/training/sgd.txt \
+    &
 done
 
 # this waits until all sub-jobs finish
