@@ -12,8 +12,8 @@ export DISC_VOCAB_PATH=models/$(ls models | grep '^disc-rnng_vocab=semisup_dev=[
 export GEN_VOCAB_PATH=models/$(ls models | grep '^gen-rnng_vocab=semisup_dev=[0-9.]\+$' | cut -c28- | sort -n | tail -n1 | sed 's|^|gen-rnng_vocab=semisup_dev=|')
 
 export LM_PATH=models/$(ls models | grep '^lm_dev=[0-9.]\+$' | cut -c8- | sort -nr | tail -n1 | sed 's|^|lm_dev=|')
-export MULTI_SPAN_LM_PATH=models/$(ls models | grep '^multitask-span-lm_dev=[0-9.]\+$' | cut -c23- | sort -nr | tail -n1 | sed 's|^|multitask-span-lm_dev=|')
-export MULTI_CCG_LM_PATH=models/$(ls models | grep '^multitask-ccg-lm_dev=[0-9.]\+$' | cut -c22- | sort -nr | tail -n1 | sed 's|^|multitask-ccg-lm_dev=|')
+export LM_MULTI_SPAN_PATH=models/$(ls models | grep '^lm-multitask-span_dev=[0-9.]\+$' | cut -c23- | sort -nr | tail -n1 | sed 's|^|lm-multitask-span_dev=|')
+export LM_MULTI_CCG_PATH=models/$(ls models | grep '^lm-multitask-ccg_dev=[0-9.]\+$' | cut -c22- | sort -nr | tail -n1 | sed 's|^|lm-multitask-ccg_dev=|')
 
 echo "The following variables were set:"
 echo "CRF_PATH=$CRF_PATH"
@@ -23,5 +23,5 @@ echo "CRF_VOCAB_PATH=$CRF_VOCAB_PATH"
 echo "DISC_VOCAB_PATH=$DISC_VOCAB_PATH"
 echo "GEN_VOCAB_PATH=$GEN_VOCAB_PATH"
 echo "LM_PATH=$LM_PATH"
-echo "MULTI_SPAN_LM_PATH=$MULTI_SPAN_LM_PATH"
-echo "MULTI_CCG_LM_PATH=$MULTI_CCG_LM_PATH"
+echo "LM_MULTI_SPAN_PATH=$LM_MULTI_SPAN_PATH"
+echo "LM_MULTI_CCG_PATH=$LM_MULTI_CCG_PATH"

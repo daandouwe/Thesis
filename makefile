@@ -41,10 +41,10 @@ gen-silver: vocab-semisup train-gen-silver
 
 lm: vocab-sup train-lm
 lm-gpu: vocab-sup train-lm-gpu
-multitask-span-lm: vocab-sup train-multitask-span-lm
-multitask-span-lm-gpu: vocab-sup train-multitask-span-lm-gpu
-multitask-ccg-lm: vocab-sup train-multitask-ccg-lm
-multitask-ccg-lm-gpu: vocab-sup train-multitask-ccg-lm-gpu
+lm-multitask-span: vocab-sup train-lm-multitask-span
+lm-multitask-span-gpu: vocab-sup train-lm-multitask-span-gpu
+lm-multitask-ccg: vocab-sup train-lm-multitask-ccg
+lm-multitask-ccg-gpu: vocab-sup train-lm-multitask-ccg-gpu
 
 disc-semisup-vocab: vocab-semisup train-disc-vocab
 crf-semisup-vocab: vocab-semisup train-crf-vocab
@@ -152,24 +152,24 @@ train-lm:
 	    @src/configs/model/lm.txt \
 	    @src/configs/training/sgd.txt
 
-train-multitask-span-lm:
+train-lm-multitask-span:
 	python src/main.py train \
       --dynet-autobatch=1 \
 	    --dynet-mem=1000 \
-	    --model-path-base=models/multitask-span-lm \
+	    --model-path-base=models/lm-multitask-span \
 	    @src/configs/vocab/supervised.txt \
 	    @src/configs/data/supervised.txt \
-	    @src/configs/model/multitask-span-lm.txt \
+	    @src/configs/model/lm-multitask-span.txt \
 	    @src/configs/training/sgd.txt
 
-train-multitask-ccg-lm:
+train-lm-multitask-ccg:
 	python src/main.py train \
 			--dynet-autobatch=1 \
 			--dynet-mem=1000 \
-			--model-path-base=models/multitask-ccg-lm \
+			--model-path-base=models/lm-multitask-ccg \
 	    @src/configs/vocab/supervised.txt \
 			@src/configs/data/supervised-ccg.txt \
-			@src/configs/model/multitask-ccg-lm.txt \
+			@src/configs/model/lm-multitask-ccg.txt \
 			@src/configs/training/sgd.txt
 
 # gpu models
@@ -199,7 +199,7 @@ train-lm-gpu:
 	    @src/configs/model/lm.txt \
 	    @src/configs/training/sgd.txt
 
-train-multitask-span-lm-gpu:
+train-lm-multitask-span-gpu:
 	python src/main.py train \
 	    --dynet-gpus=1 \
 	    --dynet-autobatch=1 \
@@ -207,7 +207,7 @@ train-multitask-span-lm-gpu:
 	    --model-path-base=models/multitask-span-lm \
 	    @src/configs/vocab/supervised.txt \
 	    @src/configs/data/supervised.txt \
-	    @src/configs/model/multitask-span-lm.txt \
+	    @src/configs/model/lm-multitask-span.txt \
 	    @src/configs/training/sgd.txt
 
 
@@ -393,7 +393,7 @@ syneval-multitask-span-lm:
 	    --dynet-autobatch=1 \
 	    --dynet-mem=3000 \
 	    --model-type=rnn-lm \
-	    --checkpoint=${MULTI_SPAN_LM_PATH} \
+	    --checkpoint=${LM_MULTI_CCG_PATH} \
 	    --indir=${SYN}
 
 syneval-multitask-ccg-lm:
@@ -401,7 +401,7 @@ syneval-multitask-ccg-lm:
 	    --dynet-autobatch=1 \
 	    --dynet-mem=3000 \
 	    --model-type=rnn-lm \
-	    --checkpoint=${MULTI_CCG_LM_PATH} \
+	    --checkpoint=${LM_MULTI_CCG_PATH} \
 	    --indir=${SYN}
 
 syneval-rnng:

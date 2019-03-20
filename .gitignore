@@ -6,7 +6,6 @@ EVALB
 
 models
 data
-notebooks
 
 src/.*
 
