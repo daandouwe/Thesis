@@ -31,11 +31,11 @@ def main():
         dynet.add_argument(arg)
 
     data = parser.add_argument_group('Data')
-    data.add_argument('--train-path', default='data/ptb/02-21.10way.clean',
+    data.add_argument('--train-path', default='data/ptb/02-21.10way.clean.notop',
                         help='training trees')
-    data.add_argument('--dev-path', default='22.auto.clean',
+    data.add_argument('--dev-path', default='data/ptb/22.auto.clean.notop',
                         help='development trees')
-    data.add_argument('--test-path', default='23.auto.clean',
+    data.add_argument('--test-path', default='data/ptb/23.auto.clean.notop',
                         help='test trees')
     data.add_argument('--unlabeled-path', default='data/unlabeled/news.en-00001-of-00100.processed',
                         help='unlabeled data for semi-supervised training')

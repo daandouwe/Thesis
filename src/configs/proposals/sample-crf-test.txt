@@ -1,5 +1,5 @@
 --sample-proposals
 --model-type=crf
 --num-samples=100
---infile=data/ptb/23.auto.clean
+--infile=data/ptb/23.auto.clean.notop
 --outfile=data/proposals/crf-test.props

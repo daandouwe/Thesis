@@ -273,9 +273,6 @@ def sample_proposals(args):
     else:
         sentences = [line.split() for line in lines]
 
-    if args.max_lines > 0:
-        sentences = sentences[:args.max_lines]
-
     parser = load_model(args.checkpoint)
 
     samples = []

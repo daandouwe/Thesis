@@ -1,4 +1,4 @@
---train-path=data/ptb/02-21.10way.clean
+--train-path=data/ptb/02-21.10way.clean.notop
 --unlabeled-path=
 --vocab-path=data/vocab/vocab.json
 --min-word-count=2

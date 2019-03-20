@@ -1,6 +1,7 @@
 import os
 import shutil
 import time
+import random
 from datetime import datetime
 
 import dynet as dy
@@ -21,6 +22,10 @@ def get_subdir_string():
 def get_folders(args):
     """Create paths for logging and checkpoints."""
     subdir = os.path.join('models', 'temp', get_subdir_string())
+    # avoid overwriting when multiple jobs are submitted simultaneously
+    while os.path.exists(subdir):
+        time.sleep(random.uniform(1, 10))
+        subdir = os.path.join('models', 'temp', get_subdir_string())
     logdir = os.path.join(subdir, 'log')
     outdir = os.path.join(subdir, 'output')
     vocabdir = os.path.join(subdir, 'vocab')

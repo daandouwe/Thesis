@@ -2,5 +2,5 @@
 --model-type=disc-rnng
 --num-samples=100
 --alpha=0.8
---infile=data/ptb/23.auto.clean
+--infile=data/ptb/23.auto.clean.notop
 --outfile=data/proposals/rnng-test.props

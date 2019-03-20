@@ -7,7 +7,6 @@ from components.feedforward import Feedforward
 from .parser.parser import DiscParser, GenParser, Stack, Buffer, History, Terminal
 from .components.encoder import StackLSTM
 from .components.composition import BiRecurrentComposition, AttentionComposition
-
 from .parser.actions import get_word, is_gen
 
 
@@ -73,13 +72,15 @@ class DiscRNNG(DiscParser):
         self.history_encoder = StackLSTM(
             self.model, action_emb_dim, history_lstm_dim, lstm_layers, dropout)
 
+        parser_dim = stack_lstm_dim + buffer_lstm_dim + history_lstm_dim
+
         # Composition function
         if composition == 'basic':
             self.composer = BiRecurrentComposition(
                 self.model, word_emb_dim, lstm_layers, dropout)
         elif composition == 'attention':
             self.composer = AttentionComposition(
-                self.model, word_emb_dim, lstm_layers, dropout)
+                self.model, word_emb_dim, parser_dim, lstm_layers, dropout)
 
         # Embeddings for empty transition system
         stack_empty_emb = self.model.add_parameters(word_emb_dim, init='glorot')
@@ -95,7 +96,6 @@ class DiscRNNG(DiscParser):
             action_vocab, self.action_embedding, self.history_encoder, history_empty_emb)
 
         # Scorers
-        parser_dim = stack_lstm_dim + buffer_lstm_dim + history_lstm_dim
         self.f_action = Feedforward(self.model, parser_dim, [f_hidden_dim], self.num_actions)
 
     def param_collection(self):
@@ -251,13 +251,15 @@ class GenRNNG(GenParser):
         self.history_encoder = StackLSTM(
             self.model, action_emb_dim, history_lstm_dim, lstm_layers, dropout)
 
+        parser_dim = stack_lstm_dim + terminal_lstm_dim + history_lstm_dim
+
         # Composition function
         if composition == 'basic':
             self.composer = BiRecurrentComposition(
                 self.model, word_emb_dim, lstm_layers, dropout)
         elif composition == 'attention':
             self.composer = AttentionComposition(
-                self.model, word_emb_dim, lstm_layers, dropout)
+                self.model, word_emb_dim, parser_dim, lstm_layers, dropout)
 
         # Embeddings for empty transition system
         stack_empty_emb = model.add_parameters(word_emb_dim, init='glorot')
@@ -273,7 +275,6 @@ class GenRNNG(GenParser):
             action_vocab, self.action_embedding, self.history_encoder, history_empty_emb)
 
         # Scorers
-        parser_dim = stack_lstm_dim + terminal_lstm_dim + history_lstm_dim
         self.f_action = Feedforward(self.model, parser_dim, [f_hidden_dim], 3)  # REDUCE, NT, GEN
         self.f_nt = Feedforward(self.model, parser_dim, [f_hidden_dim], self.num_nt)  # S, NP, ...
         self.f_word = Feedforward(self.model, parser_dim, [f_hidden_dim], self.num_words)  # the, cat, ...

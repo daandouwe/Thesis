@@ -22,7 +22,7 @@ class BiRecurrentComposition:
         self.fwd_rnn_builder.disable_dropout()
         self.bwd_rnn_builder.disable_dropout()
 
-    def __call__(self, head, children):
+    def __call__(self, head, children, *args):
         fwd_rnn = self.fwd_rnn_builder.initial_state()
         bwd_rnn = self.bwd_rnn_builder.initial_state()
         for x in [head] + children:  # ['NP', 'the', 'hungry', 'cat']
@@ -36,12 +36,13 @@ class BiRecurrentComposition:
 
 class AttentionComposition:
     """Bidirectional RNN composition function with gated attention."""
-    def __init__(self, model, input_size, num_layers, dropout):
+    def __init__(self, model, input_size, parser_dim, num_layers, dropout):
         assert input_size % 2 == 0, 'hidden size must be even'
 
         self.model = model.add_subcollection('AttentionComposition')
 
         self.input_size = input_size
+        self.parser_dim = parser_dim
         self.num_layers = num_layers
         self.dropout = dropout
         self.rnn = dy.BiRNNBuilder(
@@ -50,7 +51,7 @@ class AttentionComposition:
             input_size,
             self.model,
             dy.VanillaLSTMBuilder)
-        self.V = self.model.add_parameters((input_size, input_size), init='glorot')
+        self.V = self.model.add_parameters((input_size, input_size + parser_dim), init='glorot')
         self.gating = Affine(self.model, 2*input_size, input_size)
         self.head = Affine(self.model, input_size, input_size)
         self.training = True
@@ -63,14 +64,12 @@ class AttentionComposition:
         self.rnn.disable_dropout()
         self.training = False
 
-    def __call__(self, head, children):
+    def __call__(self, head, children, state):
         h = self.rnn.transduce(children)
         h = dy.concatenate(h, d=1)  # (input_size, seq_len)
 
-        a = dy.transpose(h) * self.V * head  # (seq_len,)
+        a = dy.transpose(h) * self.V * dy.concatenate([head, state])  # (seq_len,)
         a = dy.softmax(a, d=0)  # (seq_len,)
-        # a = dy.sparsemax(a)  # (seq_len,)
-
         m = h * a  # (input_size,)
 
         x = dy.concatenate([head, m], d=0)  # (2*input_size,)

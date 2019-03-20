@@ -65,7 +65,8 @@ class Stack:
                 item.subtree.add_child(subtree)
                 break
 
-    def reduce(self):
+    def reduce(self, u=None):
+        """Optional parser representation `u`, needed for attention composition."""
         # Gather children.
         children = []
         while not self._stack[-1].is_open_nt:
@@ -76,7 +77,7 @@ class Stack:
         # Gather child embeddings.
         sequence_len = len(children) + 1
         # Compute new representation.
-        reduced_emb = self.composer(head.emb, [child.emb for child in children])
+        reduced_emb = self.composer(head.emb, [child.emb for child in children], u)
         # Pop hidden states from StackLSTM.
         for _ in range(sequence_len):
             self.encoder.pop()
@@ -243,7 +244,7 @@ class DiscParser:
 
     def _reduce(self):
         assert self._can_reduce(), f'cannot reduce:\n{self.state()}'
-        self.stack.reduce()
+        self.stack.reduce(u=self.parser_representation())
 
     def parser_representation(self):
         """Return the representations of the stack, buffer and history."""
@@ -348,7 +349,7 @@ class GenParser:
 
     def _reduce(self):
         assert self._can_reduce(), f'cannot reduce:\n{self.state()}'
-        self.stack.reduce()
+        self.stack.reduce(u=self.parser_representation())
 
     def parser_representation(self):
         """Return the representations of the stack, terminal and history."""
