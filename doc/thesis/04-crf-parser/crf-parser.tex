@@ -4,8 +4,8 @@ This chapter introduces a neural Conditional Random Field (CRF) parser that can 
 
 In this chapter:
 \begin{itemize}
-  \item I present the parser and describe how it is an adaptation of earlier log-linear and neural crf parsing \citep{finkel2008crf,klein2015crf} and the maximum margin trained parser of \citet{stern2017minimal}.
-  \item I show how the several inference problems of interest can be solved exactly: prediction, entropy, sampling.
+  \item We present the parser and describe how it is a CRF adaptation of the max-margin trained parser of \citet{stern2017minimal}.
+  \item We show how several inference problems of interest can be solved exactly: parsing, entropy computation, sampling.
   \item We train the parser in a supervised fashion and show it's adequacy as a parser.
   \item We invesitage the kind of samples that are obtained from this parser, and evaluate how they affect the approximate inference in the RNNG.
 \end{itemize}
@@ -83,11 +83,11 @@ In this chapter:
     \begin{tikzpicture}[scale=.6]
       \input{../figures/edges/edges.tex}
     \end{tikzpicture}
-    \caption{The three types of edges making up the hypergraph of example \ref{ex:crf}.}
+    \caption{The edge-types making up the hypergraph.}
     \label{fig:crf-edges}
   \end{figure}
 
-  We connect a semiring $\mathcal{K}$ to the hypergraph by defining the weight function as $\omega: \mathcal{E} \to \mathbb{K}$, and by accumulating the weights with its binary operations. The function $\omega$ that assigns weights to the edges is given by either the function $\psi$ or $(\log \circ \, \psi)$, depending on the semiring used. Because of this association, the function $\omega$ has a very particular property: the function effectively depends only on the \textit{head} of the edge. Given edges $e = \langle \{ u, w \}, v \rangle$ and $e' =  \langle \{ u', w' \}, v \rangle$ for $u \neq u'$ and $w \neq w'$, their weights are equal: $\omega(e) = \omega(e')$. For this reason we write $\omega(v)$ instead.\footnote{Thus implicitly defining $\omega: \mathcal{V} \to \mathbb{K}$.} This fact will allow us to greatly rewrite the recursion that follow.
+  We connect a semiring $\mathcal{K}$ to the hypergraph by defining the weight function as $\omega: \mathcal{E} \to \mathbb{K}$, and by accumulating the weights with its binary operations. The function $\omega$ that assigns weights to the edges is given by either the function $\psi$ or $(\log \circ \, \psi)$, depending on the semiring used. Because of this association, the function $\omega$ has a very particular property: the function effectively depends only on the \textit{head} of the edge. Given edges $e = \langle \{ u, w \}, v \rangle$ and $e' =  \langle \{ u', w' \}, v \rangle$ for $u \neq u'$ and $w \neq w'$, their weights are equal: $\omega(e) = \omega(e')$. For this reason we write $\omega(v)$ instead.\footnote{Thus implicitly defining $\omega: \mathcal{V} \to \mathbb{K}$.} This fact will allow us to greatly rewrite the recursions that follow. Additionally, this means that instead of computing independent scores for each of the $O(n^3 \vert\Lambda\rvert^3)$ edges, we only need to compute scores for the $O(n^2 \vert\Lambda\rvert)$ vertices. For a scoring function like a neural network, for which computation can be relatively expensive, this will make a significant difference.
 
  With this structure in place, we are ready to derive the form of the inference algorithm particular to this structure.
 
@@ -98,7 +98,7 @@ In this chapter:
   \begin{align*}
     \alpha(v) =
       \begin{cases}
-        \hat{1}  &  \mbox{if } I(v) = \varnothing  \\
+        \hat{1}  &  \mbox{if } I(v) = \varnothing,  \\
         \displaystyle\bigoplus_{e \in I(v)} \omega(e) \otimes \displaystyle\bigotimes_{u \in T(e)} \alpha(u)  & \mbox{otherwise.}
       \end{cases}
   \end{align*}
@@ -132,27 +132,31 @@ In this chapter:
   where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting.
 
 \subsection{Outside recursion}
-  The outside algorithm computes the quantities $\beta(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. For the labels spanning the entire sentence, the outside value is defined as
+  The outside algorithm computes the quantities $\beta(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. The general recursion is given by:
   \begin{align*}
-    \beta(A, 0, n) =
-    \begin{cases}
-      \hat{1}, & \text{ if } A = \text{S}^{\dagger}  \\
-      \hat{0}, & \text{otherwise}.
-    \end{cases}
+    \beta(v) =
+      \begin{cases}
+        \hat{1}  & \mbox{if } O(v) = \varnothing, \\
+        \displaystyle\bigoplus_{e \in O(v)} \omega(w) \otimes \beta(H(e)) \otimes \displaystyle\bigotimes_{ \substack{ w \in T(e) \\ w \neq u } } \alpha(w)  & \mbox{otherwise.}
+      \end{cases}
   \end{align*}
-  To compute $\beta(A, i, j)$ in the general case we need to sum over all possible upward binary expansions that $A$ can be a part of, recursively making use of the outside values already computed. This means we sum over expansions $(B \to C \; A, k, i, j)$ for all labels $B$ and $C$ and left endpoints $1 \leq k < i$, and sum over expansions $(B \to A \; C, i, j, k)$ for all labels $B$ and $C$ and right endpoints $j < k \leq n$. This corresponds to the following recursive expression that uses the outside values of the superparts:
+  The only node without outgoing edges is the root node, and thus
+  \begin{align*}
+    \beta(S^{\dagger}, 0, n) = \hat{1}.
+  \end{align*}
+  To compute $\beta(A, i, j)$ in the general case we need to sum over all outgoing edges. These come in two kinds: either $(A, i, j)$ combines with $(C, k, i)$ to form constituent $(B, k, j)$; or either $(A, i, j)$ combines with $(C, j, k)$ to form constituent $(B, i, k)$. This corresponds to the following expression, that we can simplify by making use of the properties of $\omega$:
   \begin{align*}
     \beta(A, i, j)
-      &= \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=1}^{i-1} \psi(B, k, j) \otimes \alpha(C, k, i-1) \otimes \beta(B, k, j) \\
-        &\qquad \oplus \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=j+1}^{n} \psi(B, i, k) \otimes \beta(B, i, k) \otimes \alpha(C, j+1, k) \\
-      &=  \bigoplus_{k=1}^{i-1}  \Bigg[ \bigoplus_{B \in \Lambda} \psi(B, k, j)  \otimes \beta(B, k, j) \Bigg] \otimes \Bigg[ \bigoplus_{C \in \Lambda} \alpha(C, k, i-1) \Bigg] \\
-        &\qquad \oplus \bigoplus_{k=j+1}^{n}  \Bigg[ \bigoplus_{B \in \Lambda}  \psi(B, i, k) \otimes \beta(B, i, k) \Bigg] \otimes  \Bigg[  \bigoplus_{C \in \Lambda} \alpha(C, j+1, k) \Bigg] \\
-      &=  \bigoplus_{k=1}^{i-1}  \sigma'(k, j) \otimes \sigma(k, i-1) \oplus \bigoplus_{k=j+1}^{n} \sigma'(i, k) \otimes  \sigma(j+1, k) \\
+      &= \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=1}^{i-1} \omega(B, k, j) \otimes \alpha(C, k, i) \otimes \beta(B, k, j) \\
+        &\qquad \oplus \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=j+1}^{n} \omega(B, i, k) \otimes \beta(B, i, k) \otimes \alpha(C, j, k) \\
+      &=  \bigoplus_{k=1}^{i-1}  \Bigg[ \bigoplus_{B \in \Lambda} \omega(B, k, j)  \otimes \beta(B, k, j) \Bigg] \otimes \Bigg[ \bigoplus_{C \in \Lambda} \alpha(C, k, i) \Bigg] \\
+        &\qquad \oplus \bigoplus_{k=j+1}^{n}  \Bigg[ \bigoplus_{B \in \Lambda}  \omega(B, i, k) \otimes \beta(B, i, k) \Bigg] \otimes  \Bigg[  \bigoplus_{C \in \Lambda} \alpha(C, j, k) \Bigg] \\
+      &=  \bigoplus_{k=1}^{i-1}  \sigma'(k, j) \otimes \sigma(k, i) \oplus \bigoplus_{k=j+1}^{n} \sigma'(i, k) \otimes  \sigma(j, k) \\
   \end{align*}
   where
   \begin{align*}
-      \sigma(i, j) &= \bigoplus_{A \in \Lambda} \alpha(A, i, j) \\
-      \sigma'(i, j) &= \bigoplus_{A \in \Lambda} \psi(A, i, j) \beta(A, i, j)
+      \sigma(i, j) &= \bigoplus_{A \in \Lambda} \alpha(A, i, j),  \\
+      \sigma'(i, j) &= \bigoplus_{A \in \Lambda} \omega(A, i, j) \beta(A, i, j).
   \end{align*}
 
 \subsection{Solutions}
@@ -193,10 +197,9 @@ In this chapter:
       \label{eq:sample}
       P(E = e)
         &= \frac{\omega(e) \otimes \bigotimes_{u \in T(e)} \alpha(u)}{\alpha(v)}  \nonumber  \\
-        &= \frac{\psi(A, i, j) \, \alpha(B, i, k) \, \alpha(C, k, j)}{\alpha(A, i, j)}  \nonumber  \\
-        &\propto \alpha(B, i, k) \, \alpha(C, k, j),
+        &= \frac{\psi(A, i, j) \, \alpha(B, i, k) \, \alpha(C, k, j)}{\alpha(A, i, j)}.  \\
     \end{align}
-    where the edge-weight $\psi(A, i, j)$ is absorbed into the normalizing constant because it is the same for all edges.
+    We repeat the sampling at the nodes that are in the tail of the sampled edge, until we reached the nodes that span individual words.
 
   \paragraph{Entropy}
     To compute the entropy $H(Y \mid X = x)$ we need to first introduce the notion of the \textit{maginal probablity} of a node. The marginal of a node $v = (A, i, j)$ in a hypergraph is the probability that it occurs in a tree $\y$ for the sentence $\x$ as governed by the distribution $p$ that we defined on it. Let $V$ be a random variable with the hypergraph nodes $\mathcal{V}(x)$ as sample space, and define
@@ -226,6 +229,15 @@ In this chapter:
         &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v)  P(V = v \mid X = \x)  \nonumber \\
         &=  \log Z(\x) - \expect_V [ \log \psi(\x, V) ].
     \end{align}
+
+\section{Traning}
+\begin{itemize}
+  \item State training objective.
+  \item State how gradients are computed (automatically from quantities that are computed differentiably using inside and outside recursions).
+  \item State that gradients could also be computed using the same recursions \citep{eisner2009semirings}, see \citet{kim2017structured} who do this. But this is very cumbersome and not neccesary.
+  \item Say something about the gradient of the global $Z(x)$ and how this affects all other trees.
+  \item Show how the objective differs from the max-margin objective of \citep{stern2017minimal}: the difference is all in that $Z$!
+\end{itemize}
 
 \section{Experiments}
   We perform three types of experiments with the CRF parser:
@@ -266,26 +278,25 @@ In this chapter:
     \item We assess for some cherry picked sentences. This is more qualitative. These sentences should be difficult or ambiguous. Or they can be ungramatical when taken from the syneval dataset. We can evaluate their entropy, and the diversity of samples, for example to see if there are clear modes. We can make violinplots of the probabilities of the samples. We can compute the f-scores of the samples compared with the argmax tree.
   \end{itemize}
 
-\subsection{Related work}
+\section{Related work}
   The model that we presented regards a constituency tree as a collection of \textit{labeled spans} over a sentence. Earlier CRF models for constituency parsing, both log-linear and neural, factorize trees over \textit{anchored rules} \citep{finkel2008crf,klein2015crf}. This puts most of the expressiveness of the model in the state space of the dynamic program, modelling interactions between subparts of the trees through their interaction in the rules, instead of at the feature level. The model in \citet{stern2017minimal} removes part of this structure, and puts more expressiveness in the input space by using rich neural feature representations conditioning on the entire sentence. The discrete interaction between the local scores remains only at level of labeled spans. This dramatically improves the speed of this model, which will become evident in the next section.
 
-  In recent decades, chart based parsing has moved from grammar to features: the work of \citet{hall2014less} shows how the log-linear CRF model of \cite{finkel2008crf} can work with bare unnanotated grammars, when relying more on the surface features of the sentence, and \citet{klein2015crf} show how these surface features can be replaced with dense neural features. The work of \citep{stern2017minimal} moves one step further: the grammar is dispensed with altogether, making the model span-factored, and the scoring function is given the full power of neural networks.
+  In recent decades, discriminative chart-parsing has moved from grammar to features: the work of \citet{hall2014less} showed how the log-linear CRF model of \cite{finkel2008crf} can work with bare unnanotated grammars when relying more heavily on surface features of the sentence, and \citet{klein2015crf} showed that the linear scoring function can be replaced with a neural network one. The work of \citep{stern2017minimal} moves one step further: the grammar is dispensed with altogether, making the model span-factored, and the scoring function is given the full power of neural networks.
 
   Contrast this with generative parsing based on treebank grammars, where features are not available because the models are not conditional. Instead, these models rely entirely on detailed rule information: basic treebank grammars do not parse well because the rules provide too little context, and good results can only be obtained by enriching grammars. The independence assumptions in the grammar are thus typically weakened, not strengtehened. Such approaches lexicalize rules \citep{collins2003head}, annotate the rule with parent and sibling labels \citep{klein2003accurate}, or automatically learn refinements of nonterminal categories \citep{petrov2006learning}.
 
-  The closest predecessor to our model is the neural CRF parser of \citet{klein2015crf}, which predicts local potential for anchored rules using a feedfoward network. This differs from our approach in two ways. Their method requires a grammar, extracted from a treebank beforehand, whereas our approach implictly assumes all rules are possible rules in the grammar. Secondly, their scoring function conditions only on the parts of the sentence directly under the rule, dictated by the use of a feedforward network, whereas our scoring function computes a score bassed on representations computed from the entire sequence.
+  In terms of the probabilistic model, the closest predecessor to our model is the neural CRF parser of \citet{klein2015crf}, which predicts local potential for anchored rules using a feedfoward network. It differs from our approach in two ways. Their method requires a grammar, extracted from a treebank beforehand, whereas our approach implictly assumes all rules are possible rules in the grammar. Secondly, their scoring function conditions only on the parts of the sentence directly under the rule, dictated by the use of a feedforward network, whereas our scoring function computes a score bassed on representations computed from the entire sequence.
 
-  Earlier work on CRF parsing consider a tree as a collection of anchored rule productions productions \cite{finkel2008crf,klein2015crf}, and hence define the score of a tree as the product over clique potentials on anchored rules:
-  \begin{align}
-    \log\psi(A \to B \;C, i, k, j) = \log\psi(A, i, j)\\
-  \end{align}
-  discarding the rest of the span information. The function is then defined as
-  \begin{align}
-    \label{eq:span-score}
-    \log\psi(A, i, j) &\defeq s(i, j, A),
-  \end{align}
-  Note that the potential function as defined in \ref{eq:rule-score} disregards most of the information in a binary rule. In particular we see that $B$, $C$ and $k$, the labels and split-point of the children, are discarded.
-
+  % Earlier work on CRF parsing consider a tree as a collection of anchored rule productions productions \cite{finkel2008crf,klein2015crf}, and hence define the score of a tree as the product over clique potentials on anchored rules:
+  % \begin{align}
+  %   \log\psi(A \to B \;C, i, k, j) = \log\psi(A, i, j)\\
+  % \end{align}
+  % discarding the rest of the span information. The function is then defined as
+  % \begin{align}
+  %   \label{eq:span-score}
+  %   \log\psi(A, i, j) &\defeq s(i, j, A),
+  % \end{align}
+  % Note that the potential function as defined in \ref{eq:rule-score} disregards most of the information in a binary rule. In particular we see that $B$, $C$ and $k$, the labels and split-point of the children, are discarded.
 
   % \section{Related work}
   %   Here I describe related work, and in particular earlier approaches to (neural) CRF-parsing.

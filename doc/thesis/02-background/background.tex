@@ -3,7 +3,7 @@
 This section provides background on the four topics that are combined in this thesis: syntax, parsing, language modelling, and neural networks.
 
 \section{Syntax}
-This section introduces some concepts from syntax that are relevant for this thesis. In particular, we introduce the notion of a \textit{constituent}, and the hierarchical organization of constituents in a sentence as described by phrase-structure grammars. The aim is to provide a succinct and compelling answer to the question: \textit{Why should we care about constituency structure when modelling language?}
+We first introduce some concepts relating to syntax that are relevant for this thesis. In particular, we introduce the notion of a \textit{constituent}, and the hierarchical organization of constituents in a sentence as described by phrase-structure grammars. The aim is to provide a succinct and compelling answer to the question: \textit{Why should we care about constituency structure when modelling language?}
 
 The exposition primarily follows \citet{huddleston2002grammar}, a well established reference grammar of the English language that is relatively agnostic with respect to theoretical framework, with some excursions into \citet{carnie2010constituent} and \citet{everaert2015structures}, which are less language-specific but rooted more in a particular theoretical framework\footnote{Broadly subsumable under the name \textit{generative grammar}.}.
 
@@ -19,7 +19,7 @@ To each principle we now dedicate a separate section.
 Sentences consist of parts that may themselves have parts. The parts are groups of words that function as units and are called \textit{constituents}. Consider the simple sentence \textit{A bird hit the car.} The immediate constituents are \textit{a bird} (the subject) and \textit{hit the car} (the predicate). The phrase \textit{hit the car} can be analyzed further as containing the constituent \textit{the car}. The ultimate constituents of a sentence are the atomic words, and the entire analysis is called the constituent structure of the sentence. This structure can be indicated succinctly with the use of brackets
 \exi. [ [ A bird ] [ hit [ the car ] ] ]
 
-or less succinctly as a tree diagram
+or less succinctly as a tree diagram.
 \begin{figure}[h]{\textwidth}
   \center
   \begin{tikzpicture}[scale=.8]
@@ -27,7 +27,7 @@ or less succinctly as a tree diagram
   \end{tikzpicture}
   \label{fig:bird-tree}
 \end{figure}
-Evidence for the existence of such constituents can be provided by examples such as the following, which are called constituent tests \citep{carnie2010constituent}. Consider inserting the adverb \textit{apparently} into our example sentence, indicating the alleged status of the event described in the sentence. In principle there are six positions available for the placement of \textit{apparently} (including before, and after the sentence). However, only three of these placements are actually permissible:\footnote{We use an asterisk * to indicate a sentence that is judged ungrammatical, as is customary in linguistics.}
+Evidence for the existence of such constituents can be provided by examples such as the following, which are called constituent tests \citep{carnie2010constituent}. Consider inserting the adverb \textit{apparently} into our example sentence, to indicate the alleged status of the event described in the sentence. In principle there are six positions available for the placement of \textit{apparently} (including before, and after the sentence). However, only three of these placements are actually permissible:\footnote{We use an asterisk * to indicate a sentence that is judged ungrammatical, as is customary in linguistics.}
 \exi.\a. \textit{Apparently} a bird hit the car.
   \b. *An \textit{apparently} bird hit the car.
   \c. A bird \textit{apparently} hit the car.
@@ -35,7 +35,7 @@ Evidence for the existence of such constituents can be provided by examples such
   \e. *A bird hit the \textit{apparently} car.
   \f. A bird hit the car, \textit{apparently}.
 
-Based on the bracketing that we proposed for this sentence we can formulate a general constraint: the adverb must not interrupt any constituent. Indeed, this would explain why \textit{actually} cannot be placed anywhere inside \textit{hit the car} and not between \textit{a} and \textit{bird}. For full support, typically, results from many more such test are gathered, and in general these tests can be much more controversial than in our simple example \citep{carnie2010constituent}.
+Based on the bracketing that we proposed for this sentence we can formulate a general constraint: the adverb must not interrupt any constituent. Indeed, this would explain why \textit{apparently} cannot be placed anywhere inside \textit{hit the car} and not between \textit{a} and \textit{bird}. For full support, typically, results from many more such test are gathered, and in general these tests can be much more controversial than in our simple example \citep{carnie2010constituent}.
 
 \subsection{Categories}
 The constituents of a sentence belong to a limited range of types that form the set of syntactic categories. Two types of categories are distinguished: lexical and phrasal. The lexical categories are also known as part-of-speech tags. A tree can be represented in more detail by adding lexical (D, N, V) and phrasal categories (S, NP, VP).
@@ -71,9 +71,9 @@ Instead, it is argued, the constraints that govern this particular pattern depen
 Theoretical syntax is rife with controversy, and wildly differing viewpoints exist. In fact, for each point made in our short discussion, the exact opposite point has been made as well:
 
 \begin{itemize}
-  \item Work in dependency grammar and other word-based grammar formalisms depart from the idea that lexical relations between individual words are more fundamental than constituents and their hierarchical organization \citep{tesniere1959elements,nivre2005dependency,hudson2010introduction}, and dispenses with the notion of constituents altogether.
+  \item Work in dependency grammar and other word-based grammar formalisms departs from the idea that lexical relations between individual words are more fundamental than constituents and their hierarchical organization \citep{tesniere1959elements,nivre2005dependency,hudson2010introduction}, and dispenses with the notion of constituents altogether.
 
-  \item A recurring cause of controversy is the question whether hierarchical structure needs to be invoked in linguistic explanation. That is, whether the kind of analysis in figure \ref{fig:bird-tree}, with embedded constituents, is really fundamental to language. \citet{frank2012hierarchical} argue that a shallow analysis of sentences into immediate constituants with linear order but no hierachical structure\footnote{A structure reminiscent of that predicted in the task of \textit{chunking}, or shallow parsing.} is sufficient for syntactic theories, a claim that is vehemently rejected by \citet{everaert2015structures}.
+  \item A recurring cause of controversy is the question whether hierarchical structure needs to be invoked in linguistic explanation. That is, whether the kind of analysis we presented with embedded, hierarchically organized constituents is really fundamental to language. \citet{frank2012hierarchical} argue for instance that a shallow analysis of sentences into immediate constituents with linear order but no hierachical structure\footnote{A structure reminiscent of that predicted in the task of \textit{chunking}, or shallow parsing.} is sufficient for syntactic theories, a claim that is vehemently rejected by \citet{everaert2015structures}.
 
   \item Research in cognitive neuroscience and psycholinguistics shows that human sentence processing is hierachical, giving evidence that processing crucially depends on the kind of structures introduced in the sections above \citep{hale2001earley,levy2008expectation,brennan2016abstract}. However, research also exists that shows that purely linear predictors are sufficient for modeling sentence comprehension, thus showing the exact opposite to be true \citep{conway2008neurocognitive,gillespie2011hierarchy,christiansen2012similar,gillespie2013against,frank2012hierarchical}.
 \end{itemize}
@@ -82,55 +82,55 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
 \section{Parsing}
   Parsing is the task of predicting a tree $\y$ for a sentence $\x$. Probabilitic parsers solve this problem by learning a probabilistic model $p$ that describes a probability distribution over \textit{all} the possible parses $\y$ of a sentence $\x$. This distribution quantifies the uncertainty over the syntactic analyses of the sentence, and can be used to make predictions by finding the trees with highest probability. A further benefit of the probabilistic formulation is that the uncertainty over the parses can be determined quantitatively by computing the entropy of the distribution, and qualitatively by obtaining samples from the distribution. This section describes the form that such probabilistic models take, and the data from which they are estimated.
 
+  \begin{figure}[h]
+
+    \begin{subfigure}[b]{\textwidth}
+      \center
+      \begin{tikzpicture}[scale=.6]
+        \input{../figures/trees/original.tex}
+      \end{tikzpicture}
+      \subcaption{Original Penn Treebank tree.}
+      \label{fig:tree-original}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{\textwidth}
+      \center
+      \begin{tikzpicture}[scale=.6]
+        \input{../figures/trees/simplified.tex}
+      \end{tikzpicture}
+      \tiny
+      \subcaption{Function tags and traces removed.}
+      \label{fig:tree-simplified}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{\textwidth}
+      \center
+      \begin{tikzpicture}[scale=.6]
+        \input{../figures/trees/binary.tex}
+      \end{tikzpicture}
+      \tiny
+      \subcaption{Converted to normal form.}
+      \label{fig:tree-cnf}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{\textwidth}
+      \center
+      \begin{tikzpicture}[scale=.6]
+        \input{../figures/trees/spans.tex}
+      \end{tikzpicture}
+      \tiny
+      \subcaption{In normal form with spans.}
+      \label{fig:tree-cnf-spans}
+    \end{subfigure}
+
+  \caption{Converting a treebank tree (withouth part-of-speech tags).}
+  \label{fig:trees-ptb}
+  \end{figure}
+
   \subsection{Treebank}
     A treebank is a collection of sentences annotated with their grammatical structure that allows the estimation of statistical parsings models. The Penn Treebank \citep{marcus1993penn} is such a collection, consisting of sentences annotated with their constituency structure. Figure \ref{fig:tree-original} shows an example tree from this dataset and figure \ref{fig:tree-simplified} shows the tree after basic processing\footnote{This removes the functional tags and annotation of argument structure introduced in version 2 of the Penn Treebank \citep{marcus1994annotating}.}. Some of the models in this work require trees to be in \textit{normal form}: fully binary, but with unary branches at the terminals. Figure \ref{fig:tree-cnf} show the result of this (invertible) normalization, that is obtained by introduction of an empty dummy label $\varnothing$. Annotating the labels with left and right endpoints of the words they span results in the tree in figure \ref{fig:tree-cnf-spans}.
 
-    A tree can be factorized into its parts: we can think of tree as a set of \textit{labeled spans}, or as a set of \textit{anchored rules}. A labeled span is a triple $(A, i, j)$ of a syntactic label $A$ from a labelset $\Lambda$ together the left and right endpoints $i$, $j$ that the label spans. An \textit{anchored rule} is a triple $(r, i, j)$ or four-tuple $(r, i, k, j)$, containing a rule $r$ in normal form with span endpoints $i$, $j$, and a split-point $k$ of the left and right child $r$ is not a lexical rule. For the difference, consider the two representations of the tree in figure \ref{fig:tree-cnf-spans} given in table \ref{tab:spans-rules}. These different factorizations will become relevant in chapter \ref{04-crf}.
-
-    \begin{figure}
-
-      \begin{subfigure}[b]{\textwidth}
-        \center
-        \begin{tikzpicture}[scale=.6]
-          \input{../figures/trees/original.tex}
-        \end{tikzpicture}
-        \subcaption{Original Penn Treebank tree.}
-    		\label{fig:tree-original}
-      \end{subfigure}
-
-      \begin{subfigure}[b]{\textwidth}
-        \center
-        \begin{tikzpicture}[scale=.6]
-    		  \input{../figures/trees/simplified.tex}
-        \end{tikzpicture}
-        \tiny
-        \subcaption{Function tags and traces removed.}
-    		\label{fig:tree-simplified}
-      \end{subfigure}
-
-      \begin{subfigure}[b]{\textwidth}
-        \center
-        \begin{tikzpicture}[scale=.6]
-    		  \input{../figures/trees/binary.tex}
-        \end{tikzpicture}
-        \tiny
-        \subcaption{Converted to normal form.}
-    		\label{fig:tree-cnf}
-      \end{subfigure}
-
-      \begin{subfigure}[b]{\textwidth}
-        \center
-        \begin{tikzpicture}[scale=.6]
-    		  \input{../figures/trees/spans.tex}
-        \end{tikzpicture}
-        \tiny
-        \subcaption{In normal form with spans.}
-    		\label{fig:tree-cnf-spans}
-      \end{subfigure}
-
-    \caption{Converting a treebank tree (withouth part-of-speech tags).}
-    \label{fig:trees-ptb}
-    \end{figure}
+    A tree can be factorized into its parts: we can think of tree as a set of \textit{labeled spans}, or as a set of \textit{anchored rules}. A labeled span is a triple $(A, i, j)$ of a syntactic label $A$ from a labelset $\Lambda$ together with the left and right endpoints $i$, $j$ that the label spans. An \textit{anchored rule} is a triple $(r, i, j)$ or four-tuple $(r, i, k, j)$, containing a rule $r$ in normal form with span endpoints $i$, $j$, and a split-point $k$ of the left and right child when $r$ is not a lexical rule. Consider these two representations of the tree in figure \ref{fig:tree-cnf-spans} given in table \ref{tab:spans-rules}. These different factorizations will become relevant in chapter \ref{04-crf} when formulating the probabilistic model.
 
     \begin{table}[h]
       \center
@@ -146,7 +146,7 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
         $\qquad\vdots$ & $\qquad\vdots$  \\
         ($\varnothing$, 9, 10)     & ($\varnothing$ $\to$ ., 9, 10)  \\
       \end{tabular}
-      \caption{Two conceptions of the tree in \ref{fig:tree-cnf-spans}.}
+      \caption{Two representations of the tree in \ref{fig:tree-cnf-spans}.}
       \label{tab:spans-rules}
       \egroup  % increase vertical space
     \end{table}
@@ -157,23 +157,23 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
 
     Transition-based methods formulate parsing as a sequence of shift-reduce decisions made by a push-down automaton that incrementally builds a tree. The design of the transition system determines whether the tree is constructed bottom-up, top-down,\footnote{Post-order and pre-order, respectively.} or otherwise, and determines whether the trees need to be in normal form. The probabilistic model is defined over the sequences of actions, and the probability distribution typically factorizes as the product of conditional distributions over the next action given the previous actions. This makes it a directed model that is \textit{locally normalized}.\footnote{With the exception of those approaches that instead define a Conditional Random Field over the action sequences \citep{andor2016globally}, in which case the model is defined over the globally normalized action sequences.}
     \begin{definition}{}
-      A probalistic model $p(\x)$ over sequences $\x \in \mathcal{X}^n$ is \textit{locally normalized} if
+      A probalistic model $p(a)$ over sequences $a \in \mathcal{A}^n$ is \textit{locally normalized} if
       \begin{align*}
-        p(\x)
-          &= \prod_{i=1}^{n} p(x_i \mid x_{<i})  \\
-          &= \prod_{i=1}^{n} \frac{ \Psi( x_{<i}, x_{i} ) }{ Z( x_{<i} ) },
+        p(a)
+          &= \prod_{i=1}^{n} p(a_i \mid a_{<i})  \\
+          &= \prod_{i=1}^{n} \frac{ \Psi( a_{<i}, a_{i} ) }{ Z( a_{<i} ) },
       \end{align*}
-      where $Z( x_{<i} ) = \sum_{x \in \mathcal{X}} \Psi( x_{<i}, x )$  is a local normalizer and $\Psi$ is a nonnegative scoring function: $\Psi( x_{<i}, x_{i} ) \geq 0$ for all $x_{<i}$ and $x$.
+      where $Z( a_{<i} ) = \sum_{a \in \mathcal{A}} \Psi( a_{<i}, a )$  is a local normalizer and $\Psi$ is a nonnegative scoring function: $\Psi( a_{<i}, a_{i} ) \geq 0$ for all $a_{<i}$ and $a$.
     \end{definition}
     Such a model is discriminative when the actions only build the tree, but can be made generative when word prediction is included in the action set.
 
     Chart based parsing, on the other hand, factorizes trees along their parts, and defines the probabilistic model over the shared substructures. Representing the model as the product of local parts greatly reduces the number of variables required to specify the full distribution, and allows the use of dynamic programming for efficient inference. Discriminitive models based on Conditional Random Fields (CRF) \citep{lafferty2001crf} follow this factorization: local functions independently predict scores for the parts, and the product of this score is normalized \textit{globally} by a normalizer that sums over the exponential number structures composable from the parts.
     \begin{definition}{}
-      A probalistic model $p(\x)$ over sequences $\x \in \mathcal{X}^n$ is \textit{globally normalized} if
+      A probalistic model $p(a)$ over sequences $a \in \mathcal{A}^n$ is \textit{globally normalized} if
       \begin{align*}
-        p(\x) = \frac{ \Psi( \x ) }{ Z },
+        p(a) = \frac{ \Psi( a ) }{ Z },
       \end{align*}
-      where $Z  = \sum_{\x \in \mathcal{X}^n} \Psi( \x )$ is a \textit{global} normalization term, and $\Psi (\x ) \geq 0$ for all $\x$. To allow efficient computation of the normalizer $Z$, the function $\Psi$ typically factors over parts of $x$ as $\Psi ( \x ) = \prod_{a=1}^A \psi (\x_a )$.
+      where $Z  = \sum_{a \in \mathcal{A}^n} \Psi( a )$ is a \textit{global} normalization term, and $\Psi( a ) \geq 0$ for all $a$. To allow efficient computation of the normalizer $Z$, the function $\Psi$ typically factors over parts of $a$ as $\Psi ( a ) = \prod_{i=1}^K \psi (a_i )$ with the choice of parts $a = {a_i}_{i=1}^K$ depending on the model.
     \end{definition}
     Generative chart-based models, instead, estimate rule probabilities directly from a treebank. The probability of a tree is computed directly as the product of the probabilities of the rules that generate it, thus requiring no normalization.\footnote{In fact, this makes generative chart-based models directed, locally normalized models: they generate trees top-down by expanding localized normally rules.}.
 
@@ -185,18 +185,18 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
 
 
   \subsection{Metrics}
-    The standard evaluation for parsing is the Parseval metric \citep{black1991parseval}, which measures the number of correctly predicted labeled spans. Let $\mathcal{R}$ be the set of labeled spans of the gold reference trees, and let $\mathcal{P}$. The metric is defined as the harmonic mean, or $F_1$ measure, of the labelling recall $R$ and precison $P$:
+    The standard evaluation for parsing is the Parseval metric \citep{black1991parseval}, which measures the number of correctly predicted labeled spans. The metric is defined as the harmonic mean, or $F_1$ measure, of the labelling recall $R$ and precison $P$:
     \begin{align}
       \label{eq:fscore}
       F_1 = \frac{2 PR}{P + R}.
     \end{align}
-    The recall is the fraction of reference spans that are predicted correctly
+    Let $\mathcal{R}$ be the set of labeled spans of the gold reference trees, and let $\mathcal{P}$ be the set of labeled spans of the predicted trees. The recall is the fraction of reference spans that were predicted
     \begin{align*}
-      R = \frac{|\mathcal{R} \cap \mathcal{S}|}{|\mathcal{R}|},
+      R = \frac{|\mathcal{R} \cap \mathcal{P}|}{|\mathcal{R}|},
     \end{align*}
-    and the precision is the fraction of the source spans that is correct
+    and the precision is the fraction of the predicted spans that is correct
     \begin{align*}
-      P = \frac{|\mathcal{R} \cap \mathcal{S}|}{|\mathcal{S}|}.
+      P = \frac{|\mathcal{R} \cap \mathcal{P}|}{|\mathcal{P}|}.
     \end{align*}
     The cannonical implementation of the Parseval metric is \verb!EVALB! \citep{sekine1997evalb}.
 
@@ -215,7 +215,7 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
     \begin{align*}
       p(x_i \mid x_{<i}) = p(x_i \mid x_{i-j-1}^{i-1}).
     \end{align*}
-    This is the approach taken by $n$-gram language models. The lower order conditionals can be estimated directly by smoothing occurence counts \citep{chen1999empirical,kneser1995improved}, or they can be estimated by locally normalized scores $\Psi(x_{i-j-1}^{i-1}, x_i)$, given by a parametrized function $\Psi$. This function can be log-linear or a non-linear neural network \citep{rosenfeld1996loglinear,bengio2003neural}. The lower order approximation can also be dispensed with, making the model more epressive, but the estimation problem much harder. Language models based on recurrent neural networks (RNNs) follow this approach by using functions that compute scores $\Psi(x_{<i}, x_i)$ based on the entire history \citep{mikolov2010recurrent}. These models, and in particular the approaches based on the LSTM variant of the RNN, have shown to be remarkably effective and substantially improve over the above methods to give the current state of the art \citep{zaremba2014recurrent,jozefowicz2016exploring}.\footnote{Although recent work shows that the effective memory depth of RNN models is much smaller than the unbounded history suggests: \citet{chelba2017n} show that, in the perplexity they assign to test data, an RNN with unbounded history can be approximated very well by an RNN with bounded history. To be precise: a neural $n$-gram language model, with the fixed-size history encoded by a bidirectional RNN, is equivalent to an RNN with unbounded history for $n=13$, and to an RNN that is reset at the start of sentences for $n=9$. This finding is consistent accross dataset sizes.} Other neural network architectures based on convolutions \citep{kalchbrenner2014convolutional} and stacked feedforward networks with `self-attention' \citep{vaswani2017attention} have been succesfully applied to language modelling with unbounded histories as well.
+    This is the approach taken by $n$-gram language models. The lower order conditionals can be estimated directly by smoothing occurence counts \citep{chen1999empirical,kneser1995improved}, or they can be estimated by locally normalized scores $\Psi(x_{i-j-1}^{i-1}, x_i)$, given by a parametrized function $\Psi$. This function can be log-linear or a non-linear neural network \citep{rosenfeld1996loglinear,bengio2003neural}. The lower order approximation can also be dispensed with, making the model more epressive, but the estimation problem much harder. Language models based on recurrent neural networks (RNNs) follow this approach by using functions that compute scores $\Psi(x_{<i}, x_i)$ based on the entire history \citep{mikolov2010recurrent}. These models, and in particular the approaches based on the LSTM variant of the RNN \citep{hochreiter1997long}, have shown to be remarkably effective and substantially improve over the above methods to give the current state of the art \citep{zaremba2014recurrent,jozefowicz2016exploring,melis2017state}.\footnote{Although recent work shows that the effective memory depth of RNN models is much smaller than the unbounded history suggests: \citet{chelba2017n} show that, in the perplexity they assign to test data, an RNN with unbounded history can be approximated very well by an RNN with bounded history. To be precise: a neural $n$-gram language model, with the fixed-size history encoded by a bidirectional RNN, is equivalent to an RNN with unbounded history for $n=13$, and to an RNN that is reset at the start of sentences for $n=9$. This finding is consistent accross dataset sizes.} Other neural network architectures based on convolutions \citep{kalchbrenner2014convolutional} and stacked feedforward networks with `self-attention' \citep{vaswani2017attention} have been succesfully applied to language modelling with unbounded histories as well.
 
     Alternatively, a language model can be obtained by marginalizing a structured latent variable $h$ in a joint model $p(\x, h)$:
     \begin{align}
@@ -264,9 +264,9 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
   Internally, the function computes an affine transformation followed by an elementwise application of a nonlinear function, repeatedly. The number of repetitions is refered to as the number of layers of the network.
   \end{definition}
 
-  \begin{definition}{} A \textit{recurrent neural network} (RNN) is a parametrized function $\rnn$ that takes a sequence of vectors $\mathbf{X} = [ \vecx_1, \vecx_2, \dots, \vecx_k ]$, each in $\reals^{n}$,\footnote{Compactly represented as a matrix $\mathbf{X} \in \reals^{n \times k}$.} and produces a sequence of output vectors $[\vecy_1, \vecy_2, \dots,\vecy_n]$ each in $\reals^{m}$:
+  \begin{definition}{} A \textit{recurrent neural network} (RNN) is a parametrized function $\rnn$ that takes a sequence of vectors $\mathbf{x}_1^k = [ \vecx_1, \vecx_2, \dots, \vecx_k ]$, each in $\reals^{n}$, and produces a sequence of output vectors $[\vecy_1, \vecy_2, \dots,\vecy_n]$ each in $\reals^{m}$:
   \begin{align*}
-    [\vecy_1, \vecy_2, \dots, \vecy_k] = \rnn( \mathbf{X} ).
+    [\vecy_1, \vecy_2, \dots, \vecy_k] = \rnn( \mathbf{x}_1^k ).
   \end{align*}
   Each vector $\vecy_i$ is a function of the vectors $[\vecx_1, \vecx_2, \dots, \vecx_i ]$, for which reason we refer to the vector $\vecy_i$ as a context-dependent \textit{encoding} of the vector $\vecx_i$. An $\rnn$ can be applied to the input sequence in reverse. This makes each $\vecy_i$ a function of the vectors $[\vecx_i, \vecx_{i+1}, \dots, \vecx_k ]$. We denote the output of the forward direction with $\fw$ and the output of the backward direction with $\bw$.
   \end{definition}
@@ -276,29 +276,3 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
 
   \begin{definition}{} An LSTM \citep{hochreiter1997long} is a particular way to implement the internals of the RNN function. It is the only type of RNN used in this work, and we use the two names exchangeably.
   \end{definition}
-
-  % \begin{itemize}
-  %
-  %   \item A \textit{word embedding} is vector representation of a word, assigned by an embeding function $\embed$ that takes elements from $\mathcal{X}$ to $\reals^{n}$:
-  %   \begin{align*}
-  %     \vecx = \embed( x ).
-  %   \end{align*}
-  %   The function can be a simple lookup table, or a more elaborate function that depends for example on the orthography of the word.
-  %
-  %   \item A \textit{feedforward neural network} is a parametrized function $\ff$ from $\reals^{n}$ to $\reals^{m}$:
-  %   \begin{align*}
-  %     \vecy = \ff( \vecx ).
-  %   \end{align*}
-  %   Internally, the function computes an affine transformation of the input vector followed by an elementwise application of a nonlinear function, repeatedly. The number of repetitions is refered to as the number of layers of the network.
-  %
-  %   \item A \textit{recurrent neural network} (RNN) is a parametrized function $\rnn$ that takes a sequence of vectors $\vecx = [ \vecx_1, \vecx_2, \dots, \vecx_n ]$ from $\reals^{n}$ and produces a sequence of output vectors $[\vecy_1, \vecy_2, \dots,\vecy_n]$ in $\reals^{m}$:
-  %   \begin{align*}
-  %     [\vecy_1, \vecy_2, \dots, \vecy_n] = \rnn( \vecx ).
-  %   \end{align*}
-  %   Each vector $\vecy_i$ is a function of the vectors $[\vecx_1, \vecx_2, \dots, \vecx_i ]$, for which reason we refer to the vector $\vecy_i$ as a context-dependent \textit{encoding} of the vector $\vecx_i$. An $\rnn$ can be applied to the input sequence in reverse. This makes each $\vecy_i$ a function of the vectors $[\vecx_i, \vecx_{i-1}, \dots, \vecx_1 ]$. We denote the output of the forward direction with $\fw$ and the output of the backward direction with $\bw$.
-  %
-  %   \item An RNN is \textit{bidirectional} when it combines the output of an RNN that runs in the forward direction, with the output of an RNN that runs in the backward direction. Combining their output vectors by concatenation gives for each position a vector $\h_i = [ \fw_i; \bw_i ]$ that is a function of the entire input sequence.
-  %
-  %   \item An LSTM \citep{hochreiter1997long} is a particular way to implement the RNN function. It is the only type of RNN used in this work, and we use the two names exchangeably.
-  %
-  % \end{itemize}

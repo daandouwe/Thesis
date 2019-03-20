@@ -2025,6 +2025,41 @@
       \field{title}{A convolutional neural network for modelling sentences}
       \field{year}{2014}
     \endentry
+    \entry{kim2017structured}{article}{}
+      \name{author}{4}{}{%
+        {{hash=1fecefbf07117382be6f83e7910ea8a0}{%
+           family={Kim},
+           family_i={K\bibinitperiod},
+           given={Yoon},
+           given_i={Y\bibinitperiod}}}%
+        {{hash=137742fe2bd0bb9feec03fbd044beff5}{%
+           family={Denton},
+           family_i={D\bibinitperiod},
+           given={Carl},
+           given_i={C\bibinitperiod}}}%
+        {{hash=c21c0f63662877a43e600f44204bac0e}{%
+           family={Hoang},
+           family_i={H\bibinitperiod},
+           given={Luong},
+           given_i={L\bibinitperiod}}}%
+        {{hash=5857e583ce0960aba2cf6a531b3499fa}{%
+           family={Rush},
+           family_i={R\bibinitperiod},
+           given={Alexander\bibnamedelima M},
+           given_i={A\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+      }
+      \strng{namehash}{5eee5f2bd4e556439437103f838da06b}
+      \strng{fullhash}{aba28a523824b780ca502c98c2e7f903}
+      \field{sortinit}{K}
+      \field{sortinithash}{a7d5b3aec5a0890aae7baf85a209abfc}
+      \field{labelyear}{2017}
+      \field{datelabelsource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:1702.00887}
+      \field{title}{Structured attention networks}
+      \field{year}{2017}
+    \endentry
     \entry{kingma2014adam}{article}{}
       \name{author}{2}{}{%
         {{hash=1e072d74f4ac1094c9c26e1b592cea4a}{%

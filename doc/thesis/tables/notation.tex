@@ -6,10 +6,9 @@
 \begin{table}[h]
 \center
 
-  \begin{tabular}{l|l}
-    \hline\hline
+  \begin{tabular}{ll}
+
     % Real numbers and vectors
-    % $\mathbb{R}$  & The set of real numbers.   \\
     $\mathbf{a}, \mathbf{b}$, \dots  & Vectors over the reals, \textit{i.e.} $\mathbf{a} \in \mathbb{R}^m$.  \\
     $\mathbf{A}, \mathbf{B}$, \dots & Matrices over the reals, \textit{i.e.} $\mathbf{A} \in \mathbb{R}^{m \times n}$.   \\
     $[\mathbf{a}]_i$ & Vector indexing: $[\mathbf{a}]_i \in \mathbb{R}$ for $1 \leq i \leq m$. \\
@@ -24,25 +23,16 @@
     $X, Y, \dots$ & Random variables with sample spaces $\mathcal{X}, \mathcal{Y}, \dots$  \\
     $x$ & A word from $\mathcal{X}$, outcome of random variable $X$.   \\
     $y$ & A tree from $\mathcal{Y}(x)$, outcome of random variable $Y$.  \\
-    $x_1^m$ & A sequence of words $\langle x_1, \dots, x_m \rangle$ from $\mathcal{X}^m$. \\
-    % the \\ & outcome of the sequence of random variables $X_1, X_2, \dots, X_m$.   \\
+    $x_1^m$ & A sequence of words $\langle x_1, \dots, x_m \rangle$ from $\mathcal{X}^m$, shorthand: $x$. \\
     $x_{<i}$ & The sequence $x_{1}^{i-1}$ preceding $x_i$.  \\
     & \\
 
     % Distributions
-    % $P_X$, $P_{Y \mid X}$, $P_{X, Y}$ & Probability distributions.  \\
     $P_X$ & Probability distribution.  \\
-
-    % $p_{X}$, $p_{Y \mid X}$, $p_{X, Y}$ & Probability mass functions. \\
     $p_{X}$ & Probability mass function. \\
-
-    % $p(x)$, $p(y \mid x)$, $p(x, y)$ & Probabilities with random variables clear from context. \\
     $p(x)$ & Probability $P(X = x)$. \\
-
     $p_{\theta}$, $q_{\lambda}$ & Probability mass functions emphasizing parameters.   \\
-
     $\mathbb{E}[g(X)]$ & Expectation of $g(X)$ with respect to distribution $P_X$.  \\
-
     $H(P_X)$ & Entropy of random variable $X$ with distribution $P$ \\
     & \\
 
@@ -50,10 +40,12 @@
     $\Lambda$ & Finite set of nonterminal labels.  \\
     $A, B, \dots$ & Nonterminal labels from $\Lambda$.  \\
     $S^{\dagger}$ & Special root label not in $\Lambda$.  \\
+    & \\
 
+    % Sets
+    $2^A$ & The poweset of set $A$.  \\
+    $\mathbf{1}_{ \{ p \} }$  & Indicator function of predicate $p$.  \\
 
-
-    \hline\hline
   \end{tabular}
 
 \end{table}

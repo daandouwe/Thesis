@@ -16,15 +16,16 @@ How these actions work to build a tree is best illustrated with an example deriv
 
 \begin{example}{(Discriminative transition system)}
   \label{ex:disc-states}
-  Producing the gold tree of the input sentence \textit{The hungry cat sleeps.}.
+  Producing the gold tree of the input sentence \textit{The hungry cat sleeps}.
   \input{../tables/disc-transitions.tex}
+
   Individual items are separated by the midline symbol.
 \end{example}
 
  The actions are constrained in order to only derive well-formed trees:
 \begin{itemize}
   \item $\shift$ can only be excecuted if there is at least one open nonterminal (all words must be under some nonterminal symbol).
-  \item $\open(X)$ requires there to be words left on the buffer (all constituents must eventually hold terminals).
+  \item \open(X) requires there to be words left on the buffer (all constituents must eventually hold terminals).
   \item $\reduce$ requires there to be at least one terminal following the open nonterminal, and the topmost nonterminal can only be closed when the buffer is empty (all nodes must end under a single root node).
 \end{itemize}
 The generative transition system is derived from this system by replacing the $\shift$ action, which moves the word $x$ from the buffer into the open constituent on the stack, with an action that \textit{predicts} the word:
@@ -40,7 +41,7 @@ The buffer is dispensed with and is replaced by a similar structure that records
 
 \subsection{Model}
 
-Fundamentally, the model is a probability distribution over transition actions $a = ( a_1, \dots, a_T )$ that generates a tree $\y$. Conditionally, given a sequence of words $\x$, in the discriminative model, and jointly predicting $\x$ in the generative model. Put simply, the model is thus defined as
+Fundamentally, the model is a probability distribution over transition action sequences $a_1^T$ that generate trees $\y$. Conditionally, given a sequence of words $\x$, in the discriminative model, and jointly predicting $\x$ in the generative model. Put simply, the model is thus defined as
 \begin{equation}
   \label{eq:naive-rnng-model}
   p( a ) = \prod_{t=1}^T p( a_t \mid a_{<t} ),
@@ -55,88 +56,81 @@ and the set of generative actions as
 \begin{align}
   \genactions &= \{ \gen, \open, \reduce \}.
 \end{align}
-We define a finite set of nonterminal symbols $N$ and a finite alphabet of words $\Sigma$. Then in the discriminative model $a$ is an element of $\discactions^T$, and in the generative model $a$ is an elemtnt of $\genactions^T$, both with the restriction that the actions form a valid tree $\y$. The sequence of nonterminals $\mathbf{n}$ in $N^K$ is the sequence of nonterminal nodes obtained from $\y$ by pre-order traversal. An a sentence $\x$, finally, is an element of $\Sigma^N$.
-
-Finally, let $\indicator_{ \{ a_t \, = \, \open \} }$ be the indicator function for the event that the action $a_t$ is to open a new nonterminal, and similarly let $\indicator_{ \{ a_t \, = \, \gen \} }$ be the indicator function for the event that the action $a_t$ is to generate a word. Then we can introduce two functions that map between sets of indices to indicate the number of times a particular action has been taken at each time step:
+The finite set of nonterminals is indicated by $\Lambda$ and the finite alphabet of words by $\mathcal{X}$. Then in the discriminative model $a$ is sequence over $\discactions$, and in the generative model $a$ is a sequence over $\genactions$, both with the restriction that the actions form a valid tree $\y$. The sequence of nonterminals $n_1^K$ from $\Lambda^K$ is the sequence of nonterminal nodes obtained from a tree $\y$ by pre-order traversal, and we let a sentence $\x$ be an element of $\mathcal{X}^N$. Finally, we introduce two functions that map between sets of indices to indicate the number of times a particular action has been taken at each time step:
 \begin{align*}
-  \mu &: [ T ] \to [ M ]: \mu(t) = \sum_{i=0}^{t-1} \indicator_{ \{ a_i \, = \, \open \} },
+  % \mu_a &: [ T ] \to [ K ]: t \mapsto \sum_{i=1}^{t-1} \indicator_{ \{ a_i \, = \, \open \} },
+  \mu_a &: \{ 1, \dots, T \} \to \{ 1, \dots, K \}: t \mapsto \sum_{i=1}^{t-1} \indicator_{ \{ a_i \, = \, \open \} },
 \end{align*}
 and
 \begin{align*}
-  \nu &: [ T ] \to [ N ]: \nu(t) = \sum_{i=0}^{t-1} \indicator_{ \{ a_i \, = \, \gen \} }.
+  % \nu_a &: [ T ] \to [ N ]: t \mapsto \sum_{i=1}^{t-1} \indicator_{ \{ a_i \, = \, \gen \} },
+  \nu_a &: \{ 1, \dots, T \} \to \{ 1, \dots, N \}: t \mapsto \sum_{i=1}^{t-1} \indicator_{ \{ a_i \, = \, \gen \} },
 \end{align*}
+but for brevity we drop the subscript $a$. We are now in the position to write down the exact models.
 
-We are now in the position to write down the exact models. Let $a$ be a sequence from $\discactions^T$. Then the model for the discrminative RNNG is
-% \begin{align}
-%   \label{eq:disc-model}
-%   p(\y \mid \x)
-%     &= p(a \mid \x)  \\
-%     &= \prod_{t=1}^T p(a_t \mid \x, a_{<t}) p(n_{\mu(t)} \mid \x, a_{<t} )^{ \indicator_{ \{ a_t \, = \, \open \} } }.
-% \end{align}
-\begin{align}
-  \label{eq:disc-model}
-  p(\y \mid \x) = p(a \mid \x) = \prod_{t=1}^T p( a_t \mid \x, a_{<t}),
-\end{align}
-where
-\begin{equation}
-  \label{eq:disc-model}
-  p( a_t \mid \x, a_{<t}) =
-  \begin{cases}
-    p( n_{ a_t } \mid \x, a_{<t} ) p( n_{ \mu(t) } \mid \x, a_{<t} ) & \text{if } a_t = \open  \\
-    p( n_{ a_t } \mid \x, a_{<t} ) & \text{otherwise.}  \\
-  \end{cases}
-\end{equation}
+\begin{definition}{(Discriminative RNNG)}
+  Let $a$ be a sequence over from $\discactions$ of length $T$. Then the model for the discrminative RNNG is
+  \begin{align}
+    \label{eq:disc-model}
+    p(\y \mid \x) = p(a \mid \x) = \prod_{t=1}^T P( a_t \mid \x, a_{<t}),
+  \end{align}
+  where
+  \begin{equation}
+    \label{eq:disc-model}
+    P( a_t \mid \x, a_{<t}) =
+    \begin{cases}
+      p( n_{ a_t } \mid \x, a_{<t} ) p( n_{ \mu(t) } \mid \x, a_{<t} ) & \text{if } a_t = \open,  \\
+      p( n_{ a_t } \mid \x, a_{<t} ) & \text{otherwise.}  \\
+    \end{cases}
+  \end{equation}
+\end{definition}
 
-Let $a$ be a sequence from $\genactions^T$, which include the actions that generate words\footnote{Note that under this action set $p(a_t \mid a_{<t}, \x_{<t}) = p(a_t \mid a_{<t})$, given the fact that the words in $\x_{<t}$ are contained in $a_{<t}$.}, then the model for the generative RNNG is
-% \begin{align}
-%   \label{eq:gen-model}
-%   p(\x, \y)
-%     &= p(a)  \\
-%     &= \prod_{t=1}^T p(a_t \mid a_{<t}) p(n_{\mu(t)} \mid   a_{<t})^{ \indicator_{ \{ a_t \, = \, \open \} } } p(x_{\nu(t)} \mid a_{<t})^{ \indicator_{ \{ a_t \, = \, \gen \} } }.
-% \end{align}
-\begin{align}
-  \label{eq:disc-model}
-  p(\y \mid \x) = p(a) = \prod_{t=1}^T p( a_t \mid a_{<t}),
-\end{align}
-where
-\begin{equation}
-  \label{eq:gen-model}
-  p( a_t \mid a_{<t} ) =
-  \begin{cases}
-    p( a_t \mid a_{<t} ) p(n_{ \mu(t) } \mid a_{<t} ) & \text{if } a_t = \open  \\
-    p( a_t \mid a_{<t} ) p(x_{ \nu(t) } \mid a_{<t} ) & \text{if } a_t = \gen  \\
-    p( a_t \mid a_{<t} ) & \text{otherwise.}  \\
-  \end{cases}
-\end{equation}
+\begin{definition}{(Generative RNNG)}
+  Let $a$ be a sequence over $\genactions$ of length $T$, which include the actions that generate words\footnote{Note that under this action set $p(a_t \mid a_{<t}, \x_{<t}) = p(a_t \mid a_{<t})$, given the fact that the words in $\x_{<t}$ are contained in $a_{<t}$.}, then the model for the generative RNNG is
+  \begin{align}
+    \label{eq:disc-model}
+    p(\y \mid \x) = p(a) = \prod_{t=1}^T P( a_t \mid a_{<t}),
+  \end{align}
+  where
+  \begin{equation}
+    \label{eq:gen-model}
+    P( a_t \mid a_{<t} ) =
+    \begin{cases}
+      p( a_t \mid a_{<t} ) p(n_{ \mu(t) } \mid a_{<t} ) & \text{if } a_t = \open,  \\
+      p( a_t \mid a_{<t} ) p(x_{ \nu(t) } \mid a_{<t} ) & \text{if } a_t = \gen,  \\
+      p( a_t \mid a_{<t} ) & \text{otherwise.}  \\
+    \end{cases}
+  \end{equation}
+\end{definition}
 
-The probabilities over next actions at time step $t$ are given by classifiers on a vector $\vecu_t$\footnote{For brevity we omit the conditioning on $\x$, which was redundant already in the case of the generative model.}, which represents the parser configuration at that timestep:
+The probabilities over next actions at time step $t$ are given by classifiers on a vector $\vecu_t$,\footnote{For brevity we omit the conditioning on $\x$, which was redundant already in the case of the generative model.} which represents the parser configuration at that timestep:\footnote{Where we pretend that $a_t$, $n_t$, and $x_t$ double as indices.}}
 \begin{align}
   \label{eq:action-regression}
-  &p(a_t \mid a_{<t})
-    \propto \exp \ff_{\alpha}( \vecu_t )  \\
-  &p(n_{\mu(t)} \mid a_{<t})
-    \propto \exp \ff_{\beta}( \vecu_t )  \\
-  &p(x_{\nu(t)} \mid a_{<t})
-    \propto \exp \ff_{\gamma}( \vecu_t )
+  p(a_t \mid a_{<t})
+    &\propto \exp \Big\{ [\ff_{\alpha}( \vecu_t )]_{a_t}  \Big\}  \\
+  p(n_{\mu(t)} \mid a_{<t})
+    &\propto \exp \Big\{ [\ff_{\beta}( \vecu_t )]_{n_{\mu(t)}}  \Big\}  \\
+  p(x_{\nu(t)} \mid a_{<t})
+    &\propto \exp \Big\{ [\ff_{\gamma}( \vecu_t )]_{x_{\nu(t)}}  \Big\}
 \end{align}
-where $\{\alpha, \beta, \gamma\}$ are separate sets of parameters. The computation of the vector $\vecu_t$ is described in the next section.
+The parameters $\alpha$, $\beta$, and $\gamma$ are separate sets of parameters. The computation of the vector $\vecu_t$ is described in the next section.
 
 \begin{remark} We could have defined the actions as
   \begin{align*}
-    \discactions &= \{ \reduce, \shift \} \cup \{ \open(n) \mid n \in N \},
+    \discactions &= \{ \reduce, \shift \} \cup \{ \open(n) \mid n \in \Lambda \},
   \end{align*}
   and
   \begin{align*}
-    \genactions &= \{ \reduce \} \cup \{ \open(n) \mid n \in N \} \cup \{ \gen(x) \mid x \in \Sigma \},
+    \genactions &= \{ \reduce \} \cup \{ \open(n) \mid n \in \Lambda \} \cup \{ \gen(x) \mid x \in \mathcal{X} \},
   \end{align*}
-  and defined $p(a)$ as in \ref{eq:naive-rnng-model}. However, in the case of the generative model this is particularly inefficient from a computational perspective. Note that the set $\Sigma$ is generally very very large\footnote{On the order of tens or hundreds of thousands.}, and the normalization in \ref{eq:action-regression} requires a sum over all actions while a large number of the actions do not generate words. Besides, the presentation in \ref{eq:disc-model} and \ref{eq:gen-model} is conceptually cleaner: first choose an action, then, if required, choose the details of that action. For these reasons we opt for the two-step prediction. For consistency we extend this modelling choice to the discriminative RNNG. And although it appears that \citet{dyer2016rnng} model the sequences according to \ref{eq:naive-rnng-model}, followup work takes our approach and models the actions of the generative RNNG as in equation \ref{eq:gen-model} \citep{hale2018beam}.
+  and defined $p(a)$ as in \ref{eq:naive-rnng-model}. However, in the case of the generative model this is particularly inefficient from a computational perspective. Note that the set $\mathcal{X}$ is generally very large\footnote{On the order of tens or hundreds of thousands.}, and the normalization in \ref{eq:action-regression} requires a sum over all actions while a large number of the actions do not generate words. Besides, the presentation in \ref{eq:disc-model} and \ref{eq:gen-model} is conceptually cleaner: first choose an action, then, if required, choose the details of that action. For these reasons we opt for the two-step prediction. For consistency we extend this modelling choice to the discriminative RNNG. And although it appears that \citet{dyer2016rnng} model the sequences according to \ref{eq:naive-rnng-model}, followup work takes our approach and models the actions of the generative RNNG as in equation \ref{eq:gen-model} \citep{hale2018beam}.
 \end{remark}
 
 
 \section{Parametrization}
 The transition probabilities are computed from the vector $\vecu_t$ that summarizes the parser's entire configuration history at time $t$. This vector is computed incrementally and in a syntax-dependent way. It is defined as the concatenation of three vectors, each summarizing one of the three datastructures separately:
 \begin{align*}
-  \vecu_t = [\mathbf{s}_t, \mathbf{b}_t, \mathbf{h}_t],
+  \vecu_t = [\mathbf{s}_t; \mathbf{b}_t; \mathbf{h}_t].
 \end{align*}
 Here, $\mathbf{s}_t$ represents the stack, $\mathbf{b}_t$ represents the buffer, and $\mathbf{h}_t$ represents the history of actions.
 
@@ -150,7 +144,7 @@ The stack RNN computes a representation based on incoming nonterminal and termin
   \begin{center}
     (S | (NP | \textit{The} | \textit{hungry} | \textit{cat}.
   \end{center}
-  Each first represented by an embedding vector, and then encoded by an RNN in the regular way. A $\reduce$ action is now predicted: the items are popped from the stack until the first open bracket is popped, which in this example is the item that opens the NP bracket. This process also rewinds the RNN state to before the bracket was openend, which in this example brings the RNN back to its state at step 1. The composition now computes a vector representation for the 5 popped items, returning a single representation for the item
+  Each first represented by an embedding vector, and then encoded by an RNN in the regular way. A $\reduce$ action is now predicted: the items are popped from the stack until the first open bracket is popped, which in this example is the item that opens the NP bracket. This process also rewinds the RNN state to before the bracket was openend, which in this example brings the RNN back to its state at step 1. The composition now computes a vector representation for the four popped items, returning a single representation for the composed item
   \begin{center}
     (NP \textit{The} \textit{hungry} \textit{cat}).
   \end{center}
@@ -189,9 +183,9 @@ Parsing a sentence $\x$ with the discriminative model corresponds to solving the
 \end{align*}
 Solving this exactly is intractable due to the parametrization of the model. At each timestep, the model conditions on the entire history derivation history which excludes the use of dynamic programming to solve this efficiently. Instead we rely on an approximate search strategy. There are two common approaches for this: greedy decoding and beam search. We only focus on the first. Greedy decoding is precisely what it suggests: at each timestep we greedily select the best local decision
 \begin{align*}
-  a^{*}_t = \argmax_{a} \ptheta(a|a^{*}_{< t}).
+  \hat{a}_t = \argmax_{a} \ptheta(a \mid \hat{a}_{< t}).
 \end{align*}
-The predicted parse is then the approximate MAP tree $\y^*$ constructed by the sequeunce $a^* = (a^{*}_1, \cdots, a^{*}_m)$.
+The predicted parse is then the approximate MAP tree $\y^*$ constructed by the sequence $\langle \hat{a}_1, \dots, \hat{a}_m \rangle$.
 
 \subsection{Generative model}
 Given a trained generative model $\ptheta$ we are interested in solving the following two problems: parsing a sentence $\x$

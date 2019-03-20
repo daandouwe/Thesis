@@ -7,14 +7,14 @@ In this chapter we show how the RNNG can be trained on unlabeled data. Together 
   \item I show how to obtain gradients for this lowerbound by rewrinting the gradient into a form that is called the score function estimator \citep{williams1992reinforce,fu2006gradient}.
 \end{itemize}
 
-\paragraph{Notation} In this chapter we write $\x$ for a sentence, $\y$ for a (latent) constituency tree, and $\yieldx$ for the \textit{yield} of $\x$, all trees that can be assigned to $\x$. Furthermore, let $\mathcal{D}_L = \{ (\x_i, \y_i)\}_{i=1}^N$ be a labeled dataset of sentences $\x$ with gold trees $\y$, and let $\mathcal{D}_U = \{ \x_i \}_{i=1}^M$ be an unlabeled dataset consisting of just sentences $\x$. We denote our generative RNNG with $\ptheta$ and when we write $\qlambda$ we will mean either the discriminative RNNG or the CRF parser.
+\paragraph{Notation} Let $\mathcal{D}_L = \{ (\x_i, \y_i)\}_{i=1}^N$ be a labeled dataset of sentences $\x$ with gold trees $\y$, and let $\mathcal{D}_U = \{ \x_i \}_{i=1}^M$ be an unlabeled dataset consisting of just sentences $\x$.
 
 \section{Objective}
 We define the following general semi-supervised objective
 \begin{align*}
   \mathcal{L}(\theta, \lambda) \defeq \mathcal{L}_{S}(\theta) + \mathcal{L}_{U}(\theta, \lambda).
 \end{align*}
-The supervised objective $\mathcal{L}_{S}$ is optimized over $\mathcal{D}_L$ and $\mathcal{L}_{U}$ the unsupervised objective optimized over $\mathcal{D}_U$. We introduce $\alpha \in \mathbb{R}_{\geq 0}$ as an arbitrary scalar controlling the contribution of the unsupervised objective.
+The supervised objective $\mathcal{L}_{S}$ is optimized over a labeled dataset $\mathcal{D}_L = \{ (\x_i, \y_i)\}_{i=1}^N$ and $\mathcal{L}_{U}$ is the unsupervised objective optimized over an unlabeled dataset $\mathcal{D}_U = \{ \x_i \}_{i=1}^M$. We introduce $\alpha \in \mathbb{R}_{\geq 0}$ as an arbitrary scalar controlling the contribution of the unsupervised objective.
 
 \paragraph{Supervised objective}
 We define the supervised objective $\mathcal{L}_{S}(\theta)$ as
@@ -54,14 +54,14 @@ and write
    &\leq \sum_{\x \in \mathcal{D}_U} \log p (\x) \nonumber \\
    &= \mathcal{L}_{U}(\theta, \lambda)
 \end{align}
-as a lower bound on our true objective $\mathcal{L}_{U}$. This is a particular instance of the evidence lower bound (ELBO) \citep{blei2016vi}. The quantity can be rewritten to reveal an entropy term H($q$)
+as a lower bound on our true objective $\mathcal{L}_{U}$. This is a particular instance of the evidence lower bound (ELBO) \citep{blei2016vi}. The quantity can be rewritten to reveal an entropy term $H(q)$:
 \begin{align*}
   \expect_{q} \Big[\log \ptheta(\x,\y )  - \log  \qlambda(\y | \x) \Big]
     &=\expect_{q} \Big[\log \ptheta(\x,\y ) \Big]  - \expect_{q} \Big[\log \qlambda(\y | \x) \Big] \\
-    &= \expect_{q} \Big[\log \ptheta(\x,\y ) \Big]  + \text{H}(q),
+    &= \expect_{q} \Big[\log \ptheta(\x,\y ) \Big]  + H(q),
   \label{eq:expectation}
 \end{align*}
-which gives this objective an intuitive interpretation. On the one hand, the objective aims to
+% which gives this objective an intuitive interpretation. On the one hand, the objective aims to
 
 \paragraph{Posterior}
 The posterior $q$ can be any kind of models, with the only condition that for all $ \x $ and $ \y \in \yieldx$,
@@ -73,7 +73,7 @@ This condition is fulfilled by any discriminatively trained parser with the same
 An interesting advantage of the CRF parser is that we \textit{can} compute the entropy H$(q)$ exactly. This contrasts with the discriminative RNNG, where H$(q)$ can only be approximated. To make this explicit we introduct separate ELBO objectives:
 \begin{align}
   \elbo_{\textsc{rnng}}(\theta, \lambda) &\defeq \sum_{\x \in \dataset_U}\expect_{q} \Big[\log \ptheta(\x,\y )  - \log  \qlambda(\y | \x) \Big] \\
-  \elbo_{\textsc{crf}}(\theta, \lambda) &\defeq \sum_{\x \in \dataset_U} \expect_{q} \Big[\log \ptheta(\x,\y ) \Big]  + \text{H}(q).
+  \elbo_{\textsc{crf}}(\theta, \lambda) &\defeq \sum_{\x \in \dataset_U} \expect_{q} \Big[\log \ptheta(\x,\y ) \Big]  + H(q).
 \end{align}
 
 

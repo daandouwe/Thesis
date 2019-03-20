@@ -51,28 +51,27 @@ The main model $p$ is a regular RNN language model on sentences $\x$:
 \end{align*}
 where the conditional probabilities of $x_i$ are computed by linear regression on forward RNN vectors $\fw_{i-1}$ as
 \begin{align*}
-  p_{\theta, \lambda}( x \mid \x_{<i}) &\propto \exp \Big[ \vecW^{\top} \fw_{i-1} + \vecb \Big]_{x}.
+  p_{\theta, \lambda}( x \mid \x_{<i}) &\propto \exp \Big \{ [ \vecW^{\top} \fw_{i-1} + \vecb ]_{x} \Big\},
 \end{align*}
-The parameters $\xi = \{ \vecW, \vecb \}$ are specific to the language model, and the vectors $\fw_i$ are computed using a forward RNN parametrized by $\theta$. The vectors $\fw$ are used in the side objective as well, and it is in this precise sense that the parameters $\theta$ are shared between $p$ and $q$.
+where $x$ doubles as an index. The parameters $\lambda = \{ \vecW, \vecb \}$ are specific to the language model, and the vectors $\fw_i$ are computed using a forward RNN parametrized by $\theta$. The vectors $\fw_i$ are used in the side objective as well, and it is in this precise sense that the parameters $\theta$ are shared between $p$ and $q$.
 
 \paragraph{Word labeling}
-Let $\y = ( y_1, \dots, y_n )$ be a sequence of CCG supertags for the sentence \x, with one tag for each word. The side model is then a simple greedy tagging model:
+Let $\y = \langle y_1, \dots, y_n \rangle$ be a sequence of CCG supertags for the sentence $\x$, with one tag for each word. The side model is then a simple greedy tagging model:
 \begin{align*}
   \log q_{\theta, \xi}(\y \mid \x)
     &= \sum_{i=1}^n \log q_{\theta, \xi}( y_i \mid \x).  \\
 \end{align*}
 The probability over tags for position $i$ are computed from $\fw_i$ using a feedforward network parametrized by $\xi$
 \begin{align*}
-  q_{\theta, \xi}( y_i \mid \x) &\propto \exp \Big[ \ff_{\xi}( \fw_{i} ) \Big]_{y_i}.
+  q_{\theta, \xi}( y_i \mid \x) &\propto \exp \Big \{ [ \ff_{\xi}( \fw_{i} ) ]_{y_i} \Big\},
 \end{align*}
-This side objective is taken from \citet{enguehard2017multitask} and is the side objective that is used in the multitask model of \citet{linzen2018targeted}.
+where $y_i$ doubles as index. This side objective is taken from \citet{enguehard2017multitask} and is the side objective that is used in the multitask model of \citet{linzen2018targeted}.
 
 \paragraph{Span labeling}
-Let $\y$ be a sequence of labeled spans $\y_k = (\ell_k, i_k, j_k)$ that are obtained from a gold parse tree for $\x$. Given span endpoints $i$ and $j$ and the sentence $x$, the side model $q$ predicts a label $\ell$:
+Let $\y$ be a sequence of labeled spans $(A_k, i_k, j_k)$ obtained from a gold parse tree for $\x$. Given span endpoints $i$ and $j$ and the sentence $x$, the side model $q$ predicts a label $A$:
 \begin{align*}
   \log q_{\theta, \xi}(\y \mid \x)
-    &= \sum_{k=1}^K \log q_{\theta, \xi}( \y_k \mid \x)  \\
-    &= \sum_{k=1}^K \log q_{\theta, \xi}( \ell_k \mid \x, i_k, j_k).
+    &= \sum_{k=1}^K \log q_{\theta, \xi}( A_k \mid \x, i_k, j_k).
 \end{align*}
 The representation for the span is defined as in the CRF parser as
 \begin{align*}
@@ -80,9 +79,9 @@ The representation for the span is defined as in the CRF parser as
 \end{align*}
 and the distribution over labels is computed using a feedforward network parametrized by $\xi$ as
 \begin{align*}
-  q_{\theta, \xi}( \ell \mid \x, i, j) &\propto \exp [ \ff_{\xi}( \vecs_{ij} ) ]_{\ell}.
+  q_{\theta, \xi}( A \mid \x, i, j) &\propto \exp \Big \{ [ \ff_{\xi}( \vecs_{ij} ) ]_{A} \Big\},
 \end{align*}
-This model differs from the supertagging model in the interaction of the vectors $\fw$ in the definition of $vecs_{ij}$. This linear defintion puts significant restriction on the endocings, which is precisely what we want. This side objective is inspired by the label scoring function of the CRF parser, and is novel as a multitask objective, as far as I know.
+where $A$ doubles as index. This model differs from the supertagging model in the interaction of the vectors $\fw$ in the definition of $\vecs_{ij}$. This linear defintion puts significant restriction on the endocings, which is precisely what we want. This side objective is inspired by the label scoring function of the CRF parser, and is novel as a multitask objective, as far as I know.
 
 % \begin{itemize}
 %   \item I hypothesize a bit about their comparative (dis)advantages. In particular the subject argument structure that is encoded in CCG tags that is not in the CFG spans.

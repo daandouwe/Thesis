@@ -5,7 +5,6 @@
 \usepackage[utf8]{inputenc}
 
 \usepackage{amsmath,amssymb,amsfonts,latexsym,dsfont,xspace}
-
 \usepackage{hyperref}
 \usepackage{enumitem}
 \usepackage{dirtytalk}
@@ -13,57 +12,46 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{tikz-qtree}
-% \usepackage{lingmacros}
-% \usepackage{qtree}
 \usepackage{linguex}
-% \newsavebox{\partbox}
 
 \usetikzlibrary{arrows,calc}
 
-
 \graphicspath{{../figures/}}
 
-% abrevitions
+%% abrevitions
 \newcommand{\ie}{\emph{i.e.}}
 \newcommand{\eg}{\emph{e.g.}}
 \newcommand{\etc}{\emph{etc}}
 \newcommand{\cf}{\emph{cf.}}
-
-% neural network functions
+%% neural network functions
 \newcommand{\embed}{\textsc{E}}
 \newcommand{\ff}{\textsc{Ffn}}
 \newcommand{\rnn}{\textsc{Rnn}}
-
-% RNNG actions
+%% RNNG actions
 \newcommand{\reduce}{\textsc{reduce}}
 \newcommand{\open}{\textsc{open}}
 \newcommand{\shift}{\textsc{shift}}
 \newcommand{\gen}{\textsc{gen}}
-\newcommand{\discactions}{A_{\mathcal{D}}}
-\newcommand{\genactions}{A_{\mathcal{G}}}
-
-% blocking gradient in computation graph
+\newcommand{\discactions}{\mathcal{A}_D}
+\newcommand{\genactions}{\mathcal{A}_G}
+%% blocking gradient in computation graph
 \newcommand{\blockgrad}{\textsc{BlockGrad}}
-
-% probability models
+%% probability models
 \newcommand{\ptheta}{p_{\theta}}
 \newcommand{\qlambda}{q_{\lambda}}
-
 %% math symbols
 \newcommand{\reals}{\ensuremath{\mathbb{R}}}  % real numbers
 \newcommand{\dataset}{\ensuremath{\mathcal{D}}}  % dataset
 \newcommand{\defeq}{\ensuremath{\triangleq}}  % define something with an equation
-
+%% miscelaneous
 \newcommand{\x}{\ensuremath{x}}  % sentence
 \newcommand{\y}{\ensuremath{y}}  % tree
 \newcommand{\yieldx}{\mathcal{Y}(x)}  % yield of a sentence x
-
 \newcommand{\vecx}{\ensuremath{\mathbf{x}}}  % sentence
 \newcommand{\vecy}{\ensuremath{\mathbf{y}}}  % tree
 \newcommand{\h}{\ensuremath{\mathbf{h}}}  % hidden vector
 \newcommand{\fw}{\ensuremath{\mathbf{f}}}  % forward lstm feature
 \newcommand{\bw}{\ensuremath{\mathbf{b}}}  % backward lstm feature
-
 \newcommand{\veca}{\ensuremath{\mathbf{a}}}
 \newcommand{\vecb}{\ensuremath{\mathbf{b}}}
 \newcommand{\vecr}{\ensuremath{\mathbf{r}}}
@@ -71,7 +59,6 @@
 \newcommand{\vecu}{\ensuremath{\mathbf{u}}}
 \newcommand{\vecv}{\ensuremath{\mathbf{v}}}
 \newcommand{\vecw}{\ensuremath{\mathbf{w}}}
-
 \newcommand{\vecR}{\ensuremath{\mathbf{R}}}
 \newcommand{\vecS}{\ensuremath{\mathbf{S}}}
 \newcommand{\vecV}{\ensuremath{\mathbf{V}}}
@@ -172,7 +159,7 @@ In this thesis I:
 \input{../10-app-crf/crf.tex}
 
 
-\chapter{Variational inference}
+\chapter{Score function estimator}
 \label{A4-vi}
 \input{../11-app-vi/vi.tex}
 

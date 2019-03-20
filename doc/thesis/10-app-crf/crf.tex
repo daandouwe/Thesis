@@ -149,7 +149,7 @@ The derivation of the inference algorithms in chapter \ref{04-crf} makes use of 
   \begin{align*}
     \alpha(v) =
       \begin{cases}
-        \hat{1}  &  \mbox{if } I(v) = \varnothing  \\
+        \hat{1}  &  \mbox{if } I(v) = \varnothing,  \\
         \displaystyle\bigoplus_{e \in I(v)} \omega(e) \otimes \displaystyle\bigotimes_{u \in T(e)} \alpha(u)  & \mbox{otherwise.}
       \end{cases}
   \end{align*}
@@ -160,32 +160,12 @@ The derivation of the inference algorithms in chapter \ref{04-crf} makes use of 
   \begin{align*}
     \beta(v) =
       \begin{cases}
-        \hat{1}  & \mbox{if } O(v) = \varnothing \\
+        \hat{1}  & \mbox{if } O(v) = \varnothing, \\
         \displaystyle\bigoplus_{e \in O(v)} \omega(w) \otimes \beta(H(e)) \otimes \displaystyle\bigotimes_{ \substack{ w \in T(e) \\ w \neq u } } \alpha(w)  & \mbox{otherwise.}
       \end{cases}
   \end{align*}
   The recursion can solved by visiting the nodes in $V$ in reverse topological order.
   \end{definition}
-
-  % When the parse forest is highly regular such as in  example these equations simplify somewhat:
-  % \begin{align}
-  %   \alpha(v) =
-  %     \begin{cases}
-  %       \hat{1}  &  \mbox{if } I(v) = \varnothing  \\
-  %       \displaystyle\bigoplus_{e \in I(v)} \omega(e) \otimes \displaystyle\bigotimes_{u \in T(e)} \alpha(u)  & \mbox{otherwise.}
-  %     \end{cases}
-  % \end{align}
-
-  % \begin{definition}{} The \textit{outside value} $\beta(v)$ at a node $v \in V$ accumulates over the weights of all the paths that head out from $v$. The accumulation is relative to a semiring, and is defined as:
-  % \begin{align*}
-  %   \beta(v) =
-  %     \begin{cases}
-  %       \hat{1}  & \mbox{if } O(v) = \varnothing \\
-  %       \displaystyle\bigoplus_{e \in O(v)} \omega(w) \otimes \beta(H(e)) \otimes \displaystyle\bigotimes_{ \substack{ w \in T(e) \\ w \neq u } } \alpha(w)  & \mbox{otherwise.}
-  %     \end{cases}
-  % \end{align*}
-  % The recursion can solved by visiting the nodes in $V$ in reverse topological order.
-  % \end{definition}
 
 \subsection{Instantiated recursions}
 
