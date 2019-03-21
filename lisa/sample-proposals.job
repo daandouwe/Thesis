@@ -15,11 +15,15 @@ mkdir -p ${OUTPUT_DIR}
 # always run from the main directory
 cd ${HOME}/thesis
 
-source lisa/lisa-setup.sh
+source lisa/lisa-cpu.sh
 
 # set environment variables to best models
 source scripts/best-models.sh
 
+# ---------
+DISC_PATH=models/temp/20190319_143154
+CRF_PATH=models/temp/20190319_143527
+# ---------
 
 # get RNNG samples
 python src/main.py predict \
