@@ -7,6 +7,7 @@ from tqdm import tqdm
 import numpy as np
 
 from rnng.decoder import GenerativeDecoder
+from rnng.model import DiscRNNG
 from utils.trees import fromstring, InternalNode
 from utils.evalb import evalb
 from utils.general import ceil_div, load_model, is_tree
@@ -201,9 +202,8 @@ def sample_generative(args):
 
 
 def predict_perplexity(args):
-    assert os.path.exists(args.infile), 'specifiy file to parse with --infile.'
 
-    print(f'Predicting perplexity for lines in `{args.infile}`...')
+    np.random.seed(args.numpy_seed)
 
     with open(args.infile, 'r') as f:
         lines = [line.strip() for line in f.readlines()]
@@ -213,51 +213,49 @@ def predict_perplexity(args):
     else:
         sentences = [line.strip().split() for line in lines]
 
-    joint = load_model(args.checkpoint)
+    model = load_model(args.checkpoint)
+    proposal = load_model(args.proposal_model)
     decoder = GenerativeDecoder(
-        model=joint, num_samples=args.num_samples)
-    decoder.load_proposal_samples(
-        args.proposal_samples)
+        model=model, proposal=proposal, num_samples=args.num_samples, alpha=args.alpha)
 
-    nlls = []
-    lengths = []
-    perplexities = []
-    processed = []
-    for words in tqdm(sentences):
-        dy.renew_cg()
-        logprob = decoder.logprob(words)
-        perplexity = np.exp(-logprob / len(words))
-        unked_words = joint.word_vocab.process(words)
+    proposal_type = 'disc-rnng' if isinstance(proposal, DiscRNNG) else 'crf'
 
-        nlls.append(-logprob)
-        lengths.append(len(words))
-        perplexities.append(perplexity)
-        processed.append(unked_words)
+    filename_base = 'proposal={}_num-samples={}_temp={}_seed={}'.format(
+        proposal_type, args.num_samples, args.alpha, args.numpy_seed)
+    proposals_path = os.path.join(args.outdir, filename_base + '.props')
+    result_path = os.path.join(args.outdir, filename_base + '.tsv')
 
-    average_perplexity = np.exp(np.sum(nlls) / np.sum(lengths))
+    print('Predicting perplexity with Generative RNNG.')
+    print(f'Loading model from `{args.checkpoint}`.')
+    print(f'Loading proposal from `{args.proposal_model}`.')
+    print(f'Loading lines from directory `{args.infile}`.')
+    print(f'Writing proposals to `{proposals_path}`.')
+    print(f'Writing predictions to `{result_path}`.')
 
-    fields = zip(range(len(sentences)), perplexities, nlls, lengths, processed)
+    print('Sampling proposals...')
+    # decoder.generate_proposal_samples(sentences, proposals_path)
+    print('Computing perplexity...')
+    _, perplexity = decoder.predict_from_proposal_samples(proposals_path)
 
-    outfile = args.outfile + '.tsv' if not args.outfile.endswith('.tsv') else args.outfile
-    print(f'Writing results to `{outfile}`...')
-
-    with open(outfile, 'w') as f:
-        print('\t'.join(
-                'id', 'perplexity', 'nll', 'length', 'avg-perplexity', 'processed-sentence'),
+    with open(result_path, 'w') as f:
+        print('\t'.join((
+                'proposal',
+                'file',
+                'perplexity',
+                'num-samples',
+                'temp',
+                'seed'
+            )),
             file=f)
-
-        for i, pp, nll, length, words in fields:
-            results = '\t'.join((
-                i,
-                pp,
-                nll,
-                length,
-                average_perplexity,
-                ' '.join(words)
-            ))
-            print(results, file=f)
-
-    print('Average perplexity:', round(average_perplexity, 2))
+        print('\t'.join((
+                proposal_type,
+                os.path.basename(args.infile),
+                str(perplexity),
+                str(args.num_samples),
+                str(args.alpha),
+                str(args.numpy_seed)
+            )),
+            file=f)
 
 
 def sample_proposals(args):
