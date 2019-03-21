@@ -17,7 +17,7 @@ SYN_NUM_SAMPLES ?= 50
 SYN_MAX_LINES ?= 1000
 
 ALPHA ?= 0.8  # temperature for samples (discriminative rnng)
-
+SEED ?= 42
 
 # setup and data
 evalb:
@@ -366,17 +366,33 @@ predict-input-gen-crf:
 
 
 # evaluate perplexity
-eval-test-pp:
+perplexity-test-disc:
 	python src/main.py predict \
 	    --dynet-autobatch=1 \
-	    --dynet-mem=5000 \
+	    --dynet-mem=2000 \
 	    --model-type=gen-rnng \
 	    --perplexity \
 	    --checkpoint=${GEN_PATH} \
-	    --infile=data/ptb/test.trees \
-	    --proposal-samples=data/proposals/rnng-test.props \
-	    --num-samples=${TEST_NUM_SAMPLES}
+	    --proposal-model=${DISC_PATH} \
+	    --infile=data/ptb/23.auto.clean.notop \
+	    --outdir=out/sample-experiment \
+	    --num-samples=${TEST_NUM_SAMPLES} \
+	    --alpha=${ALPHA} \
+	    --numpy-seed=${SEED}
 
+perplexity-test-crf:
+	python src/main.py predict \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=2000 \
+	    --model-type=gen-rnng \
+	    --perplexity \
+	    --checkpoint=${GEN_PATH} \
+	    --proposal-model=${CRF_PATH} \
+	    --infile=data/ptb/23.auto.clean.notop \
+	    --outdir=out/sample-experiment \
+	    --num-samples=${TEST_NUM_SAMPLES} \
+	    --alpha=${ALPHA} \
+	    --numpy-seed=${SEED}
 
 
 # syneval
