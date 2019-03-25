@@ -5,19 +5,14 @@
 #SBATCH -o lisa/out/syneval-rnng.out
 #SBATCH -t 5-00:00:00
 
-module load Python/3.6.3-foss-2017b
-
 # as not to tred on each other's toes
 export MKL_NUM_THREADS=1
 
-# the strategy here is different than for the lm syneval:
-# the model is so slow that we subsample the test-set and instead
-# evaluatue the same models repeatedly on random subsets.
-GEN_PATH="models/gen-rnng_seed=2_dev=90.92"
-PROP_PATH="models/disc-rnng_seed=1_dev=88.06"
+# gather all lm paths to be evaluated
+PATHS=$(ls ${HOME}/thesis/models | grep '^gen-rnng_dev')
 
 # send an e-mail when the job starts
-echo "Job $SLURM_JOB_NAME started at `date`." | mail $USER -s "Started job $SLURM_JOB_NAME"
+echo "Job $SLURM_JOB_NAME started at `date` for the models $PATHS" | mail $USER -s "Started job $SLURM_JOB_NAME "
 
 # write sterr and stout of each experiment here
 OUTPUT_DIR=${HOME}/thesis/lisa/out/${SLURM_JOB_NAME}
@@ -26,19 +21,21 @@ mkdir -p ${OUTPUT_DIR}
 # always run from the main directory
 cd ${HOME}/thesis
 
+source lisa/lisa-cpu.sh
+source scripts/best-models.sh
+
 # evaluate the same model on different subsamples
-for seed in {1..15}; do
+for path in $PATHS; do
   python src/main.py syneval \
       --dynet-autobatch 1 \
       --dynet-mem 3000 \
       --model-type gen-rnng \
-	    --checkpoint ${GEN_PATH} \
-	    --proposal-model ${PROP_PATH} \
+	    --checkpoint ${path} \
+	    --proposal-model ${DISC_PATH} \
 	    --indir data/syneval/data/converted \
 	    --num-samples 50 \
       --alpha 0.8 \
 	    --syneval-max-lines 1000 \
-      --numpy-seed ${seed} \
       &
 done
 

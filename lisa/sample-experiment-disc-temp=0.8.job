@@ -20,11 +20,7 @@ source lisa/lisa-cpu.sh
 export MKL_NUM_THREADS=1
 
 # set environment variables to best models
-# source scripts/best-models.sh
-# ---------
-export GEN_PATH=models/temp/20190319_151047
-export DISC_PATH=models/temp/20190319_143154
-# ---------
+source scripts/best-models.sh
 export ALPHA=0.8
 
 for num in 1 10 25 50 75 100; do

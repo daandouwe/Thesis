@@ -1,0 +1,42 @@
+#!/bin/bash
+#SBATCH -N 1
+#SBATCH -p normal
+#SBATCH -J crf-resume
+#SBATCH -o lisa/out/crf-resume.out
+#SBATCH -t 5-00:00:00
+
+PATHS=$(ls ${HOME}/thesis/models | grep '^crf_')
+
+# send an e-mail when the job starts
+echo "Job $SLURM_JOB_NAME started at `date` for models in $PATHS" | mail $USER -s "Started job $SLURM_JOB_NAME"
+
+# write sterr and stout of each experiment here
+OUTPUT_DIR=${HOME}/thesis/lisa/out/${SLURM_JOB_NAME}
+mkdir -p ${OUTPUT_DIR}
+
+# always run from the main directory
+cd ${HOME}/thesis
+
+source lisa/lisa-cpu.sh
+
+for path in $PATHS; do
+  lisa/train.sh ${seed} ${OUTPUT_DIR} \
+    --dynet-autobatch 1 \
+    --dynet-mem 2500 \
+    --model-path-base models/crf \
+    --max-time $((5 * 20 * 3600)) \
+    --max-epochs 100 \
+    --resume models/${path} \
+    @src/configs/data/supervised.txt \
+    @src/configs/model/crf.txt \
+    @src/configs/training/sgd.txt \
+    &
+done
+
+# this waits until all sub-jobs finish
+wait
+
+echo "Jobs finished"
+echo "Job $SLURM_JOB_NAME ended at `date`" | mail $USER -s "Ended job $SLURM_JOB_NAME"
+
+sleep 300

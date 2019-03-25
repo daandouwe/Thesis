@@ -3,7 +3,9 @@
 #SBATCH -p normal
 #SBATCH -J sample-proposals
 #SBATCH -o lisa/out/sample-proposals.out
-#SBATCH -t 1-00:00:00
+#SBATCH -t 2-00:00:00
+
+export MKL_NUM_THREADS=1
 
 # send an e-mail when the job starts
 echo "Job $SLURM_JOB_NAME started at `date`" | mail $USER -s "Started job $SLURM_JOB_NAME"
@@ -20,17 +22,14 @@ source lisa/lisa-cpu.sh
 # set environment variables to best models
 source scripts/best-models.sh
 
-# ---------
-DISC_PATH=models/temp/20190319_143154
-CRF_PATH=models/temp/20190319_143527
-# ---------
-
 # get RNNG samples
 python src/main.py predict \
+    --dynet-mem 1000 \
     --checkpoint=${DISC_PATH} \
     @src/configs/proposals/sample-rnng-dev.txt \
     &
 python src/main.py predict \
+    --dynet-mem 1000 \
     --checkpoint=${DISC_PATH} \
     @src/configs/proposals/sample-rnng-test.txt \
     &
@@ -38,10 +37,12 @@ python src/main.py predict \
 
 # get CRF samples
 python src/main.py predict \
+    --dynet-mem 10000 \
     --checkpoint=${CRF_PATH} \
     @src/configs/proposals/sample-crf-dev.txt \
     &
 python src/main.py predict \
+    --dynet-mem 10000 \
     --checkpoint=${CRF_PATH} \
     @src/configs/proposals/sample-crf-test.txt \
     &

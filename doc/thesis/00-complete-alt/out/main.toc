@@ -1,0 +1,29 @@
+\contentsline {chapter}{\numberline {1}Introduction }{4}{chapter.1}
+\contentsline {chapter}{\numberline {2}Basic Theory}{11}{chapter.2}
+\contentsline {section}{\numberline {2.1}Statistical Learning Theory }{11}{section.2.1}
+\contentsline {section}{\numberline {2.2}Empirical Risk Minimization (ERM) }{12}{section.2.2}
+\contentsline {section}{\numberline {2.3}Consistency of Empirical Risk Minimization }{14}{section.2.3}
+\contentsline {section}{\numberline {2.4}Excess Losses }{15}{section.2.4}
+\contentsline {section}{\numberline {2.5}Rates from Concentration Inequalities }{16}{section.2.5}
+\contentsline {section}{\numberline {2.6}The PAC-Bayesian Model}{18}{section.2.6}
+\contentsline {subsection}{\numberline {2.6.1}PAC-Bayesian Inequalities }{19}{subsection.2.6.1}
+\contentsline {chapter}{\numberline {3}Toward Fast Rates }{22}{chapter.3}
+\contentsline {section}{\numberline {3.1}Second PAC-Bayesian Inequality }{22}{section.3.1}
+\contentsline {section}{\numberline {3.2}Conditions for Faster Concentration }{26}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}Bernstein's Condition }{26}{subsection.3.2.1}
+\contentsline {subsection}{\numberline {3.2.2}The Central Condition}{28}{subsection.3.2.2}
+\contentsline {subsection}{\numberline {3.2.3}The Witness Condition}{29}{subsection.3.2.3}
+\contentsline {section}{\numberline {3.3}Expected Excess Loss Bound }{30}{section.3.3}
+\contentsline {chapter}{\numberline {4}Relation Among Conditions }{33}{chapter.4}
+\contentsline {section}{\numberline {4.1}Strong Central, Witness and Bernstein's Conditions }{35}{section.4.1}
+\contentsline {section}{\numberline {4.2}A New Condition and Vapnik's Condition }{38}{section.4.2}
+\contentsline {section}{\numberline {4.3}Slow Rates from the Witness Condition }{44}{section.4.3}
+\contentsline {chapter}{\numberline {5}Conclusion}{47}{chapter.5}
+\contentsline {chapter}{\numberline {A}Rates of Convergence in Probability}{49}{Appendix.a.A}
+\contentsline {chapter}{\numberline {B}The Cram\IeC {\'e}r-Chernoff Method }{50}{Appendix.a.B}
+\contentsline {section}{\numberline {B.1}Cumulant Generating Functions}{50}{section.a.B.1}
+\contentsline {section}{\numberline {B.2}Cram\IeC {\'e}r - Chernoff Tail Bounds}{50}{section.a.B.2}
+\contentsline {section}{\numberline {B.3}Possible Rates Via The Cram\IeC {\'e}r-Chernoff Method}{51}{section.a.B.3}
+\contentsline {chapter}{\numberline {C}Subgamma Random Variables and Bernstein's Inequality}{53}{Appendix.a.C}
+\contentsline {chapter}{\numberline {D}Rates for Infinite Classes: Chaining }{55}{Appendix.a.D}
+\contentsline {chapter}{Popular Summary}{59}{chapter*.3}

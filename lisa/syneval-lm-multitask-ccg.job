@@ -8,11 +8,11 @@
 # as not to tred on each other's toes
 export MKL_NUM_THREADS=1
 
-# send an e-mail when the job starts
-echo "Job $SLURM_JOB_NAME started at `date` for the models $PATHS" | mail $USER -s "Started job $SLURM_JOB_NAME"
-
 # gather all lm paths to be evaluated
 PATHS=$(ls ${HOME}/thesis/models | grep '^lm-multitask-ccg_*')
+
+# send an e-mail when the job starts
+echo "Job $SLURM_JOB_NAME started at `date` for the models $PATHS" | mail $USER -s "Started job $SLURM_JOB_NAME"
 
 # write sterr and stout of each experiment here
 OUTPUT_DIR=${HOME}/thesis/lisa/out/${SLURM_JOB_NAME}

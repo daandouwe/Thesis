@@ -3,7 +3,7 @@
 #SBATCH -p normal
 #SBATCH -J sample-experiments-crf
 #SBATCH -o lisa/out/sample-experiments-crf.out
-#SBATCH -t 3-00:00:00
+#SBATCH -t 5-00:00:00
 
 # send an e-mail when the job starts
 echo "Job $SLURM_JOB_NAME started at `date`" | mail $USER -s "Started job $SLURM_JOB_NAME"
@@ -20,12 +20,7 @@ source lisa/lisa-cpu.sh
 export MKL_NUM_THREADS=1
 
 # set environment variables to best models
-# source scripts/best-models.sh
-# ---------
-export GEN_PATH=models/temp/20190319_151047
-export CRF_PATH=models/temp/20190319_143527
-# ---------
-export ALPHA=1.0
+source scripts/best-models.sh
 
 for num in 1 10 25 50 75 100; do
   export TEST_NUM_SAMPLES=$num

@@ -16,7 +16,7 @@ from crf.model import ChartParser, START, STOP
 from utils.vocabulary import Vocabulary, UNK
 from utils.trees import fromstring, DUMMY
 from utils.evalb import evalb
-from utils.general import Timer, get_folders, write_args, ceil_div, move_to_final_folder
+from utils.general import Timer, get_folders, write_args, ceil_div, move_to_final_folder, load_model
 
 
 class SupervisedTrainer:
@@ -112,10 +112,12 @@ class SupervisedTrainer:
         self.print_every = print_every
         self.num_dev_samples = num_dev_samples
         self.num_test_samples = num_test_samples
+        self.resume = False
 
         # Training bookkeeping
         self.timer = Timer()
         self.losses = []
+        self.current_epoch = 1
         self.num_updates = 0
 
         self.current_dev_fscore = -inf
@@ -128,9 +130,9 @@ class SupervisedTrainer:
 
         self.best_dev_epoch = 0
 
-    def build_paths(self):
+    def build_paths(self, subdir=None):
         # Make output folder structure
-        subdir, logdir, checkdir, outdir, vocabdir = get_folders(self.args)
+        subdir, logdir, checkdir, outdir, vocabdir = get_folders(self.args, subdir)
 
         os.makedirs(logdir, exist_ok=True)
         os.makedirs(checkdir, exist_ok=True)
@@ -320,11 +322,17 @@ class SupervisedTrainer:
             assert os.path.exists(self.dev_proposal_samples), self.dev_proposal_samples
             assert os.path.exists(self.test_proposal_samples), self.test_proposal_samples
 
-        # Construct model and optimizer
-        self.build_paths()
-        self.build_corpus()
-        self.build_model()
-        self.build_optimizer()
+        # Load from resume info...
+        if self.resume:
+            self.build_paths(self.resume_dir)  # output in the same folder
+            self.build_corpus()
+            self.load_checkpoint()
+            self.build_optimizer()
+        else:  # or construct model and optimizer
+            self.build_paths()
+            self.build_corpus()
+            self.build_model()
+            self.build_optimizer()
 
         try:
             # No upper limit of epochs or time when not specified
@@ -337,7 +345,7 @@ class SupervisedTrainer:
                 if self.get_lr() < self.lr / 10**5:
                     break
 
-                self.current_epoch = epoch
+                self.current_epoch += 1
 
                 # Shuffle batches every epoch
                 np.random.shuffle(self.train_treebank)
@@ -366,8 +374,8 @@ class SupervisedTrainer:
         # Check test scores
         self.check_test()
 
-        # Save model again but with test fscore
-        self.save_checkpoint()
+        # Save state again but with test fscore
+        self.save_checkpoint(save_model=False)
 
         # Save the losses for plotting and diagnostics
         self.write_losses()
@@ -459,10 +467,11 @@ class SupervisedTrainer:
                 print(f'Annealing the learning rate from {self.get_lr():.1e} to {lr:.1e}.')
                 self.set_lr(lr)
 
-    def save_checkpoint(self):
+    def save_checkpoint(self, save_model=True):
         assert self.model is not None, 'no model built'
 
-        dy.save(self.model_checkpoint_path, [self.parser])
+        if save_model:
+            dy.save(self.model_checkpoint_path, [self.parser])
 
         self.word_vocab.save(self.word_vocab_path)
         self.label_vocab.save(self.label_vocab_path)
@@ -564,15 +573,12 @@ class SupervisedTrainer:
         self.current_dev_fscore = dev_fscore
         self.current_dev_perplexity = dev_perplexity
 
-        # keep track of best fscore
-        if dev_fscore > self.best_dev_fscore:
-            self.best_dev_fscore = dev_fscore
-
         # but model selection is based on perplexity
         if dev_perplexity < self.best_dev_perplexity:
             print(f'Saving new best model to `{self.model_checkpoint_path}`...')
             self.best_dev_epoch = self.current_epoch
             self.best_dev_perplexity = dev_perplexity
+            self.best_dev_fscore = dev_fscore
             self.save_checkpoint()
 
     def check_test_disc(self):
@@ -600,7 +606,7 @@ class SupervisedTrainer:
         print(f'Evaluating F1 and perplexity on test set using {self.num_test_samples} samples...')
 
         print(f'Loading best saved model from `{self.model_checkpoint_path}` '
-              f'(epoch {self.best_dev_epoch}, fscore {self.best_dev_fscore})...')
+              f'(epoch {self.best_dev_epoch}, fscore {self.best_dev_fscore}, perplexity {self.best_dev_perplexity})...')
         self.load_checkpoint()
         self.parser.eval()
 
@@ -636,3 +642,28 @@ class SupervisedTrainer:
         score = self.best_dev_perplexity if self.model_type == 'gen-rnng' else self.best_dev_fscore
         move_to_final_folder(
             self.subdir, self.model_path_base, score)
+
+    def load_state_to_resume(self, resume_dir):
+        print(f'Resuming from checkpoint `{resume_dir}`...')
+
+        self.resume = True
+        self.resume_dir = resume_dir
+
+        with open(os.path.join(resume_dir, 'state.json')) as f:
+            state = json.load(f)
+
+        self.model_type = state['model']
+
+        self.current_epoch = state['num-epochs'] + 1
+        self.num_updates = state['num-updates']
+        self.lr = state['current-lr']
+
+        self.best_dev_epoch = state['best-dev-epoch']
+
+        self.current_dev_fscore = state['current-dev-fscore']
+        self.best_dev_fscore = state['best-dev-fscore']
+        self.test_fscore = state['test-fscore']
+
+        self.current_dev_perplexity = state['current-dev-perplexity']
+        self.best_dev_perplexity = state['best-dev-perplexity']
+        self.test_perplexity = state['test-perplexity']

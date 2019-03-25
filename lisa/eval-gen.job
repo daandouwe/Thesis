@@ -1,0 +1,42 @@
+#!/bin/bash
+#SBATCH -N 1
+#SBATCH -p normal
+#SBATCH -J eval-gen
+#SBATCH -o lisa/out/eval-gen.out
+#SBATCH -t 1-00:00:00
+
+export MKL_NUM_THREADS=1
+
+PATHS=$(ls ${HOME}/thesis/models | grep '^gen-rnng_dev*')
+
+# send an e-mail when the job starts
+echo "Job $SLURM_JOB_NAME started at `date`" | mail $USER -s "Started job $SLURM_JOB_NAME for models $PATHS"
+
+# write sterr and stout of each experiment here
+OUTPUT_DIR=${HOME}/thesis/lisa/out/${SLURM_JOB_NAME}
+mkdir -p ${OUTPUT_DIR}
+
+# always run from the main directory
+cd ${HOME}/thesis
+
+source lisa/lisa-cpu.sh
+
+export PROP_PATH=data/proposals/dyer-test.props
+
+for path in $PATHS; do
+  export GEN_PATH=$path
+  python src/main.py predict \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=2000 \
+	    --model-type=gen-rnng \
+	    --perplexity \
+	    --checkpoint=${GEN_PATH} \
+	    --proposal-samples=${PROP_PATH} \
+	    --outdir=${GEN_PATH}/output \
+      &
+done
+
+echo "Jobs finished"
+echo "Job $SLURM_JOB_NAME ended at `date`" | mail $USER -s "Ended job $SLURM_JOB_NAME"
+
+sleep 300

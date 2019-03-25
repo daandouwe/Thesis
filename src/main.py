@@ -43,9 +43,9 @@ def main():
                         help='specify a vocabulary (optional)')
 
     vocab = parser.add_argument_group('Vocabulary')
-    vocab.add_argument('--min-word-count', type=int, default=None,
+    vocab.add_argument('--min-word-count', default=1,
                         help='minimal word count for vocab')
-    vocab.add_argument('--max-vocab-size', type=int, default=-1,
+    vocab.add_argument('--max-vocab-size', default=-1,
                         help='maxinum number of words in vocab')
     vocab.add_argument('--lowercase', action='store_true',
                         help='lowercase vocab')
@@ -96,8 +96,6 @@ def main():
     lm = parser.add_argument_group('Model (LM)')
     lm.add_argument('--multitask', choices=['none', 'spans', 'ccg'], default='none',
                     help='predict labeled spans as side objective')
-    # lm.add_argument('--multitask', action='store_true',
-    #                 help='predict labeled spans as side objective')
     lm.add_argument('--all-spans', action='store_true',
                     help='also predict null spans')
 
@@ -140,6 +138,8 @@ def main():
                         help='number of samples to estimate the development fscore and perplexity')
     training.add_argument('--num-test-samples', type=int, default=100,
                         help='number of samples to estimate the test fscore and perplexity')
+    training.add_argument('--resume', default='',
+                        help='resume training from this checkpoint')
 
     semisup = parser.add_argument_group('Semisupervised')
     semisup.add_argument('--joint-model-path', default='checkpoints/joint',

@@ -1,2 +1,2 @@
---dev-proposal-samples=data/proposals/dyer-test.props
---test-proposal-samples=data/proposals/dyer-test.props
+--dev-proposal-samples=data/proposals/rnng-dev.props
+--test-proposal-samples=data/proposals/rnng-test.props

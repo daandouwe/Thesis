@@ -20,6 +20,7 @@ class GenerativeDecoder:
             model=None,
             proposal=None,
             num_samples=100,
+            use_argmax=False,
             alpha=1.0,
     ):
         if model is not None:
@@ -34,7 +35,7 @@ class GenerativeDecoder:
         self.proposal = proposal
         self.num_samples = num_samples
         self.alpha = alpha
-        self.use_argmax = (num_samples == 1)
+        self.use_argmax = use_argmax
         self.use_loaded_samples = (self.proposal is None)
 
     def parse(self, words):
@@ -97,15 +98,20 @@ class GenerativeDecoder:
         else:
             words = list(words)
             samples = []
-            if isinstance(self.proposal, DiscRNNG):
-                for _ in range(self.num_samples):
-                    dy.renew_cg()
-                    tree, nll = self.proposal.sample(words, alpha=self.alpha)
-                    samples.append((tree, -nll.value()))
-            elif isinstance(self.proposal, ChartParser):
+            if self.use_argmax:
                 dy.renew_cg()
-                for tree, nll in self.proposal.sample(words, self.num_samples):
-                    samples.append((tree, -nll.value()))
+                tree, nll = self.proposal.parse(words)
+                samples.append((tree, -nll.value()))
+            else:
+                if isinstance(self.proposal, DiscRNNG):
+                    for _ in range(self.num_samples):
+                        dy.renew_cg()
+                        tree, nll = self.proposal.sample(words, alpha=self.alpha)
+                        samples.append((tree, -nll.value()))
+                elif isinstance(self.proposal, ChartParser):
+                    dy.renew_cg()
+                    for tree, nll in self.proposal.sample(words, self.num_samples):
+                        samples.append((tree, -nll.value()))
 
         # Count and filter
         samples = self.count_samples(samples)  # list of tuples (tree, post_logprob, count)

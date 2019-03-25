@@ -301,6 +301,15 @@ train-fully-unsup-disc: sup-vocab
 			--print-every=1
 
 
+# resume training a model
+resume-train:
+	# get rid of eplicit switches, e.g. `--lowercase=False`, and replace `_` by `-`.
+	cat "${RESUME_PATH}/log/args.txt" | grep -v 'False' > 'args_.txt' | mv 'args_.txt' "${RESUME_PATH}/log/args.txt" | sed -i '' 's/_/-/g' "${RESUME_PATH}/log/args.txt"
+	python src/main.py train \
+			@${RESUME_PATH}/log/args.txt \
+			--resume=${RESUME_PATH}
+
+
 # sample proposals
 proposals-rnng: proposals-rnng-dev proposals-rnng-test
 proposals-crf: proposals-crf-dev proposals-crf-test
@@ -366,24 +375,21 @@ predict-input-gen-crf:
 
 
 # evaluate perplexity
-perplexity-test-disc:
+perplexity-test:
 	python src/main.py predict \
 	    --dynet-autobatch=1 \
 	    --dynet-mem=2000 \
 	    --model-type=gen-rnng \
 	    --perplexity \
 	    --checkpoint=${GEN_PATH} \
-	    --proposal-model=${DISC_PATH} \
-	    --infile=data/ptb/23.auto.clean.notop \
-	    --outdir=out/sample-experiment \
+	    --proposal-samples=${PROP_PATH} \
 	    --num-samples=${TEST_NUM_SAMPLES} \
-	    --alpha=${ALPHA} \
-	    --numpy-seed=${SEED}
+	    --outdir=${GEN_PATH}/output
 
 perplexity-test-crf:
 	python src/main.py predict \
 	    --dynet-autobatch=1 \
-	    --dynet-mem=2000 \
+	    --dynet-mem=3000 \
 	    --model-type=gen-rnng \
 	    --perplexity \
 	    --checkpoint=${GEN_PATH} \

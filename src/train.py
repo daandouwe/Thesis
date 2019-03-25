@@ -156,6 +156,10 @@ def main(args):
     else:
         raise ValueError(f'Invalid model {args.model_type}.')
 
+    if args.resume:
+        # load all settings from checkpoint
+        trainer.load_state_to_resume(args.resume)
+
     # Train the model
     trainer.train()
 

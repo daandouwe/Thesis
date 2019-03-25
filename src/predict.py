@@ -233,7 +233,7 @@ def predict_perplexity(args):
     print(f'Writing predictions to `{result_path}`.')
 
     print('Sampling proposals...')
-    # decoder.generate_proposal_samples(sentences, proposals_path)
+    decoder.generate_proposal_samples(sentences, proposals_path)
     print('Computing perplexity...')
     _, perplexity = decoder.predict_from_proposal_samples(proposals_path)
 
@@ -249,6 +249,46 @@ def predict_perplexity(args):
             file=f)
         print('\t'.join((
                 proposal_type,
+                os.path.basename(args.infile),
+                str(perplexity),
+                str(args.num_samples),
+                str(args.alpha),
+                str(args.numpy_seed)
+            )),
+            file=f)
+
+
+def predict_perplexity_from_samples(args):
+
+    np.random.seed(args.numpy_seed)
+
+    model = load_model(args.checkpoint)
+    decoder = GenerativeDecoder(
+        model=model, num_samples=args.num_samples, alpha=args.alpha)
+
+    result_path = os.path.join(args.outdir, 'results.tsv')
+
+    print('Predicting perplexity with Generative RNNG.')
+    print(f'Loading model from `{args.checkpoint}`.')
+    print(f'Loading proposal samples from `{args.proposal_samples}`.')
+    print(f'Loading lines from directory `{args.infile}`.')
+    print(f'Writing predictions to `{result_path}`.')
+
+    print('Computing perplexity...')
+    _, perplexity = decoder.predict_from_proposal_samples(args.proposal_samples)
+
+    with open(result_path, 'w') as f:
+        print('\t'.join((
+                'proposal-samples',
+                'file',
+                'perplexity',
+                'num-samples',
+                'temp',
+                'seed'
+            )),
+            file=f)
+        print('\t'.join((
+                args.proposal_samples,
                 os.path.basename(args.infile),
                 str(perplexity),
                 str(args.num_samples),
@@ -362,7 +402,10 @@ def main(args):
         predict_tree_file(args)
     elif args.perplexity:
         assert args.model_type == 'gen-rnng', args.model_type
-        predict_perplexity(args)
+        if args.proposal_model:
+            predict_perplexity(args)
+        else:
+            predict_perplexity_from_samples(args)
     elif args.sample_proposals:
         assert args.model_type in ('disc-rnng', 'crf'), args.model_type
         sample_proposals(args)

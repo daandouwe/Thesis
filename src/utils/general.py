@@ -19,13 +19,15 @@ def get_subdir_string():
     return f'{date}_{timestamp}'
 
 
-def get_folders(args):
+def get_folders(args, subdir=None):
     """Create paths for logging and checkpoints."""
-    subdir = os.path.join('models', 'temp', get_subdir_string())
-    # avoid overwriting when multiple jobs are submitted simultaneously
-    while os.path.exists(subdir):
-        time.sleep(random.uniform(1, 10))
+    if subdir is None:
+        # make a new subdirectory
         subdir = os.path.join('models', 'temp', get_subdir_string())
+        # avoid overwriting when multiple jobs are submitted simultaneously
+        while os.path.exists(subdir):
+            time.sleep(random.uniform(1, 10))
+            subdir = os.path.join('models', 'temp', get_subdir_string())
     logdir = os.path.join(subdir, 'log')
     outdir = os.path.join(subdir, 'output')
     vocabdir = os.path.join(subdir, 'vocab')
