@@ -6,6 +6,7 @@ EVALB
 
 models
 data
+out
 
 src/.*
 
