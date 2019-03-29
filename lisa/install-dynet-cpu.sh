@@ -5,10 +5,9 @@
 # This is what I did and this is what worked (24 January 2019) on Lisa
 # Adapted from https://dynet.readthedocs.io/en/latest/python.html#manual-installation
 
-MKL_PATH=/hpc/sw/modules/modulefiles/libraries  # find this with `module avail mkl`
+export MKL_ROOT=/sara/sw/fortran-intel-13.1.3/composer_xe_2013.5.192/mkl/
 
 module load Python/3.6.3-foss-2017b
-module load mkl
 
 cd $HOME
 
@@ -21,12 +20,38 @@ hg clone https://bitbucket.org/eigen/eigen -r b2e267d  # -r NUM specified a know
 cd dynet
 mkdir build
 cd build
-cmake .. -DEIGEN3_INCLUDE_DIR=$HOME/dynet-base/eigen -DPYTHON=`which python` -DMKL=$MKL_PATH
+cmake .. -DEIGEN3_INCLUDE_DIR=../../eigen -DPYTHON=`which python` -DMKL=TRUE
+
+# Returns:
+# daanvans@login1:~/dynet-base/dynet/build$ cmake .. -DEIGEN3_INCLUDE_DIR=$HOME/dynet-base/eigen -DPYTHON=`which python`
+# -- Found MKL
+#    * include: /sara/sw/fortran-intel-13.1.3/composer_xe_2013.5.192/mkl/include,
+#    * core library dir: /sara/sw/fortran-intel-13.1.3/composer_xe_2013.5.192/mkl/lib/intel64,
+#    * compiler library: /sara/sw/fortran-intel-13.1.3/composer_xe_2013.5.192/compiler/lib/intel64/libiomp5.so
+# -- Optimization level: fast
+# -- BACKEND not specified, defaulting to eigen.
+# -- Eigen dir is /home/daanvans/dynet-base/eigen
+# -- Found Cython version 0.25.2
+#
+# CMAKE_INSTALL_PREFIX="/usr/local"
+# PROJECT_SOURCE_DIR="/home/daanvans/dynet-base/dynet"
+# PROJECT_BINARY_DIR="/home/daanvans/dynet-base/dynet/build"
+# LIBS="mkl_rt\;libiomp5.so\;-lpthread"
+# EIGEN3_INCLUDE_DIR="/home/daanvans/dynet-base/eigen"
+# MKL_LINK_DIRS="/sara/sw/fortran-intel-13.1.3/composer_xe_2013.5.192/mkl/lib/intel64\;/sara/sw/fortran-intel-13.1.3/composer_xe_2013.5.192/compiler/lib/intel64"
+# WITH_CUDA_BACKEND=""
+# CUDA_RT_FILES=""
+# CUDA_RT_DIRS=""
+# CUDA_CUBLAS_FILES=""
+# CUDA_CUBLAS_DIRS=""
+# MSVC=""
+# -- Configuring done
+# -- Generating done
+# -- Build files have been written to: /home/daanvans/dynet-base/dynet/build
 
 make -j 8 # number of aivallable cores
 cd python
 python ../../setup.py build --build-dir=.. --skip-build install --user
-
 
 # To check if linking with MKL was successful (https://github.com/clab/dynet/issues/1167):
 #

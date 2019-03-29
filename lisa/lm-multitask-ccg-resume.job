@@ -23,15 +23,16 @@ source lisa/lisa-cpu.sh
 python src/main.py build @src/configs/vocab/supervised.txt
 
 for path in $PATHS; do
+  seed=$(cat models/${path}/log/args.txt | grep numpy_seed | cut -c14-)
   lisa/train.sh ${seed} ${OUTPUT_DIR} \
     --dynet-autobatch 1 \
     --dynet-mem 2500 \
     --model-path-base mmodels/lm-multitask-ccg  \
     --max-time $((5 * 23 * 3600)) \
-    --max-epochs 100 \
+    --max-epochs 150 \
     --resume models/${path} \
     @src/configs/vocab/supervised.txt \
-    @src/configs/data/supervised.txt \
+    @src/configs/data/supervised-ccg.txt \
     @src/configs/model/lm-multitask-ccg.txt \
     @src/configs/training/sgd.txt \
     &

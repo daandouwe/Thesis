@@ -5,7 +5,7 @@ cd ~/thesis
 
 source lisa/lisa-cpu.sh
 
-pip install cython  # if you don't have it already.
+pip install --user cython  # if you don't have it already.
 mkdir dynet-base
 cd dynet-base
 # getting dynet and eigen
@@ -14,7 +14,7 @@ hg clone https://bitbucket.org/eigen/eigen -r b2e267d  # -r NUM specified a know
 cd dynet
 mkdir build
 cd build
-cmake .. -DEIGEN3_INCLUDE_DIR=~/dynet-base/eigen -DPYTHON=`which python`
+cmake .. -DEIGEN3_INCLUDE_DIR=../../eigen -DPYTHON=`which python` -DMKL=TRUE
 # Response:
 # -- Found MKL
 #    * include: /sara/sw/fortran-intel-13.1.3/composer_xe_2013.5.192/mkl/include,

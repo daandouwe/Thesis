@@ -20,6 +20,7 @@ cd ${HOME}/thesis
 source lisa/lisa-cpu.sh
 
 for path in $PATHS; do
+  seed=$(cat models/${path}/log/args.txt | grep numpy_seed | cut -c14-)
   lisa/train.sh ${seed} ${OUTPUT_DIR} \
       --dynet-autobatch 1 \
       --dynet-mem 2500 \

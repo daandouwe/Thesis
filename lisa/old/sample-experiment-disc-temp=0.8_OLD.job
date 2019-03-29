@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J sample-exp-disc-1-0.8
-#SBATCH -o lisa/out/sample-exp-disc-1-0.8.out
-#SBATCH -t 1-00:00:00
+#SBATCH -J sample-experiments-disc-temp=0.8
+#SBATCH -o lisa/out/sample-experiments-disc-temp=0.8.out
+#SBATCH -t 3-00:00:00
 
 # send an e-mail when the job starts
 echo "Job $SLURM_JOB_NAME started at `date`" | mail $USER -s "Started job $SLURM_JOB_NAME"
@@ -20,24 +20,19 @@ source lisa/lisa-cpu.sh
 export MKL_NUM_THREADS=1
 
 # set environment variables to best models
-# source scripts/best-models.sh
-# ---------
-export TEST_NUM_SAMPLES=1
+source scripts/best-models.sh
 export ALPHA=0.8
-# ---------
-export GEN_PATH=models/temp/20190319_151047
-export DISC_PATH=models/temp/20190319_143154
-export CRF_PATH=models/temp/20190319_143527
-# ---------
 
-# 15 evaluations, all a different seed
-for seed in {1..15}; do
-  export SEED=$seed
-  make perplexity-test-disc &
+for num in 1 10 25 50 75 100; do
+  export TEST_NUM_SAMPLES=$num
+  # 15 evaluations, all a different seed
+  for seed in {1..15}; do
+    export SEED=$seed
+    make perplexity-test-disc &
+  done
+  wait
 done
 
-# this waits until all sub-jobs finish
-wait
 
 echo "Jobs finished"
 echo "Job $SLURM_JOB_NAME ended at `date`" | mail $USER -s "Ended job $SLURM_JOB_NAME"

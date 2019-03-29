@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J gen-retry
-#SBATCH -o lisa/out/gen-retry.out
+#SBATCH -J gen-fast
+#SBATCH -o lisa/out/gen-fast.out
 #SBATCH -t 5-00:00:00
 
 # send an e-mail when the job starts
@@ -31,11 +31,11 @@ for seed in {1..10}; do
   lisa/train.sh ${seed} ${OUTPUT_DIR} \
     --dynet-autobatch 1 \
     --dynet-mem 2500 \
-    --model-path-base models/gen-rnng-retry \
+    --model-path-base models/gen-rnng-fast \
     --max-time $((5 * 20 * 3600)) \
     --max-epochs 100 \
     --eval-every-epochs 4 \
-    --lr-decay-patience 8 \
+    --lr-decay-patience 4 \
     @src/configs/vocab/supervised.txt \
     @src/configs/data/supervised.txt \
     @src/configs/model/gen-rnng.txt \

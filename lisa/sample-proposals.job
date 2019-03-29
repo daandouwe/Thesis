@@ -36,16 +36,16 @@ python src/main.py predict \
 
 
 # get CRF samples
-python src/main.py predict \
-    --dynet-mem 10000 \
-    --checkpoint=${CRF_PATH} \
-    @src/configs/proposals/sample-crf-dev.txt \
-    &
-python src/main.py predict \
-    --dynet-mem 10000 \
-    --checkpoint=${CRF_PATH} \
-    @src/configs/proposals/sample-crf-test.txt \
-    &
+# python src/main.py predict \
+#     --dynet-mem 10000 \
+#     --checkpoint=${CRF_PATH} \
+#     @src/configs/proposals/sample-crf-dev.txt \
+#     &
+# python src/main.py predict \
+#     --dynet-mem 10000 \
+#     --checkpoint=${CRF_PATH} \
+#     @src/configs/proposals/sample-crf-test.txt \
+#     &
 
 
 # this waits until all sub-jobs finish
