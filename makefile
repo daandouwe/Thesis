@@ -7,7 +7,7 @@ GEN_EVAL_EVERY ?= 4
 DEV_NUM_SAMPLES ?= 50
 TEST_NUM_SAMPLES ?= 100
 
-SEMISUP_NUM_SAMPLES ?= 3
+SEMISUP_NUM_SAMPLES ?= 1
 SEMISUP_BATCH_SIZE ?= 5
 
 UNSUP_NUM_SAMPLES ?= 1
@@ -77,7 +77,8 @@ train-disc:
 	    --model-path-base=models/disc-rnng \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/disc-rnng.txt \
-	    @src/configs/training/sgd.txt
+	    @src/configs/training/sgd.txt \
+			--print-every 1
 
 train-gen:
 	python src/main.py train \
@@ -91,7 +92,8 @@ train-gen:
 	    @src/configs/proposals/rnng.txt \
 	    --eval-every-epochs=${GEN_EVAL_EVERY} \
 	    --num-dev-samples=${DEV_NUM_SAMPLES} \
-	    --num-test-samples=${TEST_NUM_SAMPLES}
+	    --num-test-samples=${TEST_NUM_SAMPLES} \
+			--print-every=1
 
 train-gen-stack-only:
 	python src/main.py train \
@@ -129,17 +131,8 @@ train-crf:
 	    --model-path-base=models/crf \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/crf.txt \
-	    @src/configs/training/sgd.txt
-
-train-crf-debug:
-	python src/main.py train \
-	    --dynet-autobatch=1 \
-	    --dynet-mem=3000 \
-	    --model-path-base=models/crf \
-	    @src/configs/data/supervised.txt \
-	    @src/configs/model/crf.txt \
 	    @src/configs/training/sgd.txt \
-	    --print-every=1 \
+			--print-every=1
 
 
 train-lm:
@@ -254,8 +247,8 @@ train-semisup-disc:
 	    --dynet-mem=6000 \
 	    --model-path-base=models/semisup-disc \
 	    --model-type=semisup-disc \
-	    --joint-model-path=${GEN_VOCAB_PATH} \
-	    --post-model-path=${DISC_VOCAB_PATH} \
+	    --joint-model-path=${GEN_PATH} \
+	    --post-model-path=${DISC_PATH} \
 	    @src/configs/vocab/semisupervised.txt \
 	    @src/configs/data/semisupervised.txt \
 	    @src/configs/training/adam.txt \
@@ -263,7 +256,9 @@ train-semisup-disc:
 	    --num-samples=${SEMISUP_NUM_SAMPLES} \
 	    --batch-size=${SEMISUP_BATCH_SIZE} \
 	    --num-dev-samples=${DEV_NUM_SAMPLES} \
-	    --num-test-samples=${TEST_NUM_SAMPLES}
+	    --num-test-samples=${TEST_NUM_SAMPLES} \
+			--print-every=1 \
+			--batch-size=1
 
 train-semisup-crf:
 	python src/main.py train \
@@ -271,8 +266,8 @@ train-semisup-crf:
 	    --dynet-mem=6000 \
 	    --model-path-base=models/semisup-crf \
 	    --model-type=semisup-crf \
-	    --joint-model-path=${GEN_VOCAB_PATH} \
-	    --post-model-path=${CRF_VOCAB_PATH} \
+	    --joint-model-path=${GEN_PATH} \
+	    --post-model-path=${CRF_PATH} \
 	    @src/configs/vocab/semisupervised.txt \
 	    @src/configs/data/semisupervised.txt \
 	    @src/configs/training/adam.txt \
@@ -280,7 +275,9 @@ train-semisup-crf:
 	    --num-samples=${SEMISUP_NUM_SAMPLES} \
 	    --batch-size=${SEMISUP_BATCH_SIZE} \
 	    --num-dev-samples=${DEV_NUM_SAMPLES} \
-	    --num-test-samples=${TEST_NUM_SAMPLES}
+	    --num-test-samples=${TEST_NUM_SAMPLES} \
+	    --print-every=1 \
+			--batch-size=1
 
 
 # unsupervised training
@@ -307,6 +304,17 @@ resume-train:
 	cat "${RESUME_PATH}/log/args.txt" | grep -v 'False' > 'args_.txt' | mv 'args_.txt' "${RESUME_PATH}/log/args.txt" | sed -i '' 's/_/-/g' "${RESUME_PATH}/log/args.txt"
 	python src/main.py train \
 			@${RESUME_PATH}/log/args.txt \
+			--resume=${RESUME_PATH}
+
+resume-lm:
+	python src/main.py train \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=3000 \
+	    --model-path-base=models/lm \
+	    @src/configs/vocab/supervised.txt \
+	    @src/configs/data/supervised.txt \
+	    @src/configs/model/lm.txt \
+	    @src/configs/training/sgd.txt \
 			--resume=${RESUME_PATH}
 
 
@@ -374,32 +382,28 @@ predict-input-gen-crf:
 	    --proposal-model=${CRF_PATH}
 
 
+# Compute entropies
+predict-entropy-crf:
+	python src/main.py predict \
+	    --entropy \
+	    --model-type=crf \
+	    --infile=${INFILE} \
+	    --outfile=${OUTFILE} \
+	    --checkpoint=${CRF_PATH} \
+			--num-samples=${NUM_SAMPLES}
+
+
 # evaluate perplexity
 perplexity-test:
 	python src/main.py predict \
-	    --dynet-autobatch=1 \
-	    --dynet-mem=2000 \
-	    --model-type=gen-rnng \
-	    --perplexity \
-	    --checkpoint=${GEN_PATH} \
-	    --proposal-samples=${PROP_PATH} \
-	    --num-samples=${TEST_NUM_SAMPLES} \
-	    --outdir=${GEN_PATH}/output
-
-perplexity-test-crf:
-	python src/main.py predict \
-	    --dynet-autobatch=1 \
-	    --dynet-mem=3000 \
-	    --model-type=gen-rnng \
-	    --perplexity \
-	    --checkpoint=${GEN_PATH} \
-	    --proposal-model=${CRF_PATH} \
-	    --infile=data/ptb/23.auto.clean.notop \
-	    --outdir=out/sample-experiment \
-	    --num-samples=${TEST_NUM_SAMPLES} \
-	    --alpha=${ALPHA} \
-	    --numpy-seed=${SEED}
-
+		  --dynet-autobatch=1 \
+		  --dynet-mem=2000 \
+		  --model-type=gen-rnng \
+		  --perplexity \
+		  --checkpoint=${GEN_PATH} \
+		  --proposal-samples=${PROP_PATH} \
+		  --num-samples=${TEST_NUM_SAMPLES} \
+		  --outfile=${GEN_PATH}/output/results.tsv
 
 # syneval
 syneval-lm:
