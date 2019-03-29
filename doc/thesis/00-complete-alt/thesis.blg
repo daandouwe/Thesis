@@ -1,46 +1,56 @@
 This is BibTeX, Version 0.99d (TeX Live 2016)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: thesis.aux
-I found no \bibstyle command---while reading file thesis.aux
-You've used 111 entries,
-            0 wiz_defined-function locations,
-            195 strings with 2496 characters,
-and the built_in function-call counts, 0 in all, are:
-= -- 0
-> -- 0
-< -- 0
-+ -- 0
-- -- 0
-* -- 0
-:= -- 0
-add.period$ -- 0
-call.type$ -- 0
-change.case$ -- 0
-chr.to.int$ -- 0
-cite$ -- 0
-duplicate$ -- 0
-empty$ -- 0
-format.name$ -- 0
-if$ -- 0
-int.to.chr$ -- 0
-int.to.str$ -- 0
-missing$ -- 0
-newline$ -- 0
-num.names$ -- 0
-pop$ -- 0
-preamble$ -- 0
-purify$ -- 0
+The style file: plainnat.bst
+Database file #1: ../src/bibliography.bib.bib
+Repeated entry---line 897 of file ../src/bibliography.bib.bib
+ : @inproceedings{kuncoro2017syntax
+ :                                 ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 1332 of file ../src/bibliography.bib.bib
+ : @article{melis2017state
+ :                        ,
+I'm skipping whatever remains of this entry
+Warning--I didn't find a database entry for "baydin2017automatic"
+You've used 110 entries,
+            2773 wiz_defined-function locations,
+            1177 strings with 25314 characters,
+and the built_in function-call counts, 59425 in all, are:
+= -- 5519
+> -- 3259
+< -- 111
++ -- 1103
+- -- 990
+* -- 4525
+:= -- 8624
+add.period$ -- 366
+call.type$ -- 110
+change.case$ -- 654
+chr.to.int$ -- 107
+cite$ -- 220
+duplicate$ -- 2866
+empty$ -- 4860
+format.name$ -- 1170
+if$ -- 12980
+int.to.chr$ -- 4
+int.to.str$ -- 1
+missing$ -- 109
+newline$ -- 558
+num.names$ -- 444
+pop$ -- 1403
+preamble$ -- 1
+purify$ -- 547
 quote$ -- 0
-skip$ -- 0
+skip$ -- 2369
 stack$ -- 0
-substring$ -- 0
-swap$ -- 0
-text.length$ -- 0
+substring$ -- 2623
+swap$ -- 658
+text.length$ -- 55
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 0
+type$ -- 1195
 warning$ -- 0
-while$ -- 0
+while$ -- 535
 width$ -- 0
-write$ -- 0
-(There was 1 error message)
+write$ -- 1459
+(There were 2 error messages)

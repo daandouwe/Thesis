@@ -149,7 +149,7 @@ The derivation of the inference algorithms in chapter \ref{04-crf} makes use of 
   \begin{align*}
     \alpha(v) =
       \begin{cases}
-        \hat{1}  &  \mbox{if } I(v) = \varnothing,  \\
+        \bar{1}  &  \mbox{if } I(v) = \varnothing,  \\
         \displaystyle\bigoplus_{e \in I(v)} \omega(e) \otimes \displaystyle\bigotimes_{u \in T(e)} \alpha(u)  & \mbox{otherwise.}
       \end{cases}
   \end{align*}
@@ -160,7 +160,7 @@ The derivation of the inference algorithms in chapter \ref{04-crf} makes use of 
   \begin{align*}
     \beta(v) =
       \begin{cases}
-        \hat{1}  & \mbox{if } O(v) = \varnothing, \\
+        \bar{1}  & \mbox{if } O(v) = \varnothing, \\
         \displaystyle\bigoplus_{e \in O(v)} \omega(w) \otimes \beta(H(e)) \otimes \displaystyle\bigotimes_{ \substack{ w \in T(e) \\ w \neq u } } \alpha(w)  & \mbox{otherwise.}
       \end{cases}
   \end{align*}
@@ -210,7 +210,7 @@ By instanstiating the inside and outside recursions with different semirings we 
   \begin{align*}
     \alpha(\text{S}^{\dagger}, 0, n) = \hat{\y}, \qquad \hat{\y} \defeq \argmax_{\y \in \yieldx} p(\y \mid \x).
   \end{align*}
-  Roughly spearking, because although this idea can be made precise by a constructing the \textit{Viterbi-derivation semiring} \citep{goodman1999semiring} over the set of possible derrivations, with corresponding binary operations and set-typed identity elements $\hat{0}$ and $\hat{1}$, it is a litle more complicated than that\footnote{And most of all, a bit cumbersome.}.
+  Roughly spearking, because although this idea can be made precise by a constructing the \textit{Viterbi-derivation semiring} \citep{goodman1999semiring} over the set of possible derrivations, with corresponding binary operations and set-typed identity elements $\bar{0}$ and $\bar{1}$, it is a litle more complicated than that\footnote{And most of all, a bit cumbersome.}.
 \end{example}
 
 \begin{example}{(Recognition)}

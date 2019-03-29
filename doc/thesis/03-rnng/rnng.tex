@@ -3,7 +3,7 @@
 In this chapter we introduce the Recurrent Neural Network Grammar (RNNG), a probabilistic model of sentences with explicit phrase structure, introduced by \citet{dyer2016rnng}.
 
 \section{Model}
-The discriminative RNNG is a discriminative transition based parser that uses regular RNNs to summarize the actions in the history and the words on the buffer into vectors, and uses a special RNN with a syntax-dependent recurrence to obtain a vector representation of items on the the stack. The generative RNNG can be seen as a generative formulation of the RNNG, jointly modelling the words instead of merely conditioning on them, or it can be seen as a structured model of language that predicts words together with their structure. From a parsing perspective, the generative RNNG simply dispends with the discriminative RNNG's buffer to instead predict the words of the tree. As a model of sentences, it can better be understood as kind of structured RNN: it predicts words incrementally, but compresses and labels them recursively whenever they form a complete constituents.
+The discriminative RNNG is a discriminative transition based parser that uses regular RNNs to summarize the actions in the history and the words on the buffer into vectors, and uses a special RNN with a syntax-dependent recurrence to obtain a vector representation of items on the the stack. The generative RNNG can be seen as a generative formulation of the RNNG, jointly modelling the words instead of merely conditioning on them, or it can be seen as a structured model of language that predicts words together with their structure. From a parsing perspective, the generative RNNG simply dispences with the discriminative RNNG's buffer to instead predict the words of the tree. As a model of sentences, it can better be understood as kind of structured RNN: it predicts words incrementally, but compresses and labels them recursively whenever they form a complete constituents.
 
 \subsection{Transition sytem}
 The RNNG uses a transition system crafted for top-down parsing. The discriminative transition system has three actions:
@@ -16,10 +16,8 @@ How these actions work to build a tree is best illustrated with an example deriv
 
 \begin{example}{(Discriminative transition system)}
   \label{ex:disc-states}
-  Producing the gold tree of the input sentence \textit{The hungry cat sleeps}.
+  The following table shows the consecutive states of the parser that produces the gold tree for input sentence \textit{The hungry cat sleeps}. Individual items are separated by the midline symbol. Example taken from \citet{dyer2016rnng}.
   \input{../tables/disc-transitions.tex}
-
-  Individual items are separated by the midline symbol.
 \end{example}
 
  The actions are constrained in order to only derive well-formed trees:
@@ -34,21 +32,23 @@ The generative transition system is derived from this system by replacing the $\
 \end{itemize}
 The buffer is dispensed with and is replaced by a similar structure that records the sequence words predicted so far.
 
-\begin{example}{(Generative transition system)} Generating the sentence of example \ref{ex:disc-states} with its gold tree.
+\begin{example}{(Generative transition system)} Generating the sentence of example \ref{ex:disc-states} together with its tree.
   \input{../tables/gen-transitions.tex}
+
+  Example taken from \citet{dyer2016rnng}.
 \end{example}
 
 
 \subsection{Model}
 
-Fundamentally, the model is a probability distribution over transition action sequences $a_1^T$ that generate trees $\y$. Conditionally, given a sequence of words $\x$, in the discriminative model, and jointly predicting $\x$ in the generative model. Put simply, the model is thus defined as
+Fundamentally, the model is a probability distribution over transition action sequences $a = \langle a_1, \dots, a_T \rangle$ that generate trees $\y$. Conditionally, given a sequence of words $\x$, in the discriminative model, and jointly predicting $\x$ in the generative model. Put simply, the model is thus defined as
 \begin{equation}
   \label{eq:naive-rnng-model}
   p( a ) = \prod_{t=1}^T p( a_t \mid a_{<t} ),
 \end{equation}
 where in the discriminative case $p( a ) = p( \y \mid \x )$ and in the generative model $p( a ) = p( \x, \y )$.
 
-The exact model however is slightly more complicated, a consequence of the difference between the discrminative and the generative actions, and a consequence of practical concerns regarding the implementation. To define the model precisely we need to introduce some things. First we define the set of discriminative actions as
+The exact model however is slightly more complicated, a consequence of the difference between the discriminative and the generative actions, and a consequence of practical concerns regarding the implementation. To define the model precisely we need to introduce some things. First we define the set of discriminative actions as
 \begin{align}
   \discactions &= \{ \shift, \open, \reduce \},
 \end{align}
@@ -56,7 +56,7 @@ and the set of generative actions as
 \begin{align}
   \genactions &= \{ \gen, \open, \reduce \}.
 \end{align}
-The finite set of nonterminals is indicated by $\Lambda$ and the finite alphabet of words by $\mathcal{X}$. Then in the discriminative model $a$ is sequence over $\discactions$, and in the generative model $a$ is a sequence over $\genactions$, both with the restriction that the actions form a valid tree $\y$. The sequence of nonterminals $n_1^K$ from $\Lambda^K$ is the sequence of nonterminal nodes obtained from a tree $\y$ by pre-order traversal, and we let a sentence $\x$ be an element of $\mathcal{X}^N$. Finally, we introduce two functions that map between sets of indices to indicate the number of times a particular action has been taken at each time step:
+The finite set of nonterminals is indicated by $\Lambda$ and the finite alphabet of words by $\mathcal{X}$. Then in the discriminative model $a$ is sequence over $\discactions$, and in the generative model $a$ is a sequence over $\genactions$, both with the restriction that the actions form a valid tree $\y$. The sequence of nonterminals $n = \langle n_1, \dots, n_K \rangle$ from $\Lambda^K$ is the sequence of nonterminal nodes obtained from a tree $\y$ by pre-order traversal, and we let a sentence $\x$ be an element of $\mathcal{X}^N$. Finally, we introduce two functions that map between sets of indices to indicate the number of times a particular action has been taken at each time step:
 \begin{align*}
   % \mu_a &: [ T ] \to [ K ]: t \mapsto \sum_{i=1}^{t-1} \indicator_{ \{ a_i \, = \, \open \} },
   \mu_a &: \{ 1, \dots, T \} \to \{ 1, \dots, K \}: t \mapsto \sum_{i=1}^{t-1} \indicator_{ \{ a_i \, = \, \open \} },
@@ -69,7 +69,7 @@ and
 but for brevity we drop the subscript $a$. We are now in the position to write down the exact models.
 
 \begin{definition}{(Discriminative RNNG)}
-  Let $a$ be a sequence over from $\discactions$ of length $T$. Then the model for the discrminative RNNG is
+  Let $a$ be a sequence over $\discactions$ of length $T$. Then the model for the discrminative RNNG is
   \begin{align}
     \label{eq:disc-model}
     p(\y \mid \x) = p(a \mid \x) = \prod_{t=1}^T P( a_t \mid \x, a_{<t}),
@@ -79,14 +79,15 @@ but for brevity we drop the subscript $a$. We are now in the position to write d
     \label{eq:disc-model}
     P( a_t \mid \x, a_{<t}) =
     \begin{cases}
-      p( n_{ a_t } \mid \x, a_{<t} ) p( n_{ \mu(t) } \mid \x, a_{<t} ) & \text{if } a_t = \open,  \\
-      p( n_{ a_t } \mid \x, a_{<t} ) & \text{otherwise.}  \\
+      p( a_t \mid \x, a_{<t} ) p( n_{ \mu(t) } \mid \x, a_{<t} ) & \text{if } a_t = \open,  \\
+      p( a_t \mid \x, a_{<t} ) & \text{otherwise.}  \\
     \end{cases}
   \end{equation}
+Whenever the prediction is to open a new nonterminal the action probability factorizes as the product of two separate probabilities: the product of the probability of the action itself, and the probability of the next upcoming label in $n$, which is indexed by $\mu(t)$.
 \end{definition}
 
 \begin{definition}{(Generative RNNG)}
-  Let $a$ be a sequence over $\genactions$ of length $T$, which include the actions that generate words\footnote{Note that under this action set $p(a_t \mid a_{<t}, \x_{<t}) = p(a_t \mid a_{<t})$, given the fact that the words in $\x_{<t}$ are contained in $a_{<t}$.}, then the model for the generative RNNG is
+  Let $a$ be a sequence over $\genactions$ of length $T$, which include the actions that generate words.\footnote{Note that under this action set $p(a_t \mid a_{<t}, \x_{<\nu(t)}) = p(a_t \mid a_{<t})$, given the fact that the words in $\x_{<\nu(t)}$ are contained in $a_{<t}$.} The model for the generative RNNG then is
   \begin{align}
     \label{eq:disc-model}
     p(\y \mid \x) = p(a) = \prod_{t=1}^T P( a_t \mid a_{<t}),
@@ -101,6 +102,7 @@ but for brevity we drop the subscript $a$. We are now in the position to write d
       p( a_t \mid a_{<t} ) & \text{otherwise.}  \\
     \end{cases}
   \end{equation}
+  This corresponds with the discriminative model on the actions that they share. For the action that predicts the next word, the factorization is identical to that of the action that predicts the next nonterminal, with the difference that the next word in $x$ is instead indexed by $\nu(t)$.
 \end{definition}
 
 The probabilities over next actions at time step $t$ are given by classifiers on a vector $\vecu_t$,\footnote{For brevity we omit the conditioning on $\x$, which was redundant already in the case of the generative model.} which represents the parser configuration at that timestep:\footnote{Where we pretend that $a_t$, $n_t$, and $x_t$ double as indices.}}
@@ -137,7 +139,7 @@ Here, $\mathbf{s}_t$ represents the stack, $\mathbf{b}_t$ represents the buffer,
 The vectors $\mathbf{b}_t$ and $\mathbf{h}_t$ are computed each with a regular RNN: the history vector is computed in the forward direction, and the buffer is encoded in the backward direction to provide a lookahead. The vector $\mathbf{s}_t$ represents the partially constructed tree that is on the stack, and its computation depends on this partial structure by using a structured RNN that encodes the tree in top-down order while recursively compressing constituents whenever they are completed.
 
 \subsection{Stack encoder}
-The stack RNN computes a representation based on incoming nonterminal and terminal symbols while these are respectively opened and shifted, as a regular RNN would, but rewrites this history whenever the constituent that they form is closed. Whenever a $\reduce$ action is predicted, the RNN rewinds its hidden state to before the constituent was opened; the items making up the constinuent are composed into a single vector by a composition function; and this composed vector is then fed into the rewound RNN as if the subtree where a single input. The closed constituent is now a single item represented by a single vector. Due to the nested nature of constituents this procedure recursively compresseses subtrees.
+The stack RNN computes a representation based on incoming nonterminal and terminal symbols while these are respectively opened and shifted, as a regular RNN would, but rewrites this history whenever the constituent that they form is closed. Whenever a $\reduce$ action is predicted, the RNN rewinds its hidden state to before the constituent was opened; the items making up the constinuent are composed into a single vector by a composition function; and this composed vector is then fed into the rewound RNN as if the subtree were a single input. The closed constituent is now a single item represented by a single vector. Due to the nested nature of constituents this procedure recursively compresseses subtrees.
 
 \begin{example}{(Composition function)}
   Consider the state of the parser in example \ref{ex:disc-states} at step 5, when the stack contains the five items
@@ -148,7 +150,7 @@ The stack RNN computes a representation based on incoming nonterminal and termin
   \begin{center}
     (NP \textit{The} \textit{hungry} \textit{cat}).
   \end{center}
-  The RNN is fed this input reduced input, resulting in the encoding of stack at step 6, and finalizing the reduction step. This process is recursive: consider the reduction that takes the stack from the five items
+  The RNN is fed this reduced input, resulting in the encoding of stack at step 6, and finalizing the reduction step. This process is recursive: consider the reduction that takes the stack from the five items
   \begin{center}
     (S | (NP | \textit{The} | (ADJP \textit{very} \textit{hungry}) | \textit{cat}
   \end{center}
@@ -165,11 +167,11 @@ Two kinds of functions have been proposed to for the composition described above
 \section{Training}
 The discriminative and generative model are trained to maximize the objective
 \begin{align*}
-  \mathcal{L}(\theta) = \sum_{(\x, \y) \in \dataset} \ptheta (\y \mid \x),
+  \mathcal{L}(\theta) = \sum_{(\x, \y) \in \dataset} \log \ptheta (\y \mid \x),
 \end{align*}
 respectively
 \begin{align*}
-  \mathcal{L}(\theta) = \sum_{(\x, \y) \in \dataset} \ptheta (\x, \y),
+  \mathcal{L}(\theta) = \sum_{(\x, \y) \in \dataset} \log \ptheta (\x, \y),
 \end{align*}
 by gradient-based optimization on the parameters $\theta$.
 
@@ -181,11 +183,11 @@ Parsing a sentence $\x$ with the discriminative model corresponds to solving the
 \begin{align*}
   \hat{\y} = \argmax_{ \y \in \yieldx } \ptheta(\y \mid \x).
 \end{align*}
-Solving this exactly is intractable due to the parametrization of the model. At each timestep, the model conditions on the entire history derivation history which excludes the use of dynamic programming to solve this efficiently. Instead we rely on an approximate search strategy. There are two common approaches for this: greedy decoding and beam search. We only focus on the first. Greedy decoding is precisely what it suggests: at each timestep we greedily select the best local decision
+Solving this exactly is intractable due to the parametrization of the model. At each timestep, the model conditions on the entire derivation history which excludes the use of dynamic programming to solve this efficiently. Instead we rely on an approximate search strategy. There are two common approaches for this: greedy decoding and beam search. We only focus on the first. Greedy decoding is precisely what it suggests: at each timestep we greedily select the best local decision
 \begin{align*}
   \hat{a}_t = \argmax_{a} \ptheta(a \mid \hat{a}_{< t}).
 \end{align*}
-The predicted parse is then the approximate MAP tree $\y^*$ constructed by the sequence $\langle \hat{a}_1, \dots, \hat{a}_m \rangle$.
+The predicted parse is then the approximate MAP tree $\y^* = \text{yield}(\hat{a})$, which is the tree constructed from the sequence $\hat{a} = \langle \hat{a}_1, \dots, \hat{a}_m \rangle$.
 
 \subsection{Generative model}
 Given a trained generative model $\ptheta$ we are interested in solving the following two problems: parsing a sentence $\x$
@@ -205,20 +207,19 @@ The proposal distribution allows us to rewrite the marginal probability of a sen
     &= \sum_{\y  \in \mathcal{Y}(\x)} \ptheta(\x, \y) \\
     &= \sum_{\y  \in \mathcal{Y}(\x)} \qlambda(\y |\x) \frac{\ptheta(\x,\y )}{\qlambda(\y | \x)} \\
     &= \expect_{q} \bigg[\frac{\ptheta(\x,\y )}{\qlambda(\y | \x)} \bigg] \\
-  \label{eq:lowerbound}
 \end{align*}
 This expectation can be approximated with a Monte Carlo estimate
 \begin{align}
   \expect_{q} \bigg[\frac{\ptheta(\x,\y )}{\qlambda(\y | \x)} \bigg]
-    &\approx \frac{1}{K}\sum_{i=1}^K  \frac{\ptheta( \x, \y_i )}{\qlambda(\y_i | \x)},
+    &\approx \frac{1}{K}\sum_{i=1}^K  \frac{\ptheta( \x, \y^{(i)} )}{\qlambda(\y^{(i)} | \x)},
 \end{align}
-using proposal samples $\y_i$ sampled from the proposal model $\qlambda$ conditioning on $\x$.
+using proposal samples $\y^{(i)}$ sampled from the proposal model $\qlambda$ conditioning on $\x$.
 
 \paragraph{Approximate MAP tree}
 To approximate the MAP tree $\hat{\y}$ we use the same set of proposal samples as above, and choose the tree $\y$ from the proposal samples that has the highest probability probability under the joint model $\ptheta( \y, \x)$.
 
 \paragraph{Proposal distribution}
-In order to avoid division by zero, the proposal distribution must satisfy the property that for all $\x$ and $\y \in \yieldx$
+The proposal distribution must have a support that covers that of the joint model. This corresponds to the property that for all $\x$ and $\y \in \yieldx$
 \begin{equation*}
   p(\x, \y) > 0 \Rightarrow q( \y| \x ) > 0.
 \end{equation*}
@@ -227,8 +228,8 @@ We additionally want that samples can be obtained efficiently, and that their co
 \section{Experiments}
 We perform three types of experiments with the RNNG:
 \begin{itemize}
-  \item We reproduce the parsing f-scores and perplexities from \citep{dyer2016rnng}, and some more.
-  \item We evauluate `how good the model is' as a sampler.
+  \item We reproduce the parsing f-scores and perplexities from \citep{dyer2016rnng}.
+  \item We evaluate `how good the model is' as a sampler.
 \end{itemize}
 
 \subsection{Supervised model} We investigate the following.
@@ -255,11 +256,8 @@ We perform three types of experiments with the RNNG:
 \section{Related work}
 
 \subsection{Generative parsing}
-\begin{itemize}
-  \item Generative dependency parsing and language modelling \citep{titov2007generative,buys2015bayesian,buys2015generative,buys2018exact}
-  \item Top-down parsing and language modelling \citep{roark2001probabilistic}.
-\end{itemize}
+Most directly related to the RNNG is the work on generative dependency parsing \citep{titov2007generative,buys2015bayesian,buys2015generative,buys2018exact}, and the work on language modelling via top-down generative parsing models in \citet{roark2001probabilistic}.
 
-\subsection{Syntax} RNNGs learn about syntax beyond their supervision. The attention mechanism in the composition function learns a type of `soft' head-rules\footnote{A head is the lexical item in a phrase that determines the syntactic category of that phrase, \cf the background.}, in which most of the attention weight is put on the item that linguist consider the synactic head of such constituents. Another finding shows that when trained on unlabeledd trees, the RNNG learns representations for constituents that cluster according to their withheld gold label \citep{kuncoro2017syntax}. Additionally RNNGs are much better at a long-distance subject-verb agreement task than LSTMS \citep{linzen2016syntax,kuncoro2018learn}, which advantage they owe to the composition function that by repeatedly compressing intervening structure decreases the distance between the two words at stake.
+\subsection{Syntax} It has been investigated what RNNGs learn about syntax beyond their supervision \citep{kuncoro2017syntax}. This work shows that the attention mechanism in the composition function learns a type of `soft' head-rules\footnote{A head is the lexical item in a phrase that determines the syntactic category of that phrase, \cf the background.}, in which most of the attention weight is put on the item that linguist consider the synactic head of such constituents. Another finding shows that when trained on unlabeledd trees, the RNNG learns representations for constituents that cluster according to their withheld gold label. Additionally, it has been found that RNNGs are much better at a long-distance subject-verb agreement task than LSTMS \citep{linzen2016syntax,kuncoro2018learn}, which advantage they owe to the composition function that by repeatedly compressing intervening structure decreases the distance between the two words at stake.
 
-\subsection{Cognition} RNNGs can tell us something about our brains. Psycholinguistic research has shown that top-down parsing is a cognitively plausible parsing strategy \citep{brennan2016abstract}, and recently, RNNGs have been shown to be particularly good statistical predictors for human sentence comprehension \citep{hale2018beam}. In this experiment, the sequential word-probabilities derived from a generative RNNG\footnote{Obtained by using `word-synchronous beam-search' \citep{stern2017beam}.} provide a per-word complexity metric that predict human reading difficulty well. Much better at least than predictions from the word probabilities obtained from a purely sequential RNN language model.
+\subsection{Cognition} It appears also that RNNGs can tell us something about our brains: Psycholinguistic research has shown that top-down parsing is a cognitively plausible parsing strategy \citep{brennan2016abstract}, and recently, RNNGs have been shown to be particularly good statistical predictors for human sentence comprehension \citep{hale2018beam}. In this experiment, the sequential word-probabilities derived from a generative RNNG\footnote{Obtained by using `word-synchronous beam-search' \citep{stern2017beam}.} provide a per-word complexity metric that predict human reading difficulty well. Much better at least than predictions from the word probabilities obtained from a purely sequential RNN language model.

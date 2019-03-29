@@ -1,6 +1,6 @@
 % \bibliography{../src/bibliography}
 
-This chapter introduces a neural Conditional Random Field (CRF) parser that can be used as an alternative proposal distribution for the approximate marginalization of the RNNG. The model is a span-factored CRF that independently predicts scores for labeled spans over the sentence using neural networks. The scores then interact in a tree-structured dynamic program, giving a compact description of the probability distribution over parses. This approach combines the efficient exact inference of chart-based parsing, the rich nonlinear features of neural networks, and the global training of a CRF. The chart-based approach enables efficient exact inference alowing for exact decoding and global sampling while the neural features can be complex and can condition on the entire sentence. The CRF training objective [...something about receiving information about all substructures...]. The parser is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} to global CRF training. In \citet{stern2017minimal} the model is trained with a margin-based objective, but given our interest in this model as a proposal distribution we require probabilistic training.
+This chapter introduces a neural Conditional Random Field (CRF) parser that can be used as an alternative proposal distribution for the approximate marginalization of the RNNG. The model is a span-factored CRF that independently predicts scores for labeled spans over the sentence using neural networks. The scores then interact in a tree-structured dynamic program, giving a compact description of the probability distribution over parses. This approach combines the efficient exact inference of chart-based parsing, the rich nonlinear features of neural networks, and the global training of a CRF. The chart-based approach enables efficient exact inference alowing for exact decoding and global sampling while the neural features can be complex and can condition on the entire sentence. The parser is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} to global CRF training. In \citet{stern2017minimal} the model is trained with a margin-based objective, but given our interest in this model as a proposal distribution we require probabilistic training.
 
 In this chapter:
 \begin{itemize}
@@ -28,15 +28,15 @@ In this chapter:
   \end{align}
   The function $\psi$, thus, scores each labeled span $\y_a$ seperately, but conditional on the entire sentence.
 
-  The above model is your typical constituency parsing CRF \citep{finkel2008crf,klein2015crf}, but the factorization over labeled spans, however, was first introduced by \citet{stern2017minimal}. Factorizing a tree over labeled spans makes an even stronger assumption than that typically made of factorizating over anchored rules\footnote{Compare table \ref{tab:spans-rules} for the different conceptions of a tree.}, such as is done in the earlier work. By factorizing over labeled spans, the potential function $\psi$ has no access to information about the direct substructure under the node, such as the child nodes and their split point, and the function can thus rely less on the (local) tree structure and must thus rely more on the surface features of the input sentence. This factorization will, however, greatly reduce the size of the state-space of the dynamic programs, speeding up training and inference, and the burden of the feature function will be carried by a rich neural network parametrization. Together this will make the parser fast yet effective. This will be made clear in section \ref{sect:inference} on inference.
+  The above model is your typical constituency parsing CRF \citep{finkel2008crf,klein2015crf}, but where those models factorize trees over \textit{anchored rules}, our model the factorizes over \textit{labeled spans},\footnote{Compare table \ref{tab:spans-rules} for the different representations of a tree.} an approach first taken in \citet{stern2017minimal}. This factorization imposes an even stronger independence assumption than that imposed by factorizatin over anchored rules. By factorizing over labeled spans, the potential function $\psi$ has no access to information about the direct substructure under the node, such as the child nodes and their split point, and the function can thus rely less on the (local) tree structure and must thus rely more on the surface features of the input sentence. It will, however, greatly reduce the size of the state-space of the dynamic programs, speeding up training and inference, and the burden of the feature function will be carried by a rich neural network parametrization. Together this will make the parser fast yet effective. This will be made clear in section \ref{sect:inference} on inference.
 
 \section{Parametrization}
-  The scoring function $\psi$ is implemented with neural networks following \citet{stern2017minimal}. Again, let $\y_a$ denote a labeled span $(A, i, j)$ in a tree $\y$, and let $\psi(\x, \y_a) \geq 0$ be the score of that labeled span for sentence $\x$. These local potentials can only make minimal use of structural information but they can depend on the entire sentence. This suggest the use of bidirectional RNN encodings. Let $\fw_i$ and $\bw_i$ respectively be the vectors computed by a forward and backward RNN for the word in position $i$. The representation of the span $(i, j)$ is the concatenation of the difference between the vectors on the endpoints of the span:
+  The scoring function $\psi$ is implemented with neural networks following \citet{stern2017minimal}. Again, let $\y_a$ denote a labeled span $(A, i, j)$ in a tree $\y$, and let $\psi(\x, \y_a) > 0$ be the score of that labeled span for sentence $\x$. These local potentials can only make minimal use of structural information but they can depend on the entire sentence. This suggest the use of bidirectional RNN encodings. Let $\fw_i$ and $\bw_i$ respectively be the vectors computed by a forward and backward RNN for the word in position $i$. The representation of the span $(i, j)$ is the concatenation of the difference between the vectors on the endpoints of the span:
   \begin{align}
     \label{eq:span-feature}
     \vecs_{ij} = [\fw_j - \fw_i; \bw_i - \bw_j].
   \end{align}
-  The vector $\vecs_{ij}$ represents the words $x_i^j$, and equation \ref{eq:span-feature} is illustrated in figure \ref{fig:span-feature}. The scores the labels of that position are computed from this vector using a feedforward network with output dimension $\reals^{\lvert \Lambda \rvert}$, and the score of label $A$ is given by the index corresponding to it:
+  The vector $\vecs_{ij}$ represents the words $x_i^j$, and equation \ref{eq:span-feature} is illustrated in figure \ref{fig:span-feature}. The scores for each label in that position are computed from this vector using a feedforward network with output dimension $\reals^{\lvert \Lambda \rvert}$, and the score of label $A$ is given by the index corresponding to it:
   \begin{align}
     \label{eq:potential-function}
     \log \psi(\x, \y_a) = [ \ff( \vecs_{ij} ) ]_{A},
@@ -45,13 +45,13 @@ In this chapter:
 
   \begin{figure}
     \includegraphics[width=\textwidth]{span-encoding.pdf}
-    \caption{Representation for the span $(1, 4)$ computed from $\rnn$ encodings. Taken without permission from \citet{stern2018analyis}.}
+    \caption{Representation for the span $(1, 4)$ computed from $\rnn$ encodings. Taken from \citet{stern2018analyis}.}
     \label{fig:span-feature}
   \end{figure}
 
 \section{Inference}
   \label{sect:inference}
-  Because the model is span-factored it allows efficient inference. In this section we describe efficient solutions to four related problems:
+  Because our model is span-factored it allows efficient inference. In this section we describe efficient solutions to four related problems:
   \begin{itemize}
     \item Compute the normalizer $Z(\x) = \sum_{ \y \in \yieldx } \prod_{ a=1 }^{ A } \psi( \x, \y_a )$.
     \item Find the best parse $\hat{ \y } = \arg \max_{\y } p(\y  \mid \x)$
@@ -87,28 +87,29 @@ In this chapter:
     \label{fig:crf-edges}
   \end{figure}
 
-  We connect a semiring $\mathcal{K}$ to the hypergraph by defining the weight function as $\omega: \mathcal{E} \to \mathbb{K}$, and by accumulating the weights with its binary operations. The function $\omega$ that assigns weights to the edges is given by either the function $\psi$ or $(\log \circ \, \psi)$, depending on the semiring used. Because of this association, the function $\omega$ has a very particular property: the function effectively depends only on the \textit{head} of the edge. Given edges $e = \langle \{ u, w \}, v \rangle$ and $e' =  \langle \{ u', w' \}, v \rangle$ for $u \neq u'$ and $w \neq w'$, their weights are equal: $\omega(e) = \omega(e')$. For this reason we write $\omega(v)$ instead.\footnote{Thus implicitly defining $\omega: \mathcal{V} \to \mathbb{K}$.} This fact will allow us to greatly rewrite the recursions that follow. Additionally, this means that instead of computing independent scores for each of the $O(n^3 \vert\Lambda\rvert^3)$ edges, we only need to compute scores for the $O(n^2 \vert\Lambda\rvert)$ vertices. For a scoring function like a neural network, for which computation can be relatively expensive, this will make a significant difference.
+  We connect a semiring $\mathcal{K}$ to the hypergraph by defining the weight function as $\omega: \mathcal{E} \to \mathbb{K}$, and by accumulating the weights with its binary operations. The function $\omega$ that assigns weights to the edges is given by either the function $\psi$ or $(\log \circ \, \psi)$, depending on the semiring used. Because of this association, the function $\omega$ has a very particular property: the function effectively depends only on the \textit{head} of the edge. Given edges $e = \langle \{ u, w \}, v \rangle$ and $e' =  \langle \{ u', w' \}, v \rangle$ for $u \neq u'$ and $w \neq w'$, their weights are equal: $\omega(e) = \omega(e')$. For this reason we write $\omega(v)$ instead.\footnote{Thus implicitly defining $\omega: \mathcal{V} \to \mathbb{K}$.} This fact will allow us to greatly simplify the recursions that follow. Additionally, this means that instead of computing independent scores for each of the $O(n^3 \vert\Lambda\rvert^3)$ edges, we only need to compute scores for the $O(n^2 \vert\Lambda\rvert)$ vertices. For a scoring function like a neural network, for which computation can be relatively expensive, this will make a significant difference.
 
  With this structure in place, we are ready to derive the form of the inference algorithm particular to this structure.
 
 \subsection{Inside recursion}
   The inside recursion computes quantities $\alpha(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. The quantity computed depends on the semiring used. In this section we derive the inside recursion specific to our hypergraph from the general result given.
 
-  Let $\mathcal{K}$ be some semiring with binary operations $\oplus$ and $\otimes$ and identity elements $\hat{0}$ and $\hat{1}$. The inside recursion is given by the formula \citep{goodman1999semiring}
+  Let $\mathcal{K}$ be some semiring with binary operations $\oplus$ and $\otimes$ and identity elements $\bar{0}$ and $\bar{1}$. The inside recursion is given by the formula \citep{goodman1999semiring}
   \begin{align*}
     \alpha(v) =
       \begin{cases}
-        \hat{1}  &  \mbox{if } I(v) = \varnothing,  \\
+        \bar{1}  &  \mbox{if } I(v) = \varnothing,  \\
         \displaystyle\bigoplus_{e \in I(v)} \omega(e) \otimes \displaystyle\bigotimes_{u \in T(e)} \alpha(u)  & \mbox{otherwise.}
       \end{cases}
   \end{align*}
+  Here $I(v) \subseteq E$ is the set of edges incoming at node $v$, and $T(e) \subseteq V$ is the set of nodes in the tail of edge $e$.
 
   At a node $v = (A, i, i+1)$ that spans one word $x_i$, the inside value is just the weight of the single edge incoming from that word:
   \begin{align}
       \label{eq:inside-base}
       \alpha(A, i, i+1) = \omega(A, i, i+1) \otimes \alpha(x_i) = \omega(A, i, i+1),
   \end{align}
-  for $A \in \Lambda$, for all $0 \leq i < n$. We used the fact that $\alpha(x_i) = \hat{1}$, which follows from the fact that there are no arrows incoming at $\x_i$.
+  for $A \in \Lambda$, for all $0 \leq i < n$. We used the fact that $\alpha(x_i) = \bar{1}$, which follows from the fact that there are no arrows incoming at $\x_i$.
 
   For a general node $\alpha(A, i, j)$, $j > i + 1$, we observe that all the incoming edges have at the tail the nodes $(B, i, k)$ and $(C, k, j)$, for all $B, C \in \Lambda$ and $i < k < j$. The sum over edges thus reduces to independent sums over $B$, $C$, and $k$, and the product over the inside values at the tail reduces to the product of values $\alpha(B, i, k)$ and $\alpha(C, k, j)$. The form of $\omega$ allows us to rewrite this greatly as
   \begin{align}
@@ -116,18 +117,18 @@ In this chapter:
     \alpha(A, i, j)
       &= \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=i+1}^{j-1} \omega(A, i, j) \otimes \alpha(B,i,k) \otimes \alpha(C,k,j) \nonumber \\
       &= \omega(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \bigoplus_{B \in \Lambda} \alpha(B,i,k) \otimes \bigoplus_{C \in \Lambda} \alpha(C,k,j) \nonumber \\
-      &= \omega(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \sigma(i,k) \otimes \sigma(k,j),
+      &= \omega(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \sigma_{\alpha}(i,k) \otimes \sigma_{\alpha}(k,j),
   \end{align}
   where we've introduced the notational abbreviation
   \begin{align*}
-      \sigma(i,j) &= \bigoplus_{A \in \Lambda} \alpha(A,i,j).
+      \sigma_{\alpha}(i,j) &= \bigoplus_{A \in \Lambda} \alpha(A,i,j).
   \end{align*}
   Looking at \ref{eq:inside} we can see the marginalized values $\sigma(i, j)$ are all that are needed for the recursion. This suggest simplifying the recursion even further as
   \begin{align}
     \label{eq:inside-simplified}
-    \sigma(i, j)
+    \sigma_{\alpha}(i, j)
       &= \bigoplus_{A \in \Lambda} \alpha(A,i,j) \nonumber \\
-      &= \Bigg[ \bigoplus_{A \in \Lambda} \omega(A, i, j) \Bigg] \otimes \Bigg[\bigoplus_{k=i+1}^{j-1} \sigma(i,k) \otimes  \sigma(k,j) \Bigg],
+      &= \Bigg[ \bigoplus_{A \in \Lambda} \omega(A, i, j) \Bigg] \otimes \Bigg[\bigoplus_{k=i+1}^{j-1} \sigma_{\alpha}(i,k) \otimes  \sigma_{\alpha}(k,j) \Bigg],
   \end{align}
   where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting.
 
@@ -136,13 +137,15 @@ In this chapter:
   \begin{align*}
     \beta(v) =
       \begin{cases}
-        \hat{1}  & \mbox{if } O(v) = \varnothing, \\
+        \bar{1}  & \mbox{if } O(v) = \varnothing, \\
         \displaystyle\bigoplus_{e \in O(v)} \omega(w) \otimes \beta(H(e)) \otimes \displaystyle\bigotimes_{ \substack{ w \in T(e) \\ w \neq u } } \alpha(w)  & \mbox{otherwise.}
       \end{cases}
   \end{align*}
+  Here, $O(v) \subseteq E$ is the set of edges outgoing from $v$, $\ie$ the edges for which $v$ is in the tail, and define $H(e) \in V$ as the node at the head of edge $e$.
+
   The only node without outgoing edges is the root node, and thus
   \begin{align*}
-    \beta(S^{\dagger}, 0, n) = \hat{1}.
+    \beta(S^{\dagger}, 0, n) = \bar{1}.
   \end{align*}
   To compute $\beta(A, i, j)$ in the general case we need to sum over all outgoing edges. These come in two kinds: either $(A, i, j)$ combines with $(C, k, i)$ to form constituent $(B, k, j)$; or either $(A, i, j)$ combines with $(C, j, k)$ to form constituent $(B, i, k)$. This corresponds to the following expression, that we can simplify by making use of the properties of $\omega$:
   \begin{align*}
@@ -151,12 +154,12 @@ In this chapter:
         &\qquad \oplus \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=j+1}^{n} \omega(B, i, k) \otimes \beta(B, i, k) \otimes \alpha(C, j, k) \\
       &=  \bigoplus_{k=1}^{i-1}  \Bigg[ \bigoplus_{B \in \Lambda} \omega(B, k, j)  \otimes \beta(B, k, j) \Bigg] \otimes \Bigg[ \bigoplus_{C \in \Lambda} \alpha(C, k, i) \Bigg] \\
         &\qquad \oplus \bigoplus_{k=j+1}^{n}  \Bigg[ \bigoplus_{B \in \Lambda}  \omega(B, i, k) \otimes \beta(B, i, k) \Bigg] \otimes  \Bigg[  \bigoplus_{C \in \Lambda} \alpha(C, j, k) \Bigg] \\
-      &=  \bigoplus_{k=1}^{i-1}  \sigma'(k, j) \otimes \sigma(k, i) \oplus \bigoplus_{k=j+1}^{n} \sigma'(i, k) \otimes  \sigma(j, k) \\
+      &=  \bigoplus_{k=1}^{i-1}  \sigma_{\beta}'(k, j) \otimes \sigma_{\beta}(k, i) \oplus \bigoplus_{k=j+1}^{n} \sigma_{\beta}'(i, k) \otimes  \sigma_{\beta}(j, k) \\
   \end{align*}
   where
   \begin{align*}
-      \sigma(i, j) &= \bigoplus_{A \in \Lambda} \alpha(A, i, j),  \\
-      \sigma'(i, j) &= \bigoplus_{A \in \Lambda} \omega(A, i, j) \beta(A, i, j).
+      \sigma_{\beta}(i, j) &= \bigoplus_{A \in \Lambda} \alpha(A, i, j),  \\
+      \sigma_{\beta}'(i, j) &= \bigoplus_{A \in \Lambda} \omega(A, i, j) \beta(A, i, j).
   \end{align*}
 
 \subsection{Solutions}
@@ -197,7 +200,7 @@ In this chapter:
       \label{eq:sample}
       P(E = e)
         &= \frac{\omega(e) \otimes \bigotimes_{u \in T(e)} \alpha(u)}{\alpha(v)}  \nonumber  \\
-        &= \frac{\psi(A, i, j) \, \alpha(B, i, k) \, \alpha(C, k, j)}{\alpha(A, i, j)}.  \\
+        &= \frac{\psi(A, i, j) \, \alpha(B, i, k) \, \alpha(C, k, j)}{\alpha(A, i, j)}.
     \end{align}
     We repeat the sampling at the nodes that are in the tail of the sampled edge, until we reached the nodes that span individual words.
 
@@ -208,13 +211,13 @@ In this chapter:
         &\defeq \expect_Y[ \indicator_{ \{ v \in Y \} } ]  \nonumber \\
         &= \sum_{ \y \in \yieldx } p(\y \mid \x) \indicator_{ \{ v \in y \} }.
     \end{align}
-    This is a probability distribution:
-    \begin{align*}
-      \sum_{v \in \mathcal{V}(x)} P(V = v \mid X = \x)
-        &= \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{v \in \mathcal{V}(x)} \indicator_{ \{ v \in y \} }  \\
-        &= \sum_{ \y \in \yieldx } p(\y \mid \x) \lvert y \rvert  \\
-        &\stackrel{?}{=} 1
-    \end{align*}
+    % This is a probability distribution:
+    % \begin{align*}
+    %   \sum_{v \in \mathcal{V}(x)} P(V = v \mid X = \x)
+    %     &= \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{v \in \mathcal{V}(x)} \indicator_{ \{ v \in y \} }  \\
+    %     &= \sum_{ \y \in \yieldx } p(\y \mid \x) \lvert y \rvert  \\
+    %     &\stackrel{?}{=} 1
+    % \end{align*}
     The marginals can be computed from the inside and outside values computed in the real semiring as
     \begin{align}
       P(V = v \mid X = \x) = \frac{\alpha(A, i, j) \, \beta(A, i, j)}{Z(\x)},

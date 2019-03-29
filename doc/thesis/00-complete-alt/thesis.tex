@@ -121,9 +121,8 @@
 
 
 
-%ARTICLE SUB-TITLE
-% \subtitle{Neural language models with latent syntax}
-%
+\title{Neural language models with latent syntax}
+
 % \maintitleauthorlist{
 %   Daan van Stigt \\
 %   Institute for Logic, Language and Computation \\
@@ -133,26 +132,33 @@
 % \addbibresource{../src/bibliography.bib}
 
 \begin{document}
-
-\makeabstracttitle
+\maketitle
 
 \begin{abstract}
-In this thesis I investigate the question: \textit{What are effective ways of incorporating syntactic structure into neural language models?}
+  In this thesis I investigate the question: \textit{What are effective ways of incorporating syntactic structure into neural language models?}
 
-In this thesis I:
-\begin{itemize}
-  \item study a class of neural language models that merges generative transition-based parsing with recurrent neural networks in order to model sentences together with their latent syntactic structure;
-  \item propose a new globally trained chart-based parser as an alternative proposal distribution used in the approximate marginalization;
-  \item propose effective methods for semisupervised learning, making the syntactic structure a latent variable;
-  \item perform targeted syntactic evaluation and compare the model's performance with that of alternative models that are based on multitask learning.
-\end{itemize}
+  In this thesis I:
+  \begin{itemize}
+    \item study a class of neural language models that merges generative transition-based parsing with recurrent neural networks in order to model sentences together with their latent syntactic structure;
+    \item propose a new globally trained chart-based parser as an alternative proposal distribution used in the approximate marginalization;
+    \item propose effective methods for semisupervised learning, making the syntactic structure a latent variable;
+    \item perform targeted syntactic evaluation and compare the model's performance with that of alternative models that are based on multitask learning.
+  \end{itemize}
 \end{abstract}
+
+
+\input{../tables/notation.tex}
+
+
+{\hypersetup{linkcolor=black}
+% or \hypersetup{linkcolor=black}, if the colorlinks=true option of hyperref is used
+\tableofcontents
+}
+
 
 % end of main matter
 \begin{acknowledgements}
 \end{acknowledgements}
-
-\input{../tables/notation.tex}
 
 
 \chapter{Introduction}

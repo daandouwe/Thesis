@@ -37,7 +37,6 @@ See Buys et al. (2018) for this.
 
 
 # March 22
-
 ## Chekckup
 - [X] Are all models running correctly? (Will most likely need to continue another 5 days...)
 - [X] Sampling is rerunning (something wrong with the memory... Might be horrible! Watch out for this).
@@ -45,8 +44,6 @@ See Buys et al. (2018) for this.
 
 
 # March 25
-The run of experiments is done
-
 
 ## Experimental
 - [X] Check all experiments, did anything go wrong?
@@ -74,6 +71,39 @@ Start semisupervised training.
 - [ ] Write wilker with the plots; ask if enough convergence.
 
 ## Home
-- [ ] Sample crf proposals
-- [ ] Sample disc proposals
+- [X] Sample crf proposals
+- [X] Sample disc proposals
 - [ ] Evaluate GenRNNG
+
+
+# March 26
+1. Both the GenRNNG and LM-CCG seem to be fucked: the test perplexity is way higher than the dev perplexity.
+2. The syneval results for LM are worse than what should be expected: rerun at the end on GPU. For now: rest and accept.
+3. Samples for CRF are done. Samples for RNNG under way.
+
+## Experiment
+- [X] Rerun GenRNNG with proper proposals. Try to fix the problem of incoherent results. Running with proper samples! Done on april 2.
+
+## Code
+- [X] Rewrite sample experiment to work more efficiently (15 sets of samples, then subsample).
+
+## Writing
+- [ ] Work out all suggestions by Wilker.
+
+## CRF
+Big surprise! The entropy appears to be working... But when I dy.renew_cg() the nan appears... WTF? YES this is CORRECT this really happens. W.T.F.
+
+
+# March 27
+
+# Experiment
+- [X] Sample experiment succesfully produced samples. Evaluation takes too much memory. Retry with smaller number. Fix Fscore.
+
+# Resume
+- [X] Resumes are running!! Lets try to see how they are doing.
+  - Cancelled GEN because it makes no sense... We now use different proposal samples!
+- [X] LM resume requires to change the trainer class.
+
+
+# March 28
+I have good news and bad news. Good news. First, I have converged models: disc-rnng, crf, gen-rnng, and I have them all evaluated. Second, the crf computation of the entropy works! Bad news: semisupervised training will not be possible. Simply not. One epoch on the ptb takes

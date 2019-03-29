@@ -1,0 +1,757 @@
+\begin{thebibliography}{110}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Andor et~al.(2016)Andor, Alberti, Weiss, Severyn, Presta, Ganchev,
+  Petrov, and Collins]{andor2016globally}
+Daniel Andor, Chris Alberti, David Weiss, Aliaksei Severyn, Alessandro Presta,
+  Kuzman Ganchev, Slav Petrov, and Michael Collins.
+\newblock Globally normalized transition-based neural networks.
+\newblock In \emph{Proceedings of the 54th Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, pages 2442--2452.
+  Association for Computational Linguistics, 2016.
+
+\bibitem[Baker(1979)]{baker1979trainable}
+James~K Baker.
+\newblock Trainable grammars for speech recognition.
+\newblock \emph{The Journal of the Acoustical Society of America}, 65\penalty0
+  (S1):\penalty0 S132--S132, 1979.
+
+\bibitem[Ballesteros et~al.(2016)Ballesteros, Goldberg, Dyer, and
+  Smith]{ballesteros2016exploration}
+Miguel Ballesteros, Yoav Goldberg, Chris Dyer, and Noah~A. Smith.
+\newblock Training with exploration improves a greedy stack lstm parser.
+\newblock In \emph{Proceedings of the 2016 Conference on Empirical Methods in
+  Natural Language Processing}, pages 2005--2010. Association for Computational
+  Linguistics, 2016.
+
+\bibitem[Bangalore and Joshi(1999)]{bangalore1999supertagging}
+Srinivas Bangalore and Aravind~K Joshi.
+\newblock Supertagging: An approach to almost parsing.
+\newblock \emph{Computational linguistics}, 25\penalty0 (2):\penalty0 237--265,
+  1999.
+
+\bibitem[Baydin et~al.(2018)Baydin, Pearlmutter, Radul, and
+  Siskind]{baydin2018automatic}
+Atilim~Gunes Baydin, Barak~A Pearlmutter, Alexey~Andreyevich Radul, and
+  Jeffrey~Mark Siskind.
+\newblock Automatic differentiation in machine learning: a survey.
+\newblock \emph{Journal of Marchine Learning Research}, 18:\penalty0 1--43,
+  2018.
+
+\bibitem[Bengio et~al.(2003)Bengio, Ducharme, Vincent, and
+  Jauvin]{bengio2003neural}
+Yoshua Bengio, R{\'e}jean Ducharme, Pascal Vincent, and Christian Jauvin.
+\newblock A neural probabilistic language model.
+\newblock \emph{Journal of machine learning research}, 3\penalty0
+  (Feb):\penalty0 1137--1155, 2003.
+
+\bibitem[Black et~al.(1991)Black, Abney, Flickenger, Gdaniec, Grishman,
+  Harrison, Hindle, Ingria, Jelinek, Klavans, et~al.]{black1991parseval}
+Ezra Black, Steven Abney, Dan Flickenger, Claudia Gdaniec, Ralph Grishman,
+  Philip Harrison, Donald Hindle, Robert Ingria, Frederick Jelinek, Judith
+  Klavans, et~al.
+\newblock A procedure for quantitatively comparing the syntactic coverage of
+  english grammars.
+\newblock In \emph{Speech and Natural Language: Proceedings of a Workshop Held
+  at Pacific Grove, California, February 19-22, 1991}, 1991.
+
+\bibitem[Blei et~al.(2016)Blei, Kucukelbir, and McAuliffe]{blei2016vi}
+D.~M. Blei, A.~Kucukelbir, and J.~D. McAuliffe.
+\newblock Variational inference: A review for statisticians.
+\newblock \emph{ArXiv e-prints}, January 2016.
+
+\bibitem[Brennan et~al.(2016)Brennan, Stabler, Van~Wagenen, Luh, and
+  Hale]{brennan2016abstract}
+Jonathan~R Brennan, Edward~P Stabler, Sarah~E Van~Wagenen, Wen-Ming Luh, and
+  John~T Hale.
+\newblock Abstract linguistic structure correlates with temporal activity
+  during naturalistic comprehension.
+\newblock \emph{Brain and language}, 157:\penalty0 81--94, 2016.
+
+\bibitem[Buys and Blunsom(2015{\natexlab{a}})]{buys2015bayesian}
+Jan Buys and Phil Blunsom.
+\newblock A bayesian model for generative transition-based dependency parsing.
+\newblock In \emph{Proceedings of the Third International Conference on
+  Dependency Linguistics, DepLing 2015, August 24-26 2015, Uppsala University,
+  Uppsala, Sweden}, pages 58--67, 2015{\natexlab{a}}.
+
+\bibitem[Buys and Blunsom(2015{\natexlab{b}})]{buys2015generative}
+Jan Buys and Phil Blunsom.
+\newblock Generative incremental dependency parsing with neural networks.
+\newblock In \emph{Proceedings of the 53rd Annual Meeting of the Association
+  for Computational Linguistics and the 7th International Joint Conference on
+  Natural Language Processing (Volume 2: Short Papers)}, volume~2, pages
+  863--869, 2015{\natexlab{b}}.
+
+\bibitem[Buys and Blunsom(2018)]{buys2018exact}
+Jan Buys and Phil Blunsom.
+\newblock Neural syntactic generative models with exact marginalization.
+\newblock In \emph{Proceedings of the 2018 Conference of the North American
+  Chapter of the Association for Computational Linguistics: Human Language
+  Technologies, Volume 1 (Long Papers)}, volume~1, pages 942--952, 2018.
+
+\bibitem[Carnie(2010)]{carnie2010constituent}
+A.~Carnie.
+\newblock \emph{Constituent Structure}.
+\newblock Oxford linguistics. Oxford University Press, 2010.
+\newblock ISBN 9780199583461.
+
+\bibitem[Caruana(1997)]{caruana1997multitask}
+Rich Caruana.
+\newblock Multitask learning.
+\newblock \emph{Machine learning}, 28\penalty0 (1):\penalty0 41--75, 1997.
+
+\bibitem[Chelba and Jelinek(2000)]{chelba2000structured}
+Ciprian Chelba and Frederick Jelinek.
+\newblock Structured language modeling.
+\newblock \emph{Computer Speech \& Language}, 14\penalty0 (4):\penalty0
+  283--332, 2000.
+
+\bibitem[Chelba et~al.(2013)Chelba, Mikolov, Schuster, Ge, Brants, Koehn, and
+  Robinson]{chelba2013one}
+Ciprian Chelba, Tomas Mikolov, Mike Schuster, Qi~Ge, Thorsten Brants, Phillipp
+  Koehn, and Tony Robinson.
+\newblock One billion word benchmark for measuring progress in statistical
+  language modeling.
+\newblock \emph{arXiv preprint arXiv:1312.3005}, 2013.
+
+\bibitem[Chelba et~al.(2017)Chelba, Norouzi, and Bengio]{chelba2017n}
+Ciprian Chelba, Mohammad Norouzi, and Samy Bengio.
+\newblock N-gram language modeling using recurrent neural network estimation.
+\newblock \emph{arXiv preprint arXiv:1703.10724}, 2017.
+
+\bibitem[Chen and Goodman(1999)]{chen1999empirical}
+Stanley~F Chen and Joshua Goodman.
+\newblock An empirical study of smoothing techniques for language modeling.
+\newblock \emph{Computer Speech \& Language}, 13\penalty0 (4):\penalty0
+  359--394, 1999.
+
+\bibitem[Cheng et~al.(2017)Cheng, Lopez, and Lapata]{cheng2017rnng}
+Jianpeng Cheng, Adam Lopez, and Mirella Lapata.
+\newblock A generative parser with a discriminative recognition algorithm.
+\newblock In \emph{Proceedings of the 55th Annual Meeting of the Association
+  for Computational Linguistics (Volume 2: Short Papers)}, pages 118--124.
+  Association for Computational Linguistics, 2017.
+
+\bibitem[Chomsky(1980)]{chomsky1980rules}
+Noam Chomsky.
+\newblock Rules and representations.
+\newblock \emph{Behavioral and brain sciences}, 3\penalty0 (1):\penalty0 1--15,
+  1980.
+
+\bibitem[Christiansen et~al.(2012)Christiansen, Conway, and
+  Onnis]{christiansen2012similar}
+Morten~H Christiansen, Christopher~M Conway, and Luca Onnis.
+\newblock Similar neural correlates for language and sequential learning:
+  evidence from event-related brain potentials.
+\newblock \emph{Language and cognitive processes}, 27\penalty0 (2):\penalty0
+  231--256, 2012.
+
+\bibitem[Collins(2003)]{collins2003head}
+Michael Collins.
+\newblock Head-driven statistical models for natural language parsing.
+\newblock \emph{Computational linguistics}, 29\penalty0 (4):\penalty0 589--637,
+  2003.
+
+\bibitem[Collobert and Weston(2008)]{collobert2008unified}
+Ronan Collobert and Jason Weston.
+\newblock A unified architecture for natural language processing: Deep neural
+  networks with multitask learning.
+\newblock In \emph{Proceedings of the 25th international conference on Machine
+  learning}, pages 160--167. ACM, 2008.
+
+\bibitem[Collobert et~al.(2011)Collobert, Weston, Bottou, Karlen, Kavukcuoglu,
+  and Kuksa]{collobert2011natural}
+Ronan Collobert, Jason Weston, L{\'e}on Bottou, Michael Karlen, Koray
+  Kavukcuoglu, and Pavel Kuksa.
+\newblock Natural language processing (almost) from scratch.
+\newblock \emph{Journal of Machine Learning Research}, 12\penalty0
+  (Aug):\penalty0 2493--2537, 2011.
+
+\bibitem[Conway and Pisoni(2008)]{conway2008neurocognitive}
+Christopher~M Conway and David~B Pisoni.
+\newblock Neurocognitive basis of implicit learning of sequential structure and
+  its relation to language processing.
+\newblock \emph{Annals of the New York Academy of Sciences}, 1145\penalty0
+  (1):\penalty0 113--131, 2008.
+
+\bibitem[Cross and Huang(2016)]{cross2016span}
+James Cross and Liang Huang.
+\newblock Span-based constituency parsing with a structure-label system and
+  provably optimal dynamic oracles.
+\newblock In \emph{Proceedings of the 2016 Conference on Empirical Methods in
+  Natural Language Processing}, pages 1--11. Association for Computational
+  Linguistics, 2016.
+
+\bibitem[Dozat and Manning(2016)]{dozat2016deep}
+Timothy Dozat and Christopher~D Manning.
+\newblock Deep biaffine attention for neural dependency parsing.
+\newblock \emph{arXiv preprint arXiv:1611.01734}, 2016.
+
+\bibitem[Durrett and Klein(2015)]{klein2015crf}
+Greg Durrett and Dan Klein.
+\newblock Neural crf parsing.
+\newblock In \emph{Proceedings of the 53rd Annual Meeting of the Association
+  for Computational Linguistics and the 7th International Joint Conference on
+  Natural Language Processing (Volume 1: Long Papers)}, pages 302--312.
+  Association for Computational Linguistics, 2015.
+
+\bibitem[Dyer et~al.(2016)Dyer, Kuncoro, Ballesteros, and Smith]{dyer2016rnng}
+Chris Dyer, Adhiguna Kuncoro, Miguel Ballesteros, and Noah~A. Smith.
+\newblock Recurrent neural network grammars.
+\newblock In \emph{Proceedings of the 2016 Conference of the North American
+  Chapter of the Association for Computational Linguistics: Human Language
+  Technologies}, pages 199--209. Association for Computational Linguistics,
+  2016.
+
+\bibitem[Emami and Jelinek(2005)]{emami2005neural}
+Ahmad Emami and Frederick Jelinek.
+\newblock A neural syntactic language model.
+\newblock \emph{Machine learning}, 60\penalty0 (1-3):\penalty0 195--227, 2005.
+
+\bibitem[Enguehard et~al.(2017)Enguehard, Goldberg, and
+  Linzen]{enguehard2017multitask}
+{\'E}mile Enguehard, Yoav Goldberg, and Tal Linzen.
+\newblock Exploring the syntactic abilities of rnns with multi-task learning.
+\newblock In \emph{Proceedings of the 21st Conference on Computational Natural
+  Language Learning (CoNLL 2017)}, pages 3--14. Association for Computational
+  Linguistics, 2017.
+
+\bibitem[Everaert et~al.(2015)Everaert, Huybregts, Chomsky, Berwick, and
+  Bolhuis]{everaert2015structures}
+Martin~BH Everaert, Marinus~AC Huybregts, Noam Chomsky, Robert~C Berwick, and
+  Johan~J Bolhuis.
+\newblock Structures, not strings: linguistics as part of the cognitive
+  sciences.
+\newblock \emph{Trends in cognitive sciences}, 19\penalty0 (12):\penalty0
+  729--743, 2015.
+
+\bibitem[Finkel et~al.(2008)Finkel, Kleeman, and Manning]{finkel2008crf}
+Jenny~Rose Finkel, Alex Kleeman, and Christopher~D. Manning.
+\newblock Efficient, feature-based, conditional random field parsing.
+\newblock In \emph{Proceedings of ACL-08: HLT}, pages 959--967. Association for
+  Computational Linguistics, 2008.
+
+\bibitem[Frank et~al.(2012)Frank, Bod, and Christiansen]{frank2012hierarchical}
+Stefan~L Frank, Rens Bod, and Morten~H Christiansen.
+\newblock How hierarchical is language use?
+\newblock \emph{Proceedings of the Royal Society B: Biological Sciences},
+  279\penalty0 (1747):\penalty0 4522--4531, 2012.
+
+\bibitem[Fried and Klein(2018)]{klein2018reinforce}
+Daniel Fried and Dan Klein.
+\newblock Policy gradient as a proxy for dynamic oracles in constituency
+  parsing.
+\newblock In \emph{Proceedings of the 56th Annual Meeting of the Association
+  for Computational Linguistics (Volume 2: Short Papers)}, pages 469--476.
+  Association for Computational Linguistics, 2018.
+
+\bibitem[Fu(2006)]{fu2006gradient}
+Michael~C. Fu.
+\newblock Gradient estimation.
+\newblock In Barry L.~Nelson Edited~by Shane G.~Henderson, editor,
+  \emph{Handbooks in Operations Research and Management Science (Volume 13)},
+  chapter~19, pages 575--616. Elsevier, 2006.
+
+\bibitem[Gaddy et~al.(2018)Gaddy, Stern, and Klein]{stern2018analyis}
+David Gaddy, Mitchell Stern, and Dan Klein.
+\newblock What's going on in neural constituency parsers? an analysis.
+\newblock In \emph{Proceedings of the 2018 Conference of the North American
+  Chapter of the Association for Computational Linguistics: Human Language
+  Technologies, Volume 1 (Long Papers)}, pages 999--1010. Association for
+  Computational Linguistics, 2018.
+
+\bibitem[Gallo et~al.(1993)Gallo, Longo, Pallottino, and
+  Nguyen]{gallo1993directed}
+Giorgio Gallo, Giustino Longo, Stefano Pallottino, and Sang Nguyen.
+\newblock Directed hypergraphs and applications.
+\newblock \emph{Discrete applied mathematics}, 42\penalty0 (2-3):\penalty0
+  177--201, 1993.
+
+\bibitem[Giannakidou(2011)]{giannakidou2011npi}
+Anastasia Giannakidou.
+\newblock Negative and positive polarity items: Variation, licensing, and
+  compositionality.
+\newblock \emph{The Handbook of Natural Language Meaning (second edition).
+  Mouton de Gruyter, Berlin}, 2011.
+
+\bibitem[Gillespie and Pearlmutter(2011)]{gillespie2011hierarchy}
+Maureen Gillespie and Neal~J Pearlmutter.
+\newblock Hierarchy and scope of planning in subject--verb agreement
+  production.
+\newblock \emph{Cognition}, 118\penalty0 (3):\penalty0 377--397, 2011.
+
+\bibitem[Gillespie and Pearlmutter(2013)]{gillespie2013against}
+Maureen Gillespie and Neal~J Pearlmutter.
+\newblock Against structural constraints in subject--verb agreement production.
+\newblock \emph{Journal of Experimental Psychology: Learning, Memory, and
+  Cognition}, 39\penalty0 (2):\penalty0 515, 2013.
+
+\bibitem[Glorot and Bengio(2010)]{glorot2010understanding}
+Xavier Glorot and Yoshua Bengio.
+\newblock Understanding the difficulty of training deep feedforward neural
+  networks.
+\newblock In \emph{Proceedings of the thirteenth international conference on
+  artificial intelligence and statistics}, pages 249--256, 2010.
+
+\bibitem[Goldberg and Nivre(2013)]{goldberg2013dynamic}
+Yoav Goldberg and Joakim Nivre.
+\newblock Training deterministic parsers with non-deterministic oracles.
+\newblock \emph{Transactions of the Association for Computational Linguistics},
+  1\penalty0 (Oct):\penalty0 403--414, 2013.
+
+\bibitem[Goodman(1999)]{goodman1999semiring}
+Joshua Goodman.
+\newblock Semiring parsing.
+\newblock \emph{Computational Linguistics}, 25\penalty0 (4):\penalty0 573--605,
+  1999.
+
+\bibitem[Gulordava et~al.(2018)Gulordava, Bojanowski, Grave, Linzen, and
+  Baroni]{gulordava2018colorless}
+Kristina Gulordava, Piotr Bojanowski, Edouard Grave, Tal Linzen, and Marco
+  Baroni.
+\newblock Colorless green recurrent networks dream hierarchically.
+\newblock In \emph{Proceedings of the 2018 Conference of the North American
+  Chapter of the Association for Computational Linguistics: Human Language
+  Technologies, Volume 1 (Long Papers)}, pages 1195--1205. Association for
+  Computational Linguistics, 2018.
+
+\bibitem[Hale(2001)]{hale2001earley}
+John Hale.
+\newblock A probabilistic earley parser as a psycholinguistic model.
+\newblock In \emph{Proceedings of the second meeting of the North American
+  Chapter of the Association for Computational Linguistics on Language
+  technologies}, pages 1--8. Association for Computational Linguistics, 2001.
+
+\bibitem[Hale et~al.(2018)Hale, Dyer, Kuncoro, and Brennan]{hale2018beam}
+John Hale, Chris Dyer, Adhiguna Kuncoro, and Jonathan Brennan.
+\newblock Finding syntax in human encephalography with beam search.
+\newblock In \emph{Proceedings of the 56th Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, pages 2727--2736.
+  Association for Computational Linguistics, 2018.
+
+\bibitem[Hall et~al.(2014)Hall, Durrett, and Klein]{hall2014less}
+David Hall, Greg Durrett, and Dan Klein.
+\newblock Less grammar, more features.
+\newblock In \emph{Proceedings of the 52nd Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, volume~1, pages
+  228--237, 2014.
+
+\bibitem[He et~al.(2012)He, Eisner, and Daume]{he2012imitation}
+He~He, Jason Eisner, and Hal Daume.
+\newblock Imitation learning by coaching.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pages
+  3149--3157, 2012.
+
+\bibitem[Hochreiter and Schmidhuber(1997)]{hochreiter1997long}
+Sepp Hochreiter and J{\"u}rgen Schmidhuber.
+\newblock Long short-term memory.
+\newblock \emph{Neural computation}, 9\penalty0 (8):\penalty0 1735--1780, 1997.
+
+\bibitem[Hockenmaier and Steedman(2007)]{hockenmaier2007ccgbank}
+Julia Hockenmaier and Mark Steedman.
+\newblock Ccgbank: a corpus of ccg derivations and dependency structures
+  extracted from the penn treebank.
+\newblock \emph{Computational Linguistics}, 33\penalty0 (3):\penalty0 355--396,
+  2007.
+
+\bibitem[Huddleston and Pullum(2002)]{huddleston2002grammar}
+Rodney~D. Huddleston and Geoffrey~K. Pullum.
+\newblock \emph{The Cambridge Grammar of the English Language}, April 2002.
+
+\bibitem[Hudson(2010)]{hudson2010introduction}
+Richard Hudson.
+\newblock \emph{An introduction to word grammar}.
+\newblock Cambridge University Press, 2010.
+
+\bibitem[Jelinek(1997)]{jelinek1997information}
+Frederick Jelinek.
+\newblock Information extraction from speech and text, chapter 8, 1997.
+
+\bibitem[Jozefowicz et~al.(2016)Jozefowicz, Vinyals, Schuster, Shazeer, and
+  Wu]{jozefowicz2016exploring}
+Rafal Jozefowicz, Oriol Vinyals, Mike Schuster, Noam Shazeer, and Yonghui Wu.
+\newblock Exploring the limits of language modeling.
+\newblock \emph{arXiv preprint arXiv:1602.02410}, 2016.
+
+\bibitem[Kalchbrenner et~al.(2014)Kalchbrenner, Grefenstette, and
+  Blunsom]{kalchbrenner2014convolutional}
+Nal Kalchbrenner, Edward Grefenstette, and Phil Blunsom.
+\newblock A convolutional neural network for modelling sentences.
+\newblock \emph{arXiv preprint arXiv:1404.2188}, 2014.
+
+\bibitem[Kim et~al.(2017)Kim, Denton, Hoang, and Rush]{kim2017structured}
+Yoon Kim, Carl Denton, Luong Hoang, and Alexander~M Rush.
+\newblock Structured attention networks.
+\newblock \emph{arXiv preprint arXiv:1702.00887}, 2017.
+
+\bibitem[Kingma and Ba(2014)]{kingma2014adam}
+Diederik~P. Kingma and Jimmy Ba.
+\newblock Adam: {A} method for stochastic optimization.
+\newblock \emph{CoRR}, abs/1412.6980, 2014.
+
+\bibitem[Kitaev and Klein(2018)]{kitaev2018attentive}
+Nikita Kitaev and Dan Klein.
+\newblock Constituency parsing with a self-attentive encoder.
+\newblock In \emph{Proceedings of the 56th Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, pages 2676--2686.
+  Association for Computational Linguistics, 2018.
+
+\bibitem[Klein and Manning(2003)]{klein2003accurate}
+Dan Klein and Christopher~D. Manning.
+\newblock Accurate unlexicalized parsing.
+\newblock In \emph{Proceedings of the 41st Annual Meeting on Association for
+  Computational Linguistics - Volume 1}, ACL '03, pages 423--430, Stroudsburg,
+  PA, USA, 2003. Association for Computational Linguistics.
+
+\bibitem[Klein and Manning(2004)]{klein2004parsing}
+Dan Klein and Christopher~D Manning.
+\newblock Parsing and hypergraphs.
+\newblock In \emph{New developments in parsing technology}, pages 351--372.
+  Springer, 2004.
+
+\bibitem[Kneser and Ney(1995)]{kneser1995improved}
+Reinhard Kneser and Hermann Ney.
+\newblock Improved backing-off for m-gram language modeling.
+\newblock In \emph{icassp}, volume~1, page 181e4, 1995.
+
+\bibitem[Kuncoro et~al.(2017)Kuncoro, Ballesteros, Kong, Dyer, Neubig, and
+  Smith]{kuncoro2017syntax}
+Adhiguna Kuncoro, Miguel Ballesteros, Lingpeng Kong, Chris Dyer, Graham Neubig,
+  and Noah~A. Smith.
+\newblock What do recurrent neural network grammars learn about syntax?
+\newblock In \emph{Proceedings of the 15th Conference of the European Chapter
+  of the Association for Computational Linguistics: Volume 1, Long Papers},
+  pages 1249--1258. Association for Computational Linguistics, 2017.
+
+\bibitem[Kuncoro et~al.(2018)Kuncoro, Dyer, Hale, Yogatama, Clark, and
+  Blunsom]{kuncoro2018learn}
+Adhiguna Kuncoro, Chris Dyer, John Hale, Dani Yogatama, Stephen Clark, and Phil
+  Blunsom.
+\newblock Lstms can learn syntax-sensitive dependencies well, but modeling
+  structure makes them better.
+\newblock In \emph{Proceedings of the 56th Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, pages 1426--1436.
+  Association for Computational Linguistics, 2018.
+
+\bibitem[Lafferty et~al.(2001)Lafferty, McCallum, and Pereira]{lafferty2001crf}
+John~D. Lafferty, Andrew McCallum, and Fernando C.~N. Pereira.
+\newblock Conditional random fields: Probabilistic models for segmenting and
+  labeling sequence data.
+\newblock In \emph{Proceedings of the Eighteenth International Conference on
+  Machine Learning}, ICML '01, pages 282--289, 2001.
+
+\bibitem[Levy(2008)]{levy2008expectation}
+Roger Levy.
+\newblock Expectation-based syntactic comprehension.
+\newblock \emph{Cognition}, 106\penalty0 (3):\penalty0 1126--1177, 2008.
+
+\bibitem[Li and Eisner(2009)]{eisner2009semirings}
+Zhifei Li and Jason Eisner.
+\newblock First- and second-order expectation semirings with applications to
+  minimum-risk training on translation forests.
+\newblock In \emph{Proceedings of the 2009 Conference on Empirical Methods in
+  Natural Language Processing}, pages 40--51. Association for Computational
+  Linguistics, 2009.
+
+\bibitem[Linzen et~al.(2016)Linzen, Dupoux, and Goldberg]{linzen2016syntax}
+Tal Linzen, Emmanuel Dupoux, and Yoav Goldberg.
+\newblock Assessing the ability of lstms to learn syntax-sensitive
+  dependencies.
+\newblock \emph{Transactions of the Association for Computational Linguistics},
+  4:\penalty0 521--535, 2016.
+
+\bibitem[Marcus et~al.(1994)Marcus, Kim, Marcinkiewicz, MacIntyre, Bies,
+  Ferguson, Katz, and Schasberger]{marcus1994annotating}
+Mitchell Marcus, Grace Kim, Mary~Ann Marcinkiewicz, Robert MacIntyre, Ann Bies,
+  Mark Ferguson, Karen Katz, and Britta Schasberger.
+\newblock The penn treebank: annotating predicate argument structure.
+\newblock In \emph{Proceedings of the workshop on Human Language Technology},
+  pages 114--119. Association for Computational Linguistics, 1994.
+
+\bibitem[Marcus et~al.(1993)Marcus, Marcinkiewicz, and
+  Santorini]{marcus1993penn}
+Mitchell~P Marcus, Mary~Ann Marcinkiewicz, and Beatrice Santorini.
+\newblock Building a large annotated corpus of english: The penn treebank.
+\newblock \emph{Computational linguistics}, 19\penalty0 (2):\penalty0 313--330,
+  1993.
+
+\bibitem[Marvin and Linzen(2018)]{linzen2018targeted}
+Rebecca Marvin and Tal Linzen.
+\newblock Targeted syntactic evaluation of language models.
+\newblock In \emph{Proceedings of the 2018 Conference on Empirical Methods in
+  Natural Language Processing}, pages 1192--1202. Association for Computational
+  Linguistics, 2018.
+
+\bibitem[McCoy et~al.(2018)McCoy, Linzen, and Frank]{mccoy2018revisiting}
+R~Thomas McCoy, Tal Linzen, and Robert Frank.
+\newblock Revisiting the poverty of the stimulus: hierarchical generalization
+  without a hierarchical bias in recurrent neural networks.
+\newblock \emph{arXiv preprint arXiv:1802.09091}, 2018.
+
+\bibitem[Melis et~al.(2017)Melis, Dyer, and Blunsom]{melis2017state}
+G{\'a}bor Melis, Chris Dyer, and Phil Blunsom.
+\newblock On the state of the art of evaluation in neural language models.
+\newblock \emph{arXiv preprint arXiv:1707.05589}, 2017.
+
+\bibitem[Merity et~al.(2016)Merity, Xiong, Bradbury, and
+  Socher]{merity2016pointer}
+Stephen Merity, Caiming Xiong, James Bradbury, and Richard Socher.
+\newblock Pointer sentinel mixture models.
+\newblock \emph{arXiv preprint arXiv:1609.07843}, 2016.
+
+\bibitem[Miao and Blunsom(2016)]{miao2016discrete}
+Yishu Miao and Phil Blunsom.
+\newblock Language as a latent variable: Discrete generative models for
+  sentence compression.
+\newblock In \emph{Proceedings of the 2016 Conference on Empirical Methods in
+  Natural Language Processing}, pages 319--328. Association for Computational
+  Linguistics, 2016.
+
+\bibitem[Mikolov et~al.(2010)Mikolov, Karafi{\'a}t, Burget, {\v{C}}ernock{\`y},
+  and Khudanpur]{mikolov2010recurrent}
+Tom{\'a}{\v{s}} Mikolov, Martin Karafi{\'a}t, Luk{\'a}{\v{s}} Burget, Jan
+  {\v{C}}ernock{\`y}, and Sanjeev Khudanpur.
+\newblock Recurrent neural network based language model.
+\newblock In \emph{Eleventh Annual Conference of the International Speech
+  Communication Association}, 2010.
+
+\bibitem[Mnih and Gregor(2014)]{mnih2014nvil}
+Andriy Mnih and Karol Gregor.
+\newblock Neural variational inference and learning in belief networks.
+\newblock In \emph{ICML}, 2014.
+
+\bibitem[Neubig et~al.(2017{\natexlab{a}})Neubig, Dyer, Goldberg, Matthews,
+  Ammar, Anastasopoulos, Ballesteros, Chiang, Clothiaux, Cohn,
+  et~al.]{neubig2017dynet}
+Graham Neubig, Chris Dyer, Yoav Goldberg, Austin Matthews, Waleed Ammar,
+  Antonios Anastasopoulos, Miguel Ballesteros, David Chiang, Daniel Clothiaux,
+  Trevor Cohn, et~al.
+\newblock Dynet: The dynamic neural network toolkit.
+\newblock \emph{arXiv preprint arXiv:1701.03980}, 2017{\natexlab{a}}.
+
+\bibitem[Neubig et~al.(2017{\natexlab{b}})Neubig, Goldberg, and
+  Dyer]{neubig2017fly}
+Graham Neubig, Yoav Goldberg, and Chris Dyer.
+\newblock On-the-fly operation batching in dynamic computation graphs.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pages
+  3971--3981, 2017{\natexlab{b}}.
+
+\bibitem[Nivre(2005)]{nivre2005dependency}
+Joakim Nivre.
+\newblock Dependency grammar and dependency parsing.
+\newblock \emph{MSI report}, 5133\penalty0 (1959):\penalty0 1--32, 2005.
+
+\bibitem[Paisley et~al.(2012)Paisley, Blei, and Jordan]{paisley2012viss}
+John Paisley, David Blei, and Michael Jordan.
+\newblock Variational bayesian inference with stochastic search.
+\newblock In John Langford and Joelle Pineau, editors, \emph{Proceedings of the
+  29th International Conference on Machine Learning (ICML-12)}, ICML '12, pages
+  1367--1374, New York, NY, USA, July 2012. Omnipress.
+
+\bibitem[Pauls and Klein(2012)]{pauls2012treelets}
+Adam Pauls and Dan Klein.
+\newblock Large-scale syntactic language modeling with treelets.
+\newblock In \emph{Proceedings of the 50th Annual Meeting of the Association
+  for Computational Linguistics: Long Papers-Volume 1}, pages 959--968.
+  Association for Computational Linguistics, 2012.
+
+\bibitem[Peters et~al.(2018)Peters, Neumann, Iyyer, Gardner, Clark, Lee, and
+  Zettlemoyer]{peters2018elmo}
+Matthew~E. Peters, Mark Neumann, Mohit Iyyer, Matt Gardner, Christopher Clark,
+  Kenton Lee, and Luke Zettlemoyer.
+\newblock Deep contextualized word representations.
+\newblock In \emph{Proc. of NAACL}, 2018.
+
+\bibitem[Petrov et~al.(2006)Petrov, Barrett, Thibaux, and
+  Klein]{petrov2006learning}
+Slav Petrov, Leon Barrett, Romain Thibaux, and Dan Klein.
+\newblock Learning accurate, compact, and interpretable tree annotation.
+\newblock In \emph{Proceedings of the 21st International Conference on
+  Computational Linguistics and the 44th annual meeting of the Association for
+  Computational Linguistics}, pages 433--440. Association for Computational
+  Linguistics, 2006.
+
+\bibitem[Ranganath et~al.(2014)Ranganath, Gerrish, and
+  Blei]{ranganath2014black}
+Rajesh Ranganath, Sean Gerrish, and David Blei.
+\newblock Black box variational inference.
+\newblock In \emph{Artificial Intelligence and Statistics}, pages 814--822,
+  2014.
+
+\bibitem[Rennie et~al.(2017)Rennie, Marcheret, Mroueh, Ross, and
+  Goel]{rennie2017argmax}
+Steven~J. Rennie, Etienne Marcheret, Youssef Mroueh, Jarret Ross, and Vaibhava
+  Goel.
+\newblock Self-critical sequence training for image captioning.
+\newblock \emph{2017 IEEE Conference on Computer Vision and Pattern Recognition
+  (CVPR)}, pages 1179--1195, 2017.
+
+\bibitem[Roark(2001)]{roark2001probabilistic}
+Brian Roark.
+\newblock Probabilistic top-down parsing and language modeling.
+\newblock \emph{Computational linguistics}, 27\penalty0 (2):\penalty0 249--276,
+  2001.
+
+\bibitem[Rosenfeld(1996)]{rosenfeld1996loglinear}
+Ronald Rosenfeld.
+\newblock A maximum entropy approach to adaptive statistical language
+  modelling.
+\newblock \emph{Computer Speech & Language}, 10\penalty0 (3):\penalty0 187 --
+  228, 1996.
+\newblock ISSN 0885-2308.
+
+\bibitem[Ross(2006)]{ross2006simulation}
+Sheldon~M. Ross.
+\newblock \emph{Simulation, Fourth Edition}.
+\newblock Academic Press, Inc., Orlando, FL, USA, 2006.
+
+\bibitem[Schulman et~al.(2015)Schulman, Heess, Weber, and
+  Abbeel]{schulman2015gradient}
+John Schulman, Nicolas Heess, Theophane Weber, and Pieter Abbeel.
+\newblock Gradient estimation using stochastic computation graphs.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pages
+  3528--3536, 2015.
+
+\bibitem[Sekine and Collins(1997)]{sekine1997evalb}
+Satoshi Sekine and Michael Collins.
+\newblock Evalb bracket scoring program.
+\newblock \emph{URL: http://www. cs. nyu. edu/cs/projects/proteus/evalb}, 1997.
+
+\bibitem[Sennrich(2017)]{sennrich2017grammatical}
+Rico Sennrich.
+\newblock How grammatical is character-level neural machine translation?
+  assessing mt quality with contrastive translation pairs.
+\newblock In \emph{Proceedings of the 15th Conference of the European Chapter
+  of the Association for Computational Linguistics: Volume 2, Short Papers},
+  pages 376--382. Association for Computational Linguistics, 2017.
+
+\bibitem[Smith(2012)]{smith2012adversarial}
+Noah~A Smith.
+\newblock Adversarial evaluation for models of natural language.
+\newblock \emph{arXiv preprint arXiv:1207.0245}, 2012.
+
+\bibitem[S{\o}gaard and Goldberg(2016)]{goldberg2016multitask}
+Anders S{\o}gaard and Yoav Goldberg.
+\newblock Deep multi-task learning with low level tasks supervised at lower
+  layers.
+\newblock In \emph{Proceedings of the 54th Annual Meeting of the Association
+  for Computational Linguistics (Volume 2: Short Papers)}, pages 231--235.
+  Association for Computational Linguistics, 2016.
+
+\bibitem[Stern et~al.(2017{\natexlab{a}})Stern, Andreas, and
+  Klein]{stern2017minimal}
+Mitchell Stern, Jacob Andreas, and Dan Klein.
+\newblock A minimal span-based neural constituency parser.
+\newblock In \emph{Proceedings of the 55th Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, pages 818--827,
+  Vancouver, Canada, July 2017{\natexlab{a}}. Association for Computational
+  Linguistics.
+
+\bibitem[Stern et~al.(2017{\natexlab{b}})Stern, Fried, and
+  Klein]{stern2017beam}
+Mitchell Stern, Daniel Fried, and Dan Klein.
+\newblock Effective inference for generative neural parsing.
+\newblock In \emph{Proceedings of the 2017 Conference on Empirical Methods in
+  Natural Language Processing}, page 1695–1700. Association for Computational
+  Linguistics, 2017{\natexlab{b}}.
+
+\bibitem[Swayamdipta et~al.(2018)Swayamdipta, Thomson, Lee, Zettlemoyer, Dyer,
+  and Smith]{swayamdipta2018scaffold}
+Swabha Swayamdipta, Sam Thomson, Kenton Lee, Luke Zettlemoyer, Chris Dyer, and
+  Noah~A. Smith.
+\newblock Syntactic scaffolds for semantic structures.
+\newblock In \emph{Proceedings of the 2018 Conference on Empirical Methods in
+  Natural Language Processing}, pages 3772--3782. Association for Computational
+  Linguistics, 2018.
+
+\bibitem[Tesni{\`e}re(1959)]{tesniere1959elements}
+Lucien Tesni{\`e}re.
+\newblock Elements of structural syntax, translated by timothy osborne and
+  sylvain kahane, 1959.
+
+\bibitem[Titov and Henderson(2007)]{titov2007generative}
+Ivan Titov and James Henderson.
+\newblock A latent variable model for generative dependency parsing.
+\newblock In \emph{Proceedings of the 10th International Conference on Parsing
+  Technologies}, IWPT '07, pages 144--155, Stroudsburg, PA, USA, 2007.
+  Association for Computational Linguistics.
+\newblock ISBN 978-1-932432-90-9.
+
+\bibitem[Tran et~al.(2018)Tran, Bisazza, and Monz]{tran2018recurrent}
+Ke~Tran, Arianna Bisazza, and Christof Monz.
+\newblock The importance of being recurrent for modeling hierarchical
+  structure.
+\newblock In \emph{Proceedings of the 2018 Conference on Empirical Methods in
+  Natural Language Processing}, pages 4731--4736. Association for Computational
+  Linguistics, 2018.
+
+\bibitem[Vaswani et~al.(2017)Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez,
+  Kaiser, and Polosukhin]{vaswani2017attention}
+Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,
+  Aidan~N Gomez, {\L}ukasz Kaiser, and Illia Polosukhin.
+\newblock Attention is all you need.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pages
+  5998--6008, 2017.
+
+\bibitem[Vlachos(2013)]{vlachos2012imitation}
+Andreas Vlachos.
+\newblock An investigation of imitation learning algorithms for structured
+  prediction.
+\newblock In \emph{European Workshop on Reinforcement Learning}, pages
+  143--154, 2013.
+
+\bibitem[Warstadt et~al.(2018)Warstadt, Singh, and
+  Bowman]{warstadt2018acceptability}
+Alex Warstadt, Amanpreet Singh, and Samuel~R Bowman.
+\newblock Neural network acceptability judgments.
+\newblock \emph{arXiv preprint arXiv:1805.12471}, 2018.
+
+\bibitem[Williams(1992)]{williams1992reinforce}
+Ronald~J Williams.
+\newblock Simple statistical gradient-following algorithms for connectionist
+  reinforcement learning.
+\newblock \emph{Machine learning}, 8\penalty0 (3-4):\penalty0 229--256, 1992.
+
+\bibitem[Wilson et~al.(2017)Wilson, Roelofs, Stern, Srebro, and
+  Recht]{wilson2017marginal}
+Ashia~C Wilson, Rebecca Roelofs, Mitchell Stern, Nati Srebro, and Benjamin
+  Recht.
+\newblock The marginal value of adaptive gradient methods in machine learning.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pages
+  4148--4158, 2017.
+
+\bibitem[Xiang et~al.(2009)Xiang, Dillon, and Phillips]{xiang2009illusory}
+Ming Xiang, Brian Dillon, and Colin Phillips.
+\newblock Illusory licensing effects across dependency types: Erp evidence.
+\newblock \emph{Brain and Language}, 108\penalty0 (1):\penalty0 40 -- 55, 2009.
+
+\bibitem[Yin et~al.(2018)Yin, Zhou, He, and Neubig]{yin2018structvae}
+Pengcheng Yin, Chunting Zhou, Junxian He, and Graham Neubig.
+\newblock Structvae: Tree-structured latent variable models for semi-supervised
+  semantic parsing.
+\newblock \emph{arXiv preprint arXiv:1806.07832}, 2018.
+
+\bibitem[Zaremba et~al.(2014)Zaremba, Sutskever, and
+  Vinyals]{zaremba2014recurrent}
+Wojciech Zaremba, Ilya Sutskever, and Oriol Vinyals.
+\newblock Recurrent neural network regularization.
+\newblock \emph{arXiv preprint arXiv:1409.2329}, 2014.
+
+\bibitem[Zhang and Weiss(2016)]{zhang2016multitask}
+Yuan Zhang and David Weiss.
+\newblock Stack-propagation: Improved representation learning for syntax.
+\newblock In \emph{Proceedings of the 54th Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, pages 1557--1566.
+  Association for Computational Linguistics, 2016.
+
+\bibitem[Zweig and Burges(2011)]{zweig2011microsoft}
+Geoffrey Zweig and Christopher~JC Burges.
+\newblock The microsoft research sentence completion challenge.
+\newblock Technical report, Citeseer, 2011.
+
+\end{thebibliography}

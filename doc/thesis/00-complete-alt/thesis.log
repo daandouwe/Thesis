@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  25 MAR 2019 12:30
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  26 MAR 2019 16:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1242,21 +1242,21 @@ LaTeX Warning: Label `eq:lowerbound' multiply defined.
 )
 \openout1 = `thesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Try loading font information for OT1+ppl on input line 135.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 134.
+LaTeX Font Info:    ... okay on input line 134.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 134.
+LaTeX Font Info:    ... okay on input line 134.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 134.
+LaTeX Font Info:    ... okay on input line 134.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 134.
+LaTeX Font Info:    ... okay on input line 134.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 134.
+LaTeX Font Info:    ... okay on input line 134.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 134.
+LaTeX Font Info:    ... okay on input line 134.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 134.
+LaTeX Font Info:    ... okay on input line 134.
+LaTeX Font Info:    Try loading font information for OT1+ppl on input line 134.
 
  (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1ppl.fd
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
@@ -1290,10 +1290,10 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \AtBeginShipoutBox=\box51
-Package hyperref Info: Link coloring OFF on input line 135.
-LaTeX Info: Redefining \ref on input line 135.
-LaTeX Info: Redefining \pageref on input line 135.
-LaTeX Info: Redefining \nameref on input line 135.
+Package hyperref Info: Link coloring OFF on input line 134.
+LaTeX Info: Redefining \ref on input line 134.
+LaTeX Info: Redefining \pageref on input line 134.
+LaTeX Info: Redefining \nameref on input line 134.
 
 (./thesis.out) (./thesis.out)
 \@outlinefile=\write4
@@ -1336,76 +1336,105 @@ Package caption Info: End \AtBeginDocument code.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-! Undefined control sequence.
-l.137 \makeabstracttitle
-                        
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
 
-LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 139.
-LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 139.
-LaTeX Font Info:    Try loading font information for OMS+ppl on input line 144.
-
-(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omsppl.fd
-File: omsppl.fd 
-)
-LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 144.
-
-Overfull \hbox (5.19946pt too wide) in paragraph at lines 146--147
-[]\OT1/ppl/m/n/10.95 propose ef-fec-tive meth-ods for semisu-per-vised learn-in
-g, mak-ing the syn-tac-tic struc-
- []
-
-
-! LaTeX Error: No \title given.
+! LaTeX Error: File `UvaLogoTekst' not found.
 
 See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.149 \end{abstract}
-                    
+l.136 
+      
+I could not locate the file with any of these extensions:
+.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPEG,.JBIG2,.JB2,.eps
 Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 149.
 
-(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1pcr.fd
-File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-)
-LaTeX Font Info:    Try loading font information for U+msa on input line 149.
+! LaTeX Error: There's no line here to end.
 
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.136 
+      
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <20.74> not available
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 136.
+LaTeX Font Info:    Try loading font information for U+msa on input line 136.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 149.
+LaTeX Font Info:    Try loading font information for U+msb on input line 136.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+lasy on input line 149.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 136.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/base/ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <8> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 149.
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 136.
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <6> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 149.
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 136.
 
-Underfull \hbox (badness 10000) in paragraph at lines 149--149
 
- []
+! LaTeX Error: File `uvalogo' not found.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.136 
+      
+I could not locate the file with any of these extensions:
+.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
 
 [1
 
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 137.
+LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 137.
+LaTeX Font Info:    Try loading font information for OMS+ppl on input line 142.
+
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omsppl.fd
+File: omsppl.fd 
+)
+LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10.95> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 142.
+
+Overfull \hbox (5.19946pt too wide) in paragraph at lines 144--145
+[]\OT1/ppl/m/n/10.95 propose ef-fec-tive meth-ods for semisu-per-vised learn-in
+g, mak-ing the syn-tac-tic struc-
+ []
+
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 147.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1pcr.fd
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+Underfull \hbox (badness 10000) in paragraph at lines 147--147
+
+ []
+
+[2] (../tables/notation.tex) [3] (./thesis.toc [4
+
+] [5])
+\tf@toc=\write5
+\openout5 = `thesis.toc'.
+
+
 
 ! LaTeX Error: Environment acknowledgements undefined.
 
@@ -1413,7 +1442,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.152 \begin{acknowledgements}
+l.160 \begin{acknowledgements}
                               
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1426,17 +1455,15 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.153 \end{acknowledgements}
+l.161 \end{acknowledgements}
                             
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-(../tables/notation.tex) [2]
+[6]
 chapter 1.
-LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <20.74> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 158.
-(../01-introduction/introduction.tex [3
+(../01-introduction/introduction.tex [7
 
 ]
 Overfull \hbox (4.55347pt too wide) in paragraph at lines 30--31
@@ -1444,7 +1471,7 @@ Overfull \hbox (4.55347pt too wide) in paragraph at lines 30--31
 ly us-ing Inside-Outside
  []
 
-) [4]
+) [8]
 chapter 2.
 (../02-background/background.tex
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <9> not available
@@ -1670,7 +1697,7 @@ two letters. (See Chapter 27 of The TeXbook.)
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[5
+[9
 
 ]
 ! Missing number, treated as zero.
@@ -1694,7 +1721,7 @@ To recover gracefully from this error, it's best to
 delete the erroneous units; e.g., type `2' to delete
 two letters. (See Chapter 27 of The TeXbook.)
 
-[6] <../figures/trees/npi-licensed.pdf, id=475, 526.77112pt x 259.41167pt>
+[10] <../figures/trees/npi-licensed.pdf, id=582, 526.77112pt x 259.41167pt>
 File: ../figures/trees/npi-licensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-licensed.pdf>
@@ -1702,7 +1729,7 @@ Package pdftex.def Info: ../figures/trees/npi-licensed.pdf used on input line 5
 9.
 (pdftex.def)             Requested size: 188.21289pt x 92.68355pt.
 
-<../figures/trees/npi-unlicensed.pdf, id=476, 482.62106pt x 256.61702pt>
+<../figures/trees/npi-unlicensed.pdf, id=583, 482.62106pt x 256.61702pt>
 File: ../figures/trees/npi-unlicensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-unlicensed.pdf>
@@ -1714,60 +1741,60 @@ Overfull \hbox (2.0805pt too wide) in paragraph at lines 58--64
 [][] [] 
  []
 
-[7 <../figures/trees/npi-licensed.pdf> <../figures/trees/npi-unlicensed.pdf>]
+[11 <../figures/trees/npi-licensed.pdf> <../figures/trees/npi-unlicensed.pdf>]
 (../figures/trees/original.tex) (../figures/trees/simplified.tex)
 (../figures/trees/binary.tex) (../figures/trees/spans.tex)
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[8]
+[12]
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <7> not available
 (Font)              Font shape `U/lasy/m/n' tried instead on input line 140.
- [9] [10] [11] [12] [13] [14]) [15] [16]
+ [13] [14] [15] [16] [17] [18]) [19] [20]
 chapter 3.
 (../03-rnng/rnng.tex (../tables/disc-transitions.tex)
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[17
+[21
 
-] (../tables/gen-transitions.tex) [18] [19]
+] (../tables/gen-transitions.tex) [22] [23]
 ! Too many }'s.
-l.106 ...t$, $n_t$, and $x_t$ double as indices.}}
+l.108 ...t$, $n_t$, and $x_t$ double as indices.}}
                                                   
 You've closed more groups than you opened.
 Such booboos are generally harmless, so keep going.
 
-
-Overfull \hbox (7.78178pt too wide) in paragraph at lines 131--132
+[24]
+Overfull \hbox (7.78178pt too wide) in paragraph at lines 133--134
 \OT1/ppl/m/n/10.95 The tran-si-tion prob-a-bil-i-ties are com-puted from the ve
 c-tor $\OT1/cmr/bx/n/10.95 u[]$ \OT1/ppl/m/n/10.95 that sum-ma-rizes the parser
 's
  []
 
-[20] [21] [22]
-Overfull \hbox (21.0442pt too wide) in paragraph at lines 202--203
+[25] [26]
+Overfull \hbox (21.0442pt too wide) in paragraph at lines 204--205
  []\OT1/ppl/b/n/10.95 Approximate marginal-iza-tion[] \OT1/ppl/m/n/10.95 The pr
 o-posal dis-tri-bu-tion al-lows us to rewrite the marginal
  []
 
-[23] [24]) [25] [26]
+[27] [28] [29]) [30]
 chapter 4.
-(../04-crf-parser/crf-parser.tex [27
+(../04-crf-parser/crf-parser.tex [31
 
-] [28]
-<../figures/span-encoding.pdf, id=1066, 464.0005pt x 150.49072pt>
+] [32]
+<../figures/span-encoding.pdf, id=1172, 464.0005pt x 150.49072pt>
 File: ../figures/span-encoding.pdf Graphic file (type pdf)
 
 <use ../figures/span-encoding.pdf>
 Package pdftex.def Info: ../figures/span-encoding.pdf used on input line 47.
 (pdftex.def)             Requested size: 418.25372pt x 135.66083pt.
- [29 <../figures/span-encoding.pdf>]
-(../figures/edges/edges.tex) [30] [31] [32] [33] [34] [35] [36] [37]) [38]
+ [33 <../figures/span-encoding.pdf>]
+(../figures/edges/edges.tex) [34] [35] [36] [37] [38] [39] [40]) [41]
 chapter 5.
-(../05-semisupervised/semisupervised.tex [39
+(../05-semisupervised/semisupervised.tex [42
 
-] [40]
+] [43]
 Overfull \hbox (0.86298pt too wide) in paragraph at lines 81--82
 \OT1/ppl/m/n/10.95 miza-tion, which means that we need to com-pute the gra-di-e
 nts $\OMS/cmsy/m/n/10.95 r[] []\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 ^^R; ^^U
@@ -1776,11 +1803,11 @@ r/m/n/10.95 (\OML/cmm/m/it/10.95 ^^R; ^^U\OT1/cmr/m/n/10.95 )$\OT1/ppl/m/n/10.9
 5 . 
  []
 
-[41] [42]) [43]
+[44] [45]) [46]
 chapter 6.
-(../06-syneval/syneval.tex [44
+(../06-syneval/syneval.tex [47
 
-] [45]
+] [48]
 ! Undefined control sequence.
 l.37 ...ntroduced in chapter \ref{04-crf}.\foonote
                                                   {This is similar to an app...
@@ -1790,25 +1817,25 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[46] [47]
+[49] [50]
 Overfull \hbox (0.81944pt too wide) in paragraph at lines 79--81
 \OT1/ppl/m/n/10.95 and the dis-tri-bu-tion over la-bels is com-puted us-ing a f
 eed-for-ward net-work parametrized
  []
 
-) [48] [49]
+) [51] [52]
 chapter 7.
-(../07-conclusion/conclusion.tex) [50
+(../07-conclusion/conclusion.tex) [53
 
 ]
 chapter A.
-(../08-app-figures/figures.tex) [51
+(../08-app-figures/figures.tex) [54
 
 ]
 chapter B.
-(../09-app-implementation/implementation.tex [52
+(../09-app-implementation/implementation.tex [55
 
-] [53] [54]
+] [56] [57]
 
 ! LaTeX Error: Lonely \item--perhaps a missing list environment.
 
@@ -2029,12 +2056,12 @@ l.53 \end{itemize}
                   
 Things are pretty mixed up, but I think the worst is over.
 
-) [55]
+) [58]
 chapter C.
-(../10-app-crf/crf.tex (../figures/hypergraph/hypergraph.tex) [56
+(../10-app-crf/crf.tex (../figures/hypergraph/hypergraph.tex) [59
 
-] [57]
-[58] [59]
+] [60]
+[61] [62]
 ! Undefined control sequence.
 l.187   The semiring addition $a \osum
                                        b = \log(e^{a} + e^{b})$ is made nume...
@@ -2044,25 +2071,46 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[60]) [61]
+[63]) [64]
 chapter D.
-(../11-app-vi/vi.tex [62
+(../11-app-vi/vi.tex [65
 
 ]
 
-Package natbib Warning: Citation `baydin2017automatic' on page 63 undefined on 
+Package natbib Warning: Citation `baydin2017automatic' on page 66 undefined on 
 input line 59.
 
-[63] [64] [65]) [66]
+[66] [67] [68]) [69]
 chapter E.
-(../12-app-syneval/syneval.tex [67
+(../12-app-syneval/syneval.tex [70
 
 ]
 LaTeX Font Info:    Font shape `OT1/ppl/bx/it' in size <10.95> not available
 (Font)              Font shape `OT1/ppl/b/it' tried instead on input line 41.
- [68]) (./thesis.bbl)
+ [71]) (./thesis.bbl [72] [73
+
+] [74] [75]
+Underfull \hbox (badness 2698) in paragraph at lines 302--306
+[]\OT1/ppl/m/n/10.95 Yoav Gold-berg and Joakim Nivre.  Train-ing de-ter-min-is-
+tic parsers with non-
+ []
+
+[76] [77] [78] [79]
+! Misplaced alignment tab character &.
+<argument> Computer Speech &
+                             Language
+l.604 \newblock \emph{Computer Speech & Language}
+                                                 , 10\penalty0 (3):\penalty0...
+I can't figure out why you would want to use a tab mark
+here. If you just want an ampersand, the remedy is
+simple: Just type `I\&' now. But if some right brace
+up above has ended a previous alignment prematurely,
+you're probably due for more error messages, and you
+might try typing `S' now just to see what is salvageable.
+
+[80])
 ! Undefined control sequence.
-l.225 \backmatter
+l.231 \backmatter
                    % references, restarts sample
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2073,7 +2121,7 @@ and I'll forget about whatever was undefined.
 
 Package natbib Warning: There were undefined citations.
 
-[69]
+[81]
 
 ! LaTeX Error: \begin{example} on input line 173 ended by \end{document}.
 
@@ -2081,393 +2129,64 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.228 \end{document}
+l.234 \end{document}
                     
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 228.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 228.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 234.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 234.
 (./thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 228.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 228.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 234.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 234.
 Package rerunfilecheck Info: File `thesis.out' has not changed.
 (rerunfilecheck)             Checksum: 975C41FD070A2F7860AD335B39DF077D;5400.
 
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 228.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 234.
  )
 (\end occurred inside a group at level 1)
 
 ### semi simple group (level 1) entered at line 173 (\begingroup)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 26103 strings out of 493014
- 482642 string characters out of 6133351
- 725649 words of memory out of 5000000
- 28574 multiletter control sequences out of 15000+600000
- 37923 words of font info for 114 fonts, out of 8000000 for 9000
+ 26381 strings out of 493014
+ 489588 string characters out of 6133351
+ 725740 words of memory out of 5000000
+ 28816 multiletter control sequences out of 15000+600000
+ 43883 words of font info for 125 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  73i,19n,77p,8522b,1414s stack positions out of 5000i,500n,10000p,200000b,80000s
-pdfTeX warning (dest): name{cite.ross2006simulation} has been r
-eferenced but does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.schulman2015gradient} has been referenced but 
-does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.peters2018elmo} has been referenced but does n
-ot exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.kingma2014adam} has been referenced but does n
-ot exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.wilson2017marginal} has been referenced but do
-es not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.neubig2017fly} has been referenced but does no
-t exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.neubig2017dynet} has been referenced but does 
-not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.glorot2010understanding} has been referenced b
-ut does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.hockenmaier2007ccgbank} has been referenced bu
-t does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.kitaev2018attentive} has been referenced but d
-oes not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.cross2016span} has been referenced but does no
-t exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.chomsky1980rules} has been referenced but does
- not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.swayamdipta2018scaffold} has been referenced b
-ut does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.bangalore1999supertagging} has been referenced
- but does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.goldberg2016multitask} has been referenced but
- does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.zhang2016multitask} has been referenced but do
-es not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.collobert2011natural} has been referenced but 
-does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.collobert2008unified} has been referenced but 
-does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.caruana1997multitask} has been referenced but 
-does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.enguehard2017multitask} has been referenced bu
-t does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.sennrich2017grammatical} has been referenced b
-ut does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.zweig2011microsoft} has been referenced but do
-es not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.mccoy2018revisiting} has been referenced but d
-oes not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.warstadt2018acceptability} has been referenced
- but does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.xiang2009illusory} has been referenced but doe
-s not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.tran2018recurrent} has been referenced but doe
-s not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.gulordava2018colorless} has been referenced bu
-t does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.cheng2017rnng} has been referenced but does no
-t exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.yin2018structvae} has been referenced but does
- not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.miao2016discrete} has been referenced but does
- not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.ranganath2014black} has been referenced but do
-es not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.mnih2014nvil} has been referenced but does not
- exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.paisley2012viss} has been referenced but does 
-not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.blei2016vi} has been referenced but does not e
-xist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.baydin2018automatic} has been referenced but d
-oes not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.petrov2006learning} has been referenced but do
-es not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.klein2003accurate} has been referenced but doe
-s not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.collins2003head} has been referenced but does 
-not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.hall2014less} has been referenced but does not
- exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.kim2017structured} has been referenced but doe
-s not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.eisner2009semirings} has been referenced but d
-oes not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.klein2004parsing} has been referenced but does
- not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.gallo1993directed} has been referenced but doe
-s not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.goodman1999semiring} has been referenced but d
-oes not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.baker1979trainable} has been referenced but do
-es not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.dozat2016deep} has been referenced but does no
-t exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.stern2018analyis} has been referenced but does
- not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.klein2015crf} has been referenced but does not
- exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.finkel2008crf} has been referenced but does no
-t exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.stern2017beam} has been referenced but does no
-t exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.kuncoro2018learn} has been referenced but does
- not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.buys2015bayesian} has been referenced but does
- not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.titov2007generative} has been referenced but d
-oes not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.kuncoro2017syntax} has been referenced but doe
-s not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.hale2018beam} has been referenced but does not
- exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.linzen2018targeted} has been referenced but do
-es not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.linzen2016syntax} has been referenced but does
- not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.smith2012adversarial} has been referenced but 
-does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.jelinek1997information} has been referenced bu
-t does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.merity2016pointer} has been referenced but doe
-s not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.chelba2013one} has been referenced but does no
-t exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.pauls2012treelets} has been referenced but doe
-s not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.emami2005neural} has been referenced but does 
-not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.chelba2000structured} has been referenced but 
-does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.roark2001probabilistic} has been referenced bu
-t does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.vaswani2017attention} has been referenced but 
-does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.chelba2017n} has been referenced but does not 
-exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.kalchbrenner2014convolutional} has been refere
-nced but does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.melis2017state} has been referenced but does n
-ot exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.jozefowicz2016exploring} has been referenced b
-ut does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.zaremba2014recurrent} has been referenced but 
-does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.hochreiter1997long} has been referenced but do
-es not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.mikolov2010recurrent} has been referenced but 
-does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.bengio2003neural} has been referenced but does
- not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.rosenfeld1996loglinear} has been referenced bu
-t does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.kneser1995improved} has been referenced but do
-es not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.chen1999empirical} has been referenced but doe
-s not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.sekine1997evalb} has been referenced but does 
-not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.klein2018reinforce} has been referenced but do
-es not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.he2012imitation} has been referenced but does 
-not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.vlachos2012imitation} has been referenced but 
-does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.ballesteros2016exploration} has been reference
-d but does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.goldberg2013dynamic} has been referenced but d
-oes not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.black1991parseval} has been referenced but doe
-s not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.andor2016globally} has been referenced but doe
-s not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.lafferty2001crf} has been referenced but does 
-not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.marcus1994annotating} has been referenced but 
-does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.marcus1993penn} has been referenced but does n
-ot exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.gillespie2013against} has been referenced but 
-does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.christiansen2012similar} has been referenced b
-ut does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.gillespie2011hierarchy} has been referenced bu
-t does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.conway2008neurocognitive} has been referenced 
-but does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.brennan2016abstract} has been referenced but d
-oes not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.levy2008expectation} has been referenced but d
-oes not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.hale2001earley} has been referenced but does n
-ot exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.frank2012hierarchical} has been referenced but
- does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.hudson2010introduction} has been referenced bu
-t does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.nivre2005dependency} has been referenced but d
-oes not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.tesniere1959elements} has been referenced but 
-does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.giannakidou2011npi} has been referenced but do
-es not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.everaert2015structures} has been referenced bu
-t does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.carnie2010constituent} has been referenced but
- does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.huddleston2002grammar} has been referenced but
- does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.rennie2017argmax} has been referenced but does
- not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.williams1992reinforce} has been referenced but
- does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.fu2006gradient} has been referenced but does n
-ot exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.stern2017minimal} has been referenced but does
- not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.buys2018exact} has been referenced but does no
-t exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.buys2015generative} has been referenced but do
-es not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{cite.dyer2016rnng} has been referenced but does not
- exist, replaced by a fixed one
-
-{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/tex
-live/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texl
-ive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texli
-ve/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texliv
-e/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/
-2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/20
-16/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2016
-/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2016/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2016/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2016/texmf-d
-ist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2016/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2016/texmf-dist/
-fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2016/texmf-dist/fo
-nts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2016/texmf-dist/font
-s/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/texmf-dist/
-fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2016/texmf-d
-ist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texmf-dist/font
-s/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1
-/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/p
-alatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/palatino
-/uplri8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmb8a.p
-fb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
-Output written on thesis.pdf (69 pages, 851296 bytes).
+{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc
+}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb>
+</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><
+/usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></
+usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></us
+r/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/
+local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/lo
+cal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loca
+l/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/t
+exlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texl
+ive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive
+/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/
+2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/20
+16/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2016
+/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/
+2016/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texl
+ive/2016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016
+/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf-
+dist/fonts/type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/f
+onts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/ty
+pe1/urw/palatino/uplri8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/ur
+w/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/ut
+mr8a.pfb>
+Output written on thesis.pdf (81 pages, 888059 bytes).
 PDF statistics:
- 2007 PDF objects out of 2073 (max. 8388607)
- 1847 compressed objects within 19 object streams
- 512 named destinations out of 1000 (max. 500000)
+ 2149 PDF objects out of 2487 (max. 8388607)
+ 1976 compressed objects within 20 object streams
+ 525 named destinations out of 1000 (max. 500000)
  732 words of extra memory for PDF output out of 10000 (max. 10000000)
 
