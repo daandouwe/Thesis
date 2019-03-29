@@ -117,7 +117,7 @@ class SupervisedTrainer:
         # Training bookkeeping
         self.timer = Timer()
         self.losses = []
-        self.current_epoch = 1
+        self.current_epoch = 0
         self.num_updates = 0
 
         self.current_dev_fscore = -inf

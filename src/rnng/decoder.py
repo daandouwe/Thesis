@@ -250,8 +250,9 @@ class GenerativeDecoder:
             for i, (_, proposal_logprob, joint_logprob, count) in enumerate(scored):
                 weights[i] = joint_logprob - proposal_logprob
                 counts[i] = count
+            # log-mean-exp for stability
             a = weights.max()
-            logprob = a + np.log(np.mean(np.exp(weights - a) * counts))  # log-mean-exp for stability
+            logprob = a + np.log(np.mean(np.exp(weights - a) * counts))
 
             trees.append(tree.linearize())  # the estimated MAP tree
             nlls.append(-logprob)  # the estimate for -log p(x)

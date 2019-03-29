@@ -43,9 +43,9 @@ def main():
                         help='specify a vocabulary (optional)')
 
     vocab = parser.add_argument_group('Vocabulary')
-    vocab.add_argument('--min-word-count', default=1,
+    vocab.add_argument('--min-word-count', type=int, default=1,
                         help='minimal word count for vocab')
-    vocab.add_argument('--max-vocab-size', default=-1,
+    vocab.add_argument('--max-vocab-size', type=int, default=-1,
                         help='maxinum number of words in vocab')
     vocab.add_argument('--lowercase', action='store_true',
                         help='lowercase vocab')
@@ -134,7 +134,7 @@ def main():
                         help='proposal samples for development set')
     training.add_argument('--test-proposal-samples', default='data/proposals/rnng-test.props',
                         help='proposal samples for test set')
-    training.add_argument('--num-dev-samples', type=int, default=20,
+    training.add_argument('--num-dev-samples', type=int, default=50,
                         help='number of samples to estimate the development fscore and perplexity')
     training.add_argument('--num-test-samples', type=int, default=100,
                         help='number of samples to estimate the test fscore and perplexity')
@@ -183,6 +183,8 @@ def main():
                         help='temperature to tweak distribution')
     pred.add_argument('--perplexity', action='store_true',
                         help='evaluate perplexity')
+    pred.add_argument('--entropy', action='store_true',
+                        help='evaluate entropy')
     pred.add_argument('--proposal-model', default='',
                         help='load discriminative model (proposal for generative model) from this checkpoint')
     pred.add_argument('--proposal-samples', default='data/proposals/rnng-dev.props',

@@ -82,10 +82,12 @@ class LanguageModelTrainer:
         self.max_time = max_time
         self.eval_every = eval_every
         self.print_every = print_every
+        self.resume = False
 
         # Training bookkeeping
         self.timer = Timer()
         self.losses = []
+        self.current_epoch = 0
         self.num_updates = 0
 
         self.current_dev_perplexity = inf
@@ -93,9 +95,9 @@ class LanguageModelTrainer:
         self.best_dev_epoch = 0
         self.test_perplexity = inf
 
-    def build_paths(self):
+    def build_paths(self, subdir=None):
         # Make output folder structure
-        subdir, logdir, checkdir, outdir, vocabdir = get_folders(self.args)
+        subdir, logdir, checkdir, outdir, vocabdir = get_folders(self.args, subdir)
 
         os.makedirs(logdir, exist_ok=True)
         os.makedirs(checkdir, exist_ok=True)
@@ -238,12 +240,17 @@ class LanguageModelTrainer:
         Train the model. At any point you can
         use Ctrl + C to break out of training early.
         """
-
-        # Construct model and optimizer
-        self.build_paths()
-        self.build_corpus()
-        self.build_model()
-        self.build_optimizer()
+        # Load from resume info...
+        if self.resume:
+            self.build_paths(self.resume_dir)  # output in the same folder
+            self.build_corpus()
+            self.load_checkpoint()
+            self.build_optimizer()
+        else:  # or construct model and optimizer
+            self.build_paths()
+            self.build_corpus()
+            self.build_model()
+            self.build_optimizer()
 
         try:
             # No upper limit of epochs or time when not specified
@@ -253,7 +260,8 @@ class LanguageModelTrainer:
                     break
                 if self.timer.elapsed() > self.max_time:
                     break
-                self.current_epoch = epoch
+
+                self.current_epoch += 1
 
                 # Shuffle batches every epoch
                 np.random.shuffle(self.train_treebank)
@@ -281,8 +289,8 @@ class LanguageModelTrainer:
         # Check test scores
         self.check_test()
 
-        # Save model again but with test pp
-        self.save_checkpoint()
+        # Save model again but with test pp in state
+        self.save_checkpoint(save_model=False)
 
         # Save the losses for plotting and diagnostics
         self.write_losses()
@@ -373,10 +381,11 @@ class LanguageModelTrainer:
                 print(f'Annealing the learning rate from {self.get_lr():.1e} to {lr:.1e}.')
                 self.set_lr(lr)
 
-    def save_checkpoint(self):
+    def save_checkpoint(self, save_model=True):
         assert self.model is not None, 'no model built'
 
-        dy.save(self.model_checkpoint_path, [self.lm])
+        if save_model:
+            dy.save(self.model_checkpoint_path, [self.lm])
 
         self.word_vocab.save(self.word_vocab_path)
         self.label_vocab.save(self.label_vocab_path)
@@ -450,3 +459,21 @@ class LanguageModelTrainer:
     def finalize_model_folder(self):
         move_to_final_folder(
             self.subdir, self.model_path_base, self.best_dev_perplexity)
+
+    def load_state_to_resume(self, resume_dir):
+        print(f'Resuming from checkpoint `{resume_dir}`...')
+
+        self.resume = True
+        self.resume_dir = resume_dir
+
+        with open(os.path.join(resume_dir, 'state.json')) as f:
+            state = json.load(f)
+
+        self.multitask = state['multitask']
+        self.current_epoch = state['num-epochs'] + 1
+        self.num_updates = state['num-updates']
+        self.lr = state['current-lr']
+
+        self.best_dev_perplexity = state['best-dev-perplexity']
+        self.best_dev_epoch = state['best-dev-perplexity-epoch']
+        self.test_perplexity = state['test-perplexity']

@@ -3,6 +3,7 @@ import json
 import itertools
 from math import inf
 from collections import Counter
+import time
 
 import numpy as np
 import dynet as dy
@@ -340,8 +341,16 @@ class SemiSupervisedTrainer:
 
             dy.renew_cg()
 
+            print()
+            t0 = time.time()
+
             sup_loss = self.supervised_step(labeled_batch)
+            t1 = time.time()
+            print('supervised', t1 - t0)
+
             unsup_loss, baseline_loss = self.unsupervised_step(get_unlabeled_batch())
+            t2 = time.time()
+            print('unsupervised', t2 - t1)
 
             loss = sup_loss + self.lmbda * unsup_loss
 
@@ -349,11 +358,15 @@ class SemiSupervisedTrainer:
             loss.forward()
             loss.backward()
             self.optimizer.update()
+            t3 = time.time()
+            print('loss update', t3 - t2)
 
             # Optimize baseline
             baseline_loss.forward()
             baseline_loss.backward()
             self.baseline_optimizer.update()
+            t4 = time.time()
+            print('baseline update', t4 - t3)
 
             # Store losses
             self.losses.append(loss.value())
@@ -386,11 +399,14 @@ class SemiSupervisedTrainer:
                     self.current_dev_fscore, self.current_dev_perplexity))
                 print(89*'=')
 
+            t5 = time.time()
+            print('rest', t5 - t4)
+
+
     def supervised_step(self, batch):
         losses = []
         for tree in batch:
             post_tree = tree.cnf() if self.posterior_type == 'cnf' else tree
-            # loss = self.joint_model.forward(tree) + 0.1 * self.post_model.forward(post_tree)
             loss = self.joint_model.forward(tree)
             losses.append(loss)
         loss = dy.esum(losses) / self.batch_size
@@ -596,25 +612,25 @@ class SemiSupervisedTrainer:
             'semisup/unsup/joint-logprob', np.mean(histogram['joint']), self.num_updates)
 
         # Write signal statistics
-        cov, corr = self.baseline_signal_covariance()
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/signal-mean', np.mean(self.learning_signals), self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/signal-variance', np.var(self.learning_signals), self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/centered-signal-mean', np.mean(self.centered_learning_signals), self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/centered-signal-variance', np.var(self.centered_learning_signals), self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/baseline-mean', np.mean(self.baseline_values), self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/baseline-variance', np.var(self.baseline_values), self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/signal-baseline-cov', cov, self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/signal-baseline-cor', corr, self.num_updates)
-        self.tensorboard_writer.add_scalar(  # var(f') / var(f) = 1 - corr(f, b)**2
-            'semisup/unsup/signal-baseline-var-frac', 1 - corr**2, self.num_updates)
+        # cov, corr = self.baseline_signal_covariance()
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/signal-mean', np.mean(self.learning_signals), self.num_updates)
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/signal-variance', np.var(self.learning_signals), self.num_updates)
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/centered-signal-mean', np.mean(self.centered_learning_signals), self.num_updates)
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/centered-signal-variance', np.var(self.centered_learning_signals), self.num_updates)
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/baseline-mean', np.mean(self.baseline_values), self.num_updates)
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/baseline-variance', np.var(self.baseline_values), self.num_updates)
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/signal-baseline-cov', cov, self.num_updates)
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/signal-baseline-cor', corr, self.num_updates)
+        # self.tensorboard_writer.add_scalar(  # var(f') / var(f) = 1 - corr(f, b)**2
+        #     'semisup/unsup/signal-baseline-var-frac', 1 - corr**2, self.num_updates)
 
     def check_dev(self):
         print('Evaluating F1 and perplexity on development set...')

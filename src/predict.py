@@ -266,36 +266,44 @@ def predict_perplexity_from_samples(args):
     decoder = GenerativeDecoder(
         model=model, num_samples=args.num_samples, alpha=args.alpha)
 
-    result_path = os.path.join(args.outdir, 'results.tsv')
-
     print('Predicting perplexity with Generative RNNG.')
     print(f'Loading model from `{args.checkpoint}`.')
     print(f'Loading proposal samples from `{args.proposal_samples}`.')
     print(f'Loading lines from directory `{args.infile}`.')
-    print(f'Writing predictions to `{result_path}`.')
+    print(f'Writing predictions to `{args.outfile}`.')
 
     print('Computing perplexity...')
-    _, perplexity = decoder.predict_from_proposal_samples(args.proposal_samples)
+    trees, perplexity = decoder.predict_from_proposal_samples(args.proposal_samples)
 
-    with open(result_path, 'w') as f:
-        print('\t'.join((
-                'proposal-samples',
-                'file',
-                'perplexity',
-                'num-samples',
-                'temp',
-                'seed'
-            )),
-            file=f)
-        print('\t'.join((
-                args.proposal_samples,
-                os.path.basename(args.infile),
-                str(perplexity),
-                str(args.num_samples),
-                str(args.alpha),
-                str(args.numpy_seed)
-            )),
-            file=f)
+    # Compute f-score from trees
+    base_name = os.path.splitext(args.outfile)[0]
+    pred_path = base_name + '.trees'
+    result_path = base_name + '.result'
+    with open(pred_path, 'w') as f:
+        print('\n'.join(trees), file=f)
+    fscore = evalb(
+        args.evalb_dir, pred_path, args.infile, result_path)
+
+    print(f'Results: {fscore} fscore, {perplexity} perplexity.')
+
+    with open(args.outfile, 'w') as f:
+        print(
+            'proposals',
+            'perplexity',
+            'fscore',
+            'num-samples',
+            'temp',
+            'seed',
+            sep='\t', file=f)
+        print(
+            args.proposal_samples,
+            perplexity,
+            fscore,
+            args.num_samples,
+            args.alpha,
+            args.numpy_seed,
+            sep='\t', file=f
+        )
 
 
 def sample_proposals(args):
@@ -324,6 +332,7 @@ def sample_proposals(args):
     else:
         for i, words in enumerate(tqdm(sentences)):
             for _ in range(args.num_samples):
+                dy.renew_cg()
                 tree, nll = parser.sample(words, alpha=args.alpha)
                 samples.append(
                     ' ||| '.join(
@@ -378,13 +387,43 @@ def inspect_model(args):
         tree.substitute_leaves(iter(words))  # replaces UNKs with originals
         return tree, nll
 
-    for sentence in sentences:
-        tree, _ = parser.parse(sentence)
-        print('>', ' '.join(sentence))
-        print('>', tree.linearize(with_tag=False))
-        parse_with_inspection(parser, sentence)
-        print()
+        for sentence in sentences:
+            tree, _ = parser.parse(sentence)
+            print('>', ' '.join(sentence))
+            print('>', tree.linearize(with_tag=False))
+            parse_with_inspection(parser, sentence)
+            print()
 
+
+def predict_entropy(args):
+    parser = load_model(args.checkpoint)
+    parser.eval()
+
+    with open(args.infile, 'r') as f:
+        lines = [line.strip() for line in f.readlines()]
+
+    if is_tree(lines[0]):
+        sentences = [fromstring(line.strip()).words() for line in lines]
+    else:
+        sentences = [line.strip().split() for line in lines]
+
+    with open(args.outfile, 'w') as f:
+        for i, words in enumerate(sentences):
+            # TODO: renewing cg causes nan! WHY? And sometimes it does not, WHAT?
+            dy.renew_cg()
+            if args.num_samples == 0:
+                assert args.model_type == 'crf', 'only exact computation for CRF.'
+                entropy = parser.get_entropy(words)
+            else:
+                if args.model_type == 'crf':
+                    samples = parser.sample(words, num_samples=args.num_samples)
+                else:
+                    samples = [parser.sample(words, alpha=args.alpha) for _ in range(args.num_samples)]
+                nlls, trees = zip(*samples)
+                entropy = -dy.sum(list(nlls)) / len(nlls)
+            print(i, entropy.value())
+            print(i, entropy.value(), file=f)
+            # print(i, entropy.value(), ' '.join(words), args.infile, args.model_type, sep='\t', file=f)
 
 def main(args):
     if args.from_input:
@@ -415,5 +454,7 @@ def main(args):
     elif args.inspect_model:
         assert args.model_type.endswith('rnng'), args.model_type
         inspect_model(args)
+    elif args.entropy:
+        predict_entropy(args)
     else:
         exit('Specify type of prediction. Use --from-input, --from-file or --sample-gen.')

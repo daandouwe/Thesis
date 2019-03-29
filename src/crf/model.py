@@ -299,40 +299,42 @@ class ChartParser(object):
         label_scores = self.get_node_scores(unked_words)
         score = self.score_tree(tree, label_scores)
         inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
-
         logprob = score - lognormalizer
         nll = -logprob
 
         if return_entropy:
-
             outside_chart = self.outside(words, label_scores, inside_chart, inside_summed)
             marginals = self.marginals(inside_chart, outside_chart, lognormalizer)
             entropy, expected_score = self.entropy(marginals, label_scores, lognormalizer)
 
-            score_sum = dy.esum([
-                label_scores[left, right][self.label_vocab.index(label)]
-                for left, right, label in marginals
-            ])
-
-            print(
-                'sent-length', len(words),
-                'tree-score', round(score.value(), 4),
-                'expected-score', round(expected_score.value(), 4),
-                'num-scores', len(marginals),
-                'score-sum', round(score_sum.value(), 2),
-                'entropy', round(entropy.value(), 2),
-                'marginal-sum', round(dy.esum(list(marginals.values())).value(), 2),
-                'lognormalizer', round(lognormalizer.value(), 2),
-            )
+            # score_sum = dy.esum([
+            #     label_scores[left, right][self.label_vocab.index(label)]
+            #     for left, right, label in marginals
+            # ])
+            #
+            # print(
+            #     'sent-length', len(words),
+            #     'tree-score', round(score.value(), 4),
+            #     'expected-score', round(expected_score.value(), 4),
+            #     'num-scores', len(marginals),
+            #     'score-sum', round(score_sum.value(), 2),
+            #     'entropy', round(entropy.value(), 2),
+            #     'marginal-sum', round(dy.esum(list(marginals.values())).value(), 2),
+            #     'lognormalizer', round(lognormalizer.value(), 2),
+            # )
 
             return nll, entropy
         else:
-            score_sum = dy.esum([
-                label_scores[left, right][self.label_vocab.index(label)]
-                for left, right, label in inside_chart
-            ])
-
             return nll
+
+    def get_entropy(self, words):
+        unked_words = self.word_vocab.process(words)
+        label_scores = self.get_node_scores(unked_words)
+        inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
+        outside_chart = self.outside(words, label_scores, inside_chart, inside_summed)
+        marginals = self.marginals(inside_chart, outside_chart, lognormalizer)
+        entropy, _ = self.entropy(marginals, label_scores, lognormalizer)
+        return entropy
 
     def parse(self, words):
         unked_words = self.word_vocab.process(words)
