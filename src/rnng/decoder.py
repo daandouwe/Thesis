@@ -113,7 +113,7 @@ class GenerativeDecoder:
                     for tree, nll in self.proposal.sample(words, self.num_samples):
                         samples.append((tree, -nll.value()))
 
-        # Count and filter
+        # count and filter
         samples = self.count_samples(samples)  # list of tuples (tree, post_logprob, count)
 
         scored = []
@@ -135,7 +135,7 @@ class GenerativeDecoder:
             sample_id, logprob, tree = line.split('|||')
             sample_id, logprob, tree = int(sample_id), float(logprob), fromstring(add_dummy_tags(tree.strip()))
             if sample_id > sent_id:
-                # Arrived at the first sample of next sentence
+                # arrived at the first sample of next sentence
                 if self.num_samples > len(samples):
                     raise ValueError('not enough samples for line {}'.format(sample_id))
                 elif self.num_samples < len(samples):
@@ -202,12 +202,9 @@ class GenerativeDecoder:
             print('\n'.join(samples), file=f, end='')
 
     def predict_from_proposal_samples(self, inpath):
-        """
-        Predict MAP trees and perplexity from proposal samples in `inpath`.
-        Does this in one go, so especially useful for evaluation during training.
-        """
+        """Predict MAP trees and perplexity from proposal samples in one fell swoop."""
 
-        # Load scored proposal samples
+        # load scored proposal samples
         all_samples = defaultdict(list)  # i -> [samples for sentence i]
         with open(inpath) as f:
             for line in f:
@@ -215,18 +212,18 @@ class GenerativeDecoder:
                 i, proposal_logprob, tree = int(i), float(proposal_logprob), fromstring(add_dummy_tags(tree.strip()))
                 all_samples[i].append((tree, proposal_logprob))
 
-        # Check if number of samples is as desired
+        # check if number of samples is as desired
         for i, samples in all_samples.items():
             if self.num_samples > len(samples):
-                raise ValueError('not enough samples for line {}'.format(sample_id))
+                raise ValueError('not enough samples for line {}'.format(i))
             elif self.num_samples < len(samples):
                 all_samples[i] = samples[:self.num_samples]
             else:
                 pass
 
-        # Score the trees
+        # score the trees
         for i, samples in tqdm(all_samples.items()):
-            # Count and remove duplicates
+            # count and remove duplicates
             samples = self.count_samples(samples)
             scored_samples = []
             for (tree, proposal_logprob, count) in samples:
@@ -236,16 +233,17 @@ class GenerativeDecoder:
                     (tree, proposal_logprob, joint_logprob, count))
             all_samples[i] = scored_samples
 
-        # Get the predictions
+        # get the predictions
         trees = []
         nlls = []
         lengths = []
         for i, scored in all_samples.items():
-            # Estimate the map tree by sorting the scored tuples according to the joint logprob
+            # sort the scored tuples according to the joint logprob
             ranked = sorted(scored, reverse=True, key=lambda t: t[2])
+            # pick by highest logprob to estimate the map tree
             tree, _, _, _ = ranked[0]
 
-            # Estimate the perplexity
+            # estimate the perplexity
             weights, counts = np.zeros(len(scored)), np.zeros(len(scored))
             for i, (_, proposal_logprob, joint_logprob, count) in enumerate(scored):
                 weights[i] = joint_logprob - proposal_logprob
@@ -256,10 +254,9 @@ class GenerativeDecoder:
 
             trees.append(tree.linearize())  # the estimated MAP tree
             nlls.append(-logprob)  # the estimate for -log p(x)
-            lengths.append(len(tree.words()))  # need for computing total perplexity
+            lengths.append(len(tree.words()))  # needed to compute perplexity
 
-        # The perplexity is averaged over the total number of words,
-        # which is correct, and not averaged over individual sentences.
+        # the perplexity is averaged over the total number of words
         perplexity = np.exp(np.sum(nlls) / np.sum(lengths))
 
         return trees, round(perplexity, 2)

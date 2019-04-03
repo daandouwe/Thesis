@@ -105,7 +105,7 @@ def syneval_rnn(args):
 
             assert len(pos_sents) == len(neg_sents)
 
-            if args.syneval_max_lines != 1 and len(pos_sents) > args.syneval_max_lines:
+            if args.syneval_max_lines != -1 and len(pos_sents) > args.syneval_max_lines:
                 subsampled_ids = np.random.choice(
                     len(pos_sents), args.syneval_max_lines, replace=False)
                 pos_sents = [pos_sents[i] for i in subsampled_ids]
@@ -195,7 +195,7 @@ def syneval_rnng(args):
             assert len(pos_sents) == len(neg_sents)
 
             # subsample the dataset if it exceeds the maximum number of lines specified
-            if args.syneval_max_lines != 1 and len(pos_sents) > args.syneval_max_lines:
+            if args.syneval_max_lines != -1 and len(pos_sents) > args.syneval_max_lines:
                 subsampled_ids = np.random.choice(
                     len(pos_sents), args.syneval_max_lines, replace=False)
                 pos_sents = [pos_sents[i] for i in subsampled_ids]
@@ -284,7 +284,7 @@ def syneval_parser(args):
 
             assert len(pos_sents) == len(neg_sents)
 
-            if args.syneval_max_lines != 1 and len(pos_sents) > args.syneval_max_lines:
+            if args.syneval_max_lines != -1 and len(pos_sents) > args.syneval_max_lines:
                 subsampled_ids = np.random.choice(
                     len(pos_sents), args.syneval_max_lines, replace=False)
                 pos_sents = [pos_sents[i] for i in subsampled_ids]

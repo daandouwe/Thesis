@@ -353,12 +353,11 @@ class SupervisedTrainer:
                 # Train one epoch
                 self.train_epoch()
 
-                # Check development scores
                 if epoch % self.eval_every_epochs == 0:
+                    # Check development scores
                     self.check_dev()
-
-                # Anneal learning rate depending on development set f-score
-                self.anneal_lr()
+                    # Anneal learning rate depending on development set f-score
+                    self.anneal_lr()
 
                 print('-'*99)
                 print('| End of epoch {:3d}/{} | Elapsed {} | Current dev F1 {:4.2f} | Best dev F1 {:4.2f} (epoch {:2d})'.format(
@@ -374,8 +373,8 @@ class SupervisedTrainer:
         # Check test scores
         self.check_test()
 
-        # Save state again but with test fscore
-        self.save_checkpoint(save_model=False)
+        # Save again but with test fscore
+        self.save_checkpoint()
 
         # Save the losses for plotting and diagnostics
         self.write_losses()
@@ -467,11 +466,10 @@ class SupervisedTrainer:
                 print(f'Annealing the learning rate from {self.get_lr():.1e} to {lr:.1e}.')
                 self.set_lr(lr)
 
-    def save_checkpoint(self, save_model=True):
+    def save_checkpoint(self):
         assert self.model is not None, 'no model built'
 
-        if save_model:
-            dy.save(self.model_checkpoint_path, [self.parser])
+        dy.save(self.model_checkpoint_path, [self.parser])
 
         self.word_vocab.save(self.word_vocab_path)
         self.label_vocab.save(self.label_vocab_path)
@@ -537,6 +535,8 @@ class SupervisedTrainer:
         dev_fscore = evalb(
             self.evalb_dir, self.dev_pred_path, self.dev_path, self.dev_result_path)
 
+        print(f'Current dev F1 {dev_fscore}')
+
         # Log score to tensorboard
         self.tensorboard_writer.add_scalar(
             'dev/f-score', dev_fscore, self.current_epoch)
@@ -563,6 +563,8 @@ class SupervisedTrainer:
 
         dev_fscore = evalb(
             self.evalb_dir, self.dev_pred_path, self.dev_path, self.dev_result_path)
+
+        print(f'Current dev F1 {dev_fscore}, current dev perplexity {dev_perplexity}')
 
         # Log score to tensorboard
         self.tensorboard_writer.add_scalar(

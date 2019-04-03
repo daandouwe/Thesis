@@ -260,17 +260,17 @@ def predict_perplexity(args):
 
 def predict_perplexity_from_samples(args):
 
-    np.random.seed(args.numpy_seed)
-
-    model = load_model(args.checkpoint)
-    decoder = GenerativeDecoder(
-        model=model, num_samples=args.num_samples, alpha=args.alpha)
-
     print('Predicting perplexity with Generative RNNG.')
     print(f'Loading model from `{args.checkpoint}`.')
     print(f'Loading proposal samples from `{args.proposal_samples}`.')
     print(f'Loading lines from directory `{args.infile}`.')
     print(f'Writing predictions to `{args.outfile}`.')
+
+    np.random.seed(args.numpy_seed)
+
+    model = load_model(args.checkpoint)
+    decoder = GenerativeDecoder(
+        model=model, num_samples=args.num_samples, alpha=args.alpha)
 
     print('Computing perplexity...')
     trees, perplexity = decoder.predict_from_proposal_samples(args.proposal_samples)
@@ -396,6 +396,10 @@ def inspect_model(args):
 
 
 def predict_entropy(args):
+    print(f'Predicting entropy for lines in `{args.infile}`, writing to `{args.outfile}`...')
+    print(f'Loading model from `{args.checkpoint}`.')
+    print(f'Using {args.num_samples} samples.')
+
     parser = load_model(args.checkpoint)
     parser.eval()
 
@@ -408,22 +412,22 @@ def predict_entropy(args):
         sentences = [line.strip().split() for line in lines]
 
     with open(args.outfile, 'w') as f:
-        for i, words in enumerate(sentences):
-            # TODO: renewing cg causes nan! WHY? And sometimes it does not, WHAT?
+        print('id', 'entropy', 'num-samples', 'model', 'file', file=f, sep='\t')
+        for i, words in enumerate(tqdm(sentences)):
             dy.renew_cg()
             if args.num_samples == 0:
-                assert args.model_type == 'crf', 'only exact computation for CRF.'
-                entropy = parser.get_entropy(words)
+                assert args.model_type == 'crf', 'exact computation only for crf.'
+                entropy = parser.entropy(words)
             else:
                 if args.model_type == 'crf':
                     samples = parser.sample(words, num_samples=args.num_samples)
+                    if args.num_samples == 1:
+                        samples = [samples]
                 else:
                     samples = [parser.sample(words, alpha=args.alpha) for _ in range(args.num_samples)]
-                nlls, trees = zip(*samples)
-                entropy = -dy.sum(list(nlls)) / len(nlls)
-            print(i, entropy.value())
-            print(i, entropy.value(), file=f)
-            # print(i, entropy.value(), ' '.join(words), args.infile, args.model_type, sep='\t', file=f)
+                trees, nlls = zip(*samples)
+                entropy = dy.esum(list(nlls)) / len(nlls)
+            print(i, entropy.value(), args.num_samples, args.model_type, args.infile, file=f, sep='\t')
 
 def main(args):
     if args.from_input:
@@ -455,6 +459,7 @@ def main(args):
         assert args.model_type.endswith('rnng'), args.model_type
         inspect_model(args)
     elif args.entropy:
+        assert args.model_type in ('disc-rnng', 'crf'), args.model_type
         predict_entropy(args)
     else:
         exit('Specify type of prediction. Use --from-input, --from-file or --sample-gen.')

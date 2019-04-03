@@ -180,9 +180,6 @@ class SemiSupervisedTrainer:
         print(f'Loading unlabeled data from `{self.unlabeled_path}`...')
         with open(self.unlabeled_path) as f:
             unlabeled_data = [line.strip().split() for line in f]
-            # NOTE: a dirty solution
-            if self.posterior_type == 'crf':
-                unlabeled_data = [line for line in unlabeled_data if len(line) < 10]
 
         self.word_vocab = self.joint_model.word_vocab
         self.label_vocab = self.joint_model.nt_vocab
@@ -310,12 +307,8 @@ class SemiSupervisedTrainer:
                 # Train one epoch
                 self.train_epoch()
 
-                # Check development scores
-                self.check_dev()
-                self.save_checkpoint()
                 print('='*89)
-                print('| End of epoch {} | elapsed {} | dev F1 {:4.2f} | dev perplexity {:4.2f}'.format(
-                    epoch, self.timer.format_elapsed(), self.current_dev_fscore, self.current_dev_perplexity))
+                print(f'| End of epoch {epoch} | elapsed {self.timer.format_elapsed()}')
                 print('='*89)
         except KeyboardInterrupt:
             print('-'*99)
@@ -402,61 +395,37 @@ class SemiSupervisedTrainer:
                     self.timer.format_elapsed_epoch(), i / self.timer.elapsed_epoch(),
                     self.timer.format_eta(i, len(labeled_batches))))
 
-            # if self.num_updates % self.eval_every == 0 and self.eval_every != -1:
-            #     self.check_dev()
-            #     self.save_checkpoint()
-            #     self.timer.new_epoch()
-            #     print(89*'=')
-            #     print('| dev F1 {:4.2f} | dev perplexity {:4.2f}'.format(
-            #         self.current_dev_fscore, self.current_dev_perplexity))
-            #     print(89*'=')
+            if self.num_updates % self.eval_every == 0 and self.eval_every != -1:
+                self.check_dev()
+                self.save_checkpoint()
+                self.timer.new_epoch()
+                print(89*'=')
+                print('| dev F1 {:4.2f} | dev perplexity {:4.2f}'.format(
+                    self.current_dev_fscore, self.current_dev_perplexity))
+                print(89*'=')
+
+            t5 = time.time()
+            print('rest', t5 - t4)
+
 
     def supervised_step(self, batch):
         losses = []
         for tree in batch:
-            post_tree = tree.cnf() if self.posterior_type == 'crf' else tree
+            post_tree = tree.cnf() if self.posterior_type == 'cnf' else tree
             loss = self.joint_model.forward(tree)
             losses.append(loss)
         loss = dy.esum(losses) / self.batch_size
         return loss
 
     def unsupervised_step(self, batch):
-        if self.posterior_type == 'disc':
-            return self.unsupervised_step_disc(batch)
-        else:
-            return self.unsupervised_step_crf(batch)
-
-    def unsupervised_step_disc(self, batch):
-
-        def sample(words):
-            samples = [self.post_model.sample(words, self.alpha)
-                for _ in range(self.num_samples)]
-            trees, nlls = zip(*samples)
-            logprob = dy.esum([-nll for nll in nlls]) / len(nlls)
-            return trees, logprob
-
-        def argmax_baseline(words):
-            """Parameter-free baseline based on argmax decoding."""
-            tree, post_nll = self.post_model.parse(words)
-            post_logprob = -post_nll
-            joint_logprob = -self.joint_model.forward(tree)
-            return dy.scalarInput(blockgrad(joint_logprob - post_logprob))
-
-        def baselines(words):
-            b = dy.scalarInput(0)
-            if self.use_mlp_baseline:
-                b += self.mlp_baseline(words)
-            if self.use_argmax_baseline:
-                b += argmax_baseline(words)
-            return b
-
         # Keep track of losses
         losses = []
         baseline_losses = []
+
         # Keep track of various types statistics
         histogram = dict(
             signal=[],
-            baseline=[],
+            baselines=[],
             centered=[],
             normalized=[],
             post=[],
@@ -464,9 +433,12 @@ class SemiSupervisedTrainer:
             unique=[],
             scale=[]
         )
+
+        # TODO: make compatible with CRF parser's entropy computation
+
         for words in batch:
             # Get samples with their \mean_y [log q(y|x)] for samples y
-            trees, post_logprob = sample(words)
+            trees, post_logprob = self.sample(words)
 
             # Compute mean \mean_y [log p(x,y)] for samples y
             joint_logprob = self.joint(trees)
@@ -475,10 +447,9 @@ class SemiSupervisedTrainer:
             learning_signal = blockgrad(joint_logprob - post_logprob)
 
             # Substract baseline
-            baseline = baselines(words)
-            # a = self.optimal_baseline_scale()
-            # centered_learning_signal = learning_signal - a * baseline
-            centered_learning_signal = learning_signal - baseline
+            baselines = self.baselines(words)
+            a = self.optimal_baseline_scale()
+            centered_learning_signal = learning_signal - a * baselines
 
             # Normalize
             normalized_learning_signal = self.normalize(centered_learning_signal)
@@ -496,8 +467,8 @@ class SemiSupervisedTrainer:
 
             # For tesorboard logging
             histogram['signal'].append(learning_signal)
-            histogram['baseline'].append(baseline.value())
-            # histogram['scale'].append(a)
+            histogram['baselines'].append(baselines.value())
+            histogram['scale'].append(a)
             histogram['centered'].append(centered_learning_signal.value())
             histogram['normalized'].append(normalized_learning_signal.value())
             histogram['post'].append(post_logprob.value())
@@ -507,7 +478,7 @@ class SemiSupervisedTrainer:
         self.write_tensoboard_histogram(histogram)
 
         self.learning_signals.append(np.mean(histogram['signal']))
-        self.baseline_values.append(np.mean(histogram['baseline']))
+        self.baseline_values.append(np.mean(histogram['baselines']))
         self.centered_learning_signals.append(np.mean(histogram['centered']))
 
         # Average losses over minibatch
@@ -516,94 +487,44 @@ class SemiSupervisedTrainer:
 
         return loss, baseline_loss
 
-    def unsupervised_step_crf(self, batch):
-
-        def argmax_baseline(tree):
-            """Parameter-free baseline based on argmax decoding."""
-            joint_logprob = -self.joint_model.forward(tree)
-            return dy.scalarInput(blockgrad(joint_logprob))
-
-        def baselines(words, tree):
-            b = dy.scalarInput(0)
-            if self.use_mlp_baseline:
-                b += self.mlp_baseline(words)
-            if self.use_argmax_baseline:
-                b += argmax_baseline(tree)
-            return b
-
-        # Keep track of losses
-        losses = []
-        baseline_losses = []
-        # Keep track of various types statistics
-        histogram = dict(
-            signal=[], baseline=[], centered=[], normalized=[],
-            post=[], joint=[], unique=[], scale=[], entropy=[])
-
-        for words in batch:
-            # Combined computation is most efficient
-            parse, samples, post_entropy = self.post_model.parse_sample_entropy(
-                words, self.num_samples)
-
-            # Compute \mean_y [log p(y|x)] for samples
-            trees, post_nlls = zip(*samples)
-            post_logprob = dy.esum([-nll for nll in post_nlls]) / len(post_nlls)
-
-            # Compute mean \mean_y [log p(x,y)] for samples y
-            joint_logprob = self.joint(trees)
-
-            # Compute \mean_y [log p(x,y)]
-            learning_signal = blockgrad(joint_logprob)
-
-            # Substract baseline
-            baseline = baselines(words, parse)
-            # a = self.optimal_baseline_scale()
-            # centered_learning_signal = learning_signal - a * baseline
-            centered_learning_signal = learning_signal - baseline
-
-            # Normalize
-            normalized_learning_signal = self.normalize(centered_learning_signal)
-
-            # Optional clipping of learning signal
-            normalized_learning_signal = self.clip(normalized_learning_signal)
-
-            baseline_loss = centered_learning_signal**2
-            post_loss = -(blockgrad(normalized_learning_signal) * post_logprob + post_entropy)
-            joint_loss = -joint_logprob
-            loss = post_loss + joint_loss
-
-            losses.append(loss)
-            baseline_losses.append(baseline_loss)
-
-            # For tesorboard logging
-            histogram['signal'].append(learning_signal)
-            histogram['baseline'].append(baseline.value())
-            # histogram['scale'].append(a)
-            histogram['centered'].append(centered_learning_signal.value())
-            histogram['normalized'].append(normalized_learning_signal.value())
-            histogram['post'].append(post_logprob.value())
-            histogram['entropy'].append(post_entropy.value())
-            histogram['joint'].append(joint_logprob.value())
-            histogram['unique'].append(len(set(tree.linearize() for tree in trees)))
-
-        self.write_tensoboard_histogram(histogram)
-
-        self.learning_signals.append(np.mean(histogram['signal']))
-        self.baseline_values.append(np.mean(histogram['baseline']))
-        self.centered_learning_signals.append(np.mean(histogram['centered']))
-
-        # Average losses over minibatch
-        loss = dy.esum(losses) / self.batch_size
-        baseline_loss = dy.esum(baseline_losses) / self.batch_size
-
-        return loss, baseline_loss
-
-    # def posterior(self, trees):
-    #     logprobs = [-self.post_model.forward(tree) for tree in trees]
-    #     return dy.esum(logprobs) / len(logprobs)
+    def sample(self, words):
+        if self.posterior_type == 'crf':
+            # repeated sampling is cheaper this way
+            samples = self.post_model.sample(words, self.num_samples)
+            if self.num_samples == 1:
+                samples = [samples]
+        else:
+            samples = [self.post_model.sample(words, self.alpha) for _ in range(self.num_samples)]
+        trees, nlls = zip(*samples)
+        logprob = dy.esum([-nll for nll in nlls]) / len(nlls)
+        return trees, logprob
 
     def joint(self, trees):
         logprobs = [-self.joint_model.forward(tree) for tree in trees]
         return dy.esum(logprobs) / len(logprobs)
+
+    def posterior(self, trees):
+        trees = [tree.cnf() for tree in trees] if self.posterior_type == 'cnf' else trees
+        logprobs = [-self.post_model.forward(tree) for tree in trees]
+        return dy.esum(logprobs) / len(logprobs)
+
+    def baselines(self, words):
+        b = dy.scalarInput(0)
+        if self.use_mlp_baseline:
+            b += self.mlp_baseline(words)
+        if self.use_argmax_baseline:
+            b += self.argmax_baseline(words)
+        return b
+
+    def argmax_baseline(self, words):
+        """Parameter-free baseline based on argmax decoding."""
+
+        # TODO: make compatible with CRF parser's entropy computation
+
+        tree, post_nll = self.post_model.parse(words)
+        post_logprob = -post_nll
+        joint_logprob = -self.joint_model.forward(tree)
+        return dy.scalarInput(blockgrad(joint_logprob - post_logprob))
 
     def mlp_baseline(self, words):
         """Baseline parametrized by a feedfoward network."""
@@ -667,9 +588,9 @@ class SemiSupervisedTrainer:
         self.tensorboard_writer.add_histogram(
             'semisup/histogram/learning-signal', np.array(histogram['signal']), self.num_updates)
         self.tensorboard_writer.add_histogram(
-            'semisup/histogram/baseline', np.array(histogram['baseline']), self.num_updates)
-        # self.tensorboard_writer.add_histogram(
-            # 'semisup/histogram/scale', np.array(histogram['scale']), self.num_updates)
+            'semisup/histogram/baselines', np.array(histogram['baselines']), self.num_updates)
+        self.tensorboard_writer.add_histogram(
+            'semisup/histogram/scale', np.array(histogram['scale']), self.num_updates)
         self.tensorboard_writer.add_histogram(
             'semisup/histogram/centered-learning-signal', np.array(histogram['centered']), self.num_updates)
         self.tensorboard_writer.add_histogram(
@@ -685,9 +606,9 @@ class SemiSupervisedTrainer:
         self.tensorboard_writer.add_scalar(
             'semisup/unsup/learning-signal', np.mean(histogram['signal']), self.num_updates)
         self.tensorboard_writer.add_scalar(
-            'semisup/unsup/baseline', np.mean(histogram['baseline']), self.num_updates)
-        # self.tensorboard_writer.add_histogram(
-            # 'semisup/unsup/scale', np.mean(histogram['scale']), self.num_updates)
+            'semisup/unsup/baselines', np.mean(histogram['baselines']), self.num_updates)
+        self.tensorboard_writer.add_histogram(
+            'semisup/unsup/scale', np.mean(histogram['scale']), self.num_updates)
         self.tensorboard_writer.add_scalar(
             'semisup/unsup/centered-learning-signal', np.mean(histogram['centered']), self.num_updates)
         self.tensorboard_writer.add_scalar(
@@ -696,47 +617,27 @@ class SemiSupervisedTrainer:
             'semisup/unsup/post-logprob', np.mean(histogram['post']), self.num_updates)
         self.tensorboard_writer.add_scalar(
             'semisup/unsup/joint-logprob', np.mean(histogram['joint']), self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/joint-logprob', np.mean(histogram['joint']), self.num_updates)
-        if self.posterior_type == 'crf':
-            self.tensorboard_writer.add_scalar(
-                'semisup/unsup/post-entropy', np.mean(histogram['entropy']), self.num_updates)
 
         # Write signal statistics
-        cov, corr = self.baseline_signal_covariance()
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/signal-mean', np.mean(self.learning_signals[-100:]), self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/signal-variance', np.var(self.learning_signals[-100:]), self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/centered-signal-mean', np.mean(self.centered_learning_signals[-100:]), self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/centered-signal-variance', np.var(self.centered_learning_signals[-100:]), self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/baseline-mean', np.mean(self.baseline_values[-100:]), self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/baseline-variance', np.var(self.baseline_values[-100:]), self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/signal-baseline-cov', cov, self.num_updates)
-        self.tensorboard_writer.add_scalar(
-            'semisup/unsup/signal-baseline-cor', corr, self.num_updates)
-        self.tensorboard_writer.add_scalar(  # var(f') / var(f) = 1 - corr(f, b)**2
-            'semisup/unsup/signal-baseline-var-frac', 1 - corr**2, self.num_updates)
-
-    def baseline_signal_covariance(self, n=200):
-        baseline_values = np.array(self.baseline_values[-n:])
-        signal_values = np.array(self.learning_signals[-n:])
-        signal_var, cov, _, baseline_var = np.cov([signal_values, baseline_values]).ravel()
-
-        # baseline_mean = np.mean(baseline_values)
-        # signal_mean = np.mean(signal_values)
-        # cov = np.mean((baseline_values - baseline_mean) * (signal_values - signal_mean))
-        #
-        # baseline_var = np.var(baseline_values)
-        # signal_var = np.var(signal_values)
-
-        corr = cov / (baseline_var * signal_var)
-        return cov, corr
+        # cov, corr = self.baseline_signal_covariance()
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/signal-mean', np.mean(self.learning_signals), self.num_updates)
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/signal-variance', np.var(self.learning_signals), self.num_updates)
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/centered-signal-mean', np.mean(self.centered_learning_signals), self.num_updates)
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/centered-signal-variance', np.var(self.centered_learning_signals), self.num_updates)
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/baseline-mean', np.mean(self.baseline_values), self.num_updates)
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/baseline-variance', np.var(self.baseline_values), self.num_updates)
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/signal-baseline-cov', cov, self.num_updates)
+        # self.tensorboard_writer.add_scalar(
+        #     'semisup/unsup/signal-baseline-cor', corr, self.num_updates)
+        # self.tensorboard_writer.add_scalar(  # var(f') / var(f) = 1 - corr(f, b)**2
+        #     'semisup/unsup/signal-baseline-var-frac', 1 - corr**2, self.num_updates)
 
     def check_dev(self):
         print('Evaluating F1 and perplexity on development set...')

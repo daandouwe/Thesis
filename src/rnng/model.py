@@ -262,9 +262,9 @@ class GenRNNG(GenParser):
                 self.model, word_emb_dim, parser_dim, lstm_layers, dropout)
 
         # Embeddings for empty transition system
-        stack_empty_emb = model.add_parameters(word_emb_dim, init='glorot')
-        terminal_empty_emb = model.add_parameters(word_emb_dim, init='glorot')
-        history_empty_emb = model.add_parameters(action_emb_dim, init='glorot')
+        stack_empty_emb = self.model.add_parameters(word_emb_dim, init='glorot')
+        terminal_empty_emb = self.model.add_parameters(word_emb_dim, init='glorot')
+        history_empty_emb = self.model.add_parameters(action_emb_dim, init='glorot')
 
         # Transition system
         self.stack = Stack(
