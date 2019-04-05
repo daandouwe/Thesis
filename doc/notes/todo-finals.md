@@ -107,3 +107,16 @@ Big surprise! The entropy appears to be working... But when I dy.renew_cg() the 
 
 # March 28
 I have good news and bad news. Good news. First, I have converged models: disc-rnng, crf, gen-rnng, and I have them all evaluated. Second, the crf computation of the entropy works! Bad news: semisupervised training will not be possible. Simply not. One epoch on the ptb takes
+
+
+# April 5
+## Models etc
+  - CRF all finished
+  - RNNG finished Sunday 7 april
+
+## Syneval
+- [X] LM
+- [X] Multitask LMs
+
+## Notities Wilker uitwerken
+- [ ] Probeer Hoofdstukken af te maken. Meer inleiding, en kijk naar de resultaten sectie. Aftikken! Maar nu even pauze.

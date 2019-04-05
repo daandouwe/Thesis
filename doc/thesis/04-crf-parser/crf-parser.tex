@@ -117,18 +117,18 @@ In this chapter:
     \alpha(A, i, j)
       &= \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=i+1}^{j-1} \omega(A, i, j) \otimes \alpha(B,i,k) \otimes \alpha(C,k,j) \nonumber \\
       &= \omega(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \bigoplus_{B \in \Lambda} \alpha(B,i,k) \otimes \bigoplus_{C \in \Lambda} \alpha(C,k,j) \nonumber \\
-      &= \omega(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \sigma_{\alpha}(i,k) \otimes \sigma_{\alpha}(k,j),
+      &= \omega(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \sigma(i,k) \otimes \sigma(k,j),
   \end{align}
   where we've introduced the notational abbreviation
   \begin{align*}
-      \sigma_{\alpha}(i,j) &= \bigoplus_{A \in \Lambda} \alpha(A,i,j).
+      \sigma(i,j) &= \bigoplus_{A \in \Lambda} \alpha(A,i,j).
   \end{align*}
   Looking at \ref{eq:inside} we can see the marginalized values $\sigma(i, j)$ are all that are needed for the recursion. This suggest simplifying the recursion even further as
   \begin{align}
     \label{eq:inside-simplified}
-    \sigma_{\alpha}(i, j)
+    \sigma(i, j)
       &= \bigoplus_{A \in \Lambda} \alpha(A,i,j) \nonumber \\
-      &= \Bigg[ \bigoplus_{A \in \Lambda} \omega(A, i, j) \Bigg] \otimes \Bigg[\bigoplus_{k=i+1}^{j-1} \sigma_{\alpha}(i,k) \otimes  \sigma_{\alpha}(k,j) \Bigg],
+      &= \Bigg[ \bigoplus_{A \in \Lambda} \omega(A, i, j) \Bigg] \otimes \Bigg[\bigoplus_{k=i+1}^{j-1} \sigma(i,k) \otimes  \sigma(k,j) \Bigg],
   \end{align}
   where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting.
 
@@ -154,12 +154,12 @@ In this chapter:
         &\qquad \oplus \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=j+1}^{n} \omega(B, i, k) \otimes \beta(B, i, k) \otimes \alpha(C, j, k) \\
       &=  \bigoplus_{k=1}^{i-1}  \Bigg[ \bigoplus_{B \in \Lambda} \omega(B, k, j)  \otimes \beta(B, k, j) \Bigg] \otimes \Bigg[ \bigoplus_{C \in \Lambda} \alpha(C, k, i) \Bigg] \\
         &\qquad \oplus \bigoplus_{k=j+1}^{n}  \Bigg[ \bigoplus_{B \in \Lambda}  \omega(B, i, k) \otimes \beta(B, i, k) \Bigg] \otimes  \Bigg[  \bigoplus_{C \in \Lambda} \alpha(C, j, k) \Bigg] \\
-      &=  \bigoplus_{k=1}^{i-1}  \sigma_{\beta}'(k, j) \otimes \sigma_{\beta}(k, i) \oplus \bigoplus_{k=j+1}^{n} \sigma_{\beta}'(i, k) \otimes  \sigma_{\beta}(j, k) \\
+      &=  \bigoplus_{k=1}^{i-1}  \sigma'(k, j) \otimes \sigma(k, i) \oplus \bigoplus_{k=j+1}^{n} \sigma'(i, k) \otimes  \sigma(j, k) \\
   \end{align*}
   where
   \begin{align*}
-      \sigma_{\beta}(i, j) &= \bigoplus_{A \in \Lambda} \alpha(A, i, j),  \\
-      \sigma_{\beta}'(i, j) &= \bigoplus_{A \in \Lambda} \omega(A, i, j) \beta(A, i, j).
+      \sigma(i, j) &= \bigoplus_{A \in \Lambda} \alpha(A, i, j),  \\
+      \sigma'(i, j) &= \bigoplus_{A \in \Lambda} \omega(A, i, j) \beta(A, i, j).
   \end{align*}
 
 \subsection{Solutions}
@@ -205,42 +205,69 @@ In this chapter:
     We repeat the sampling at the nodes that are in the tail of the sampled edge, until we reached the nodes that span individual words.
 
   \paragraph{Entropy}
-    To compute the entropy $H(Y \mid X = x)$ we need to first introduce the notion of the \textit{maginal probablity} of a node. The marginal of a node $v = (A, i, j)$ in a hypergraph is the probability that it occurs in a tree $\y$ for the sentence $\x$ as governed by the distribution $p$ that we defined on it. Let $V$ be a random variable with the hypergraph nodes $\mathcal{V}(x)$ as sample space, and define
+    % To compute the entropy $H(Y \mid X = x)$ we need to first introduce the notion of the \textit{maginal probablity} of a node. The marginal of a node $v = (A, i, j)$ in a hypergraph is the probability that it occurs in a tree $\y$ for the sentence $\x$ as governed by the distribution $p$ that we defined on it. Let $V$ be a random variable with the hypergraph nodes $\mathcal{V}(x)$ as sample space, and define
+    % \begin{align}
+    %   P(V = v \mid X = \x)
+    %     &\defeq \expect_Y[ \indicator_{ \{ v \in Y \} } ]  \nonumber \\
+    %     &= \sum_{ \y \in \yieldx } p(\y \mid \x) \indicator_{ \{ v \in y \} }.
+    % \end{align}
+    %
+    % The marginals can be computed from the inside and outside values computed in the real semiring as
+    % \begin{align}
+    %   P(V = v \mid X = \x) = \frac{\alpha(A, i, j) \, \beta(A, i, j)}{Z(\x)},
+    % \end{align}
+    % a result from \citep{goodman1999semiring}.\footnote{This can also be seen by noting that the product of $\alpha(A, i, j)$ and $\beta(A, i, j)$ is the sum over all trees that contain the node $v$, and $Z(\x)$ the sum over all trees in general.} The entropy can then be written as an expectation with respect to these marginals:
+    % \begin{align}
+    %   H(Y \mid X = x)
+    %     &= - \sum_{ \y \in \yieldx } p(\y \mid \x) \log p(\y \mid \x)  \nonumber \\
+    %     &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{v \in \y} \log \psi(\x, v)  \nonumber \\
+    %     &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{ v \in \mathcal{V}(x) } \indicator_{ \{ v \in y \} } \log \psi(\x, v)  \nonumber \\
+    %     &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v)  \sum_{ \y \in \yieldx } \indicator_{ \{ v \in y \} } p(\y \mid \x)  \nonumber \\
+    %     &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v)  P(V = v \mid X = \x)  \nonumber \\
+    %     &=  \log Z(\x) - \expect_V [ \log \psi(\x, V) ].
+    % \end{align}
+    To compute the entropy $H(Y \mid X = x)$ we need to first introduce the notion of a \textit{node maginal}. The marginal of a node $v = (A, i, j)$ in a hypergraph is the probability that it occurs in a tree $\y$ for the sentence $\x$, according to the probability distribution $p$ over trees. The node marginal $\mu(v)$ is defined as the expectation
     \begin{align}
-      P(V = v \mid X = \x)
+      \label{eq:node-marginal}
+      \mu(v)
         &\defeq \expect_Y[ \indicator_{ \{ v \in Y \} } ]  \nonumber \\
         &= \sum_{ \y \in \yieldx } p(\y \mid \x) \indicator_{ \{ v \in y \} }.
     \end{align}
-    % This is a probability distribution:
-    % \begin{align*}
-    %   \sum_{v \in \mathcal{V}(x)} P(V = v \mid X = \x)
-    %     &= \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{v \in \mathcal{V}(x)} \indicator_{ \{ v \in y \} }  \\
-    %     &= \sum_{ \y \in \yieldx } p(\y \mid \x) \lvert y \rvert  \\
-    %     &\stackrel{?}{=} 1
-    % \end{align*}
-    The marginals can be computed from the inside and outside values computed in the real semiring as
+    This can be computed from the inside and outside values computed in the real semiring as
     \begin{align}
-      P(V = v \mid X = \x) = \frac{\alpha(A, i, j) \, \beta(A, i, j)}{Z(\x)},
+      \mu(v) = \frac{\alpha(A, i, j) \, \beta(A, i, j)}{Z(\x)},
     \end{align}
-    a result from \citep{goodman1999semiring}.\footnote{This can also be seen by noting that the product of $\alpha(A, i, j)$ and $\beta(A, i, j)$ is the sum over all trees that contain the node $v$, and $Z(\x)$ the sum over all trees in general.} The entropy can then be written as an expectation with respect to these marginals:
+    a result from \citep{goodman1999semiring}. This can also be seen by noting that the product of $\alpha(A, i, j)$ and $\beta(A, i, j)$ is the sum over all trees that contain the node $v$, and $Z(\x)$ the sum over all trees in general.
+
+    The entropy, then can then be written in terms of these marginals:
     \begin{align}
       H(Y \mid X = x)
         &= - \sum_{ \y \in \yieldx } p(\y \mid \x) \log p(\y \mid \x)  \nonumber \\
         &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{v \in \y} \log \psi(\x, v)  \nonumber \\
         &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{ v \in \mathcal{V}(x) } \indicator_{ \{ v \in y \} } \log \psi(\x, v)  \nonumber \\
         &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v)  \sum_{ \y \in \yieldx } \indicator_{ \{ v \in y \} } p(\y \mid \x)  \nonumber \\
-        &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v)  P(V = v \mid X = \x)  \nonumber \\
-        &=  \log Z(\x) - \expect_V [ \log \psi(\x, V) ].
+        &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v) \mu(v)
     \end{align}
 
 \section{Traning}
-\begin{itemize}
-  \item State training objective.
-  \item State how gradients are computed (automatically from quantities that are computed differentiably using inside and outside recursions).
-  \item State that gradients could also be computed using the same recursions \citep{eisner2009semirings}, see \citet{kim2017structured} who do this. But this is very cumbersome and not neccesary.
-  \item Say something about the gradient of the global $Z(x)$ and how this affects all other trees.
-  \item Show how the objective differs from the max-margin objective of \citep{stern2017minimal}: the difference is all in that $Z$!
-\end{itemize}
+The training objective is to maximize the likelihood of the training data
+\begin{align*}
+  \mathcal{L}(\theta)
+    &= \sum_{(\x, \y) \in \dataset} \log \ptheta(\y \mid \x)
+\end{align*}
+with respect to the model parameters $\theta$. Writing out the objective for a single example as
+\begin{align*}
+  \log \ptheta(\y \mid \x) = \log \Psi(\x, \y) - \log Z(x)
+\end{align*}
+reveals that the maximization of this value decomposes as two separate optimizationproblems: to maximize the log-score of the example tree $\log \Psi(\x, \y)$, whilst minimizing the total weight of the parse forest $\log Z(x)$. The solution is thus to move probability mass onto the gold tree, and move mass away from \textit{all} other trees. Because the log-score of the tree decomposes as a sum of log-scores of the nodes that comprise it, the objective is effectively to \textit{increase} the scores of the labeled spans that make up the gold tree, and \textit{decrease} the scores of all other labeled spans not observed. Another effect of the factorization over parts is that this increases not only the probability of the gold tree, but the probability of all trees that share substantial substructure. It is in this precise sense that we mean that the model learns about all substructures.
+
+We rely on automatic differentiation to compute the derivatives, but note that in principle it is possible to efficiently combine the computation of the inside and outside values with their derivatives, a fact demonstrated in \citep{eisner2009semirings} and \citep{eisner2016backprop}, and implemented in \citep{kim2017structured}. Instead, for convenience and simplicity compute the quantity $Z(x)$ and let automatic differentation do the rest.
+
+It is fruitful to see how our global objective differs from the margin-based objective in \citep{stern2017minimal}. The margin-based objective is to maximize the difference, or `margin', between the score of the gold tree and the highest scoring, incorrect tree. Given an example pair $(\x, \y)$, the model computes the predicted tree $\hat{y}$. If the predicted tree equals the example tree, $\hat{y} = \y$, then no changes to the model are made. Otherwise, the model is updated to maximize the difference between their scores
+\begin{align*}
+  \Psi(\x, \y) - \Psi(\x, \hat{\y}),
+\end{align*}
+maximizing the score of the correct tree, and minimizing the score of the predicted tree.\footnote{The objective reported in the paper is minimizing the hinge loss $\max \Big(0, 1 - \Psi(\x, \y) + \Psi(\x, \hat{\y}) \Big)$, but the above is what is actually implementated in their code.} This objective shows a striking similarity with our CRF objective, with one very particular difference. The goal is still to maximize the score of the gold tree. But the minimization that in the CRF objective concerns all possible trees through $Z(x)$, in this objective concerns just the single tree $\hat{\y}$ that was incorrectly predicted. The scores of all other nodes not observed in either tree remain unchanched.
 
 \section{Experiments}
   We perform three types of experiments with the CRF parser:

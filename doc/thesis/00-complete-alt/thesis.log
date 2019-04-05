@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  26 MAR 2019 16:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  5 APR 2019 17:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1186,7 +1186,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.34 
+l.37 
      
 The package hyperref has already been loaded with options:
   []
@@ -1221,7 +1221,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.48 \newcommand{\eg}{\emph{e.g.}}
+l.50 \newcommand{\eg}{\emph{e.g.}}
                                   
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1229,6 +1229,72 @@ or  <return>  to continue without it.
 
 \c@theorem=\count162
 \c@condition=\count163
+! Undefined control sequence.
+l.137 \birthdate
+                {August 17, 1992}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.137 \birthdate{A
+                  ugust 17, 1992}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+! Undefined control sequence.
+l.138 \birthplace
+                 {Amsterdam, Netherlands}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.139 \defensedate
+                  {May 10, 2019}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.140 \supervisor
+                 {Dr Wilker Aziz}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.141 \committeemember
+                      {Dr Khalil Sima`an}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.142 \committeemember
+                      {Prof Dr Jane Williams}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
 (./thesis.aux
 
 LaTeX Warning: Label `eq:disc-model' multiply defined.
@@ -1236,27 +1302,24 @@ LaTeX Warning: Label `eq:disc-model' multiply defined.
 
 LaTeX Warning: Label `eq:disc-model' multiply defined.
 
-
-LaTeX Warning: Label `eq:lowerbound' multiply defined.
-
 )
 \openout1 = `thesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Try loading font information for OT1+ppl on input line 134.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 145.
+LaTeX Font Info:    ... okay on input line 145.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 145.
+LaTeX Font Info:    ... okay on input line 145.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 145.
+LaTeX Font Info:    ... okay on input line 145.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 145.
+LaTeX Font Info:    ... okay on input line 145.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 145.
+LaTeX Font Info:    ... okay on input line 145.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 145.
+LaTeX Font Info:    ... okay on input line 145.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 145.
+LaTeX Font Info:    ... okay on input line 145.
+LaTeX Font Info:    Try loading font information for OT1+ppl on input line 145.
 
  (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1ppl.fd
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
@@ -1290,10 +1353,10 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \AtBeginShipoutBox=\box51
-Package hyperref Info: Link coloring OFF on input line 134.
-LaTeX Info: Redefining \ref on input line 134.
-LaTeX Info: Redefining \pageref on input line 134.
-LaTeX Info: Redefining \nameref on input line 134.
+Package hyperref Info: Link coloring OFF on input line 145.
+LaTeX Info: Redefining \ref on input line 145.
+LaTeX Info: Redefining \pageref on input line 145.
+LaTeX Info: Redefining \nameref on input line 145.
 
 (./thesis.out) (./thesis.out)
 \@outlinefile=\write4
@@ -1343,7 +1406,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.136 
+l.147 
       
 I could not locate the file with any of these extensions:
 .png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPEG,.JBIG2,.JB2,.eps
@@ -1357,32 +1420,32 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.136 
+l.147 
       
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <20.74> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 136.
-LaTeX Font Info:    Try loading font information for U+msa on input line 136.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 147.
+LaTeX Font Info:    Try loading font information for U+msa on input line 147.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 136.
+LaTeX Font Info:    Try loading font information for U+msb on input line 147.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+lasy on input line 136.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 147.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/base/ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <8> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 136.
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 147.
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <6> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 136.
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 147.
 
 
 ! LaTeX Error: File `uvalogo' not found.
@@ -1391,7 +1454,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.136 
+l.147 
       
 I could not locate the file with any of these extensions:
 .png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPEG,.JBIG2,.JB2,.eps
@@ -1402,29 +1465,29 @@ If that doesn't work, type  X <return>  to quit.
 
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 137.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 148.
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 137.
-LaTeX Font Info:    Try loading font information for OMS+ppl on input line 142.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 148.
+LaTeX Font Info:    Try loading font information for OMS+ppl on input line 153.
 
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omsppl.fd
 File: omsppl.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 142.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 153.
 
-Overfull \hbox (5.19946pt too wide) in paragraph at lines 144--145
+Overfull \hbox (5.19946pt too wide) in paragraph at lines 155--156
 []\OT1/ppl/m/n/10.95 propose ef-fec-tive meth-ods for semisu-per-vised learn-in
 g, mak-ing the syn-tac-tic struc-
  []
 
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 147.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 158.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-Underfull \hbox (badness 10000) in paragraph at lines 147--147
+Underfull \hbox (badness 10000) in paragraph at lines 158--158
 
  []
 
@@ -1442,7 +1505,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.160 \begin{acknowledgements}
+l.171 \begin{acknowledgements}
                               
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1455,7 +1518,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.161 \end{acknowledgements}
+l.172 \end{acknowledgements}
                             
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1790,11 +1853,16 @@ File: ../figures/span-encoding.pdf Graphic file (type pdf)
 Package pdftex.def Info: ../figures/span-encoding.pdf used on input line 47.
 (pdftex.def)             Requested size: 418.25372pt x 135.66083pt.
  [33 <../figures/span-encoding.pdf>]
-(../figures/edges/edges.tex) [34] [35] [36] [37] [38] [39] [40]) [41]
-chapter 5.
-(../05-semisupervised/semisupervised.tex [42
+(../figures/edges/edges.tex) [34] [35] [36] [37] [38]
 
-] [43]
+Package natbib Warning: Citation `eisner2016backprop' on page 39 undefined on i
+nput line 262.
+
+[39] [40] [41]) [42]
+chapter 5.
+(../05-semisupervised/semisupervised.tex [43
+
+] [44]
 Overfull \hbox (0.86298pt too wide) in paragraph at lines 81--82
 \OT1/ppl/m/n/10.95 miza-tion, which means that we need to com-pute the gra-di-e
 nts $\OMS/cmsy/m/n/10.95 r[] []\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 ^^R; ^^U
@@ -1803,11 +1871,11 @@ r/m/n/10.95 (\OML/cmm/m/it/10.95 ^^R; ^^U\OT1/cmr/m/n/10.95 )$\OT1/ppl/m/n/10.9
 5 . 
  []
 
-[44] [45]) [46]
+[45] [46]) [47]
 chapter 6.
-(../06-syneval/syneval.tex [47
+(../06-syneval/syneval.tex [48
 
-] [48]
+] [49]
 ! Undefined control sequence.
 l.37 ...ntroduced in chapter \ref{04-crf}.\foonote
                                                   {This is similar to an app...
@@ -1817,25 +1885,25 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[49] [50]
+[50] [51]
 Overfull \hbox (0.81944pt too wide) in paragraph at lines 79--81
 \OT1/ppl/m/n/10.95 and the dis-tri-bu-tion over la-bels is com-puted us-ing a f
 eed-for-ward net-work parametrized
  []
 
-) [51] [52]
+) [52] [53]
 chapter 7.
-(../07-conclusion/conclusion.tex) [53
+(../07-conclusion/conclusion.tex) [54
 
 ]
 chapter A.
-(../08-app-figures/figures.tex) [54
+(../08-app-figures/figures.tex) [55
 
 ]
 chapter B.
-(../09-app-implementation/implementation.tex [55
+(../09-app-implementation/implementation.tex [56
 
-] [56] [57]
+] [57] [58]
 
 ! LaTeX Error: Lonely \item--perhaps a missing list environment.
 
@@ -2056,14 +2124,14 @@ l.53 \end{itemize}
                   
 Things are pretty mixed up, but I think the worst is over.
 
-) [58]
+) [59]
 chapter C.
-(../10-app-crf/crf.tex (../figures/hypergraph/hypergraph.tex) [59
+(../10-app-crf/crf.tex (../figures/hypergraph/hypergraph.tex) [60
 
-] [60]
-[61] [62]
+] [61]
+[62] [63]
 ! Undefined control sequence.
-l.187   The semiring addition $a \osum
+l.186   The semiring addition $a \osum
                                        b = \log(e^{a} + e^{b})$ is made nume...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2071,31 +2139,31 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[63]) [64]
+[64]) [65]
 chapter D.
-(../11-app-vi/vi.tex [65
+(../11-app-vi/vi.tex [66
 
 ]
 
-Package natbib Warning: Citation `baydin2017automatic' on page 66 undefined on 
+Package natbib Warning: Citation `baydin2017automatic' on page 67 undefined on 
 input line 59.
 
-[66] [67] [68]) [69]
+[67] [68] [69]) [70]
 chapter E.
-(../12-app-syneval/syneval.tex [70
+(../12-app-syneval/syneval.tex [71
 
 ]
 LaTeX Font Info:    Font shape `OT1/ppl/bx/it' in size <10.95> not available
 (Font)              Font shape `OT1/ppl/b/it' tried instead on input line 41.
- [71]) (./thesis.bbl [72] [73
+ [72]) (./thesis.bbl [73] [74
 
-] [74] [75]
+] [75] [76]
 Underfull \hbox (badness 2698) in paragraph at lines 302--306
 []\OT1/ppl/m/n/10.95 Yoav Gold-berg and Joakim Nivre.  Train-ing de-ter-min-is-
 tic parsers with non-
  []
 
-[76] [77] [78] [79]
+[77] [78] [79] [80]
 ! Misplaced alignment tab character &.
 <argument> Computer Speech &
                              Language
@@ -2108,9 +2176,9 @@ up above has ended a previous alignment prematurely,
 you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
-[80])
+[81])
 ! Undefined control sequence.
-l.231 \backmatter
+l.242 \backmatter
                    % references, restarts sample
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2121,7 +2189,7 @@ and I'll forget about whatever was undefined.
 
 Package natbib Warning: There were undefined citations.
 
-[81]
+[82]
 
 ! LaTeX Error: \begin{example} on input line 173 ended by \end{document}.
 
@@ -2129,64 +2197,65 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.234 \end{document}
+l.245 \end{document}
                     
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 234.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 234.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 245.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 245.
 (./thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 234.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 234.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 245.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 245.
 Package rerunfilecheck Info: File `thesis.out' has not changed.
 (rerunfilecheck)             Checksum: 975C41FD070A2F7860AD335B39DF077D;5400.
 
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 234.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 245.
  )
 (\end occurred inside a group at level 1)
 
 ### semi simple group (level 1) entered at line 173 (\begingroup)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 26381 strings out of 493014
- 489588 string characters out of 6133351
- 725740 words of memory out of 5000000
- 28816 multiletter control sequences out of 15000+600000
+ 26385 strings out of 493014
+ 489645 string characters out of 6133351
+ 725792 words of memory out of 5000000
+ 28818 multiletter control sequences out of 15000+600000
  43883 words of font info for 125 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  73i,19n,77p,8522b,1414s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc
 }</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb>
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><
-/usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></
-usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></us
-r/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/
-local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/lo
-cal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loca
-l/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/t
-exlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texl
-ive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive
-/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/
-2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/20
-16/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2016
-/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/
-2016/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texl
-ive/2016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016
-/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf-
-dist/fonts/type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/f
-onts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/ty
-pe1/urw/palatino/uplri8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/ur
-w/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/ut
-mr8a.pfb>
-Output written on thesis.pdf (81 pages, 888059 bytes).
+/usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pf
+b></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb
+></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb><
+/usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></u
+sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr
+/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/l
+ocal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/loca
+l/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/t
+exlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texl
+ive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texli
+ve/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive
+/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2
+016/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texli
+ve/2016/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/t
+exlive/2016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2
+016/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/tex
+mf-dist/fonts/type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dis
+t/fonts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts
+/type1/urw/palatino/uplri8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1
+/urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times
+/utmr8a.pfb>
+Output written on thesis.pdf (82 pages, 900285 bytes).
 PDF statistics:
- 2149 PDF objects out of 2487 (max. 8388607)
- 1976 compressed objects within 20 object streams
- 525 named destinations out of 1000 (max. 500000)
+ 2163 PDF objects out of 2487 (max. 8388607)
+ 1988 compressed objects within 20 object streams
+ 527 named destinations out of 1000 (max. 500000)
  732 words of extra memory for PDF output out of 10000 (max. 10000000)
 
