@@ -146,12 +146,16 @@ def main():
                         help='pretrained joint model (gen-rnng)')
     semisup.add_argument('--post-model-path', default='checkpoints/posterior',
                         help='pretrained posterior model (disc-rnng or crf)')
+    semisup.add_argument('--lmbda', type=float, default=0.1,
+                        help='fraction of posterior model loss in supervised objective')
     semisup.add_argument('--normalize-learning-signal', action='store_true',
                         help='optional baseline')
     semisup.add_argument('--use-argmax-baseline', action='store_true',
                         help='optional baseline')
     semisup.add_argument('--use-mlp-baseline', action='store_true',
                         help='optional baseline')
+    semisup.add_argument('--exact-entropy', action='store_true',
+                        help='exact entropy computation (crf only)')
 
     # Predict arguments
     pred = parser.add_argument_group('Predict')

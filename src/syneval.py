@@ -246,7 +246,7 @@ def syneval_parser(args):
     print(f'Writing predictions to `{outpath}`.')
 
     with open(outpath, 'w') as outfile:
-        if self.num_samples == 1:
+        if args.num_samples == 1:
             # predict with logprob of predicted parse
             print('\t'.join((
                     'name', 'index', 'pos-logprob', 'neg-logprob',
@@ -318,21 +318,30 @@ def syneval_parser(args):
                         neg_tree
                     ))
                     print(result, file=outfile)
-
                 else:
-                    # predict with the parser's entropy
-                    pos_trees, pos_nlls = zip(*
-                        [model.sample(pos) for _ in range(args.num_samples)])
-                    neg_trees, neg_nlls = zip(*
-                        [model.sample(neg) for _ in range(args.num_samples)])
+                    if args.exact_entropy:
+                        pos_tree, pos_entropy = model.parse_entropy(pos)
+                        neg_tree, neg_entropy = model.parse_entropy(neg)
 
-                    pos_entropy = np.mean([nll.value() for nll in pos_nlls])
-                    neg_entropy = np.mean([nll.value() for nll in neg_nlls])
+                        pos_entropy = pos_entropy.value()
+                        neg_entropy = neg_entropy.value()
 
-                    pos_tree = Counter(
-                        [tree.linearize(with_tag=False) for tree in pos_trees]).most_common(1)[0][0]
-                    neg_tree = Counter(
-                        [tree.linearize(with_tag=False) for tree in neg_trees]).most_common(1)[0][0]
+                        pos_tree = pos_tree.linearize(with_tag=False)
+                        neg_tree = neg_tree.linearize(with_tag=False)
+                    else:
+                        # predict with the parser's entropy
+                        pos_trees, pos_nlls = zip(*
+                            [model.sample(pos) for _ in range(args.num_samples)])
+                        neg_trees, neg_nlls = zip(*
+                            [model.sample(neg) for _ in range(args.num_samples)])
+
+                        pos_entropy = np.mean([nll.value() for nll in pos_nlls])
+                        neg_entropy = np.mean([nll.value() for nll in neg_nlls])
+
+                        pos_tree = Counter(
+                            [tree.linearize(with_tag=False) for tree in pos_trees]).most_common(1)[0][0]
+                        neg_tree = Counter(
+                            [tree.linearize(with_tag=False) for tree in neg_trees]).most_common(1)[0][0]
 
                     correct = pos_entropy < neg_entropy
                     num_correct += correct

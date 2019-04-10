@@ -466,10 +466,42 @@ class ChartParser(object):
         entropy = self.compute_entropy(marginals, label_scores, lognormalizer)
 
         # parse computation
-        parse, parse_score = self.viterbi(words, label_scores)
+        parse, _ = self.viterbi(words, label_scores)
         parse = parse.un_cnf()
 
         # sample computation
         samples = self._sample(inside_chart, words, label_scores, lognormalizer, num_samples)
 
         return parse, samples, entropy
+
+    def parse_sample(self, words, num_samples):
+        # shared computation
+        unked_words = self.word_vocab.process(words)
+        label_scores = self.get_node_scores(unked_words)
+        inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
+
+        # parse computation
+        parse, _ = self.viterbi(words, label_scores)
+        parse = parse.un_cnf()
+
+        # sample computation
+        samples = self._sample(inside_chart, words, label_scores, lognormalizer, num_samples)
+
+        return parse, samples
+
+    def parse_entropy(self, words):
+        # shared computation
+        unked_words = self.word_vocab.process(words)
+        label_scores = self.get_node_scores(unked_words)
+        inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
+
+        # entropy computation
+        outside_chart = self.outside(words, label_scores, inside_chart, inside_summed)
+        marginals = self.marginals(inside_chart, outside_chart, lognormalizer)
+        entropy = self.compute_entropy(marginals, label_scores, lognormalizer)
+
+        # parse computation
+        parse, _ = self.viterbi(words, label_scores)
+        parse = parse.un_cnf()
+
+        return parse, entropy
