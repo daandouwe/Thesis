@@ -1,15 +1,15 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J syneval-lm
-#SBATCH -o lisa/out/syneval-lm.out
+#SBATCH -J syneval-lm-multitask-ccg
+#SBATCH -o lisa/out/syneval-lm-multitask-ccg.out
 #SBATCH -t 0-24:00:00
 
 # as not to tred on each other's toes
 export MKL_NUM_THREADS=1
 
 # gather all lm paths to be evaluated
-PATHS=$(ls ${HOME}/thesis/models | grep '^lm_dev*')
+PATHS=$(ls ${HOME}/thesis/models | grep '^lm-multitask-ccg_*')
 
 # send an e-mail when the job starts
 echo "Job $SLURM_JOB_NAME started at `date` for the models $PATHS" | mail $USER -s "Started job $SLURM_JOB_NAME"
@@ -23,6 +23,16 @@ cd ${HOME}/thesis
 
 source lisa/lisa-cpu.sh
 
+# for path in $PATHS; do
+#   python src/main.py syneval \
+#       --dynet-autobatch 1 \
+#       --dynet-mem 2500 \
+#       --model-type rnn-lm \
+# 	    --checkpoint models/${path} \
+# 	    --indir data/syneval/data/converted \
+#       &
+# done
+
 for path in $PATHS; do
   python src/main.py syneval \
       --dynet-autobatch 1 \
@@ -30,6 +40,7 @@ for path in $PATHS; do
       --model-type rnn-lm \
 	    --checkpoint models/${path} \
 	    --indir data/syneval/data/converted \
+      --capitalize \
       &
 done
 

@@ -1,0 +1,55 @@
+#!/bin/bash
+#SBATCH -N 1
+#SBATCH -p normal
+#SBATCH -J semisup-crf-argmax-1sample
+#SBATCH -o lisa/out/semisup-crf-argmax-1sample.out
+#SBATCH -t 4-00:00:00
+
+# send an e-mail when the job starts
+echo "Job $SLURM_JOB_NAME started at `date`" | mail $USER -s "Started job $SLURM_JOB_NAME"
+
+# write sterr and stout of each experiment here
+OUTPUT_DIR=${HOME}/thesis/lisa/out/${SLURM_JOB_NAME}
+mkdir -p ${OUTPUT_DIR}
+
+# always run from the main directory
+cd ${HOME}/thesis
+
+source lisa/lisa-cpu.sh
+source scripts/best-models.sh
+
+for seed in {1..6}; do
+
+  # do not conflate the timestamped foldernames
+  sleep 5
+
+  lisa/train-multithread.sh ${seed} ${OUTPUT_DIR} \
+  	--dynet-autobatch 1 \
+    --dynet-mem 4000 \
+    --max-time $((4 * 20 * 3600)) \
+    --max-epochs 1 \
+    --model-path-base models/semisup-crf-argmax-1sample \
+    --model-type semisup-crf \
+    --joint-model-path ${GEN_PATH} \
+    --post-model-path ${CRF_PATH} \
+    --lmbda 0.1 \
+    @src/configs/vocab/semisupervised.txt \
+    @src/configs/data/semisupervised.txt \
+    @src/configs/training/adam.txt \
+    @src/configs/baseline/argmax.txt \
+    --num-samples 1 \
+    --batch-size 5 \
+    --print-every 10 \
+    --num-dev-samples 50 \
+    --num-test-samples 100 \
+    &
+
+done
+
+# this waits until all sub-jobs finish
+wait
+
+echo "Jobs finished"
+echo "Job $SLURM_JOB_NAME ended at `date`" | mail $USER -s "Ended job $SLURM_JOB_NAME"
+
+sleep 300

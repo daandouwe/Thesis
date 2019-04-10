@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J lm-multitask-span-resume
-#SBATCH -o lisa/out/lm-multitask-span-resume.out
+#SBATCH -J crf-big-resume
+#SBATCH -o lisa/out/crf-big-resume.out
 #SBATCH -t 5-00:00:00
 
-PATHS=$(ls ${HOME}/thesis/models | grep '^lm-multitask-span_')
+PATHS=$(ls ${HOME}/thesis/models | grep '^crf-big')
 
 # send an e-mail when the job starts
 echo "Job $SLURM_JOB_NAME started at `date` for models in $PATHS" | mail $USER -s "Started job $SLURM_JOB_NAME"
@@ -19,22 +19,18 @@ cd ${HOME}/thesis
 
 source lisa/lisa-cpu.sh
 
-# create supervised vocab
-python src/main.py build @src/configs/vocab/supervised.txt
-
 for path in $PATHS; do
   seed=$(cat models/${path}/log/args.txt | grep numpy_seed | cut -c14-)
   lisa/train.sh ${seed} ${OUTPUT_DIR} \
     --dynet-autobatch 1 \
     --dynet-mem 2500 \
-    --model-path-base mmodels/lm-multitask-span  \
-    --max-time $((5 * 23 * 3600)) \
-    --max-epochs 150 \
+    --model-path-base models/crf-big \
+    --max-time $((5 * 20 * 3600)) \
+    --max-epochs 100 \
     --resume models/${path} \
-    @src/configs/vocab/supervised.txt \
     @src/configs/data/supervised.txt \
-    @src/configs/model/lm-multitask-span.txt \
-    @src/configs/training/sgd.txt \
+    @src/configs/model/crf-big.txt \
+    @src/configs/training/adam.txt \
     &
 done
 

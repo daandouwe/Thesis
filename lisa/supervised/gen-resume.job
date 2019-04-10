@@ -5,7 +5,7 @@
 #SBATCH -o lisa/out/gen-resume.out
 #SBATCH -t 5-00:00:00
 
-PATHS=$(ls ${HOME}/thesis/models | grep '^gen-rnng_dev')
+PATHS=$(ls ${HOME}/thesis/models | grep '^gen-rnng-retry_dev')
 
 # send an e-mail when the job starts
 echo "Job $SLURM_JOB_NAME started at `date` for models in $PATHS" | mail $USER -s "Started job $SLURM_JOB_NAME"
@@ -25,7 +25,7 @@ for path in $PATHS; do
     --dynet-autobatch 1 \
     --dynet-mem 2500 \
     --model-path-base models/gen-rnng \
-    --max-time $((5 * 20 * 3600)) \
+    --max-time $((5 * 21 * 3600)) \
     --max-epochs 100 \
     --eval-every-epochs 4 \
     --lr-decay-patience 8 \

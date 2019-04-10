@@ -1,0 +1,45 @@
+#!/bin/bash
+#SBATCH -N 1
+#SBATCH -p normal
+#SBATCH -J eval-gen-dyer-test
+#SBATCH -o lisa/out/eval-gen-dyer-test.out
+#SBATCH -t 3-00:00:00
+
+export MKL_NUM_THREADS=1
+
+PATHS=$(ls ${HOME}/thesis/models | grep '^gen-rnng_dev')
+
+# send an e-mail when the job starts
+echo "Job $SLURM_JOB_NAME started at `date` for models $PATHS" | mail $USER -s "Started job $SLURM_JOB_NAME"
+
+# write sterr and stout of each experiment here
+OUTPUT_DIR=${HOME}/thesis/lisa/out/${SLURM_JOB_NAME}
+mkdir -p ${OUTPUT_DIR}
+
+# always run from the main directory
+cd ${HOME}/thesis
+
+source lisa/lisa-cpu.sh
+
+PROPS=data/proposals/dyer-test.props
+PROPS_NAME=dyer-test
+
+for path in $PATHS; do
+  python src/main.py predict \
+	    --dynet-autobatch 1 \
+	    --dynet-mem 2000 \
+	    --model-type gen-rnng \
+	    --perplexity \
+	    --checkpoint models/${path} \
+	    --proposal-samples ${PROPS} \
+      --infile data/ptb/23.auto.clean.notop \
+	    --outfile models/${path}/output/results_proposals=${PROPS_NAME}.tsv \
+      &
+done
+
+wait
+
+echo "Jobs finished"
+echo "Job $SLURM_JOB_NAME ended at `date`" | mail $USER -s "Ended job $SLURM_JOB_NAME"
+
+sleep 300

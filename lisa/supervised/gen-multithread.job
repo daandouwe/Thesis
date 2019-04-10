@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J gen-silver
-#SBATCH -o lisa/out/gen-silver.out
+#SBATCH -J gen-multithread
+#SBATCH -o lisa/out/gen-multithread.out
 #SBATCH -t 5-00:00:00
 
 # send an e-mail when the job starts
@@ -18,30 +18,31 @@ cd ${HOME}/thesis
 source lisa/lisa-cpu.sh
 
 # create supervised vocab
-python src/main.py build @src/configs/vocab/semisupervised.txt
+python src/main.py build @src/configs/vocab/supervised.txt
 
 # we can run training runs in parallel, each on a different processor (16 in total)
 # with a different seed, and we tell each script which seed
 # all other arguments are passed to the parser
-for seed in {1..10}; do
+for seed in {1..6}; do
 
   # do not conflate the timestamped foldernames
   sleep 5
 
-  lisa/train.sh ${seed} ${OUTPUT_DIR} \
-      --dynet-autobatch 1 \
-      --dynet-mem 2500 \
-      --model-path-base models/gen-rnng_data=silver-gold \
-      --max-time $((5 * 21 * 3600)) \
-      --max-epochs 100 \
-      --eval-every-epochs 2 \
-      --lr-decay-patience 4 \
-      @src/configs/vocab/semisupervised.txt \
-      @src/configs/data/supervised-silver.txt \
-      @src/configs/model/gen-rnng.txt \
-      @src/configs/proposals/rnng.txt \
-      @src/configs/training/sgd.txt \
-      &
+  lisa/train-multithread.sh ${seed} ${OUTPUT_DIR} \
+    --dynet-autobatch 1 \
+    --dynet-mem 2500 \
+    --model-path-base models/gen-rnng-multithread \
+    --max-time $((5 * 21 * 3600)) \
+    --max-epochs 100 \
+    --eval-every-epochs 4 \
+    --lr-decay-patience 4 \
+    @src/configs/vocab/supervised.txt \
+    @src/configs/data/supervised.txt \
+    @src/configs/model/gen-rnng.txt \
+    @src/configs/proposals/rnng.txt \
+    @src/configs/training/sgd.txt \
+    --num-dev-samples=50 \
+    &
 done
 
 # this waits until all sub-jobs finish

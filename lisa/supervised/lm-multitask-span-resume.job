@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J lm-multitask-ccg-resume
-#SBATCH -o lisa/out/lm-multitask-ccg-resume.out
+#SBATCH -J lm-multitask-span-resume
+#SBATCH -o lisa/out/lm-multitask-span-resume.out
 #SBATCH -t 5-00:00:00
 
-PATHS=$(ls ${HOME}/thesis/models | grep '^lm-multitask-ccg_')
+PATHS=$(ls ${HOME}/thesis/models | grep '^lm-multitask-span_')
 
 # send an e-mail when the job starts
 echo "Job $SLURM_JOB_NAME started at `date` for models in $PATHS" | mail $USER -s "Started job $SLURM_JOB_NAME"
@@ -27,13 +27,13 @@ for path in $PATHS; do
   lisa/train.sh ${seed} ${OUTPUT_DIR} \
     --dynet-autobatch 1 \
     --dynet-mem 2500 \
-    --model-path-base mmodels/lm-multitask-ccg  \
+    --model-path-base models/lm-multitask-span  \
     --max-time $((5 * 23 * 3600)) \
     --max-epochs 150 \
     --resume models/${path} \
     @src/configs/vocab/supervised.txt \
-    @src/configs/data/supervised-ccg.txt \
-    @src/configs/model/lm-multitask-ccg.txt \
+    @src/configs/data/supervised.txt \
+    @src/configs/model/lm-multitask-span.txt \
     @src/configs/training/sgd.txt \
     &
 done

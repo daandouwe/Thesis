@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J sample-experiments-disc-temp=1
-#SBATCH -o lisa/out/sample-experiments-disc-temp=1.out
+#SBATCH -J sample-experiments-disc-temp=0.8
+#SBATCH -o lisa/out/sample-experiments-disc-temp=0.8.out
 #SBATCH -t 3-00:00:00
 
 # send an e-mail when the job starts
@@ -21,7 +21,7 @@ export MKL_NUM_THREADS=1
 
 # set environment variables to best models
 source scripts/best-models.sh
-export ALPHA=1.0
+export ALPHA=0.8
 
 # 15 proposal samples all a different seed
 # for seed in {1..15}; do
@@ -47,6 +47,7 @@ for num in 1 10 25 50 75 100; do
 		  --perplexity \
 		  --checkpoint ${GEN_PATH} \
       --num-samples ${num} \
+      --alpha ${ALPHA} \
       --infile data/ptb/23.auto.clean.notop \
 		  --proposal-samples out/sample-experiment/proposal=disc-rnng_temp=${ALPHA}_seed=${seed}.props \
 		  --outfile out/sample-experiment/proposal=disc-rnng_temp=${ALPHA}_seed=${seed}_num-samples=${num}.tsv \

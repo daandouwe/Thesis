@@ -1,18 +1,18 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -p normal
-#SBATCH -J syneval-rnng
-#SBATCH -o lisa/out/syneval-rnng.out
-#SBATCH -t 5-00:00:00
+#SBATCH -J syneval-lm-multitask-span
+#SBATCH -o lisa/out/syneval-lm-multitask-span.out
+#SBATCH -t 0-24:00:00
 
 # as not to tred on each other's toes
 export MKL_NUM_THREADS=1
 
 # gather all lm paths to be evaluated
-PATHS=$(ls ${HOME}/thesis/models | grep '^gen-rnng_dev')
+PATHS=$(ls ${HOME}/thesis/models | grep '^lm-multitask-span_*')
 
 # send an e-mail when the job starts
-echo "Job $SLURM_JOB_NAME started at `date` for the models $PATHS" | mail $USER -s "Started job $SLURM_JOB_NAME "
+echo "Job $SLURM_JOB_NAME started at `date` for the models $PATHS" | mail $USER -s "Started job $SLURM_JOB_NAME"
 
 # write sterr and stout of each experiment here
 OUTPUT_DIR=${HOME}/thesis/lisa/out/${SLURM_JOB_NAME}
@@ -22,20 +22,25 @@ mkdir -p ${OUTPUT_DIR}
 cd ${HOME}/thesis
 
 source lisa/lisa-cpu.sh
-source scripts/best-models.sh
 
-# evaluate the same model on different subsamples
+# for path in $PATHS; do
+#   python src/main.py syneval \
+#       --dynet-autobatch 1 \
+#       --dynet-mem 2500 \
+#       --model-type rnn-lm \
+# 	    --checkpoint models/${path} \
+# 	    --indir data/syneval/data/converted \
+#       &
+# done
+
 for path in $PATHS; do
   python src/main.py syneval \
       --dynet-autobatch 1 \
-      --dynet-mem 3000 \
-      --model-type gen-rnng \
-	    --checkpoint ${path} \
-	    --proposal-model ${DISC_PATH} \
+      --dynet-mem 2500 \
+      --model-type rnn-lm \
+	    --checkpoint models/${path} \
 	    --indir data/syneval/data/converted \
-	    --num-samples 50 \
-      --alpha 0.8 \
-	    --syneval-max-lines 1000 \
+      --capitalize \
       &
 done
 
