@@ -54,9 +54,9 @@
 \contentsline {section}{\numberline {4.4}Traning}{39}{section.4.4}
 \contentsline {section}{\numberline {4.5}Experiments}{40}{section.4.5}
 \contentsline {subsection}{\numberline {4.5.1}Supervised model}{40}{subsection.4.5.1}
-\contentsline {subsection}{\numberline {4.5.2}Proposal model}{41}{subsection.4.5.2}
+\contentsline {subsection}{\numberline {4.5.2}Proposal model}{40}{subsection.4.5.2}
 \contentsline {subsection}{\numberline {4.5.3}Sampler}{41}{subsection.4.5.3}
-\contentsline {section}{\numberline {4.6}Related work}{42}{section.4.6}
+\contentsline {section}{\numberline {4.6}Related work}{41}{section.4.6}
 \contentsline {chapter}{\numberline {5}Semisupervised learning}{43}{chapter.5}
 \contentsline {paragraph}{\nonumberline Notation}{43}{section*.24}
 \contentsline {section}{\numberline {5.1}Objective}{43}{section.5.1}

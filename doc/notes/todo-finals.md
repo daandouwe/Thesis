@@ -120,3 +120,50 @@ I have good news and bad news. Good news. First, I have converged models: disc-r
 
 ## Notities Wilker uitwerken
 - [ ] Probeer Hoofdstukken af te maken. Meer inleiding, en kijk naar de resultaten sectie. Aftikken! Maar nu even pauze.
+
+
+# April 10
+## Paper!
+- [X] Check out this shabang new paper, what did they do??
+
+## Semisup
+1. Understand semisupervised results:
+  - [ ] Download models, evaluate them (?), interpret training logs to see what went wrong
+2. Make changes accordingly.
+  - [ ] Also evaluate posterior F1
+3. Unsupervised training
+  - rewrite semisup training as unsupervised
+  - train unsupervised with CRF! Apparently that works a whole lot better than the RNNG proposal
+4. Some lessons from the unsup paper:
+  - Batch size 16, K=8 samples
+  - Baseline: use the mean of _all other samples_ (which makes sense for larger)
+5. Speed (time for 1 epoch)
+  - semisup-crf-argmax-1sample        1d9h24m36s    max 3 epochs
+  - semisup-crf-argmax-1sample-exact  1d19h40m43s   max 2 epochs
+  - semisup-disc-argmax-1sample       17h07m07s     max 5 epochs
+  - semisup-disc-argmax-3samples      1d2h50m32s    max 5 epochs
+6. Evaluate development training on Much smaller datasets! Instead of the full 1700, just do 200 first sentences.
+
+## Syneval
+- [X] Download RNNG syneval results, make syneval plots.
+- [X] How much influence does UNK have?
+- [X] Do syneval only on sentences without UNK (see "unsupervised" paper). Write code that filters the files.
+
+## Writing
+1. CRF chapter
+  - [ ] Write down explicit algorithms for inside, outside, entropy, and sampling: take more ownership! you did this fucking work!
+  - [ ] ELBO: rewrite the term with the KL term as usual, and make the connection more eplicitly.
+2. Make notes about preliminary experiments with fully unsupervised that collapse to trivial solutions.
+
+
+# April 11
+
+## Lisa
+- [ ] Request nodes with more memory.
+
+## Semisup
+- [ ] Allow Dev computation on smaller dataset.
+- [ ] Figure out maximum training time for semisupervised models.
+
+## Unsupervised
+- [ ] Adapt supervised training class to allow unsupervised training on the PTB

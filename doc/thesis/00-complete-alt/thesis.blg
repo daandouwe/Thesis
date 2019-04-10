@@ -12,45 +12,45 @@ Repeated entry---line 1332 of file ../src/bibliography.bib.bib
  :                        ,
 I'm skipping whatever remains of this entry
 Warning--I didn't find a database entry for "baydin2017automatic"
-You've used 110 entries,
+You've used 111 entries,
             2773 wiz_defined-function locations,
-            1177 strings with 25314 characters,
-and the built_in function-call counts, 59425 in all, are:
-= -- 5519
-> -- 3259
-< -- 111
-+ -- 1103
-- -- 990
-* -- 4525
-:= -- 8624
-add.period$ -- 366
-call.type$ -- 110
-change.case$ -- 654
-chr.to.int$ -- 107
-cite$ -- 220
-duplicate$ -- 2866
-empty$ -- 4860
-format.name$ -- 1170
-if$ -- 12980
+            1183 strings with 25501 characters,
+and the built_in function-call counts, 59880 in all, are:
+= -- 5566
+> -- 3269
+< -- 113
++ -- 1107
+- -- 993
+* -- 4553
+:= -- 8688
+add.period$ -- 370
+call.type$ -- 111
+change.case$ -- 658
+chr.to.int$ -- 108
+cite$ -- 222
+duplicate$ -- 2894
+empty$ -- 4906
+format.name$ -- 1174
+if$ -- 13085
 int.to.chr$ -- 4
 int.to.str$ -- 1
-missing$ -- 109
-newline$ -- 558
-num.names$ -- 444
-pop$ -- 1403
+missing$ -- 110
+newline$ -- 563
+num.names$ -- 448
+pop$ -- 1414
 preamble$ -- 1
-purify$ -- 547
+purify$ -- 550
 quote$ -- 0
-skip$ -- 2369
+skip$ -- 2386
 stack$ -- 0
-substring$ -- 2623
-swap$ -- 658
-text.length$ -- 55
+substring$ -- 2644
+swap$ -- 665
+text.length$ -- 56
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 1195
+type$ -- 1206
 warning$ -- 0
-while$ -- 535
+while$ -- 541
 width$ -- 0
-write$ -- 1459
+write$ -- 1474
 (There were 2 error messages)
