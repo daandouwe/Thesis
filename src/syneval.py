@@ -150,15 +150,12 @@ def syneval_rnng(args):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    # result_filename = 'syneval_results_caps.tsv' if args.capitalize else 'syneval_results.tsv'
-
-    # when numpy_seed is not 42 (default) it means we are evaluating
-    # the same model repeatedly of different subsamples of the full dataset
-    result_filename = f'syneval_results_{args.numpy_seed}.tsv' if args.numpy_seed != 42 else 'syneval_results.tsv'
+    result_filename = 'syneval_results_crf.tsv' if 'crf' in args.proposal_model else 'syneval_results.tsv'
     outpath = os.path.join(outdir, result_filename)
 
     print('Predicting syneval with Generative RNNG.')
-    print(f'Loading model from `{args.checkpoint}`.')
+    print(f'Loading joint model from `{args.checkpoint}`.')
+    print(f'Loading proposal model from `{args.proposal_model}`.')
     print(f'Loading syneval examples from directory `{args.indir}`.')
     print(f'Writing predictions to `{outpath}`.')
 

@@ -5,6 +5,7 @@ from rnng.parser.actions import SHIFT, NT, GEN, REDUCE
 
 TOP = 'TOP'
 DUMMY = '@'
+UNLABEL = 'X'
 
 
 class Node(object):
@@ -89,6 +90,11 @@ class InternalNode(Node):
     def cnf(self):
         return self.convert().binarize()
 
+    def unlabelize(self, label=UNLABEL):
+        self.label = label
+        for child in self.children:
+            child.unlabelize(label=label)
+
 
 class LeafNode(Node):
     def __init__(self, word, label='*'):
@@ -133,6 +139,9 @@ class LeafNode(Node):
 
     def convert(self, index=0):
         return LeafSpanNode(index, self.label, self.word)
+
+    def unlabelize(self, label=UNLABEL):
+        self.label = label
 
 
 class SpanNode(object):
@@ -230,6 +239,11 @@ class InternalSpanNode(SpanNode):
     def un_cnf(self):
         return self.unbinarize().convert()
 
+    def remove_chains(self):
+        self.label = (self.label[0],)
+        for child in self.children:
+            child.remove_chains()
+
 
 class LeafSpanNode(SpanNode):
     def __init__(self, index, tag, word):
@@ -270,6 +284,9 @@ class LeafSpanNode(SpanNode):
 
     def unbinarize(self):
         return self
+
+    def remove_chains(self):
+        pass
 
     @property
     def is_dummy(self):

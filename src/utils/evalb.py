@@ -5,19 +5,33 @@ import subprocess
 from utils.trees import fromstring, uncollapse
 
 
-def evalb(evalb_dir, pred_path, gold_path, result_path, ignore_error=10000):
+def evalb(evalb_dir, pred_path, gold_path, result_path, ignore_error=10000, param_file=None):
     """Use EVALB to score trees."""
     evalb_dir = os.path.expanduser(evalb_dir)
-    assert os.path.exists(evalb_dir), f'Do you have EVALB installed at {evalb_dir}?'
+
+    assert os.path.exists(evalb_dir), f'do you have EVALB installed at {evalb_dir}?'
+
 
     evalb_exec = os.path.join(evalb_dir, "evalb")
-    command = '{} {} {} -e {} > {}'.format(
-        evalb_exec,
-        pred_path,
-        gold_path,
-        ignore_error,
-        result_path
-    )
+    if param_file is None:
+        command = '{} {} {} -e {} > {}'.format(
+            evalb_exec,
+            pred_path,
+            gold_path,
+            ignore_error,
+            result_path
+        )
+    else:
+        assert os.path.exists(param_file), f'cannot find parameter file at {param_file}?'
+        command = '{} {} {} -e {} -p {} > {}'.format(
+            evalb_exec,
+            pred_path,
+            gold_path,
+            ignore_error,
+            param_file,
+            result_path
+        )
+
     subprocess.run(command, shell=True)
 
     # Read result path and get F-sore.

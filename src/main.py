@@ -51,7 +51,8 @@ def main():
                         help='lowercase vocab')
 
     model = parser.add_argument_group('Model (shared)')
-    model.add_argument('--model-type', choices=['disc-rnng', 'gen-rnng', 'crf', 'semisup-crf', 'semisup-disc', 'fully-unsup-disc', 'rnn-lm'],
+    model.add_argument('--model-type',
+                        choices=['disc-rnng', 'gen-rnng', 'crf', 'semisup-crf', 'semisup-disc', 'unsup-disc', 'unsup-crf', 'rnn-lm'],
                         help='type of model', default='disc-rnng')
     model.add_argument('--model-path-base', default='disc-rnng',
                         help='path base to use for saving models')
@@ -140,13 +141,15 @@ def main():
                         help='number of samples to estimate the test fscore and perplexity')
     training.add_argument('--resume', default='',
                         help='resume training from this checkpoint')
+    training.add_argument('--unlabeled', action='store_true',
+                        help='train on unlabeled trees (trees will be converted)')
 
     semisup = parser.add_argument_group('Semisupervised')
-    semisup.add_argument('--joint-model-path', default='checkpoints/joint',
+    semisup.add_argument('--joint-model-path', default=None,
                         help='pretrained joint model (gen-rnng)')
-    semisup.add_argument('--post-model-path', default='checkpoints/posterior',
+    semisup.add_argument('--post-model-path', default=None,
                         help='pretrained posterior model (disc-rnng or crf)')
-    semisup.add_argument('--lmbda', type=float, default=0.1,
+    semisup.add_argument('--lmbda', type=float, default=0,
                         help='fraction of posterior model loss in supervised objective')
     semisup.add_argument('--normalize-learning-signal', action='store_true',
                         help='optional baseline')
@@ -154,6 +157,8 @@ def main():
                         help='optional baseline')
     semisup.add_argument('--use-mlp-baseline', action='store_true',
                         help='optional baseline')
+    semisup.add_argument('--max-crf-line-len', type=int, default=-1,
+                        help='use only short sentences for crf (disable with -1)')
     semisup.add_argument('--exact-entropy', action='store_true',
                         help='exact entropy computation (crf only)')
 
@@ -197,6 +202,8 @@ def main():
                         help='inspect the attention in the model')
     pred.add_argument('--evalb-dir', default='EVALB',
                         help='where the evalb excecutable is located')
+    pred.add_argument('--evalb-param-file', default='COLLINS.prm',
+                        help='parameter file for evalb')
 
     syn = parser.add_argument_group('Syneval')
     syn.add_argument('--syneval-short', action='store_true',

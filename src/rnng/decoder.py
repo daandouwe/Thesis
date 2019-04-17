@@ -201,7 +201,7 @@ class GenerativeDecoder:
         with open(outpath, 'w') as f:
             print('\n'.join(samples), file=f, end='')
 
-    def predict_from_proposal_samples(self, inpath):
+    def predict_from_proposal_samples(self, inpath, unlabeled=False):
         """Predict MAP trees and perplexity from proposal samples in one fell swoop."""
 
         # load scored proposal samples
@@ -210,6 +210,8 @@ class GenerativeDecoder:
             for line in f:
                 i, proposal_logprob, tree = line.strip().split(' ||| ')
                 i, proposal_logprob, tree = int(i), float(proposal_logprob), fromstring(add_dummy_tags(tree.strip()))
+                if unlabeled:
+                    tree.unlabelize()
                 all_samples[i].append((tree, proposal_logprob))
 
         # check if number of samples is as desired

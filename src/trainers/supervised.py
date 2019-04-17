@@ -14,7 +14,7 @@ from rnng.model import DiscRNNG, GenRNNG
 from rnng.decoder import GenerativeDecoder
 from crf.model import ChartParser, START, STOP
 from utils.vocabulary import Vocabulary, UNK
-from utils.trees import fromstring, DUMMY
+from utils.trees import fromstring, DUMMY, UNLABEL
 from utils.evalb import evalb
 from utils.general import Timer, get_folders, write_args, ceil_div, move_to_final_folder, load_model
 
@@ -31,8 +31,10 @@ class SupervisedTrainer:
             test_path=None,
             vocab_path=None,
             evalb_dir=None,
+            evalb_param_file=None,
             dev_proposal_samples=None,
             test_proposal_samples=None,
+            unlabeled=False,
             word_emb_dim=None,
             label_emb_dim=None,
             action_emb_dim=None,
@@ -66,16 +68,21 @@ class SupervisedTrainer:
     ):
         assert model_type in ('disc-rnng', 'gen-rnng', 'crf'), model_type
 
+        if not unlabeled:
+            evalb_param_file = None
+
         self.args = args
 
         # Data arguments
         self.evalb_dir = evalb_dir
+        self.evalb_param_file = evalb_param_file
         self.train_path = train_path
         self.dev_path = dev_path
         self.test_path = test_path
         self.vocab_path = vocab_path
         self.dev_proposal_samples = dev_proposal_samples
         self.test_proposal_samples = test_proposal_samples
+        self.unlabeled = unlabeled
 
         # Model arguments
         self.model_type = model_type
@@ -182,11 +189,18 @@ class SupervisedTrainer:
         with open(self.test_path) as f:
             test_treebank = [fromstring(line.strip()) for line in f]
 
+        if self.unlabeled:
+            print(f'Converting trees to unlabeled form...')
+            for tree in train_treebank:
+                tree.unlabelize()
+
         if self.model_type == 'crf':
             print(f'Converting trees to CNF...')
             train_treebank = [tree.cnf() for tree in train_treebank]
-            dev_treebank = [tree.cnf() for tree in dev_treebank]
-            test_treebank = [tree.cnf() for tree in test_treebank]
+
+            if self.unlabeled:
+                for tree in train_treebank:
+                    tree.remove_chains()
 
         print("Constructing vocabularies...")
         if self.vocab_path is not None:
@@ -201,7 +215,6 @@ class SupervisedTrainer:
 
         if self.model_type == 'crf':
             words = [UNK, START, STOP] + words
-            labels = [(DUMMY,)] + labels
         else:
             words = [UNK] + words
 
@@ -533,7 +546,8 @@ class SupervisedTrainer:
 
         # Compute f-score
         dev_fscore = evalb(
-            self.evalb_dir, self.dev_pred_path, self.dev_path, self.dev_result_path)
+            self.evalb_dir, self.dev_pred_path, self.dev_path, self.dev_result_path,
+            param_file=self.evalb_param_file)
 
         print(f'Current dev F1 {dev_fscore}')
 
@@ -556,13 +570,14 @@ class SupervisedTrainer:
             model=self.parser, num_samples=self.num_dev_samples)
 
         trees, dev_perplexity = decoder.predict_from_proposal_samples(
-            inpath=self.dev_proposal_samples)
+            inpath=self.dev_proposal_samples, unlabeled=self.unlabeled)
 
         with open(self.dev_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
 
         dev_fscore = evalb(
-            self.evalb_dir, self.dev_pred_path, self.dev_path, self.dev_result_path)
+            self.evalb_dir, self.dev_pred_path, self.dev_path, self.dev_result_path,
+            param_file=self.evalb_param_file)
 
         print(f'Current dev F1 {dev_fscore}, current dev perplexity {dev_perplexity}')
 
@@ -597,7 +612,8 @@ class SupervisedTrainer:
 
         # Compute f-score.
         test_fscore = evalb(
-            self.evalb_dir, self.test_pred_path, self.test_path, self.test_result_path)
+            self.evalb_dir, self.test_pred_path, self.test_path, self.test_result_path,
+            param_file=self.evalb_param_file)
 
         self.tensorboard_writer.add_scalar(
             'test/f-score', test_fscore, self.current_epoch)
@@ -616,14 +632,15 @@ class SupervisedTrainer:
             model=self.parser, num_samples=self.num_test_samples)
 
         trees, test_perplexity = decoder.predict_from_proposal_samples(
-            inpath=self.test_proposal_samples)
+            inpath=self.test_proposal_samples, unlabeled=self.unlabeled)
 
         with open(self.test_pred_path, 'w') as f:
             print('\n'.join(trees), file=f)
 
         # Compute f-score.
         test_fscore = evalb(
-            self.evalb_dir, self.test_pred_path, self.test_path, self.test_result_path)
+            self.evalb_dir, self.test_pred_path, self.test_path, self.test_result_path,
+            param_file=self.evalb_param_file)
 
         # Log score to tensorboard.
         self.tensorboard_writer.add_scalar(

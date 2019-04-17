@@ -76,8 +76,7 @@ class LogProbSemiring(Semiring):
 
     @staticmethod
     def zero():
-        # return dy.constant(1, -np.inf)  # causes nan
-        return dy.constant(1, -1000)  # np.exp(-1000) = 0
+        return dy.constant(1, -1000)  # using -inf causes nan, and exp(-1000) = 0
 
     @staticmethod
     def one():

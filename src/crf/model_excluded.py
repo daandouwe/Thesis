@@ -115,6 +115,7 @@ class ChartParser(object):
     def inside(self, words, label_scores, semiring=LogProbSemiring):
 
         chart = {}
+        summed_left = {}
         summed = {}
 
         for length in range(1, len(words) + 1):
@@ -124,11 +125,15 @@ class ChartParser(object):
                 if right == left + 1:
                     split_sum = semiring.one()
                 else:
-                    split_sum = semiring.sums([
+                    semiring.sums([
                         semiring.product(
-                            summed[left, split],
+                            summed[left, left + 1],
+                            summed[left + 1, right]))
+                        ] + [
+                        semiring.product(
+                            summed_left[left, split],
                             summed[split, right])
-                        for split in range(left + 1, right)
+                        for split in range(left + 2, right)
                     ])
 
                 for label, label_index in self.label_vocab.indices.items():
@@ -140,10 +145,14 @@ class ChartParser(object):
                 if length == len(words):
                     chart[left, right, self.label_vocab.values[0]] = semiring.zero()
 
-                summed[left, right] = semiring.sums([
+                summed_left[left, right] = semiring.sums([
                     chart[left, right, label]
-                    for label in self.label_vocab.values
+                    for label in self.label_vocab.values[1:]
                 ])
+                summed[left, right] = semiring.sum(
+                    summed_left[left, right],
+                    chart[left, right, self.label_vocab.values[0]])
+
 
         # implicit top node that expands to all but the dummy node
         lognormalizer = summed[0, len(words)]
@@ -202,6 +211,7 @@ class ChartParser(object):
     def viterbi(self, words, label_scores, semiring=LogProbSemiring, tag='*'):
 
         chart = {}
+        chart_left = {}
 
         for length in range(1, len(words) + 1):
             for left in range(0, len(words) + 1 - length):
@@ -220,14 +230,33 @@ class ChartParser(object):
                     best_split_score = semiring.one()
                     children = [trees.LeafSpanNode(left, tag, words[left])]
                     subtree = trees.InternalSpanNode(label, children)
+                    chart_left[left, right] = subtree, score
                 else:
-                    best_split = max(
-                        range(left + 1, right),
-                        key=lambda split:
-                            chart[left, split][1].value() +
-                            chart[split, right][1].value())
+                    if left + 1 == split:
+                        split_values = [
+                            semiring.product(
+                                chart[left, left + 1],
+                                chart[left + 1, right]).value()
+                            ] + [
+                            semiring.product(
+                                chart_left[left, split],
+                                chart[split, right]).value()
+                            for split in range(left + 2, right)
+                        ]
+                    else:
+                        split_values = [
+                            semiring.product(
+                                chart_left[left, split],
+                                chart[split, right]).value()
+                            for split in range(left + 1, right)
+                        ]
 
-                    left_subtree, left_score = chart[left, best_split]
+                    best_split_index = np.argmax(split_values)
+                    best_split = range(left + 1, right)[best_split_index]
+                    if left + 1 == best_split:
+                        left_subtree, left_score = chart[left, best_split]
+                    else:
+                        left_subtree, left_score = chart_left[left, best_split]
                     right_subtree, right_score = chart[best_split, right]
 
                     children = [left_subtree, right_subtree]
@@ -386,7 +415,6 @@ class ChartParser(object):
             nll = -logprob
 
             samples.append((tree.un_cnf(), nll))
-            # samples.append((tree, nll))
 
         return samples
 

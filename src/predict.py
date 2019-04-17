@@ -133,14 +133,27 @@ def predict_input_crf(args):
 
         print('Parse:')
         tree, nll = parser.parse(words)
-        print('  {} {:.2f}'.format(
+        print('  {} {:.3f}'.format(
             tree.linearize(with_tag=False), nll.value()))
         print()
 
         print('Samples:')
-        for tree, nll in parser.sample(words, num_samples=8):
-            print('  {} {:.2f}'.format(
+        parse, parse_logprob, samples, entropy = parser.parse_sample_entropy(
+            words, num_samples=8, alpha=1)
+        for tree, nll in samples:
+            print('  {} {:.3f}'.format(
                 tree.linearize(with_tag=False), nll.value()))
+            # print('  {} ||| {} ||| {:.3f}'.format(
+            #     tree.convert().linearize(with_tag=False), tree.un_cnf().linearize(with_tag=False), nll.value()))
+            print()
+        print('Parse (temperature {}):'.format(args.alpha))
+        print('  {} {:.3f}'.format(
+            parse.linearize(with_tag=False), -parse_logprob.value()))
+        print()
+
+        print('Entropy:')
+        print('  {:.3f}'.format(entropy.value()))
+
         print('-'*79)
         print()
 

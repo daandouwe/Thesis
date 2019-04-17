@@ -70,10 +70,11 @@ def write_losses(args, losses):
 
 def blockgrad(expression):
     """Detach a dynet expression from the computation graph"""
-    if isinstance(expression, dy.Expression):
-        return expression.value()
-    else:  # already detached
-        return expression
+    # if isinstance(expression, dy.Expression):
+    #     return expression.value()
+    # else:  # already detached
+    #     return expression
+    return expression.value()
 
 
 def load_model(dir, name='model'):

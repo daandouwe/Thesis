@@ -23,9 +23,9 @@ class Vocabulary:
         return len(self.values)
 
     @classmethod
-    def fromlist(cls, values, unk_value=None):
+    def fromlist(cls, values, unk_value=None, sort=True):
         vocab = cls()
-        vocab.values = list(sorted(set(values)))
+        vocab.values = list(sorted(set(values))) if sort else list(values)
         vocab.indices = dict((value, i) for i, value in enumerate(vocab))
         vocab.counts = Counter(values)
         vocab.unk_value = unk_value
