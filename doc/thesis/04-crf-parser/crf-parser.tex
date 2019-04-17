@@ -1,6 +1,7 @@
 % \bibliography{../src/bibliography}
 
-This chapter introduces a neural Conditional Random Field (CRF) parser that can be used as an alternative proposal distribution for the approximate marginalization of the RNNG. The model is a span-factored CRF that independently predicts scores for labeled spans over the sentence using neural networks. The scores then interact in a tree-structured dynamic program, giving a compact description of the probability distribution over parses. This approach combines the efficient exact inference of chart-based parsing, the rich nonlinear features of neural networks, and the global training of a CRF. The chart-based approach enables efficient exact inference alowing for exact decoding and global sampling while the neural features can be complex and can condition on the entire sentence. The parser is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} to global CRF training. In \citet{stern2017minimal} the model is trained with a margin-based objective, but given our interest in this model as a proposal distribution we require probabilistic training.
+This chapter introduces a novel neural Conditional Random Field (CRF) parser. The model is a strong parser in itself, but can additionaly be used as an alternative proposal distribution for the approximate marginalization of the RNNG. The model is a CRF factored over labeled spans, and is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} from margin-based training to global CRF training. Given our interest in this model as a proposal distribution we require probabilistic training. The model is defined over normal form trees, but can deal with $n$-ary trees by introducing a dummy label $\varnoting$ in the binarization, and with unary chains by collapsing them to a single atomic label.\footnote{\textit{Cf.} figure \ref{fig:trees-ptb} for this normalization process.}. The process is to applied trees in the training corpus For the predicted trees, t
+This does pose a challenge for the probabilistic interpretation of our model. Where the parser defines a probability distribution over normal form trees, it does not define a distribution over the reconstituted trees: the process of  As such
 
 In this chapter:
 \begin{itemize}
@@ -8,10 +9,13 @@ In this chapter:
   \item We show how several inference problems of interest can be solved exactly: parsing, entropy computation, sampling.
   \item We train the parser in a supervised fashion and show it's adequacy as a parser.
   \item We invesitage the kind of samples that are obtained from this parser, and evaluate how they affect the approximate inference in the RNNG.
+  \item We discuss the drawbacks of this model as a proposal model for the RNNG.
 \end{itemize}
 
 \section{Model}
-  The model is a CRF factored over labeled spans. Let $x$ be a sentence, and $y$ a tree from $\yieldx$. We define a function $\Psi$ that assings nonnegative scores $\Psi(\x, \y)$ and let the probability of a tree be its globally normalized score
+ The model is a span-factored CRF that predicts scores for labeled spans over the sentence using neural networks, which then interact in a tree-structured dynamic program, giving a compact description of the probability distribution over all parses. This approach combines the efficient exact inference of chart-based parsing, the rich nonlinear features of neural networks, and the global training of a CRF. The factorization enables efficient exact inference alowing for exact decoding and global sampling while the neural features can be complex and can condition on the entire sentence.
+
+  Let $x$ be a sentence, and $y$ a tree from $\yieldx$. We define a function $\Psi$ that assings nonnegative scores $\Psi(\x, \y)$ and let the probability of a tree be its globally normalized score
   \begin{align}
     \label{eq:crf-model}
     p(\y \mid \x) &= \frac{\Psi(\x, \y)}{Z(\x)},
@@ -41,7 +45,7 @@ In this chapter:
     \label{eq:potential-function}
     \log \psi(\x, \y_a) = [ \ff( \vecs_{ij} ) ]_{A},
   \end{align}
-  where we pretend that $A$ doubles as an index. This architecture is rightly called minimal, but it works surprisingly well: \citet{stern2017minimal} experiment with more elaborate functions based on concatenation of vectors (a strict superset of the minus approach) and biaffine scoring (inspired by \citet{dozat2016deep}), but these function improve marginally, if they do at all.
+  where we pretend that $A$ doubles as an index. This architecture is rightly called minimal, but it works surprisingly well: \citet{stern2017minimal} experiment with more elaborate functions based on concatenation of vectors (a strict superset of the minus approach) and biaffine scoring (inspired by \citet{dozat2016deep}), but these functions improve marginally, if they do at all.
 
   \begin{figure}
     \includegraphics[width=\textwidth]{span-encoding.pdf}
@@ -79,17 +83,18 @@ In this chapter:
   The three kind of edges that make up $\mathcal{E}$ are illustrated in figure \ref{fig:crf-edges}. A tree is a set of nodes $y \subseteq \mathcal{V}(x)$, and the parse forest a set of trees $\yieldx \subseteq 2^{\mathcal{V}(x)}$.
 
   \begin{figure}[h]
+  \label{fig:crf-edges}
     \center
     \begin{tikzpicture}[scale=.6]
       \input{../figures/edges/edges.tex}
     \end{tikzpicture}
     \caption{The edge-types making up the hypergraph.}
-    \label{fig:crf-edges}
   \end{figure}
 
   We connect a semiring $\mathcal{K}$ to the hypergraph by defining the weight function as $\omega: \mathcal{E} \to \mathbb{K}$, and by accumulating the weights with its binary operations. The function $\omega$ that assigns weights to the edges is given by either the function $\psi$ or $(\log \circ \, \psi)$, depending on the semiring used. Because of this association, the function $\omega$ has a very particular property: the function effectively depends only on the \textit{head} of the edge. Given edges $e = \langle \{ u, w \}, v \rangle$ and $e' =  \langle \{ u', w' \}, v \rangle$ for $u \neq u'$ and $w \neq w'$, their weights are equal: $\omega(e) = \omega(e')$. For this reason we write $\omega(v)$ instead.\footnote{Thus implicitly defining $\omega: \mathcal{V} \to \mathbb{K}$.} This fact will allow us to greatly simplify the recursions that follow. Additionally, this means that instead of computing independent scores for each of the $O(n^3 \vert\Lambda\rvert^3)$ edges, we only need to compute scores for the $O(n^2 \vert\Lambda\rvert)$ vertices. For a scoring function like a neural network, for which computation can be relatively expensive, this will make a significant difference.
 
  With this structure in place, we are ready to derive the form of the inference algorithm particular to this structure.
+
 
 \subsection{Inside recursion}
   The inside recursion computes quantities $\alpha(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. The quantity computed depends on the semiring used. In this section we derive the inside recursion specific to our hypergraph from the general result given.
@@ -132,13 +137,16 @@ In this chapter:
   \end{align}
   where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting.
 
+  These values can be computed by visiting the nodes of the parse forest in topological order. This order ensures that the in quantities in the tail of an edge will have been computed when the value at the node at the head is at turn. Given the highly regular for of the parse forest, this order boils down to something quite simple: the nodes are visited by increasing width of the span; the order in which the starting-points are visited does not matter because these nodes are not connected among each other.\footnote{\textit{Cf.} figure \ref{fig:hypergraph}: the width of the span determines the vertical level of the node in the parse forest; for a fixed width, the label and startpoint are all unconnected along this vertical level, and thus independent.}. We choose to visit the starting points from left to right, that is, from 0 to $n$. Algorithm \ref{algo:inside} shows the this recursion as an algorithm.
+
+
 \subsection{Outside recursion}
   The outside algorithm computes the quantities $\beta(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. The general recursion is given by:
   \begin{align*}
     \beta(v) =
       \begin{cases}
         \bar{1}  & \mbox{if } O(v) = \varnothing, \\
-        \displaystyle\bigoplus_{e \in O(v)} \omega(w) \otimes \beta(H(e)) \otimes \displaystyle\bigotimes_{ \substack{ w \in T(e) \\ w \neq u } } \alpha(w)  & \mbox{otherwise.}
+        \displaystyle\bigoplus_{e \in O(v)} \omega(e) \otimes \beta(H(e)) \otimes \displaystyle\bigotimes_{ \substack{ w \in T(e) \\ w \neq u } } \alpha(w)  & \mbox{otherwise.}
       \end{cases}
   \end{align*}
   Here, $O(v) \subseteq E$ is the set of edges outgoing from $v$, $\ie$ the edges for which $v$ is in the tail, and define $H(e) \in V$ as the node at the head of edge $e$.
@@ -147,7 +155,7 @@ In this chapter:
   \begin{align*}
     \beta(S^{\dagger}, 0, n) = \bar{1}.
   \end{align*}
-  To compute $\beta(A, i, j)$ in the general case we need to sum over all outgoing edges. These come in two kinds: either $(A, i, j)$ combines with $(C, k, i)$ to form constituent $(B, k, j)$; or either $(A, i, j)$ combines with $(C, j, k)$ to form constituent $(B, i, k)$. This corresponds to the following expression, that we can simplify by making use of the properties of $\omega$:
+  To compute $\beta(A, i, j)$ in the general case we need to sum over all outgoing edges. These come in two kinds: either $(A, i, j)$ combines with $(C, j, k)$ to form constituent $(B, i, k)$; or $(A, i, j)$ combines with $(C, k, i)$ to form constituent $(B, k, j)$. This corresponds to the following expression, that we can simplify by making use of the properties of $\omega$:
   \begin{align*}
     \beta(A, i, j)
       &= \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=1}^{i-1} \omega(B, k, j) \otimes \alpha(C, k, i) \otimes \beta(B, k, j) \\
@@ -161,6 +169,9 @@ In this chapter:
       \sigma(i, j) &= \bigoplus_{A \in \Lambda} \alpha(A, i, j),  \\
       \sigma'(i, j) &= \bigoplus_{A \in \Lambda} \omega(A, i, j) \beta(A, i, j).
   \end{align*}
+
+  These values can be computed by visiting the nodes of the parse forest in \textit{reverse} topological order, exactly the opposite of the inside recursion. This order ensures that the in quantities in the head of an edge will have been computed when the values in the tail are at turn. Again, this this order boils down to something quite simple: the nodes are visited based by decreasing width of their span, and again the order of the start-points are free. Algorithm \ref{algo:outside} shows the this recursion as an algorithm.
+
 
 \subsection{Solutions}
   Equiped with the two recursions and a handful of semirings we can provide the solutions promised at the outset of this section.
@@ -195,14 +206,14 @@ In this chapter:
     and the best tree $\hat{y}$ is found by following back from the root down to the leaves the best splits and labels.
 
   \paragraph{Sample}
-    Samples can be obtained by recursively sampling edges, starting at the root node $(S^{\dagger}, 0, n)$. The probability of an edges is proportional to the weight under that edge: this is precicely the inside value $\alpha$ computed in the real-semiring. An edge $e = \langle \{ u, w \}, v \rangle$, with $u = (B, i, k)$, $w = (C, k, j)$ and $v = (A, i, j)$, has probability
+    Unbiased samples from the model can be obtained by recursively sampling incoming edges, starting at the root node $(S^{\dagger}, 0, n)$, ending at the word nodes. The probability of an edges is proportional to the weight under that edge: this is precicely the inside value $\alpha$ computed in the real-semiring. An edge $e = \langle \{ u, w \}, v \rangle$, with $u = (B, i, k)$, $w = (C, k, j)$ and $v = (A, i, j)$, thus has probability
     \begin{align}
       \label{eq:sample}
       P(E = e)
         &= \frac{\omega(e) \otimes \bigotimes_{u \in T(e)} \alpha(u)}{\alpha(v)}  \nonumber  \\
         &= \frac{\psi(A, i, j) \, \alpha(B, i, k) \, \alpha(C, k, j)}{\alpha(A, i, j)}.
     \end{align}
-    We repeat the sampling at the nodes that are in the tail of the sampled edge, until we reached the nodes that span individual words.
+    Once an edge is sampled, the process is repeated at the nodes in the tail of that edge. We stop when we reach the nodes that span individual words. The sampled edges together then are guaranteed to form a tree. From a compuational point of view, this sampling is very efficient: the scores for the labeled spans need to be computed only once, followed by a single run of the inside and outside algorithm. Beyond this point, no costly computation is required. In our case, where the scores are predicted by a neural network, this means that we need to perfom just a single forward pass. Compare this with a sequential model such as the discriminative RNNG, where each sample requires an separate forward pass.
 
   \paragraph{Entropy}
     % To compute the entropy $H(Y \mid X = x)$ we need to first introduce the notion of the \textit{maginal probablity} of a node. The marginal of a node $v = (A, i, j)$ in a hypergraph is the probability that it occurs in a tree $\y$ for the sentence $\x$ as governed by the distribution $p$ that we defined on it. Let $V$ be a random variable with the hypergraph nodes $\mathcal{V}(x)$ as sample space, and define
@@ -250,24 +261,24 @@ In this chapter:
     \end{align}
 
 \section{Traning}
-The training objective is to maximize the likelihood of the training data
-\begin{align*}
-  \mathcal{L}(\theta)
-    &= \sum_{(\x, \y) \in \dataset} \log \ptheta(\y \mid \x)
-\end{align*}
-with respect to the model parameters $\theta$. Writing out the objective for a single example as
-\begin{align*}
-  \log \ptheta(\y \mid \x) = \log \Psi(\x, \y) - \log Z(x)
-\end{align*}
-reveals that the maximization of this value decomposes as two separate optimizationproblems: to maximize the log-score of the example tree $\log \Psi(\x, \y)$, whilst minimizing the total weight of the parse forest $\log Z(x)$. The solution is thus to move probability mass onto the gold tree, and move mass away from \textit{all} other trees. Because the log-score of the tree decomposes as a sum of log-scores of the nodes that comprise it, the objective is effectively to \textit{increase} the scores of the labeled spans that make up the gold tree, and \textit{decrease} the scores of all other labeled spans not observed. Another effect of the factorization over parts is that this increases not only the probability of the gold tree, but the probability of all trees that share substantial substructure. It is in this precise sense that we mean that the model learns about all substructures.
+  The training objective is to maximize the likelihood of the training data
+  \begin{align*}
+    \mathcal{L}(\theta)
+      &= \sum_{(\x, \y) \in \dataset} \log \ptheta(\y \mid \x)
+  \end{align*}
+  with respect to the model parameters $\theta$. Writing out the objective for a single example as
+  \begin{align*}
+    \log \ptheta(\y \mid \x) = \log \Psi(\x, \y) - \log Z(x)
+  \end{align*}
+  reveals that the maximization of this value decomposes as two separate optimizationproblems: to maximize the log-score of the example tree $\log \Psi(\x, \y)$, whilst minimizing the total weight of the parse forest $\log Z(x)$. The solution is thus to move probability mass onto the gold tree, and move mass away from \textit{all} other trees. Because the log-score of the tree decomposes as a sum of log-scores of the nodes that comprise it, the objective is effectively to \textit{increase} the scores of the labeled spans that make up the gold tree, and \textit{decrease} the scores of all other labeled spans not observed. Another effect of the factorization over parts is that this increases not only the probability of the gold tree, but the probability of all trees that share substantial substructure. It is in this precise sense that we mean that the model learns about all substructures.
 
-We rely on automatic differentiation to compute the derivatives, but note that in principle it is possible to efficiently combine the computation of the inside and outside values with their derivatives, a fact demonstrated in \citep{eisner2009semirings} and \citep{eisner2016backprop}, and implemented in \citep{kim2017structured}. Instead, for convenience and simplicity compute the quantity $Z(x)$ and let automatic differentation do the rest.
+  We rely on automatic differentiation to compute the derivatives, but note that in principle it is possible to efficiently combine the computation of the inside and outside values with their derivatives, a fact demonstrated in \citep{eisner2009semirings} and \citep{eisner2016backprop}, and implemented in \citep{kim2017structured}. Instead, for convenience and simplicity compute the quantity $Z(x)$ and let automatic differentation do the rest.
 
-It is fruitful to see how our global objective differs from the margin-based objective in \citep{stern2017minimal}. The margin-based objective is to maximize the difference, or `margin', between the score of the gold tree and the highest scoring, incorrect tree. Given an example pair $(\x, \y)$, the model computes the predicted tree $\hat{y}$. If the predicted tree equals the example tree, $\hat{y} = \y$, then no changes to the model are made. Otherwise, the model is updated to maximize the difference between their scores
-\begin{align*}
-  \Psi(\x, \y) - \Psi(\x, \hat{\y}),
-\end{align*}
-maximizing the score of the correct tree, and minimizing the score of the predicted tree.\footnote{The objective reported in the paper is minimizing the hinge loss $\max \Big(0, 1 - \Psi(\x, \y) + \Psi(\x, \hat{\y}) \Big)$, but the above is what is actually implementated in their code.} This objective shows a striking similarity with our CRF objective, with one very particular difference. The goal is still to maximize the score of the gold tree. But the minimization that in the CRF objective concerns all possible trees through $Z(x)$, in this objective concerns just the single tree $\hat{\y}$ that was incorrectly predicted. The scores of all other nodes not observed in either tree remain unchanched.
+  It is fruitful to see how our global objective differs from the margin-based objective in \citep{stern2017minimal}. The margin-based objective is to maximize the difference, or `margin', between the score of the gold tree and the highest scoring, incorrect tree. Given an example pair $(\x, \y)$, the model computes the predicted tree $\hat{y}$. If the predicted tree equals the example tree, $\hat{y} = \y$, then no changes to the model are made. Otherwise, the model is updated to maximize the difference between their scores
+  \begin{align*}
+    \Psi(\x, \y) - \Psi(\x, \hat{\y}),
+  \end{align*}
+  maximizing the score of the correct tree, and minimizing the score of the predicted tree.\footnote{The objective reported in the paper is minimizing the hinge loss $\max \Big(0, 1 - \Psi(\x, \y) + \Psi(\x, \hat{\y}) \Big)$, but the above is what is actually implementated in their code.} This objective shows a striking similarity with our CRF objective, with one very particular difference. The goal is still to maximize the score of the gold tree. But the minimization that in the CRF objective concerns all possible trees through $Z(x)$, in this objective concerns just the single tree $\hat{\y}$ that was incorrectly predicted. The scores of all other nodes not observed in either tree remain unchanched.
 
 \section{Experiments}
   We perform three types of experiments with the CRF parser:
@@ -284,13 +295,39 @@ maximizing the score of the correct tree, and minimizing the score of the predic
     \item I suggest two experiments: (1) use the default setting from \citep{stern2017minimal} and (2) use the settings for the RNNG with a hidden size to match the 800,000 parameters.
   \end{itemize}
 
+  \begin{table}[h]
+  \center
+    \begin{tabular}{r|l|l|l}
+      & Stack & Buffer & Action  \\ \hline
+      0 &  & \textit{The} \,$\mid$\, \textit{hungry}\,$\mid$\,\textit{cat}\,$\mid$\,\textit{meows}\,$\mid$\,. & \open(S) \\
+      1 & (S & \textit{The}\,$\mid$\,\textit{hungry}\,$\mid$\,\textit{cat}\,$\mid$\,\textit{meows}\,$\mid$\,. & \open(NP) \\
+      2 & (S\,$\mid$\,(NP  & \textit{The}\,$\mid$\,\textit{hungry}\,$\mid$\,\textit{cat}\,$\mid$\,\textit{meows}\,$\mid$\,. & \shift \\
+      3 & (S\,$\mid$\,(NP\,$\mid$\,\textit{The} & \textit{hungry}\,$\mid$\,\textit{cat}\,$\mid$\,\textit{meows}\,$\mid$\,. & \shift \\
+      4 & (S\,$\mid$\,(NP\,$\mid$\,\textit{The}\,$\mid$\,\textit{hungry} & \textit{cat}\,$\mid$\,\textit{meows}\,$\mid$\,. & \shift \\
+      5 & (S\,$\mid$\,(NP\,$\mid$\,\textit{The}\,$\mid$\,\textit{hungry}\,$\mid$\,\textit{cat} & \textit{meows}\,$\mid$\,. & \reduce \\
+      6 & (S\,$\mid$\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat}) & \textit{meows}\,$\mid$\,. & \open(VP) \\
+      7 & (S\,$\mid$\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,$\mid$\,(VP & \textit{meows}\,$\mid$\,. & \shift \\
+      8 & (S\,$\mid$\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,$\mid$\,(VP\,$\mid$\,\textit{meows} & . & \reduce \\
+      9 & (S\,$\mid$\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,$\mid$\,(VP\,\textit{meows}) & . & \shift \\
+      10 & (S\,$\mid$\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,$\mid$\,(VP \textit{meows})\,$\mid$\,. &  & \reduce \\
+      11 & (S\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,(VP\,\textit{meows})\,.) &  &  \\ \hline
+    \end{tabular}
+  % \caption{Discriminative transition sequence that parses an input sentence. Items are separated by the midline symbol $|$.}
+  % \label{tab:disc-trans}
+  \end{table}
+
 \subsection{Proposal model}
+  Discuss that the CRF is not a proper proposal model, for two reasons:
+  \begin{enumerate}
+    \item The CRF defines a probability distribution over normal form trees. After collapsing the dummy nodes, and expanding the unary chains we get a very different set of the trees. Over this set of trees, the CRF does not define a distribution. The
+    \item The CRF breaks the required assumption for a proposal model: for some trees $y$, $p(x, y) > 0$, but $q(y | x) = 0$. The CRF supports unary chains (by collapsing them), but only to a limited extend. The RNNG, on the other hand, supports arbitrarily long unary chains (whose number is arbitrarily capped to 100). For those trees $y$ that have these unbouded chains, $p(x, y) > 0$, but $q(y | x) = 0$. This breaks the assumption of the proposal model. Now, a trained RNNG will most likely assign very little probability to such trees, so in the practical marginalization, this will have little effect (hopefully). But theoretically, this is a major problem.
+  \end{enumerate}
+
   We investigate the following:
   \begin{itemize}
     \item We evaluate validation F-score and perplexity.
     \item We evaluate F-score with 100 samples (as many proposal trees as possible).
     \item We evaluate perplexity with varying number of samples: 1 (argmax), 10, 20, 50, 100 (default). The peplexity evaluation with the argmax prediction gives an impression of the uncertaty in the model \citep{buys2018exact}.
-    \item  We perform learning rate decay and model selection based on a development score computed with the samples from the discriminative RNNG. Undecided: should we train a separate joint RNNG with CRF samples?
   \end{itemize}
 
 \subsection{Sampler}

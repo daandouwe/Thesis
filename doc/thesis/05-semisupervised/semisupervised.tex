@@ -125,6 +125,107 @@ We introduce the two baselines:
 \end{itemize}
 
 
+\section{Problems with CRF proposal}
+We map a treebank tree to \textit{a single} normal form derivation, but many normal form derivations map to a single treebank tree. This means that if we let $f: \mathcal{D}(x) \to \yieldx$ be the transformation that collapses the dummy nodes, then $f$ is such that $f(d) = y$, but the preimage of $f$ is a set of derivations $f^{-1}( y ) = D \subseteq \mathcal{D}(x)$ with $\lvert D \rvert > 1$. However, to produce normal form trees from treebank trees, we defined a function $g: \yieldx \to \mathcal{D}(x)$ that always produces one particular normal form tree.
+
+Let us illustrate this with an example. The following two normal form trees
+\begin{figure}[h]
+  \begin{subfigure}[b]{0.5\textwidth}
+    \center
+    \begin{tikzpicture}[scale=.6]
+      \input{../figures/normal-form/cnf-valid.tex}
+    \end{tikzpicture}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.5\textwidth}
+    \center
+    \begin{tikzpicture}[scale=.6]
+      \input{../figures/normal-form/cnf-invalid.tex}
+    \end{tikzpicture}
+	\end{subfigure}
+\end{figure}
+both collapse to the same tree when dummy labels $\varnothing$ are collapsed:
+\begin{center}
+  (S (NP The other hungry cat) (VP meows) .)
+\end{center}
+% \begin{figure}[h]
+%   \center
+%   \begin{subfigure}[b]{0.5\textwidth}
+%     \begin{tikzpicture}[scale=.6]
+%       \input{../figures/normal-form/un-cnf.tex}
+%     \end{tikzpicture}
+%   \end{subfigure}
+% \end{figure}
+But going the other way, applying the normal form transformation to the above tree, we obtain the left tree, and never the right tree. This causes the problems noted above: there is derivational ambiguity, and the distribution over derivations is a different distribution from the one over the trees that they collapse to. We propose two solutions to this:
+\begin{enumerate}
+  \item We can dispense with the dummy label altogether, and instead alter our CRF so that it can deal directly with $m$-ary trees, for any order $m$.\footnote{The way we deal with unary chains remains unchanched} This means that we add all hyperedges with more than 2 children. The general formulation of the inside and outside recursions remain unaltered, but the specific form becomes less efficient because we now need to deal with a sum over all possible partitions of the span under a node.
+  \item We keep the dummy label, but prune the hyperforest to only contain derivations that are reachable by the normal form transformation. This means that we assign probability zero to all trees that do not correspond to the cannonical normal form that we commited to by choosing the transformation. Because this transformation is very regular, we can easily incorporate this pruning in the inside and outside algorithms. Again, there is a loss in efficiency due to the loss of regularity: the forest does remain binary, but the sum over labels and splitpoint are no longer independent, and thus we cannot absorb the sums.
+\end{enumerate}
+
+We now describe either solution, starting with the solution of making the CRF deal directly with $m$-ary trees.
+
+\subsection{Unrestricted parse forest}
+  One solution, as noted, is to make the parse-forest deal with $m$-ary trees directly. This requires that for each noterminal node, we add incoming edges that contain more than two children in the tail. This needs to be done for each permissible number of children (determined by the width of the span), and for all possible partitions of that size of the span. More formally, let $(A,i,j)$ be such a node with $i + 1 < j$, so that it can expand to other noterminal nodes. Then let $i = k_0 < k_1 < k_2 < \cdots < k_m = j$ be a partition of the discrete interval $[i, j]$ into $m$ subspans. Letting $B_1, \dots, B_m$ be labels for those subspans we can form an edge that connects the set
+  \begin{align*}
+    \Big\{ (B_1, k_0, k_1), (B_2, k_1, k_2), \dots, (B_m, k_{n-1}, k_m) \Big\}
+  \end{align*}
+  at the tail to the node $(A, i, j)$ at the head. Adding \textit{all} such nodes to the parse forest will allow us to deal with $n$-ary trees directly.
+
+  The generality of the semiring formulations of the inside and outside algorithms, allows us to seamlesly apply them to this new parse forest. If we let $v = (A, i, j)$ such that $I(v) \neq \varnothing$ we can derive the inside value $\alpha(v)$ as
+  \begin{align*}
+    \alpha(v)
+      &= \displaystyle\bigoplus_{e \in I(v)} \omega(e) \otimes \displaystyle\bigotimes_{u \in T(e)} \alpha(u)  \\
+      &= \displaystyle\bigoplus_{n = 2}^{j - i} \displaystyle\bigoplus_{k_0 < k_1 < \cdots < k_m} \displaystyle\bigoplus_{B_1 \in \Lambda} \cdots \displaystyle\bigoplus_{B_m \in \Lambda} \omega(A, i, j) \otimes \displaystyle\bigotimes_{l=1}^n \alpha(B_l, k_{l-1}, k_l) \\
+      &= \omega(A, i, j) \otimes \displaystyle\bigoplus_{n = 2}^{j - i} \displaystyle\bigoplus_{k_0 < k_1 < \cdots < k_m} \displaystyle\bigotimes_{l=1}^n \displaystyle\bigoplus_{B \in \Lambda} \alpha(B, k_{l-1}, k_l) \\
+      &= \omega(A, i, j) \otimes \displaystyle\bigoplus_{n = 2}^{j - i} \displaystyle\bigoplus_{k_0 < k_1 < \cdots < k_m} \displaystyle\bigotimes_{l=1}^n \sigma(k_{l-1}, k_l), \\
+  \end{align*}
+  where logic that allows us write
+  \begin{align*}
+    \displaystyle\bigoplus_{B_1 \in \Lambda} \cdots \displaystyle\bigoplus_{B_m \in \Lambda} \displaystyle\bigotimes_{l=1}^n \alpha(B_l, k_{l-1}, k_l) = \displaystyle\bigotimes_{l=1}^n \displaystyle\bigoplus_{B \in \Lambda} \alpha(B, k_{l-1}, k_l)
+  \end{align*}
+  is the same as in the binary case, but generalized to $m$ terms.
+
+  For the outside value $\beta(v)$ we can follow a similar derivation. Let
+  \begin{align*}
+    0 \leq k_0 < \cdots < k_a = i < j = k_{a+1} < \cdots < k_m \leq n
+  \end{align*}
+  be a partition of the discrete interval $[k_0, k_m]$ into $m$ pieces, one of which is $[i, j]$, namely the interval $[k_a, k_{a+1}]$. This partition represents one way in wich the interval $[i, j]$ can be completed with $m-1$ other intervals into an interval $[k_0, k_m]$. With this in place, we can derive the outside recursion as
+  \begin{align*}
+    \beta(v)
+      &= \displaystyle\bigoplus_{e \in O(v)} \omega(w) \otimes \beta(H(e)) \otimes \displaystyle\bigotimes_{ \substack{ w \in T(e) \\ w \neq u } } \alpha(w) \\
+      &= \displaystyle\bigoplus_{m = 2}^{n - j + i} \displaystyle\bigoplus_{k_0=0}^{i-1} \displaystyle\bigoplus_{k_m = j}^{n} \displaystyle\bigoplus_{k_0 < \cdots < k_a < k_{a+1} < \cdots < k_m} \displaystyle\bigoplus_{B \in \Lambda}  \\
+        &\qquad\qquad \omega(A, i, j) \otimes \beta(B, k_0, k_m) \otimes \displaystyle\bigotimes_{ \substack{1 \leq l \leq n \\ l \neq a } } \displaystyle\bigotimes_{C \in \Lambda} \alpha(C, k_{l-1}, k_l) \\
+      &= \displaystyle\bigoplus_{m = 2}^{n - j + i} \displaystyle\bigoplus_{k_0=0}^{i-1} \displaystyle\bigoplus_{k_m = j}^{n} \displaystyle\bigoplus_{k_0 < \cdots < k_a < k_{a+1} < \cdots < k_m}  \\
+        &\qquad\qquad \displaystyle\bigoplus_{B \in \Lambda} \omega(B, i, j) \otimes \beta(B, k_0, k_m) \otimes \displaystyle\bigotimes_{ \substack{1 \leq l \leq n \\ l \neq a } } \displaystyle\bigotimes_{C \in \Lambda} \alpha(C, k_{l-1}, k_l)  \\
+      &= \displaystyle\bigoplus_{m = 2}^{n - j + i} \displaystyle\bigoplus_{k_0=0}^{i-1} \displaystyle\bigoplus_{k_m = j}^{n} \displaystyle\bigoplus_{k_0 < \cdots < k_a < k_{a+1} < \cdots < k_m} \sigma'(k_0, k_m) \otimes \displaystyle\bigotimes_{ \substack{1 \leq l \leq n \\ l \neq a } } \sigma(k_{l-1}, k_l).
+  \end{align*}
+
+
+\subsection{Pruned parse forest}
+  Another solution is to prune the parse forest: to keep only those trees that can be obtained by the normal form transformation. Going back to the example at the beginning of the example, this solution asks us to assign probability zero to the right tree, the tree that we cannot obtain by the normal form transformation. Since the transformation that we apply is very regular, we can easily characterize the set of trees that are impossible to derive. In fact, it boils done to one characteristic: a node can have the label $\varnothing$ only when \textit{either} that node spans a single word \textit{or} that node is the right child of its parent node.\footnote{We binarize \textit{rightwards}, thus introducting the dummy labels in that position, and can only ever introduce the dummy label in the left child position when it spans a single word.} That means we should remove from the parse forest all edges of the form illustrated in figure \ref{fig:illegal-edges}.
+  \begin{figure}[h]
+    \center
+    \begin{tikzpicture}[scale=.6]
+      \input{../figures/edges/illegal-edges.tex}
+    \end{tikzpicture}
+    \caption{Edges in the parse forest that produce the derivational ambiguity, where $k > i+1$ and $A, B \in \Lambda$.}
+    \label{fig:illegal-edges}
+  \end{figure}
+
+  With this characterization in hand, we can alter the recursions, starting with the inside algorithm.
+  \begin{align*}
+    \alpha(A, i, j)
+      &= \displaystyle\bigoplus_{B \in \Lambda} \displaystyle\bigoplus_{C \in \Lambda} \omega(A, i, j) \otimes \alpha(B,i,i+1) \otimes \alpha(C,i+1,j) \\
+        &\qquad\oplus \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \displaystyle\bigoplus_{C \in \Lambda} \displaystyle\bigoplus_{k=i+2}^{j-1} \omega(A, i, j) \otimes \alpha(B,i,k) \otimes \alpha(C,k,j) \\
+      &= \omega(A, i, j) \otimes \displaystyle\bigoplus_{B \in \Lambda} \displaystyle\bigoplus_{C \in \Lambda} \alpha(B,i,i+1) \otimes \alpha(C,i+1,j)  \\
+        &\qquad\oplus \omega(A, i, j) \otimes \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \displaystyle\bigoplus_{C \in \Lambda} \displaystyle\bigoplus_{k=i+2}^{j-1} \alpha(B,i,k) \otimes \alpha(C,k,j)  \\
+      &= \Bigg[ \omega(A, i, j) \otimes \sigma(i,i+1) \otimes \sigma(i+1,j) \Bigg] \oplus \Bigg[ \omega(A, i, j) \otimes \displaystyle\bigoplus_{k=i+2}^{j-1} \tilde{\sigma}(i,k) \sigma(k,j) \Bigg] 
+  \end{align*}
+  where
+  \begin{align*}
+    \tilde{\sigma}(i,k) =  \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \alpha(A, i, k).
+  \end{align*}
+
+
 \section{Related work}
 \begin{itemize}
   \item Discrete latent variables in neural models \citep{miao2016discrete,yin2018structvae}.

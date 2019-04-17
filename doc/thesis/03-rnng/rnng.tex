@@ -1,6 +1,6 @@
 % \bibliography{../src/bibliography}
 
-In this chapter we introduce the Recurrent Neural Network Grammar (RNNG), a probabilistic model of sentences with explicit phrase structure, introduced by \citet{dyer2016rnng}.
+In this chapter we describe the Recurrent Neural Network Grammar (RNNG), a probabilistic model of sentences with explicit phrase structure, introduced by \citet{dyer2016rnng}.
 
 \section{Model}
 The discriminative RNNG is a discriminative transition based parser that uses regular RNNs to summarize the actions in the history and the words on the buffer into vectors, and uses a special RNN with a syntax-dependent recurrence to obtain a vector representation of items on the the stack. The generative RNNG can be seen as a generative formulation of the RNNG, jointly modelling the words instead of merely conditioning on them, or it can be seen as a structured model of language that predicts words together with their structure. From a parsing perspective, the generative RNNG simply dispences with the discriminative RNNG's buffer to instead predict the words of the tree. As a model of sentences, it can better be understood as kind of structured RNN: it predicts words incrementally, but compresses and labels them recursively whenever they form a complete constituents.
@@ -37,7 +37,6 @@ The buffer is dispensed with and is replaced by a similar structure that records
 
   Example taken from \citet{dyer2016rnng}.
 \end{example}
-
 
 \subsection{Model}
 
@@ -144,7 +143,7 @@ The stack RNN computes a representation based on incoming nonterminal and termin
 \begin{example}{(Composition function)}
   Consider the state of the parser in example \ref{ex:disc-states} at step 5, when the stack contains the five items
   \begin{center}
-    (S | (NP | \textit{The} | \textit{hungry} | \textit{cat}.
+    (S $\mid$ (NP $\mid$ \textit{The} $\mid$ \textit{hungry} $\mid$ \textit{cat}.
   \end{center}
   Each first represented by an embedding vector, and then encoded by an RNN in the regular way. A $\reduce$ action is now predicted: the items are popped from the stack until the first open bracket is popped, which in this example is the item that opens the NP bracket. This process also rewinds the RNN state to before the bracket was openend, which in this example brings the RNN back to its state at step 1. The composition now computes a vector representation for the four popped items, returning a single representation for the composed item
   \begin{center}
@@ -152,11 +151,11 @@ The stack RNN computes a representation based on incoming nonterminal and termin
   \end{center}
   The RNN is fed this reduced input, resulting in the encoding of stack at step 6, and finalizing the reduction step. This process is recursive: consider the reduction that takes the stack from the five items
   \begin{center}
-    (S | (NP | \textit{The} | (ADJP \textit{very} \textit{hungry}) | \textit{cat}
+    (S $\mid$ (NP $\mid$ \textit{The} $\mid$ (ADJP \textit{very} \textit{hungry}) $\mid$ \textit{cat}
   \end{center}
   to the two items
   \begin{center}
-    (S | (NP \textit{The} (ADJP \textit{very} \textit{hungry}) \textit{cat}).
+    (S $\mid$ (NP \textit{The} (ADJP \textit{very} \textit{hungry}) \textit{cat}).
   \end{center}
   The items in the constituent (ADJP \textit{very} \textit{hungry}) have already been composed into a single item, and now it takes part in the composition at a higher level.
 \end{example}
@@ -205,13 +204,13 @@ The proposal distribution allows us to rewrite the marginal probability of a sen
 \begin{align*}
   p (\x)
     &= \sum_{\y  \in \mathcal{Y}(\x)} \ptheta(\x, \y) \\
-    &= \sum_{\y  \in \mathcal{Y}(\x)} \qlambda(\y |\x) \frac{\ptheta(\x,\y )}{\qlambda(\y | \x)} \\
-    &= \expect_{q} \bigg[\frac{\ptheta(\x,\y )}{\qlambda(\y | \x)} \bigg] \\
+    &= \sum_{\y  \in \mathcal{Y}(\x)} \qlambda(\y \mid \x) \frac{\ptheta(\x,\y )}{\qlambda(\y \mid \x)} \\
+    &= \expect_{q} \bigg[\frac{\ptheta(\x,\y )}{\qlambda(\y \mid  \x)} \bigg] \\
 \end{align*}
 This expectation can be approximated with a Monte Carlo estimate
 \begin{align}
-  \expect_{q} \bigg[\frac{\ptheta(\x,\y )}{\qlambda(\y | \x)} \bigg]
-    &\approx \frac{1}{K}\sum_{i=1}^K  \frac{\ptheta( \x, \y^{(i)} )}{\qlambda(\y^{(i)} | \x)},
+  \expect_{q} \bigg[\frac{\ptheta(\x,\y )}{\qlambda(\y \mid \x)} \bigg]
+    &\approx \frac{1}{K}\sum_{i=1}^K  \frac{\ptheta( \x, \y^{(i)} )}{\qlambda(\y^{(i)} \mid \x)},
 \end{align}
 using proposal samples $\y^{(i)}$ sampled from the proposal model $\qlambda$ conditioning on $\x$.
 
@@ -221,18 +220,19 @@ To approximate the MAP tree $\hat{\y}$ we use the same set of proposal samples a
 \paragraph{Proposal distribution}
 The proposal distribution must have a support that covers that of the joint model. This corresponds to the property that for all $\x$ and $\y \in \yieldx$
 \begin{equation*}
-  p(\x, \y) > 0 \Rightarrow q( \y| \x ) > 0.
+  p(\x, \y) > 0 \Rightarrow q( \y \mid \x ) > 0.
 \end{equation*}
 We additionally want that samples can be obtained efficiently, and that their conditional probability can be computed. All these requirements are met by the discriminative RNNG: samples can be obtained by ancestral sampling over the transition sequences. For this reason \citet{dyer2016rnng} use this as their proposal. However, any discriminatively trained parser that meets these requirements can be used alternatively, and in chapter \ref{04-crf} we will propose such an alternative.
 
 \section{Experiments}
 We perform three types of experiments with the RNNG:
 \begin{itemize}
-  \item We reproduce the parsing f-scores and perplexities from \citep{dyer2016rnng}.
+  \item We train our own implementations of the discriminative and generative models and evaluate their parsing f-scores and perplexities. We compare these to the results reported in \citep{dyer2016rnng}.
   \item We evaluate `how good the model is' as a sampler.
 \end{itemize}
 
-\subsection{Supervised model} We investigate the following.
+\subsection{Supervised models} We investigate the following.
+In this section we show the results
 \begin{itemize}
   \item We train with standard hyperparameter settings and optimizer, and replicate the original results. We will get a little lower with the discriminative model because we do not use tags.
   \item We evaluate F-score with 100 samples (as many proposal trees as possible).
@@ -258,6 +258,6 @@ We perform three types of experiments with the RNNG:
 \subsection{Generative parsing}
 Most directly related to the RNNG is the work on generative dependency parsing \citep{titov2007generative,buys2015bayesian,buys2015generative,buys2018exact}, and the work on language modelling via top-down generative parsing models in \citet{roark2001probabilistic}.
 
-\subsection{Syntax} It has been investigated what RNNGs learn about syntax beyond their supervision \citep{kuncoro2017syntax}. This work shows that the attention mechanism in the composition function learns a type of `soft' head-rules\footnote{A head is the lexical item in a phrase that determines the syntactic category of that phrase, \cf the background.}, in which most of the attention weight is put on the item that linguist consider the synactic head of such constituents. Another finding shows that when trained on unlabeledd trees, the RNNG learns representations for constituents that cluster according to their withheld gold label. Additionally, it has been found that RNNGs are much better at a long-distance subject-verb agreement task than LSTMS \citep{linzen2016syntax,kuncoro2018learn}, which advantage they owe to the composition function that by repeatedly compressing intervening structure decreases the distance between the two words at stake.
+\subsection{Syntax} It has been investigated what RNNGs learn about syntax beyond their supervision. \citet{kuncoro2017syntax} show that the attention mechanism in the composition function learns a type of `soft' head-rules\footnote{A head is the lexical item in a phrase that determines the syntactic category of that phrase, \cf the background.}, in which most of the attention weight is put on the item that linguist consider the synactic head of such constituents. Another finding shows that when trained on unlabeledd trees, the RNNG learns representations for constituents that cluster according to their withheld gold label. Additionally, it has been found that RNNGs are much better at a long-distance subject-verb agreement task than LSTMS \citep{linzen2016syntax,kuncoro2018learn}, which advantage they owe to the composition function that by repeatedly compressing intervening structure decreases the distance between the two words at stake.
 
 \subsection{Cognition} It appears also that RNNGs can tell us something about our brains: Psycholinguistic research has shown that top-down parsing is a cognitively plausible parsing strategy \citep{brennan2016abstract}, and recently, RNNGs have been shown to be particularly good statistical predictors for human sentence comprehension \citep{hale2018beam}. In this experiment, the sequential word-probabilities derived from a generative RNNG\footnote{Obtained by using `word-synchronous beam-search' \citep{stern2017beam}.} provide a per-word complexity metric that predict human reading difficulty well. Much better at least than predictions from the word probabilities obtained from a purely sequential RNN language model.

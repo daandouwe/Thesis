@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  5 APR 2019 17:49
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  17 APR 2019 18:26
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1718,7 +1718,7 @@ To recover gracefully from this error, it's best to
 delete the erroneous units; e.g., type `2' to delete
 two letters. (See Chapter 27 of The TeXbook.)
 
-[10] <../figures/trees/npi-licensed.pdf, id=582, 526.77112pt x 259.41167pt>
+[10] <../figures/trees/npi-licensed.pdf, id=572, 526.77112pt x 259.41167pt>
 File: ../figures/trees/npi-licensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-licensed.pdf>
@@ -1726,7 +1726,7 @@ Package pdftex.def Info: ../figures/trees/npi-licensed.pdf used on input line 5
 9.
 (pdftex.def)             Requested size: 188.21289pt x 92.68355pt.
 
-<../figures/trees/npi-unlicensed.pdf, id=583, 482.62106pt x 256.61702pt>
+<../figures/trees/npi-unlicensed.pdf, id=573, 482.62106pt x 256.61702pt>
 File: ../figures/trees/npi-unlicensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-unlicensed.pdf>
@@ -1755,61 +1755,83 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 [21
 
-] (../tables/gen-transitions.tex) [22] [23]
+] (../tables/gen-transitions.tex)
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[22] [23]
 ! Too many }'s.
-l.108 ...t$, $n_t$, and $x_t$ double as indices.}}
+l.107 ...t$, $n_t$, and $x_t$ double as indices.}}
                                                   
 You've closed more groups than you opened.
 Such booboos are generally harmless, so keep going.
 
 [24]
-Overfull \hbox (7.78178pt too wide) in paragraph at lines 133--134
+Overfull \hbox (7.78178pt too wide) in paragraph at lines 132--133
 \OT1/ppl/m/n/10.95 The tran-si-tion prob-a-bil-i-ties are com-puted from the ve
 c-tor $\OT1/cmr/bx/n/10.95 u[]$ \OT1/ppl/m/n/10.95 that sum-ma-rizes the parser
 's
  []
 
 [25] [26]
-Overfull \hbox (21.0442pt too wide) in paragraph at lines 204--205
+Overfull \hbox (21.0442pt too wide) in paragraph at lines 203--204
  []\OT1/ppl/b/n/10.95 Approximate marginal-iza-tion[] \OT1/ppl/m/n/10.95 The pr
 o-posal dis-tri-bu-tion al-lows us to rewrite the marginal
  []
 
 [27] [28] [29]) [30]
 chapter 4.
-(../04-crf-parser/crf-parser.tex [31
+(../04-crf-parser/crf-parser.tex
+! Undefined control sequence.
+<recently read> \varnoting 
+                           
+l.3 ...es by introducing a dummy label $\varnoting
+                                                  $ in the binarization, and...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
 
-] [32]
-<../figures/span-encoding.pdf, id=1172, 464.0005pt x 150.49072pt>
+[31
+
+] [32] <../figures/span-encoding.pdf, id=1167, 464.0005pt x 150.49072pt>
 File: ../figures/span-encoding.pdf Graphic file (type pdf)
 
 <use ../figures/span-encoding.pdf>
-Package pdftex.def Info: ../figures/span-encoding.pdf used on input line 47.
+Package pdftex.def Info: ../figures/span-encoding.pdf used on input line 51.
 (pdftex.def)             Requested size: 418.25372pt x 135.66083pt.
  [33 <../figures/span-encoding.pdf>]
-(../figures/edges/edges.tex) [34] [35] [36] [37] [38]
 
-Package natbib Warning: Citation `eisner2016backprop' on page 39 undefined on i
-nput line 264.
+Package caption Warning: \label without proper reference on input line 86.
+See the caption package documentation for explanation.
 
-[39] [40] [41]) [42]
+
+LaTeX Warning: Reference `fig:crf-edges' on page 34 undefined on input line 83.
+
+
+(../figures/edges/edges.tex)
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[34] [35]
+
+LaTeX Warning: Reference `algo:inside' on page 36 undefined on input line 140.
+
+[36]
+
+LaTeX Warning: Reference `algo:outside' on page 37 undefined on input line 173.
+
+
+[37] [38] [39] [40]
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[41] [42] [43]) [44]
 chapter 5.
-(../05-semisupervised/semisupervised.tex [43
+(../06-syneval/syneval.tex [45
 
-] [44]
-Overfull \hbox (0.86298pt too wide) in paragraph at lines 81--82
-\OT1/ppl/m/n/10.95 miza-tion, which means that we need to com-pute the gra-di-e
-nts $\OMS/cmsy/m/n/10.95 r[] []\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 ^^R; ^^U
-\OT1/cmr/m/n/10.95 )$ \OT1/ppl/m/n/10.95 and $\OMS/cmsy/m/n/10.95 r[] []\OT1/cm
-r/m/n/10.95 (\OML/cmm/m/it/10.95 ^^R; ^^U\OT1/cmr/m/n/10.95 )$\OT1/ppl/m/n/10.9
-5 . 
- []
-
-[45] [46]) [47]
-chapter 6.
-(../06-syneval/syneval.tex [48
-
-] [49]
+] [46]
 ! Undefined control sequence.
 l.37 ...ntroduced in chapter \ref{04-crf}.\foonote
                                                   {This is similar to an app...
@@ -1819,25 +1841,44 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[50] [51]
+[47] [48]
 Overfull \hbox (0.81944pt too wide) in paragraph at lines 79--81
 \OT1/ppl/m/n/10.95 and the dis-tri-bu-tion over la-bels is com-puted us-ing a f
 eed-for-ward net-work parametrized
  []
 
-) [52] [53]
+) [49] [50]
+chapter 6.
+(../05-semisupervised/semisupervised.tex [51
+
+] [52]
+Overfull \hbox (0.86298pt too wide) in paragraph at lines 81--82
+\OT1/ppl/m/n/10.95 miza-tion, which means that we need to com-pute the gra-di-e
+nts $\OMS/cmsy/m/n/10.95 r[] []\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 ^^R; ^^U
+\OT1/cmr/m/n/10.95 )$ \OT1/ppl/m/n/10.95 and $\OMS/cmsy/m/n/10.95 r[] []\OT1/cm
+r/m/n/10.95 (\OML/cmm/m/it/10.95 ^^R; ^^U\OT1/cmr/m/n/10.95 )$\OT1/ppl/m/n/10.9
+5 . 
+ []
+
+[53] [54] (../figures/normal-form/cnf-valid.tex)
+(../figures/normal-form/cnf-invalid.tex)
+Overfull \hbox (2.0805pt too wide) in paragraph at lines 133--145
+[][] [] 
+ []
+
+[55] [56] (../figures/edges/illegal-edges.tex)
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[57]) [58]
 chapter 7.
-(../07-conclusion/conclusion.tex) [54
+(../07-conclusion/conclusion.tex) [59
 
 ]
 chapter A.
-(../08-app-figures/figures.tex) [55
+(../09-app-implementation/implementation.tex [60
 
-]
-chapter B.
-(../09-app-implementation/implementation.tex [56
-
-] [57] [58]
+] [61] [62]
 
 ! LaTeX Error: Lonely \item--perhaps a missing list environment.
 
@@ -2058,12 +2099,12 @@ l.53 \end{itemize}
                   
 Things are pretty mixed up, but I think the worst is over.
 
-) [59]
-chapter C.
-(../10-app-crf/crf.tex (../figures/hypergraph/hypergraph.tex) [60
+) [63]
+chapter B.
+(../10-app-crf/crf.tex (../figures/hypergraph/hypergraph.tex) [64
 
-] [61]
-[62] [63]
+] [65]
+[66] [67]
 ! Undefined control sequence.
 l.186   The semiring addition $a \osum
                                        b = \log(e^{a} + e^{b})$ is made nume...
@@ -2073,31 +2114,31 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[64]) [65]
-chapter D.
-(../11-app-vi/vi.tex [66
+[68]) [69]
+chapter C.
+(../11-app-vi/vi.tex [70
 
 ]
 
-Package natbib Warning: Citation `baydin2017automatic' on page 67 undefined on 
+Package natbib Warning: Citation `baydin2017automatic' on page 71 undefined on 
 input line 59.
 
-[67] [68] [69]) [70]
-chapter E.
-(../12-app-syneval/syneval.tex [71
+[71] [72] [73]) [74]
+chapter D.
+(../12-app-syneval/syneval.tex [75
 
 ]
 LaTeX Font Info:    Font shape `OT1/ppl/bx/it' in size <10.95> not available
 (Font)              Font shape `OT1/ppl/b/it' tried instead on input line 41.
- [72]) (./thesis.bbl [73] [74
+ [76]) (./thesis.bbl [77] [78
 
-] [75] [76]
+] [79] [80]
 Underfull \hbox (badness 2698) in paragraph at lines 310--314
 []\OT1/ppl/m/n/10.95 Yoav Gold-berg and Joakim Nivre.  Train-ing de-ter-min-is-
 tic parsers with non-
  []
 
-[77] [78] [79] [80]
+[81] [82] [83] [84]
 ! Misplaced alignment tab character &.
 <argument> Computer Speech &
                              Language
@@ -2110,9 +2151,9 @@ up above has ended a previous alignment prematurely,
 you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
-[81] [82])
+[85] [86])
 ! Undefined control sequence.
-l.243 \backmatter
+l.244 \backmatter
                    % references, restarts sample
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -2123,7 +2164,7 @@ and I'll forget about whatever was undefined.
 
 Package natbib Warning: There were undefined citations.
 
-[83]
+[87]
 
 ! LaTeX Error: \begin{example} on input line 173 ended by \end{document}.
 
@@ -2131,40 +2172,38 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.246 \end{document}
+l.247 \end{document}
                     
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 246.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 246.
-(./thesis.aux
-
-Package natbib Warning: Citation(s) may have changed.
-(natbib)                Rerun to get citations correct.
-
-)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 246.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 246.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 247.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 247.
+(./thesis.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 247.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 247.
 Package rerunfilecheck Info: File `thesis.out' has not changed.
-(rerunfilecheck)             Checksum: 975C41FD070A2F7860AD335B39DF077D;5400.
+(rerunfilecheck)             Checksum: 11A8E9E8F61BD6DF98A9CC0CC3970B62;5338.
+
+
+LaTeX Warning: There were undefined references.
 
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 246.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 247.
  )
 (\end occurred inside a group at level 1)
 
 ### semi simple group (level 1) entered at line 173 (\begingroup)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 26388 strings out of 493014
- 489721 string characters out of 6133351
- 725792 words of memory out of 5000000
- 28820 multiletter control sequences out of 15000+600000
- 43883 words of font info for 125 fonts, out of 8000000 for 9000
+ 26891 strings out of 493014
+ 499395 string characters out of 6133351
+ 725931 words of memory out of 5000000
+ 29306 multiletter control sequences out of 15000+600000
+ 44359 words of font info for 126 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  73i,19n,77p,8522b,1414s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc
@@ -2191,10 +2230,10 @@ t/fonts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts
 /type1/urw/palatino/uplri8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1
 /urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times
 /utmr8a.pfb>
-Output written on thesis.pdf (83 pages, 898603 bytes).
+Output written on thesis.pdf (87 pages, 916816 bytes).
 PDF statistics:
- 2161 PDF objects out of 2487 (max. 8388607)
- 1985 compressed objects within 20 object streams
- 528 named destinations out of 1000 (max. 500000)
- 732 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 2193 PDF objects out of 2487 (max. 8388607)
+ 2012 compressed objects within 21 object streams
+ 539 named destinations out of 1000 (max. 500000)
+ 716 words of extra memory for PDF output out of 10000 (max. 10000000)
 

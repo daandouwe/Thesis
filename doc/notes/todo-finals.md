@@ -128,9 +128,9 @@ I have good news and bad news. Good news. First, I have converged models: disc-r
 
 ## Semisup
 1. Understand semisupervised results:
-  - [ ] Download models, evaluate them (?), interpret training logs to see what went wrong
+  - [X] Download models, evaluate them (?), interpret training logs to see what went wrong
 2. Make changes accordingly.
-  - [ ] Also evaluate posterior F1
+  - [X] Also evaluate posterior F1
 3. Unsupervised training
   - rewrite semisup training as unsupervised
   - train unsupervised with CRF! Apparently that works a whole lot better than the RNNG proposal
@@ -142,7 +142,7 @@ I have good news and bad news. Good news. First, I have converged models: disc-r
   - semisup-crf-argmax-1sample-exact  1d19h40m43s   max 2 epochs
   - semisup-disc-argmax-1sample       17h07m07s     max 5 epochs
   - semisup-disc-argmax-3samples      1d2h50m32s    max 5 epochs
-6. Evaluate development training on Much smaller datasets! Instead of the full 1700, just do 200 first sentences.
+6. Evaluate development training on much smaller datasets! Instead of the full 1700, just do 200 first sentences.
 
 ## Syneval
 - [X] Download RNNG syneval results, make syneval plots.
@@ -162,8 +162,132 @@ I have good news and bad news. Good news. First, I have converged models: disc-r
 - [ ] Request nodes with more memory.
 
 ## Semisup
-- [ ] Allow Dev computation on smaller dataset.
-- [ ] Figure out maximum training time for semisupervised models.
+- [X] Allow Dev computation on smaller dataset.
+- [X] Figure out maximum training time for semisupervised models based on above times.
 
 ## Unsupervised
-- [ ] Adapt supervised training class to allow unsupervised training on the PTB
+- [X] Adapt semisupervised training class to allow unsupervised training on the PTB
+
+
+# April 12
+
+- [X] Supervised pre-training unlabeled
+- [X] Semisupervise unlabeled training from scratch
+- [ ] Run unsupervised unlabeled training on Lisa
+- [ ] Alternative entropy computation, see difference
+- [X] Alternative baseline: sample-mean of others
+
+## Plan
+Semisup:
+  * Labeled semisup:
+    - Disc, doable already running, likely faulty, but fuck it.
+    - CRF absolutely undoable, mention O(n^3|L|)
+  * Unlabeled semisup
+    - Disc (maybe work)
+    - CRF (will work) => Collapse to trivial trees.
+  * Unlabeled unsup
+    - Disc (Likely fail)
+    - CRF (will likely work)  => Collapse to trivial trees.
+Sup:
+  * Pretrain unlabeled models
+    - Gen
+    - CRF
+
+Plan:
+  * batch size 1
+  * 6 samples
+  * argmax baseline
+  * leave one out baseline
+  * no normalization
+  * scaling yes
+  => total of 8 models
+
+
+# April 14
+- [X] Q: Why is entropy not the same as mean post-logprob? A: we were including the marginal of the impossiblem top node
+- [X] Is the objective 100% correct?
+- [X] Supervised unlabeled training (make sure CRF has only 2 labels!). Filter out sentences with unary chains
+- [X] Semisupervised with unlabeled ptb: have a test statement when loading unlabeled
+
+
+## Terrible discovery
+- The CRF gives biased samples?
+- Sample, then collapse dummy nodes, and disalowing the Dummy at the top introduces bias. Yes, but only because we implement entropy wrong.
+- Result: the mean of the samples diverges wildly from the exact entropy.
+
+This is how I solved it:
+
+  * Inside
+  Sum over only those trees that do not have Dummy at top.
+  ```python
+    if length == len(words):
+        chart[left, right, self.label_vocab.values[0]] = semiring.zero()
+
+    summed[left, right] = semiring.sums([
+        chart[left, right, label]
+        for label in self.label_vocab.values[start:]
+    ])
+  ```
+
+  * Outside
+  Exlude the entire part of the forest consisting of Dummy at the top
+  ```python
+  if left == 0 and right == len(words):
+      for label, label_index in self.label_vocab.indices.items():
+          if label_index == 0:  # dummy label
+              chart[left, right, label] = semiring.zero()
+          else:
+              chart[left, right, label] = semiring.one()
+  ```
+
+## NOTE
+1. The posterior can cheat: we are unbinarizing, and so many different trees collapse to a single one. Thus we can have a high entropy, but still all the samples could be the same when unbinarized. So we can expect that the model will collapse to single node trees.
+2. This is what we observe.
+
+# April 15
+1. I observe collapse for unsup and semisup: all trees are like `(X ....)`
+  - [X] Is there a problem with the entropy still? NO
+  - [X] Why are all the samples of very low probability, but are the samples all the same? A: the model learns a perfect uniform distribution over all internal @ nodes, and all internal X nodes have probability 0. Therefore, all the trees get the same probability, which is still very low. I checked: all the sample trees _are_ different, before collapsing the dummy nodes. So sampling works fine, and the numbers make sense.
+  - [X] Scaling with temperature (either dividing node scores, or scaling the distributions), works, and diversifies the samples just perfectly.
+  - [X] The perplexity is waay too low, and that is because of the extremely skewed proposal samples. The perplexity will be much higher when we amp the temperature.
+
+2. Pretrain the models unlabeled.
+- [X] Decoder unlabelize the proposal samples.
+  * DiscRNNG and GenRNNG not much faster...
+  * CRF model is _much_ faster.
+
+
+# April 16
+Writing
+
+1. RNNG
+  - [ ] Introduction
+  - [ ] Composition and attention section
+  - [ ] Emphasize that the support of the RNNG is practically unbouded.
+  - [ ] Results: plots, numbers
+
+2. CRF
+  - [ ] Introduction
+  - [ ] Results: plots, numbers
+  - [ ] Binarization, dummy label, impact on inside and outside, and entropy computation
+  - [ ] CRF is misplaced as proposal.
+    * CRF is distribution over binary trees, not over collapsed trees! So actually not porperly suitable as proposal distribution. This is not so strongly noticable when dealing with large (100+) label-set, but becomes totally untenable in case of unlabeled (1 label).
+    * Also: the support of the GenRNNG is strictly greater than the support of the CRF: unbounded unary chains are not supported by CRF, only small unary chains that are in the PTB. This is not a problem really for the pretrained models; it is a problem for training from scratch.
+    * Cannot find an easy solution for this. If we not count dummy nodes in tree score and not in normalization, then viterbi and sampling become impossible, because these depend on the inside values. Also, the node scores cannot be fixed, because we would end up with the same problem.
+  - [ ] Describe time complexity.
+  - [ ] Check: is the MC estimate still valid, given that the CRF models derivations?
+  - [ ] CRF describes distribution over 'derivations', not over 'trees'. So entropy computation is over the derivations, _not_ over the trees: this explains the semisupervised behaviour.
+
+
+3. Semisup
+- [ ] DiscRNNG: (labeled and unlabeled) from scratch impossible; from pretraining unrails completely
+- [ ] CRF: from pretraining impossible (tooo slow); from scratch looks promising, but we run into the problem that a
+- [ ] When move to unbinarized trees the approach is possible!
+- [ ] Very practical way to sort-of support the notion of unlabeled constituent is to introduce labels into the binary tree: `(X (X The (@ binarized sentence)) collapses)` and use a TreeLSTM that incoporates the label: `TreeLSTM(a, b, l)`
+- [ ] Describe CRF as fully connected forest, then it is possible.
+
+
+4. Syneval
+- [ ] Incorporate the results
+
+5. Conclusion
