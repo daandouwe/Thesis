@@ -59,7 +59,7 @@
 \BOOKMARK [1][-]{section.6.3}{Optimization}{chapter.6}% 59
 \BOOKMARK [1][-]{section.6.4}{Variance reduction}{chapter.6}% 60
 \BOOKMARK [1][-]{section.6.5}{Experiments}{chapter.6}% 61
-\BOOKMARK [1][-]{section.6.6}{Problems with CRF proposal}{chapter.6}% 62
+\BOOKMARK [1][-]{section.6.6}{Problems with CRF as proposal}{chapter.6}% 62
 \BOOKMARK [2][-]{subsection.6.6.1}{Unrestricted parse forest}{section.6.6}% 63
 \BOOKMARK [2][-]{subsection.6.6.2}{Pruned parse forest}{section.6.6}% 64
 \BOOKMARK [1][-]{section.6.7}{Related work}{chapter.6}% 65

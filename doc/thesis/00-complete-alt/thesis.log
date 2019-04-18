@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  17 APR 2019 18:26
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  18 APR 2019 14:52
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1749,32 +1749,25 @@ LaTeX Font Info:    Font shape `U/lasy/b/n' in size <7> not available
 (Font)              Font shape `U/lasy/m/n' tried instead on input line 140.
  [13] [14] [15] [16] [17] [18]) [19] [20]
 chapter 3.
-(../03-rnng/rnng.tex (../tables/disc-transitions.tex)
+(../03-rnng/rnng.tex (../tables/disc-transitions.tex) [21
 
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[21
-
-] (../tables/gen-transitions.tex)
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[22] [23]
+]
+(../tables/gen-transitions.tex) [22] [23]
 ! Too many }'s.
-l.107 ...t$, $n_t$, and $x_t$ double as indices.}}
+l.106 ...t$, $n_t$, and $x_t$ double as indices.}}
                                                   
 You've closed more groups than you opened.
 Such booboos are generally harmless, so keep going.
 
 [24]
-Overfull \hbox (7.78178pt too wide) in paragraph at lines 132--133
+Overfull \hbox (7.78178pt too wide) in paragraph at lines 131--132
 \OT1/ppl/m/n/10.95 The tran-si-tion prob-a-bil-i-ties are com-puted from the ve
 c-tor $\OT1/cmr/bx/n/10.95 u[]$ \OT1/ppl/m/n/10.95 that sum-ma-rizes the parser
 's
  []
 
 [25] [26]
-Overfull \hbox (21.0442pt too wide) in paragraph at lines 203--204
+Overfull \hbox (21.0442pt too wide) in paragraph at lines 202--203
  []\OT1/ppl/b/n/10.95 Approximate marginal-iza-tion[] \OT1/ppl/m/n/10.95 The pr
 o-posal dis-tri-bu-tion al-lows us to rewrite the marginal
  []
@@ -1810,7 +1803,13 @@ See the caption package documentation for explanation.
 LaTeX Warning: Reference `fig:crf-edges' on page 34 undefined on input line 83.
 
 
-(../figures/edges/edges.tex)
+(../figures/edges/edges.tex
+! Double superscript.
+l.22 \node(S) at ($(d)+(0,3)$){$S^{\dagger}_{0}^
+                                                {n}$} ;
+I treat `x^1^2' essentially like `x^1{}^2'.
+
+)
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
@@ -1823,15 +1822,11 @@ LaTeX Warning: Reference `algo:inside' on page 36 undefined on input line 140.
 LaTeX Warning: Reference `algo:outside' on page 37 undefined on input line 173.
 
 
-[37] [38] [39] [40]
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[41] [42] [43]) [44]
+[37] [38] [39] [40] [41] [42]) [43]
 chapter 5.
-(../06-syneval/syneval.tex [45
+(../06-syneval/syneval.tex [44
 
-] [46]
+] [45]
 ! Undefined control sequence.
 l.37 ...ntroduced in chapter \ref{04-crf}.\foonote
                                                   {This is similar to an app...
@@ -1841,17 +1836,17 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[47] [48]
+[46] [47]
 Overfull \hbox (0.81944pt too wide) in paragraph at lines 79--81
 \OT1/ppl/m/n/10.95 and the dis-tri-bu-tion over la-bels is com-puted us-ing a f
 eed-for-ward net-work parametrized
  []
 
-) [49] [50]
+) [48] [49]
 chapter 6.
-(../05-semisupervised/semisupervised.tex [51
+(../05-semisupervised/semisupervised.tex [50
 
-] [52]
+] [51]
 Overfull \hbox (0.86298pt too wide) in paragraph at lines 81--82
 \OT1/ppl/m/n/10.95 miza-tion, which means that we need to com-pute the gra-di-e
 nts $\OMS/cmsy/m/n/10.95 r[] []\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 ^^R; ^^U
@@ -1860,17 +1855,22 @@ r/m/n/10.95 (\OML/cmm/m/it/10.95 ^^R; ^^U\OT1/cmr/m/n/10.95 )$\OT1/ppl/m/n/10.9
 5 . 
  []
 
-[53] [54] (../figures/normal-form/cnf-valid.tex)
+[52]
+
+LaTeX Warning: Reference `fig:normal-form-trees' on page 53 undefined on input 
+line 129.
+
+[53] (../figures/normal-form/cnf-valid.tex)
 (../figures/normal-form/cnf-invalid.tex)
-Overfull \hbox (2.0805pt too wide) in paragraph at lines 133--145
+Overfull \hbox (2.0805pt too wide) in paragraph at lines 137--149
 [][] [] 
  []
 
-[55] [56] (../figures/edges/illegal-edges.tex)
+[54] [55] (../figures/edges/illegal-edges.tex)
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[57]) [58]
+[56] [57]) [58]
 chapter 7.
 (../07-conclusion/conclusion.tex) [59
 
@@ -2184,7 +2184,7 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 247.
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 247.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 247.
 Package rerunfilecheck Info: File `thesis.out' has not changed.
-(rerunfilecheck)             Checksum: 11A8E9E8F61BD6DF98A9CC0CC3970B62;5338.
+(rerunfilecheck)             Checksum: A306396AEC002142ACAD0DBCD32CC556;5341.
 
 
 LaTeX Warning: There were undefined references.
@@ -2200,9 +2200,9 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 247.
 ### bottom level 
 Here is how much of TeX's memory you used:
  26891 strings out of 493014
- 499395 string characters out of 6133351
- 725931 words of memory out of 5000000
- 29306 multiletter control sequences out of 15000+600000
+ 499402 string characters out of 6133351
+ 726036 words of memory out of 5000000
+ 29307 multiletter control sequences out of 15000+600000
  44359 words of font info for 126 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  73i,19n,77p,8522b,1414s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -2219,21 +2219,22 @@ ocal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/loca
 l/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/t
 exlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texl
 ive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texli
-ve/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive
-/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texli
-ve/2016/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/t
-exlive/2016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/tex
-mf-dist/fonts/type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dis
-t/fonts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts
-/type1/urw/palatino/uplri8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1
-/urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times
-/utmr8a.pfb>
-Output written on thesis.pdf (87 pages, 916816 bytes).
+ve/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive
+/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2
+016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/201
+6/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive
+/2016/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/tex
+live/2016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/201
+6/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf
+-dist/fonts/type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/
+fonts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/t
+ype1/urw/palatino/uplri8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/u
+rw/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/u
+tmr8a.pfb>
+Output written on thesis.pdf (87 pages, 925895 bytes).
 PDF statistics:
- 2193 PDF objects out of 2487 (max. 8388607)
- 2012 compressed objects within 21 object streams
- 539 named destinations out of 1000 (max. 500000)
+ 2196 PDF objects out of 2487 (max. 8388607)
+ 2014 compressed objects within 21 object streams
+ 538 named destinations out of 1000 (max. 500000)
  716 words of extra memory for PDF output out of 10000 (max. 10000000)
 

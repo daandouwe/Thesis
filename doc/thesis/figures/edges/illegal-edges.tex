@@ -12,10 +12,13 @@
 
 % \begin{tikzpicture}
 
-\node(b){$\varnothing_{i,k}$} ;
-\node(c) at ($(b)+(2,0)$){B$_{k,j}$} ;
+\node(b){$\varnothing_{i}^k$} ;
+% \node(b){$\varnothing_{i,k}$} ;
+\node(c) at ($(b)+(2,0)$){$B_{k}^j$} ;
+% \node(c) at ($(b)+(2,0)$){$B_{k,j}$} ;
 
-\node(A2) at ($(b)+(1,3)$){A$_{i,j}$} ;
+\node(A2) at ($(b)+(1,3)$){$A_{i}^j$} ;
+% \node(A2) at ($(b)+(1,3)$){$A_{i,j}$} ;
 
 \draw[->] (b) to [in=-90,out=90](A2);
 \draw[->] (c) to [in=-90,out=90](A2);

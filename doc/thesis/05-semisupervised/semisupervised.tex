@@ -125,11 +125,15 @@ We introduce the two baselines:
 \end{itemize}
 
 
-\section{Problems with CRF proposal}
-We map a treebank tree to \textit{a single} normal form derivation, but many normal form derivations map to a single treebank tree. This means that if we let $f: \mathcal{D}(x) \to \yieldx$ be the transformation that collapses the dummy nodes, then $f$ is such that $f(d) = y$, but the preimage of $f$ is a set of derivations $f^{-1}( y ) = D \subseteq \mathcal{D}(x)$ with $\lvert D \rvert > 1$. However, to produce normal form trees from treebank trees, we defined a function $g: \yieldx \to \mathcal{D}(x)$ that always produces one particular normal form tree.
+\section{Problems with CRF as proposal}
+We map a treebank tree to \textit{a single} normal form derivation, but many normal form derivations map to a single treebank tree. Let us illustrate this with an example. The two normal form trees in \ref{fig:normal-form-trees} both collapse to the same tree when dummy labels $\varnothing$ are collapsed:
+\begin{center}
+  (S (NP The other hungry cat) (VP meows) .).
+\end{center}
+But when going the other way---applying the normal form transformation to the above tree---we always obtain the left tree, and never the right tree. Let $f: \yieldx \to \mathcal{D}(x)$ be the transformation that we defined that produces normal form trees from treebank trees, and let $g: \mathcal{D}(x) \to \yieldx$ be the transformation that takes a normal form tree and collapses the dummy nodes. Then $g$ is a bijection, but $f$ is not. In fact, the preimage of $f$ is the set of derivations $f^{-1}( y ) = D \subseteq \mathcal{D}(x)$ that collapse to the same tree. And generally $\lvert D \rvert > 1$.
 
-Let us illustrate this with an example. The following two normal form trees
 \begin{figure}[h]
+  \label{fig:normal-form-trees}
   \begin{subfigure}[b]{0.5\textwidth}
     \center
     \begin{tikzpicture}[scale=.6]
@@ -142,11 +146,9 @@ Let us illustrate this with an example. The following two normal form trees
       \input{../figures/normal-form/cnf-invalid.tex}
     \end{tikzpicture}
 	\end{subfigure}
+  \caption{Two normal form derivations that collapse to the same tree.}
 \end{figure}
-both collapse to the same tree when dummy labels $\varnothing$ are collapsed:
-\begin{center}
-  (S (NP The other hungry cat) (VP meows) .)
-\end{center}
+
 % \begin{figure}[h]
 %   \center
 %   \begin{subfigure}[b]{0.5\textwidth}
@@ -155,10 +157,13 @@ both collapse to the same tree when dummy labels $\varnothing$ are collapsed:
 %     \end{tikzpicture}
 %   \end{subfigure}
 % \end{figure}
-But going the other way, applying the normal form transformation to the above tree, we obtain the left tree, and never the right tree. This causes the problems noted above: there is derivational ambiguity, and the distribution over derivations is a different distribution from the one over the trees that they collapse to. We propose two solutions to this:
+
+This causes the problems noted above: there is derivational ambiguity. If $y$ is some tree, then our CRF assigns probabilities to all $d \in f^{-1}(y)$. We must thus note that \textit{in fact}, our CRF defines a distribution over $\mathcal{D}(x)$, and that as a result $p(y \mid x) = \sum_{d \in f^{-1}(y)} p(d \mid x)$. And in particular, $p(y \mid x) \neq p(d \mid x)$, for $d \in p(y \mid x)$.
+
+We propose two solutions to this problem:
 \begin{enumerate}
   \item We can dispense with the dummy label altogether, and instead alter our CRF so that it can deal directly with $m$-ary trees, for any order $m$.\footnote{The way we deal with unary chains remains unchanched} This means that we add all hyperedges with more than 2 children. The general formulation of the inside and outside recursions remain unaltered, but the specific form becomes less efficient because we now need to deal with a sum over all possible partitions of the span under a node.
-  \item We keep the dummy label, but prune the hyperforest to only contain derivations that are reachable by the normal form transformation. This means that we assign probability zero to all trees that do not correspond to the cannonical normal form that we commited to by choosing the transformation. Because this transformation is very regular, we can easily incorporate this pruning in the inside and outside algorithms. Again, there is a loss in efficiency due to the loss of regularity: the forest does remain binary, but the sum over labels and splitpoint are no longer independent, and thus we cannot absorb the sums.
+  \item We keep the dummy label, but prune the hyperforest to only contain derivations that are reachable by the normal form transformation. This means that we assign probability zero to all trees that do not correspond to the cannonical normal form that we commited to by choosing the transformation. Because this transformation is very regular, we can easily incorporate this pruning in the inside and outside algorithms.
 \end{enumerate}
 
 We now describe either solution, starting with the solution of making the CRF deal directly with $m$-ary trees.
@@ -168,7 +173,7 @@ We now describe either solution, starting with the solution of making the CRF de
   \begin{align*}
     \Big\{ (B_1, k_0, k_1), (B_2, k_1, k_2), \dots, (B_m, k_{n-1}, k_m) \Big\}
   \end{align*}
-  at the tail to the node $(A, i, j)$ at the head. Adding \textit{all} such nodes to the parse forest will allow us to deal with $n$-ary trees directly.
+  at the tail to the node $(A, i, j)$ at the head. Adding \textit{all} such nodes to the parse forest for each $m$ will allow us to deal with trees of unrestricted arity directly.
 
   The generality of the semiring formulations of the inside and outside algorithms, allows us to seamlesly apply them to this new parse forest. If we let $v = (A, i, j)$ such that $I(v) \neq \varnothing$ we can derive the inside value $\alpha(v)$ as
   \begin{align*}
@@ -199,6 +204,8 @@ We now describe either solution, starting with the solution of making the CRF de
       &= \displaystyle\bigoplus_{m = 2}^{n - j + i} \displaystyle\bigoplus_{k_0=0}^{i-1} \displaystyle\bigoplus_{k_m = j}^{n} \displaystyle\bigoplus_{k_0 < \cdots < k_a < k_{a+1} < \cdots < k_m} \sigma'(k_0, k_m) \otimes \displaystyle\bigotimes_{ \substack{1 \leq l \leq n \\ l \neq a } } \sigma(k_{l-1}, k_l).
   \end{align*}
 
+  The above two recursions show that this approach is challenging, despite its elegance. Enumerating the sets of partitions is in itself already a nontrivial task.
+
 
 \subsection{Pruned parse forest}
   Another solution is to prune the parse forest: to keep only those trees that can be obtained by the normal form transformation. Going back to the example at the beginning of the example, this solution asks us to assign probability zero to the right tree, the tree that we cannot obtain by the normal form transformation. Since the transformation that we apply is very regular, we can easily characterize the set of trees that are impossible to derive. In fact, it boils done to one characteristic: a node can have the label $\varnothing$ only when \textit{either} that node spans a single word \textit{or} that node is the right child of its parent node.\footnote{We binarize \textit{rightwards}, thus introducting the dummy labels in that position, and can only ever introduce the dummy label in the left child position when it spans a single word.} That means we should remove from the parse forest all edges of the form illustrated in figure \ref{fig:illegal-edges}.
@@ -216,14 +223,38 @@ We now describe either solution, starting with the solution of making the CRF de
     \alpha(A, i, j)
       &= \displaystyle\bigoplus_{B \in \Lambda} \displaystyle\bigoplus_{C \in \Lambda} \omega(A, i, j) \otimes \alpha(B,i,i+1) \otimes \alpha(C,i+1,j) \\
         &\qquad\oplus \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \displaystyle\bigoplus_{C \in \Lambda} \displaystyle\bigoplus_{k=i+2}^{j-1} \omega(A, i, j) \otimes \alpha(B,i,k) \otimes \alpha(C,k,j) \\
-      &= \omega(A, i, j) \otimes \displaystyle\bigoplus_{B \in \Lambda} \displaystyle\bigoplus_{C \in \Lambda} \alpha(B,i,i+1) \otimes \alpha(C,i+1,j)  \\
-        &\qquad\oplus \omega(A, i, j) \otimes \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \displaystyle\bigoplus_{C \in \Lambda} \displaystyle\bigoplus_{k=i+2}^{j-1} \alpha(B,i,k) \otimes \alpha(C,k,j)  \\
-      &= \Bigg[ \omega(A, i, j) \otimes \sigma(i,i+1) \otimes \sigma(i+1,j) \Bigg] \oplus \Bigg[ \omega(A, i, j) \otimes \displaystyle\bigoplus_{k=i+2}^{j-1} \tilde{\sigma}(i,k) \sigma(k,j) \Bigg] 
+      &= \omega(A, i, j) \otimes  \Bigg[ \displaystyle\bigoplus_{B \in \Lambda}\alpha(B,i,i+1) \otimes  \displaystyle\bigoplus_{C \in \Lambda} \alpha(C,i+1,j)  \\
+        &\qquad\oplus \displaystyle\bigoplus_{k=i+2}^{j-1} \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \alpha(B,i,k) \otimes \displaystyle\bigoplus_{C \in \Lambda} \alpha(C,k,j)  \Bigg]  \\
+      &= \omega(A, i, j) \otimes \Bigg[ \sigma(i,i+1) \otimes \sigma(i+1,j) \oplus \displaystyle\bigoplus_{k=i+2}^{j-1} \tilde{\sigma}(i,k) \otimes \sigma(k,j) \Bigg]
   \end{align*}
   where
   \begin{align*}
     \tilde{\sigma}(i,k) =  \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \alpha(A, i, k).
   \end{align*}
+  For the outside algorithm we need to split cases: the outside algorithm sums over ways to complete a labeled span into a larger labeled span, and as we have noted, the node $(A, i, j)$, for $A \neq \varnothing$ and $j > i + 1$ is allowed to combine in ways that $(\varnothing, i, j)$ is not. Specifically, $(\varnothing, i, j)$ is not allowed to combine \textit{with any node} of the form $(C, j, k)$ for $C \in \Lambda$ whenever $j > i + 1$. That would constitute an edge that we deemed illegal. We thus split the computation of $\beta(A, i, j)$ into the following two cases: the case where $j > i + 1$ and $ A = \varnothing$, and otherwise.
+
+  First, consider the case where either $A \neq \varnothing$, or $j = i + 1$. In this case, the node $(A, i, j)$ can combine any way it desires, as the left node, and as the right node, but note that when we complete it as the right node---thus adding a node to it on the left---we still need to avoid completing it with $(\varnothing, k, i)$ if $k \neq i-1$. Taking this consideration into account we can derive
+  \begin{align*}
+    \beta(A, i, j)
+      &= \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda}  \omega(B, i-1, j) \otimes \alpha(C, i-1, i) \otimes \beta(B, i-1, j)  \\
+        &\qquad \oplus \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda \setminus \{ \varnothing \}} \bigoplus_{k=1}^{i-2} \omega(B, k, j) \otimes \alpha(C, k, i) \otimes \beta(B, k, j) \\
+        &\qquad \oplus \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=j+1}^{n} \omega(B, i, k) \otimes \beta(B, i, k) \otimes \alpha(C, j, k)  \\
+      &= \sigma'(i-1, j) \otimes \sigma(i-1, i) \oplus \bigoplus_{k=1}^{i-2} \sigma'(k, j) \otimes \tilde{\sigma}(k, i) \oplus \bigoplus_{k=j+1}^{n} \sigma'(i, k) \otimes \sigma(j, k).
+  \end{align*}
+  Now, consider the special case where $ A = \varnothing$ and $j > i + 1$. In this case we must disallow the node to combine in the left position. This corresponds simply to removing that part of the sum; in the above derivation this is the third term. This gives:
+  \begin{align*}
+    \beta(A, i, j) &=
+      \sigma'(i-1, j) \otimes \sigma(i-1, i) \oplus \displaystyle\bigoplus_{k=1}^{i-2} \sigma'(k, j) \otimes \tilde{\sigma}(k, i)
+  \end{align*}
+
+  % Writing this by case gives us
+  % \begin{align*}
+  %   \beta(A, i, j) =
+  %     \begin{cases}
+  %       \sigma'(i-1, j) \otimes \sigma(i-1, i) \oplus \displaystyle\bigoplus_{k=1}^{i-2} \sigma'(k, j) \otimes \tilde{\sigma}(k, i)  &  \mbox{if } A = \varnothing \text{ and } j > i + 1,  \\
+  %       \sigma'(i-1, j) \otimes \sigma(i-1, i) \oplus \displaystyle\bigoplus_{k=1}^{i-2} \sigma'(k, j) \otimes \tilde{\sigma}(k, i) \oplus \displaystyle\bigoplus_{k=j+1}^{n} \sigma'(i, k) \otimes \sigma(j, k)  & \mbox{otherwise.}
+  %     \end{cases}
+  % \end{align*}
 
 
 \section{Related work}

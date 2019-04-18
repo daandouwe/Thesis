@@ -73,12 +73,12 @@ In this chapter:
   \end{align*}
   where $(S^{\dagger}, 0, n)$ is a designated root node. The dependence on $x$ can be made explicit by writing $\mathcal{V}(x)$.
 
-  The set of hyperedges $\mathcal{E} \subseteq 2^{\mathcal{V}} \times \mathcal{V}$ specifies all the ways that adjacent constituents can be combined to form a larger constituent, under a particular grammar. Because we (implicitly) assume a normal form grammar that contains \textit{all} possible productions, the set of hyperedges is particularly regular: the set $\mathcal{E}$ contains all edges that connect nodes $(B, i, k)$ and $(C, k, j)$ at the tail with $(A, i, j)$ at the head for all $0 \leq i < k < j \leq n$, all edges that connect $\x_i$ to $(A, i, i+1)$, and all nodes can function as top nodes:
+  The set of hyperedges $\mathcal{E} \subseteq 2^{\mathcal{V}} \times \mathcal{V}$ specifies all the ways that adjacent constituents can be combined to form a larger constituent, under a particular grammar. Because we (implicitly) assume a normal form grammar that contains \textit{all} possible productions, the set of hyperedges is particularly regular: the set $\mathcal{E}$ contains all edges that connect nodes $(B, i, k)$ and $(C, k, j)$ at the tail with $(A, i, j)$ at the head for all $0 \leq i < k < j \leq n$, all edges that connect $\x_i$ to $(A, i, i+1)$, and all labels can appear in the top node, with the exception of the dummy label $\varnothing$:
   \begin{align*}
     \mathcal{E}
       &= \Bigg\{ \Big\langle \Big\{ (B, i, k), (C, k, j) \Big\},  (A, i, j) \Big\rangle \; \Bigg\vert \; A, B, C \in \Lambda, \; 0 \leq i < k < j \leq n \Bigg\}  \\
       &\quad\cup \Bigg\{ \Big\langle \{ \x_i \}, (A, i-1, i) \Big\rangle \; \Bigg\vert \; A \in \Lambda, \; 1 \leq i \leq n \Bigg\}  \\
-      &\quad\cup \Bigg\{ \Big\langle \{ (A, 0, n) \}, (S^{\dagger}, 0, n) \Big\rangle \; \Bigg\vert \; A \in \Lambda \Bigg\}
+      &\quad\cup \Bigg\{ \Big\langle \{ (A, 0, n) \}, (S^{\dagger}, 0, n) \Big\rangle \; \Bigg\vert \; A \in \Lambda \setminus \{ \varnothing \} \Bigg\}
   \end{align*}
   The three kind of edges that make up $\mathcal{E}$ are illustrated in figure \ref{fig:crf-edges}. A tree is a set of nodes $y \subseteq \mathcal{V}(x)$, and the parse forest a set of trees $\yieldx \subseteq 2^{\mathcal{V}(x)}$.
 
@@ -88,7 +88,7 @@ In this chapter:
     \begin{tikzpicture}[scale=.6]
       \input{../figures/edges/edges.tex}
     \end{tikzpicture}
-    \caption{The edge-types making up the hypergraph.}
+    \caption{The edge-types making up the hypergraph. The edges are instatiated for all $A, B, C \in \Lambda$ and all $0 \leq i < j \leq n$. Only for the rightmost edge holds the restriction $A \neq \varnothing$, to ensure that the dummy label cannot be the top node.}
   \end{figure}
 
   We connect a semiring $\mathcal{K}$ to the hypergraph by defining the weight function as $\omega: \mathcal{E} \to \mathbb{K}$, and by accumulating the weights with its binary operations. The function $\omega$ that assigns weights to the edges is given by either the function $\psi$ or $(\log \circ \, \psi)$, depending on the semiring used. Because of this association, the function $\omega$ has a very particular property: the function effectively depends only on the \textit{head} of the edge. Given edges $e = \langle \{ u, w \}, v \rangle$ and $e' =  \langle \{ u', w' \}, v \rangle$ for $u \neq u'$ and $w \neq w'$, their weights are equal: $\omega(e) = \omega(e')$. For this reason we write $\omega(v)$ instead.\footnote{Thus implicitly defining $\omega: \mathcal{V} \to \mathbb{K}$.} This fact will allow us to greatly simplify the recursions that follow. Additionally, this means that instead of computing independent scores for each of the $O(n^3 \vert\Lambda\rvert^3)$ edges, we only need to compute scores for the $O(n^2 \vert\Lambda\rvert)$ vertices. For a scoring function like a neural network, for which computation can be relatively expensive, this will make a significant difference.
@@ -206,10 +206,10 @@ In this chapter:
     and the best tree $\hat{y}$ is found by following back from the root down to the leaves the best splits and labels.
 
   \paragraph{Sample}
-    Unbiased samples from the model can be obtained by recursively sampling incoming edges, starting at the root node $(S^{\dagger}, 0, n)$, ending at the word nodes. The probability of an edges is proportional to the weight under that edge: this is precicely the inside value $\alpha$ computed in the real-semiring. An edge $e = \langle \{ u, w \}, v \rangle$, with $u = (B, i, k)$, $w = (C, k, j)$ and $v = (A, i, j)$, thus has probability
+    Unbiased samples from the model can be obtained by recursively sampling incoming edges, starting at the root node $(S^{\dagger}, 0, n)$, ending at the word nodes. The probability of an edges is proportional to the weight of all the trees under that edge. This is precicely what is represented by the inside value $\alpha$ computed in the real-semiring. At node $v = (A, i, j)$ the probability of edge $e = \langle \{ u, w \}, v \rangle$, with $u = (B, i, k)$ and $w = (C, k, j)$, is thus
     \begin{align}
       \label{eq:sample}
-      P(E = e)
+      P(E = e \mid V = v)
         &= \frac{\omega(e) \otimes \bigotimes_{u \in T(e)} \alpha(u)}{\alpha(v)}  \nonumber  \\
         &= \frac{\psi(A, i, j) \, \alpha(B, i, k) \, \alpha(C, k, j)}{\alpha(A, i, j)}.
     \end{align}
@@ -294,27 +294,6 @@ In this chapter:
     \item We have some optimization and hyperparameter choices here. The original paper uses Adam with 0.001 and a LSTM of dimension 250, which gives the model around 2.5 million parameters. For the discriminative RRNG we use SGD with 0.1, and hidden sizes of 128 gives the model around 800,000 parameters.
     \item I suggest two experiments: (1) use the default setting from \citep{stern2017minimal} and (2) use the settings for the RNNG with a hidden size to match the 800,000 parameters.
   \end{itemize}
-
-  \begin{table}[h]
-  \center
-    \begin{tabular}{r|l|l|l}
-      & Stack & Buffer & Action  \\ \hline
-      0 &  & \textit{The} \,$\mid$\, \textit{hungry}\,$\mid$\,\textit{cat}\,$\mid$\,\textit{meows}\,$\mid$\,. & \open(S) \\
-      1 & (S & \textit{The}\,$\mid$\,\textit{hungry}\,$\mid$\,\textit{cat}\,$\mid$\,\textit{meows}\,$\mid$\,. & \open(NP) \\
-      2 & (S\,$\mid$\,(NP  & \textit{The}\,$\mid$\,\textit{hungry}\,$\mid$\,\textit{cat}\,$\mid$\,\textit{meows}\,$\mid$\,. & \shift \\
-      3 & (S\,$\mid$\,(NP\,$\mid$\,\textit{The} & \textit{hungry}\,$\mid$\,\textit{cat}\,$\mid$\,\textit{meows}\,$\mid$\,. & \shift \\
-      4 & (S\,$\mid$\,(NP\,$\mid$\,\textit{The}\,$\mid$\,\textit{hungry} & \textit{cat}\,$\mid$\,\textit{meows}\,$\mid$\,. & \shift \\
-      5 & (S\,$\mid$\,(NP\,$\mid$\,\textit{The}\,$\mid$\,\textit{hungry}\,$\mid$\,\textit{cat} & \textit{meows}\,$\mid$\,. & \reduce \\
-      6 & (S\,$\mid$\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat}) & \textit{meows}\,$\mid$\,. & \open(VP) \\
-      7 & (S\,$\mid$\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,$\mid$\,(VP & \textit{meows}\,$\mid$\,. & \shift \\
-      8 & (S\,$\mid$\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,$\mid$\,(VP\,$\mid$\,\textit{meows} & . & \reduce \\
-      9 & (S\,$\mid$\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,$\mid$\,(VP\,\textit{meows}) & . & \shift \\
-      10 & (S\,$\mid$\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,$\mid$\,(VP \textit{meows})\,$\mid$\,. &  & \reduce \\
-      11 & (S\,(NP\,\textit{The}\,\textit{hungry}\,\textit{cat})\,(VP\,\textit{meows})\,.) &  &  \\ \hline
-    \end{tabular}
-  % \caption{Discriminative transition sequence that parses an input sentence. Items are separated by the midline symbol $|$.}
-  % \label{tab:disc-trans}
-  \end{table}
 
 \subsection{Proposal model}
   Discuss that the CRF is not a proper proposal model, for two reasons:
