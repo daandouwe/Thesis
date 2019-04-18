@@ -157,8 +157,12 @@ def main():
                         help='optional baseline')
     semisup.add_argument('--use-mlp-baseline', action='store_true',
                         help='optional baseline')
-    semisup.add_argument('--max-crf-line-len', type=int, default=-1,
+    semisup.add_argument('--max-crf-line-len', type=int, default=40,
                         help='use only short sentences for crf (disable with -1)')
+    semisup.add_argument('--num-anneal-epochs', type=int, default=2,
+                        help='anneal over this many epochs')
+    semisup.add_argument('--anneal-entropy', action='store_true',
+                        help='anneal the entropy (crf only)')
     semisup.add_argument('--exact-entropy', action='store_true',
                         help='exact entropy computation (crf only)')
 

@@ -38,7 +38,7 @@ class SemiSupervisedTrainer:
             joint_model_path=None,
             post_model_path=None,
             lmbda=0,
-            max_crf_line_len=40,
+            max_crf_line_len=-1,
             use_argmax_baseline=False,
             use_mlp_baseline=False,
             normalize_learning_signal=False,
@@ -53,6 +53,8 @@ class SemiSupervisedTrainer:
             lr=None,
             lr_decay=None,
             lr_decay_patience=None,
+            anneal_entropy=False,
+            num_anneal_epochs=2,
             weight_decay=None,
             max_grad_norm=None,
             glove_dir=None,
@@ -116,6 +118,8 @@ class SemiSupervisedTrainer:
         self.num_dev_samples = num_dev_samples
         self.num_test_samples = num_test_samples
         self.max_crf_line_len = max_crf_line_len
+        self.anneal_entropy = anneal_entropy
+        self.num_anneal_epochs = num_anneal_epochs
 
         self.num_updates = 0
         self.build_logger()
@@ -445,12 +449,20 @@ class SemiSupervisedTrainer:
             'post': [],
             'joint': [],
             'post-viterbi': [],
+            'anneal-entropy': [],
         }
 
     def batchify(self, data):
         batches = [data[i*self.batch_size:(i+1)*self.batch_size]
             for i in range(ceil_div(len(data), self.batch_size))]
         return batches
+
+    def anneal(self):
+        """Linear annealing spread out over epochs."""
+        if self.current_epoch > self.num_anneal_epochs:
+            return 1.
+        else:
+            return self.num_updates / (self.num_anneal_epochs * self.num_batches)
 
     def train(self):
         self.build_paths()
@@ -533,6 +545,7 @@ class SemiSupervisedTrainer:
             return batch
 
         labeled_batches = self.batchify(self.train_treebank)
+        self.num_batches = len(batches)
 
         # We loop over the labeled_batches and request an unlabeled batch
         for i, labeled_batch in enumerate(labeled_batches, 1):
@@ -571,6 +584,7 @@ class SemiSupervisedTrainer:
     def train_epoch_unsup(self):
 
         batches = self.batchify(self.train_treebank)
+        self.num_batches = len(batches)
 
         for i, batch in enumerate(batches, 1):
             if self.timer.elapsed() > self.max_time:
@@ -602,10 +616,10 @@ class SemiSupervisedTrainer:
     def supervised_step(self, batch):
         losses = []
         for tree in batch:
-            post_tree = tree.cnf() if self.posterior_type == 'crf' else tree
             if self.lmbda == 0:
                 loss = self.joint_model.forward(tree)
             else:
+                post_tree = tree.cnf() if self.posterior_type == 'crf' else tree
                 loss = self.joint_model.forward(tree) + self.lmbda * self.post_model.forward(post_tree)
             losses.append(loss)
         loss = dy.esum(losses) / self.batch_size
@@ -643,7 +657,12 @@ class SemiSupervisedTrainer:
                     for signal, baseline in zip(signals, baselines)]
                 baseline = np.mean(baselines)  # only for logging
 
-            post_loss = -(post_entropy + 1 / self.num_samples * dy.esum(
+            if self.anneal_entropy:
+                anneal = self.anneal()
+            else:
+                anneal = 1.
+
+            post_loss = -(anneal * post_entropy + 1 / self.num_samples * dy.esum(
                 [signal * logprob for signal, logprob in zip(centered_signals, post_logprobs)]))
             joint_loss = -dy.esum(joint_logprobs) / self.batch_size
             loss += post_loss + joint_loss
@@ -656,6 +675,7 @@ class SemiSupervisedTrainer:
             self.logger['joint'].append(np.mean(signals))
             self.logger['post'].append(np.mean([logprob.value() for logprob in post_logprobs]))
             self.logger['post-viterbi'].append(parse_logprob.value())
+            self.logger['anneal-entropy'].append(anneal)
 
             # print(post_entropy.value())
             # print(-np.mean([logprob.value() for logprob in post_logprobs]))
@@ -815,6 +835,14 @@ class SemiSupervisedTrainer:
             self.tensorboard_writer.add_scalar(
                 'unsup/posterior-entropy',
                 np.mean(self.logger['entropy'][-self.print_every:]),
+                self.num_updates)
+            self.tensorboard_writer.add_scalar(
+                'unsup/posterior-viterbi',
+                np.mean(self.logger['post-viterbi'][-self.print_every:]),
+                self.num_updates)
+            self.tensorboard_writer.add_scalar(
+                'unsup/anneal-entropy',
+                np.mean(self.logger['anneal-entropy'][-self.print_every:]),
                 self.num_updates)
 
         # Write signal statistics

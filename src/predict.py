@@ -124,6 +124,20 @@ def predict_input_crf(args):
 
     parser = load_model(args.checkpoint)
 
+    ##
+    right_branching = fromstring("(S (NP (@ The) (@ (@ other) (@ (@ hungry) (@ cat)))) (@ (VP meows ) (@ .)))").convert()
+    left_branching = fromstring("(S (NP (@ The) (@ (@ (@ other) (@ hungry)) (@ cat))) (@ (VP meows ) (@ .)))").convert()
+
+    # right_branching = fromstring("(X (X (@ The) (@ (@ other) (@ (@ hungry) (@ cat)))) (@ (X meows ) (@ .)))").convert()
+    # left_branching = fromstring("(X (X (@ The) (@ (@ (@ other) (@ hungry)) (@ cat))) (@ (X meows ) (@ .)))").convert()
+
+    right_nll = parser.forward(right_branching, is_train=False)
+    left_nll = parser.forward(left_branching, is_train=False)
+
+    print('Right:', right_nll.value())
+    print('Left:', left_nll.value())
+    ##
+
     while True:
         sentence = input('Input a sentence: ')
         words = sentence.split()
