@@ -1,0 +1,53 @@
+#!/bin/bash
+#SBATCH -N 1
+#SBATCH -p normal
+#SBATCH -J semisup-disc-6samples-ptb-mean
+#SBATCH -o lisa/out/semisup-disc-6samples-ptb-mean.out
+#SBATCH -t 5-00:00:00
+
+# send an e-mail when the job starts
+echo "Job $SLURM_JOB_NAME started at `date`" | mail $USER -s "Started job $SLURM_JOB_NAME"
+
+# write sterr and stout of each experiment here
+OUTPUT_DIR=${HOME}/thesis/lisa/out/${SLURM_JOB_NAME}
+mkdir -p ${OUTPUT_DIR}
+
+# always run from the main directory
+cd ${HOME}/thesis
+
+source lisa/lisa-cpu.sh
+source scripts/best-models.sh
+
+for seed in {1..6}; do
+
+  # do not conflate the timestamped foldernames
+  sleep 5
+
+  lisa/train-multithread.sh ${seed} ${OUTPUT_DIR} \
+  	--dynet-autobatch 1 \
+    --dynet-mem 5000 \
+    --max-time $((5 * 21 * 3600)) \
+    --max-epochs 5 \
+    --model-path-base models/semisup-disc-6samples-ptb-mean \
+    --model-type semisup-disc \
+    --joint-model-path ${GEN_PATH} \
+    --post-model-path ${DISC_PATH} \
+    @src/configs/vocab/supervised.txt \
+    @src/configs/data/semisupervised-ptb.txt \
+    @src/configs/training/adam.txt \
+    --num-samples 6 \
+    --batch-size 1 \
+    --print-every 10 \
+    --num-dev-samples 50 \
+    --num-test-samples 100 \
+    &
+
+done
+
+# this waits until all sub-jobs finish
+wait
+
+echo "Jobs finished"
+echo "Job $SLURM_JOB_NAME ended at `date`" | mail $USER -s "Ended job $SLURM_JOB_NAME"
+
+sleep 300

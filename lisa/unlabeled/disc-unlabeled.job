@@ -1,0 +1,47 @@
+#!/bin/bash
+#SBATCH -N 1
+#SBATCH -p normal
+#SBATCH -J disc-unlabeled
+#SBATCH -o lisa/out/disc-unlabeled.out
+#SBATCH -t 5-00:00:00
+
+# send an e-mail when the job starts
+echo "Job $SLURM_JOB_NAME started at `date`" | mail $USER -s "Started job $SLURM_JOB_NAME"
+
+# write sterr and stout of each experiment here
+OUTPUT_DIR=${HOME}/thesis/lisa/out/${SLURM_JOB_NAME}
+mkdir -p ${OUTPUT_DIR}
+
+# always run from the main directory
+cd ${HOME}/thesis
+
+source lisa/lisa-cpu.sh
+
+# we can run training runs in parallel, each on a different processor (16 in total)
+# with a different seed, and we tell each script which seed
+# all other arguments are passed to the parser
+for seed in {1..10}; do
+
+  # do not conflate the timestamped foldernames
+  sleep 5
+
+  lisa/train.sh ${seed} ${OUTPUT_DIR} \
+      --model-path-base models/disc-rnng-unlabeled \
+      --max-time $((5 * 20 * 3600)) \
+      --max-epochs 50 \
+      --dynet-autobatch 1 \
+      @src/configs/data/supervised.txt \
+      @src/configs/model/disc-rnng.txt \
+      @src/configs/training/sgd.txt \
+      --unlabeled \
+      &
+
+done
+
+# this waits until all sub-jobs finish
+wait
+
+echo "Jobs finished"
+echo "Job $SLURM_JOB_NAME ended at `date`" | mail $USER -s "Ended job $SLURM_JOB_NAME"
+
+sleep 300
