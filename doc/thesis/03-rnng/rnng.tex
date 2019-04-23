@@ -248,12 +248,12 @@ In this chapter:
   This section reports the results of the experiments performed with our own implementation of the RNNG. We train the discriminative and generative model on the Penn Treebank with the same hyperparameters as \citep{dyer2016rnng}, and compare our results to conclude the correctness of our implementation. We then investigate how the approximate marginalization depends on two parameters: the number of samples, and the temperature used to scale the distribution of the proposal model. For the general training setup, including details about data preprocessing, we refer the reader to appendix \ref{A2-implementation}.
 
   \subsection{Models}
-    We use the same hyperparameters as \citep{dyer2016rnng}. For both models the embeddings are of size 100, and the LSTMs have 2 layers. The LSTMs have dimension 128 in the discriminative model and 256 in the generative model, and the dimension of the feedforward networks that compute the action distributions are the same as the LSTMs. We apply dropout to all layers including the recurrent connections\footnote{Also called \textit{variational dropout} \citep{gal2016theoretically}, which is implemented by default in Dynet \citep{neubig2017dynet}.} and use a dropout ratio of 0.2 in the discriminative model, and 0.3 in the generative model. Given the above dimensions, the total number of trainable parameters is approximately 800,000 (798,078) for the discriminative model and 9,500,000 (9,610,736) for the generative model.
+    We use the same hyperparameters as \citep{dyer2016rnng}. For both models the embeddings are of size 100, and the LSTMs have 2 layers. The LSTMs have dimension 128 in the discriminative model and 256 in the generative model, and the dimension of the feedforward networks that compute the action distributions are the same as the LSTMs. We apply dropout to all layers including the recurrent connections\footnote{Also called \textit{variational dropout} \citep{gal2016theoretically}, which is implemented by default in Dynet \citep{neubig2017dynet}.} and use a dropout ratio of 0.2 in the discriminative model, and 0.3 in the generative model. Given the above dimensions, the total number of trainable parameters is approximately 800,000 for the discriminative model and 9,600,000 for the generative model (the exact numbers are given in \ref{tab:num-params}).
 
     Our discriminative model does not make use of predicted tags, which contrasts with \citet{dyer2016rnng}. This decision was made with the application of the RNNG as language model in mind, in which case tags are not available, but this choice will affect the parsing accuracy of the discriminative model. For a more elaborate justification of this choice we refer the reader to section \label{sec:impl-embedding} of the implementation appendix.
 
   \subsection{Results}
-    We train 10 separate models from different random seeds.\footnote{The random seeds control both the random initialization of the model parameters as well as the order in which the training data is presented.} We report mean and standard deviation to give a sense of the variability of the accuracy, as well as the value of the model with the best development performance. Model selection is based on development F1 for the discriminative model, and based on development perplexity for the generative model.
+    We train 10 separate models from different random seeds.\footnote{The random seeds control both the random initialization of the model parameters as well as the order in which the training data is presented.} We report mean and standard deviation to give a sense of the variability of the accuracy, as well as the value of the model with the best development performance. Model selection is based on development F1 for the discriminative model, and based on development perplexity for the generative model. For inference with the generative model we follow \citet{dyer2016rnng} and sample 100 trees from our best discriminative model. The samples are obtained by ancestral sampling on the action sequeunces, and we flatten this ditribution by raising each action distribution to the power $\alpha = 0.8$ and renormalizing it.
 
     \input{../tables/disc-fscores.tex}
 
@@ -261,23 +261,45 @@ In this chapter:
 
     \input{../tables/gen-perplexities.tex}
 
-    The parsing F1 of the discriminate model can be seen in table \ref{tab:disc-fscores}, and the results of the generative model can be seen in tables \ref{tab:gen-fscores} (F1) and \ref{tab:gen-perplexities} (perplexity). The value between brackets is the value based on model selection. The accuracy of our discriminative model is below that of \citet{dyer2016rnng}, a gap that can reasonably be attributed to the absence of tag information in our model. This gap in F1 is carried through in a lesser degree to the generative model, resulting in a lower F1 than reported by \citet{dyer2016rnng} when using our own samples. The reranking by the generative models still finds better trees than the greedy decoding of the discriminative model, as evidenced by the higher F1 score, and when we evaluate with the proposal samples used in the original work we find that the F1 agrees perfectly with that of \citet{dyer2016rnng}.\footnote{The proposal samples used by \citet{dyer2016rnng} are availlable at \url{https://github.com/clab/rnng}.}. The difference in perplexity is much less pronounced, and our samples manage
+    The parsing F1 of the discriminate model can be seen in table \ref{tab:disc-fscores}, and the results of the generative model can be seen in tables \ref{tab:gen-fscores} (F1) and \ref{tab:gen-perplexities} (perplexity). The value between brackets is the value based on model selection.
+
+    The accuracy of our discriminative model is below that of \citet{dyer2016rnng}, a gap that can reasonably be attributed to the absence of tag information in our model. This gap in F1 is carried through in a lesser degree to the generative model, resulting in a lower F1 than reported by \citet{dyer2016rnng} when using our own samples. The reranking by the generative models still finds better trees than the greedy decoding of the discriminative model, as evidenced by the higher F1 score, and when we evaluate with the proposal samples used in the original work we find that the F1 agrees perfectly with that of \citet{dyer2016rnng} and is on par with the results reported in \citet{kuncoro2017syntax}.\footnote{The proposal samples used by \citet{dyer2016rnng} are availlable at \url{https://github.com/clab/rnng}.}. The difference in perplexity performance is less pronounced, and with our own samples we manage to get close to the perplexity published in \citet{dyer2016rnng}. The perplexity does lag behind the results reported in \citet{kuncoro2017syntax}, which are the results obtained with the attention-based composition function.
+
+  \subsection{Samples}
+    How do the number of samples and the temperature $\alpha$ influence the approximate inference? To gain insight into this dependence we performed the following experiment. We evaluate the generative RNNG as in the above setting, while varying the number of samples, and the temperature $\alpha$: we let the number of samples be in $\{ 10, 25, 50, 75, 100 \}$ and let $\alpha$ be in $\{ 0.8, 1 \}$.\footnote{When $\alpha=1$, the distribution is left unchanched.}. To quantify the variability of the proposal model in this we repeat the experiment 10 times. To quantify how the spread of the  can use these samples
+
+    Figure \ref{fig:samples-fscores} shows the results of this experiment for the parsing F1, and \ref{fig:samples-perplexities} shows the results for the perplexity.
+
+    \begin{figure}[h]
+      \center
+    	\includegraphics[width=0.9\textwidth]{sample-experiment/fscore/disc_temp.pdf}
+    \caption{F1 for varying number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.}
+    \label{fig:samples-fscores}
+    \end{figure}
+
+    \begin{figure}[h]
+      \center
+    	\includegraphics[width=0.9\textwidth]{sample-experiment/ppl/disc_temp.pdf}
+    \caption{Perplexity for varying number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.}
+    \label{fig:samples-perplexities}
+    \end{figure}
 
 
-  \subsection{Sampler}
-    We investigate the following:
-    \begin{itemize}
-      \item We asses the conditional entropy of the model. This is most quantitative. Recall that conditional entropy is defined as
-      \begin{equation}
-        \text{H}(Y \mid X) = \sum_{x \in \mathcal{X}} p_X(x)\text{H}(Y \mid X = x),
-      \end{equation}
-      where
-      \begin{equation}
-        \text{H}(Y \mid X = x) = - \sum_{y \in \mathcal{Y}} p_{Y \mid X}(y \mid x) \log p_{Y \mid X}(y \mid x).
-      \end{equation}
-      We estimate the quantity $\text{H}(Y \mid X = x)$ with the model samples. We estimate the quantity $\text{H}(Y \mid X)$ by a sum over the development dataset. For the probabilities $p_X(x)$ we use the marginalized probabilities of the joint RNNG (with samples from the discrminative parser $p_{Y \mid X}$).
-      \item We asses for some cherry picked sentences. This is more qualitative. These sentences should be difficult or ambiguous. Or they can be ungramatical when taken from the syneval dataset. We can evaluate their entropy, and the diversity of samples, for example to see if there are clear modes. We can make violinplots of the probabilities of the samples. We can compute the f-scores of the samples compared with the argmax tree.
-    \end{itemize}
+
+  % \subsection{Sampler}
+  %   We investigate the following:
+  %   \begin{itemize}
+  %     \item We asses the conditional entropy of the model. This is most quantitative. Recall that conditional entropy is defined as
+  %     \begin{equation}
+  %       \text{H}(Y \mid X) = \sum_{x \in \mathcal{X}} p_X(x)\text{H}(Y \mid X = x),
+  %     \end{equation}
+  %     where
+  %     \begin{equation}
+  %       \text{H}(Y \mid X = x) = - \sum_{y \in \mathcal{Y}} p_{Y \mid X}(y \mid x) \log p_{Y \mid X}(y \mid x).
+  %     \end{equation}
+  %     We estimate the quantity $\text{H}(Y \mid X = x)$ with the model samples. We estimate the quantity $\text{H}(Y \mid X)$ by a sum over the development dataset. For the probabilities $p_X(x)$ we use the marginalized probabilities of the joint RNNG (with samples from the discrminative parser $p_{Y \mid X}$).
+  %     \item We asses for some cherry picked sentences. This is more qualitative. These sentences should be difficult or ambiguous. Or they can be ungramatical when taken from the syneval dataset. We can evaluate their entropy, and the diversity of samples, for example to see if there are clear modes. We can make violinplots of the probabilities of the samples. We can compute the f-scores of the samples compared with the argmax tree.
+  %   \end{itemize}
 
 \section{Related work}
 

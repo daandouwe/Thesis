@@ -267,7 +267,7 @@ Writing
   - [ ] Subsection of training: speed and complexity.
   - [X] Result tables
   - [ ] Entropy figures
-  - [ ] Perplexity figures.
+  - [X] Perplexity figures.
   - [ ] Helemaal rechtrekken.
 
 2. CRF

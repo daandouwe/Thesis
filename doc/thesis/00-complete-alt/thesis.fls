@@ -443,6 +443,12 @@ INPUT ../tables/gen-fscores.tex
 INPUT ../tables/gen-perplexities.tex
 INPUT ../tables/gen-perplexities.tex
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/adobe/courier/pcrr7t.tfm
+INPUT ../figures/sample-experiment/fscore/disc_temp.pdf
+INPUT ../figures/sample-experiment/fscore/disc_temp.pdf
+INPUT ../figures/sample-experiment/fscore/disc_temp.pdf
+INPUT ../figures/sample-experiment/ppl/disc_temp.pdf
+INPUT ../figures/sample-experiment/ppl/disc_temp.pdf
+INPUT ../figures/sample-experiment/ppl/disc_temp.pdf
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/vf/adobe/courier/pcrr7t.vf
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/adobe/courier/pcrr8r.tfm
 INPUT ../04-crf-parser/crf-parser.tex
