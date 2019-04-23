@@ -1,38 +1,37 @@
 % \bibliography{../src/bibliography}
 
-This chapter introduces a novel neural Conditional Random Field (CRF) parser. The model is a strong parser in itself, but can additionaly be used as an alternative proposal distribution for the approximate marginalization of the RNNG. The model is a CRF factored over labeled spans, and is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} from margin-based training to global CRF training. Given our interest in this model as a proposal distribution we require probabilistic training. The model is defined over normal form trees, but can deal with $n$-ary trees by introducing a dummy label $\varnoting$ in the binarization, and with unary chains by collapsing them to a single atomic label.\footnote{\textit{Cf.} figure \ref{fig:trees-ptb} for this normalization process.}. The process is to applied trees in the training corpus For the predicted trees, t
-This does pose a challenge for the probabilistic interpretation of our model. Where the parser defines a probability distribution over normal form trees, it does not define a distribution over the reconstituted trees: the process of  As such
+This chapter introduces a novel neural Conditional Random Field (CRF) parser. By itself the model is a strong parser, but it can additionaly be used as an alternative proposal distribution for the approximate marginalization of the RNNG. The model is a CRF factored over labeled spans, and is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} from margin-based training to global CRF training. Given our interest in this model as a proposal distribution we require probabilistic training. The model is defined over normal form trees, but can deal with $n$-ary trees by introducing a dummy label in the binarization, and with unary chains by collapsing them to a single atomic label.\footnote{\textit{Cf.} figure \ref{fig:trees-ptb} for this normalization process.}. This solution is adequate for the supervised training of the CRF, but does pose a challenge for the use of this model as proposal for the RNNG: the implicit binarization causes derivational ambiguity and in turn a subtle mismatch between the set of trees modelled by the CRF and the set of trees modelled by the RNNG. We discuss this briefly, but move the discussion of solutions to this to chapter
 
 In this chapter:
 \begin{itemize}
-  \item We present the parser and describe how it is a CRF adaptation of the max-margin trained parser of \citet{stern2017minimal}.
-  \item We show how several inference problems of interest can be solved exactly: parsing, entropy computation, sampling.
-  \item We train the parser in a supervised fashion and show it's adequacy as a parser.
-  \item We invesitage the kind of samples that are obtained from this parser, and evaluate how they affect the approximate inference in the RNNG.
-  \item We discuss the drawbacks of this model as a proposal model for the RNNG.
+  \item We present the model and describe how it is an adaptation into a CRF of the max-margin trained model of \citet{stern2017minimal}.
+  \item We show how several inference problems of interest---parsing, sampling, and computing the entropy---can be solved exactly and efficiently by deriving specific instances of the inside and outside algorithms.
+  \item We train the model in and show its effectiveness as discriminative parser: with the same number of parameters as the discriminative RNNG it achieves 90.04 F1, surpassing RNNG by more than 1 point.
+  \item We use the trained model as a proposal distribution for the generative RNNG, and show that this does not affect the parsing accuracy, but does affect the perplexity, albeit negatively.
+  \item We desribe the drawbacks of this model as a proposal model for the RNNG, and discuss solutions. These
 \end{itemize}
 
 \section{Model}
- The model is a span-factored CRF that predicts scores for labeled spans over the sentence using neural networks, which then interact in a tree-structured dynamic program, giving a compact description of the probability distribution over all parses. This approach combines the efficient exact inference of chart-based parsing, the rich nonlinear features of neural networks, and the global training of a CRF. The factorization enables efficient exact inference alowing for exact decoding and global sampling while the neural features can be complex and can condition on the entire sentence.
+   The model is a span-factored CRF that predicts scores for labeled spans over the sentence using neural networks, which then interact in a tree-structured dynamic program, giving a compact description of the probability distribution over all parses. This approach combines the efficient exact inference of chart-based parsing, the rich nonlinear features of neural networks, and the global training of a CRF. The factorization enables efficient exact inference alowing for exact decoding and global sampling while the neural features can be complex and can condition on the entire sentence.
 
-  Let $x$ be a sentence, and $y$ a tree from $\yieldx$. We define a function $\Psi$ that assings nonnegative scores $\Psi(\x, \y)$ and let the probability of a tree be its globally normalized score
-  \begin{align}
-    \label{eq:crf-model}
-    p(\y \mid \x) &= \frac{\Psi(\x, \y)}{Z(\x)},
-  \end{align}
-  where
-  \begin{align*}
-    Z(\x) = \sum_{ \y \in \yieldx } \Psi(\x, \y)
-  \end{align*}
-  is the normalizer, or partition function, that sums over the exponential number of trees availlable for $\x$.
+    Let $x$ be a sentence, and $y$ a tree from $\yieldx$. We define a function $\Psi$ that assings nonnegative scores $\Psi(\x, \y)$ and let the probability of a tree be its globally normalized score
+    \begin{align}
+      \label{eq:crf-model}
+      p(\y \mid \x) &= \frac{\Psi(\x, \y)}{Z(\x)},
+    \end{align}
+    where
+    \begin{align*}
+      Z(\x) = \sum_{ \y \in \yieldx } \Psi(\x, \y)
+    \end{align*}
+    is the normalizer, or partition function, that sums over the exponential number of trees availlable for $\x$.
 
-  To allow efficient computation of the normalizer, we let the scoring function $\Psi$ factorize over the parts of $\y$. We consider a tree as a set of labeled spans $\y_a = (A, i, j)$, indicating that a label $A$ spans the words $\langle x_{i+1}, \dots, \x_j \rangle$, and thus write $\y = \{ \y_a \}_{a=1}^A$. The value $\Psi(\x, \y)$ is then defined as the product
-  \begin{align}
-    \Psi(\x, \y) = \prod_{a=1}^A \psi(\x, \y_a),
-  \end{align}
-  where nonnegative potentials $\psi(\x, \y_a)$ score the parts. The function $\psi$ scores each labeled span $\y_a$ seperately, but conditional on the entire sentence.
+    To allow efficient computation of the normalizer, we let the scoring function $\Psi$ factorize over the parts of $\y$. We consider a tree as a set of labeled spans $\y_a = (A, i, j)$, indicating that a label $A$ spans the words $\langle x_{i+1}, \dots, \x_j \rangle$, and thus write $\y = \{ \y_a \}_{a=1}^A$. The value $\Psi(\x, \y)$ is then defined as the product
+    \begin{align}
+      \Psi(\x, \y) = \prod_{a=1}^A \psi(\x, \y_a),
+    \end{align}
+    where nonnegative potentials $\psi(\x, \y_a)$ score the parts. The function $\psi$ scores each labeled span $\y_a$ seperately, but conditional on the entire sentence.
 
-  The above model is your typical constituency parsing CRF \citep{finkel2008crf,klein2015crf}. But where those models factorize trees over \textit{anchored rules}, our model the factorizes over \textit{labeled spans},\footnote{Compare table \ref{tab:spans-rules} for the different representations of a tree.} an approach first taken in \citet{stern2017minimal}. This factorization imposes an even stronger independence assumption than that imposed by factorizatin over anchored rules. By factorizing over labeled spans, the potential function $\psi$ has no access to information about the direct substructure under the node, such as the child nodes and their split point, and the function can thus rely less on the (local) tree structure and must thus rely more on the surface features of the input sentence. It will, however, greatly reduce the size of the state-space of the dynamic programs, speeding up training and inference, and the burden of the feature function will be carried by a rich neural network parametrization. Together this will make the parser fast yet effective. This will be made clear in section \ref{sect:inference} on inference.
+    The above model is your typical constituency parsing CRF \citep{finkel2008crf,klein2015crf}. But where those models factorize trees over \textit{anchored rules}, our model the factorizes over \textit{labeled spans},\footnote{Compare table \ref{tab:spans-rules} for the different representations of a tree.} an approach first taken in \citet{stern2017minimal}. This factorization imposes an even stronger independence assumption than that imposed by factorizatin over anchored rules. By factorizing over labeled spans, the potential function $\psi$ has no access to information about the direct substructure under the node, such as the child nodes and their split point, and the function can thus rely less on the (local) tree structure and must thus rely more on the surface features of the input sentence. It will, however, greatly reduce the size of the state-space of the dynamic programs, speeding up training and inference, and the burden of the feature function will be carried by a rich neural network parametrization. Together this will make the parser fast yet effective. This will be made clear in section \ref{sect:inference} on inference.
 
 \section{Parametrization}
   The scoring function $\psi$ is implemented with neural networks following \citet{stern2017minimal}. Again, let $\y_a$ denote a labeled span $(A, i, j)$ in a tree $\y$, and let $\psi(\x, \y_a) > 0$ be the score of that labeled span for sentence $\x$. These local potentials can only make minimal use of structural information but they can depend on the entire sentence. This suggest the use of bidirectional RNN encodings. Let $\fw_i$ and $\bw_i$ respectively be the vectors computed by a forward and backward RNN for the word in position $i$. The representation of the span $(i, j)$ is the concatenation of the difference between the vectors on the endpoints of the span:
@@ -64,201 +63,198 @@ In this chapter:
   \end{itemize}
   These problems can be solved by instances of the \textit{inside algorithm} and \textit{outside algorithm} \citep{baker1979trainable} with differentent semirings, an insight we take from semiring parsing \citep{goodman1999semiring}. In the following derivations we will make use of the notion of a \textit{weighted hypergraph} as a compact representation of all parses and their scores \citep{gallo1993directed,klein2004parsing}, and use some of the ideas and notation of \textit{semiring parsing} \citep{goodman1999semiring,eisner2009semirings}. First we describe the structure of the parse forest specified by our CRF parser, and then derrive the particular form of the inside and outside recursions for this hypergraph from the general formulations. We refer the reader to appendix \ref{A3-crf} for background on these ideas, and the introduction of the notation.
 
-\subsection{Weighted parse forest}
-  The hypergraph $G = (\mathcal{V}, \mathcal{E})$ specified by the CRF parser has the following structure.
+  \subsection{Weighted parse forest}
+    The hypergraph $G = (\mathcal{V}, \mathcal{E})$ specified by the CRF parser has the following structure.
 
-  The set $\mathcal{V}$ is defined relative to the sentence $\x$, and contains the invidual words of a sentence $\x$, together with all possible labeled spans over that sentence:
-  \begin{align*}
-    \mathcal{V} = \Big\{ \x_i \; \Big\vert \; 1 \leq i \leq n \Big\} \cup \Big\{ (A, i, j) \; \Big\vert \; A \in \Lambda, 0 \leq i < j \leq n \Big\} \cup \Big\{ (S^{\dagger}, 0, n) \Big\},
-  \end{align*}
-  where $(S^{\dagger}, 0, n)$ is a designated root node. The dependence on $x$ can be made explicit by writing $\mathcal{V}(x)$.
-
-  The set of hyperedges $\mathcal{E} \subseteq 2^{\mathcal{V}} \times \mathcal{V}$ specifies all the ways that adjacent constituents can be combined to form a larger constituent, under a particular grammar. Because we (implicitly) assume a normal form grammar that contains \textit{all} possible productions, the set of hyperedges is particularly regular: the set $\mathcal{E}$ contains all edges that connect nodes $(B, i, k)$ and $(C, k, j)$ at the tail with $(A, i, j)$ at the head for all $0 \leq i < k < j \leq n$, all edges that connect $\x_i$ to $(A, i, i+1)$, and all labels can appear in the top node, with the exception of the dummy label $\varnothing$:
-  \begin{align*}
-    \mathcal{E}
-      &= \Bigg\{ \Big\langle \Big\{ (B, i, k), (C, k, j) \Big\},  (A, i, j) \Big\rangle \; \Bigg\vert \; A, B, C \in \Lambda, \; 0 \leq i < k < j \leq n \Bigg\}  \\
-      &\quad\cup \Bigg\{ \Big\langle \{ \x_i \}, (A, i-1, i) \Big\rangle \; \Bigg\vert \; A \in \Lambda, \; 1 \leq i \leq n \Bigg\}  \\
-      &\quad\cup \Bigg\{ \Big\langle \{ (A, 0, n) \}, (S^{\dagger}, 0, n) \Big\rangle \; \Bigg\vert \; A \in \Lambda \setminus \{ \varnothing \} \Bigg\}
-  \end{align*}
-  The three kind of edges that make up $\mathcal{E}$ are illustrated in figure \ref{fig:crf-edges}. A tree is a set of nodes $y \subseteq \mathcal{V}(x)$, and the parse forest a set of trees $\yieldx \subseteq 2^{\mathcal{V}(x)}$.
-
-  \begin{figure}[h]
-  \label{fig:crf-edges}
-    \center
-    \begin{tikzpicture}[scale=.6]
-      \input{../figures/edges/edges.tex}
-    \end{tikzpicture}
-    \caption{The edge-types making up the hypergraph. The edges are instatiated for all $A, B, C \in \Lambda$ and all $0 \leq i < j \leq n$. Only for the rightmost edge holds the restriction $A \neq \varnothing$, to ensure that the dummy label cannot be the top node.}
-  \end{figure}
-
-  We connect a semiring $\mathcal{K}$ to the hypergraph by defining the weight function as $\omega: \mathcal{E} \to \mathbb{K}$, and by accumulating the weights with its binary operations. The function $\omega$ that assigns weights to the edges is given by either the function $\psi$ or $(\log \circ \, \psi)$, depending on the semiring used. Because of this association, the function $\omega$ has a very particular property: the function effectively depends only on the \textit{head} of the edge. Given edges $e = \langle \{ u, w \}, v \rangle$ and $e' =  \langle \{ u', w' \}, v \rangle$ for $u \neq u'$ and $w \neq w'$, their weights are equal: $\omega(e) = \omega(e')$. For this reason we write $\omega(v)$ instead.\footnote{Thus implicitly defining $\omega: \mathcal{V} \to \mathbb{K}$.} This fact will allow us to greatly simplify the recursions that follow. Additionally, this means that instead of computing independent scores for each of the $O(n^3 \vert\Lambda\rvert^3)$ edges, we only need to compute scores for the $O(n^2 \vert\Lambda\rvert)$ vertices. For a scoring function like a neural network, for which computation can be relatively expensive, this will make a significant difference.
-
- With this structure in place, we are ready to derive the form of the inference algorithm particular to this structure.
-
-
-\subsection{Inside recursion}
-  The inside recursion computes quantities $\alpha(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. The quantity computed depends on the semiring used. In this section we derive the inside recursion specific to our hypergraph from the general result given.
-
-  Let $\mathcal{K}$ be some semiring with binary operations $\oplus$ and $\otimes$ and identity elements $\bar{0}$ and $\bar{1}$. The inside recursion is given by the formula \citep{goodman1999semiring}
-  \begin{align*}
-    \alpha(v) =
-      \begin{cases}
-        \bar{1}  &  \mbox{if } I(v) = \varnothing,  \\
-        \displaystyle\bigoplus_{e \in I(v)} \omega(e) \otimes \displaystyle\bigotimes_{u \in T(e)} \alpha(u)  & \mbox{otherwise.}
-      \end{cases}
-  \end{align*}
-  Here $I(v) \subseteq E$ is the set of edges incoming at node $v$, and $T(e) \subseteq V$ is the set of nodes in the tail of edge $e$.
-
-  At a node $v = (A, i, i+1)$ that spans one word $x_i$, the inside value is just the weight of the single edge incoming from that word:
-  \begin{align}
-      \label{eq:inside-base}
-      \alpha(A, i, i+1) = \omega(A, i, i+1) \otimes \alpha(x_i) = \omega(A, i, i+1),
-  \end{align}
-  for $A \in \Lambda$, for all $0 \leq i < n$. We used the fact that $\alpha(x_i) = \bar{1}$, which follows from the fact that there are no arrows incoming at $\x_i$.
-
-  For a general node $\alpha(A, i, j)$, $j > i + 1$, we observe that all the incoming edges have at the tail the nodes $(B, i, k)$ and $(C, k, j)$, for all $B, C \in \Lambda$ and $i < k < j$. The sum over edges thus reduces to independent sums over $B$, $C$, and $k$, and the product over the inside values at the tail reduces to the product of values $\alpha(B, i, k)$ and $\alpha(C, k, j)$. The form of $\omega$ allows us to rewrite this greatly as
-  \begin{align}
-    \label{eq:inside}
-    \alpha(A, i, j)
-      &= \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=i+1}^{j-1} \omega(A, i, j) \otimes \alpha(B,i,k) \otimes \alpha(C,k,j) \nonumber \\
-      &= \omega(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \bigoplus_{B \in \Lambda} \alpha(B,i,k) \otimes \bigoplus_{C \in \Lambda} \alpha(C,k,j) \nonumber \\
-      &= \omega(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \sigma(i,k) \otimes \sigma(k,j),
-  \end{align}
-  where we've introduced the notational abbreviation
-  \begin{align*}
-      \sigma(i,j) &= \bigoplus_{A \in \Lambda} \alpha(A,i,j).
-  \end{align*}
-  Looking at \ref{eq:inside} we can see the marginalized values $\sigma(i, j)$ are all that are needed for the recursion. This suggest simplifying the recursion even further as
-  \begin{align}
-    \label{eq:inside-simplified}
-    \sigma(i, j)
-      &= \bigoplus_{A \in \Lambda} \alpha(A,i,j) \nonumber \\
-      &= \Bigg[ \bigoplus_{A \in \Lambda} \omega(A, i, j) \Bigg] \otimes \Bigg[\bigoplus_{k=i+1}^{j-1} \sigma(i,k) \otimes  \sigma(k,j) \Bigg],
-  \end{align}
-  where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting.
-
-  These values can be computed by visiting the nodes of the parse forest in topological order. This order ensures that the in quantities in the tail of an edge will have been computed when the value at the node at the head is at turn. Given the highly regular for of the parse forest, this order boils down to something quite simple: the nodes are visited by increasing width of the span; the order in which the starting-points are visited does not matter because these nodes are not connected among each other.\footnote{\textit{Cf.} figure \ref{fig:hypergraph}: the width of the span determines the vertical level of the node in the parse forest; for a fixed width, the label and startpoint are all unconnected along this vertical level, and thus independent.}. We choose to visit the starting points from left to right, that is, from 0 to $n$. Algorithm \ref{algo:inside} shows the this recursion as an algorithm.
-
-
-\subsection{Outside recursion}
-  The outside algorithm computes the quantities $\beta(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. The general recursion is given by:
-  \begin{align*}
-    \beta(v) =
-      \begin{cases}
-        \bar{1}  & \mbox{if } O(v) = \varnothing, \\
-        \displaystyle\bigoplus_{e \in O(v)} \omega(e) \otimes \beta(H(e)) \otimes \displaystyle\bigotimes_{ \substack{ w \in T(e) \\ w \neq u } } \alpha(w)  & \mbox{otherwise.}
-      \end{cases}
-  \end{align*}
-  Here, $O(v) \subseteq E$ is the set of edges outgoing from $v$, $\ie$ the edges for which $v$ is in the tail, and define $H(e) \in V$ as the node at the head of edge $e$.
-
-  The only node without outgoing edges is the root node, and thus
-  \begin{align*}
-    \beta(S^{\dagger}, 0, n) = \bar{1}.
-  \end{align*}
-  To compute $\beta(A, i, j)$ in the general case we need to sum over all outgoing edges. These come in two kinds: either $(A, i, j)$ combines with $(C, j, k)$ to form constituent $(B, i, k)$; or $(A, i, j)$ combines with $(C, k, i)$ to form constituent $(B, k, j)$. This corresponds to the following expression, that we can simplify by making use of the properties of $\omega$:
-  \begin{align*}
-    \beta(A, i, j)
-      &= \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=1}^{i-1} \omega(B, k, j) \otimes \alpha(C, k, i) \otimes \beta(B, k, j) \\
-        &\qquad \oplus \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=j+1}^{n} \omega(B, i, k) \otimes \beta(B, i, k) \otimes \alpha(C, j, k) \\
-      &=  \bigoplus_{k=1}^{i-1}  \Bigg[ \bigoplus_{B \in \Lambda} \omega(B, k, j)  \otimes \beta(B, k, j) \Bigg] \otimes \Bigg[ \bigoplus_{C \in \Lambda} \alpha(C, k, i) \Bigg] \\
-        &\qquad \oplus \bigoplus_{k=j+1}^{n}  \Bigg[ \bigoplus_{B \in \Lambda}  \omega(B, i, k) \otimes \beta(B, i, k) \Bigg] \otimes  \Bigg[  \bigoplus_{C \in \Lambda} \alpha(C, j, k) \Bigg] \\
-      &=  \bigoplus_{k=1}^{i-1}  \sigma'(k, j) \otimes \sigma(k, i) \oplus \bigoplus_{k=j+1}^{n} \sigma'(i, k) \otimes  \sigma(j, k) \\
-  \end{align*}
-  where
-  \begin{align*}
-      \sigma(i, j) &= \bigoplus_{A \in \Lambda} \alpha(A, i, j),  \\
-      \sigma'(i, j) &= \bigoplus_{A \in \Lambda} \omega(A, i, j) \beta(A, i, j).
-  \end{align*}
-
-  These values can be computed by visiting the nodes of the parse forest in \textit{reverse} topological order, exactly the opposite of the inside recursion. This order ensures that the in quantities in the head of an edge will have been computed when the values in the tail are at turn. Again, this this order boils down to something quite simple: the nodes are visited based by decreasing width of their span, and again the order of the start-points are free. Algorithm \ref{algo:outside} shows the this recursion as an algorithm.
-
-
-\subsection{Solutions}
-  Equiped with the two recursions and a handful of semirings we can provide the solutions promised at the outset of this section.
-
-  \paragraph{Normalizer}
-    When we intantiate the inside recursion with the real semiring, the value of $\alpha$ at the root is the normalizer:
+    The set $\mathcal{V}$ is defined relative to the sentence $\x$, and contains the invidual words of a sentence $\x$, together with all possible labeled spans over that sentence:
     \begin{align*}
-      \alpha(\text{S}^{\dagger}, 0, n) = Z(\x),
+      \mathcal{V} = \Big\{ \x_i \; \Big\vert \; 1 \leq i \leq n \Big\} \cup \Big\{ (A, i, j) \; \Big\vert \; A \in \Lambda, 0 \leq i < j \leq n \Big\} \cup \Big\{ (S^{\dagger}, 0, n) \Big\},
     \end{align*}
-    and when we instantiate the inside recursion with the log-real semiring we obtain the log-normalizer
+    where $(S^{\dagger}, 0, n)$ is a designated root node. The dependence on $x$ can be made explicit by writing $\mathcal{V}(x)$.
+
+    The set of hyperedges $\mathcal{E} \subseteq 2^{\mathcal{V}} \times \mathcal{V}$ specifies all the ways that adjacent constituents can be combined to form a larger constituent, under a particular grammar. Because we (implicitly) assume a normal form grammar that contains \textit{all} possible productions, the set of hyperedges is particularly regular: the set $\mathcal{E}$ contains all edges that connect nodes $(B, i, k)$ and $(C, k, j)$ at the tail with $(A, i, j)$ at the head for all $0 \leq i < k < j \leq n$, all edges that connect $\x_i$ to $(A, i, i+1)$, and all labels can appear in the top node, with the exception of the dummy label $\varnothing$:
     \begin{align*}
-      \alpha(\text{S}^{\dagger}, 0, n) = \log Z(\x).
+      \mathcal{E}
+        &= \Bigg\{ \Big\langle \Big\{ (B, i, k), (C, k, j) \Big\},  (A, i, j) \Big\rangle \; \Bigg\vert \; A, B, C \in \Lambda, \; 0 \leq i < k < j \leq n \Bigg\}  \\
+        &\quad\cup \Bigg\{ \Big\langle \{ \x_i \}, (A, i-1, i) \Big\rangle \; \Bigg\vert \; A \in \Lambda, \; 1 \leq i \leq n \Bigg\}  \\
+        &\quad\cup \Bigg\{ \Big\langle \{ (A, 0, n) \}, (S^{\dagger}, 0, n) \Big\rangle \; \Bigg\vert \; A \in \Lambda \setminus \{ \varnothing \} \Bigg\}
+    \end{align*}
+    The three kind of edges that make up $\mathcal{E}$ are illustrated in figure \ref{fig:crf-edges}. A tree is a set of nodes $y \subseteq \mathcal{V}(x)$, and the parse forest a set of trees $\yieldx \subseteq 2^{\mathcal{V}(x)}$.
+
+    \begin{figure}[h]
+    \label{fig:crf-edges}
+      \center
+      \begin{tikzpicture}[scale=.6]
+        \input{../figures/edges/edges.tex}
+      \end{tikzpicture}
+      \caption{The edge-types making up the hypergraph. The edges are instatiated for all $A, B, C \in \Lambda$ and all $0 \leq i < j \leq n$. Only for the rightmost edge holds the restriction $A \neq \varnothing$, to ensure that the dummy label cannot be the top node.}
+    \end{figure}
+
+    We connect a semiring $\mathcal{K}$ to the hypergraph by defining the weight function as $\omega: \mathcal{E} \to \mathbb{K}$, and by accumulating the weights with its binary operations. The function $\omega$ that assigns weights to the edges is given by either the function $\psi$ or $(\log \circ \, \psi)$, depending on the semiring used. Because of this association, the function $\omega$ has a very particular property: the function effectively depends only on the \textit{head} of the edge. Given edges $e = \langle \{ u, w \}, v \rangle$ and $e' =  \langle \{ u', w' \}, v \rangle$ for $u \neq u'$ and $w \neq w'$, their weights are equal: $\omega(e) = \omega(e')$. For this reason we write $\omega(v)$ instead.\footnote{Thus implicitly defining $\omega: \mathcal{V} \to \mathbb{K}$.} This fact will allow us to greatly simplify the recursions that follow. Additionally, this means that instead of computing independent scores for each of the $O(n^3 \vert\Lambda\rvert^3)$ edges, we only need to compute scores for the $O(n^2 \vert\Lambda\rvert)$ vertices. For a scoring function like a neural network, for which computation can be relatively expensive, this will make a significant difference.
+
+   With this structure in place, we are ready to derive the form of the inference algorithm particular to this structure.
+
+  \subsection{Inside recursion}
+    The inside recursion computes quantities $\alpha(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. The quantity computed depends on the semiring used. In this section we derive the inside recursion specific to our hypergraph from the general result given.
+
+    Let $\mathcal{K}$ be some semiring with binary operations $\oplus$ and $\otimes$ and identity elements $\bar{0}$ and $\bar{1}$. The inside recursion is given by the formula \citep{goodman1999semiring}
+    \begin{align*}
+      \alpha(v) =
+        \begin{cases}
+          \bar{1}  &  \mbox{if } I(v) = \varnothing,  \\
+          \displaystyle\bigoplus_{e \in I(v)} \omega(e) \otimes \displaystyle\bigotimes_{u \in T(e)} \alpha(u)  & \mbox{otherwise.}
+        \end{cases}
+    \end{align*}
+    Here $I(v) \subseteq E$ is the set of edges incoming at node $v$, and $T(e) \subseteq V$ is the set of nodes in the tail of edge $e$.
+
+    At a node $v = (A, i, i+1)$ that spans one word $x_i$, the inside value is just the weight of the single edge incoming from that word:
+    \begin{align}
+        \label{eq:inside-base}
+        \alpha(A, i, i+1) = \omega(A, i, i+1) \otimes \alpha(x_i) = \omega(A, i, i+1),
+    \end{align}
+    for $A \in \Lambda$, for all $0 \leq i < n$. We used the fact that $\alpha(x_i) = \bar{1}$, which follows from the fact that there are no arrows incoming at $\x_i$.
+
+    For a general node $\alpha(A, i, j)$, $j > i + 1$, we observe that all the incoming edges have at the tail the nodes $(B, i, k)$ and $(C, k, j)$, for all $B, C \in \Lambda$ and $i < k < j$. The sum over edges thus reduces to independent sums over $B$, $C$, and $k$, and the product over the inside values at the tail reduces to the product of values $\alpha(B, i, k)$ and $\alpha(C, k, j)$. The form of $\omega$ allows us to rewrite this greatly as
+    \begin{align}
+      \label{eq:inside}
+      \alpha(A, i, j)
+        &= \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=i+1}^{j-1} \omega(A, i, j) \otimes \alpha(B,i,k) \otimes \alpha(C,k,j) \nonumber \\
+        &= \omega(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \bigoplus_{B \in \Lambda} \alpha(B,i,k) \otimes \bigoplus_{C \in \Lambda} \alpha(C,k,j) \nonumber \\
+        &= \omega(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \sigma(i,k) \otimes \sigma(k,j),
+    \end{align}
+    where we've introduced the notational abbreviation
+    \begin{align*}
+        \sigma(i,j) &= \bigoplus_{A \in \Lambda} \alpha(A,i,j).
+    \end{align*}
+    Looking at \ref{eq:inside} we can see the marginalized values $\sigma(i, j)$ are all that are needed for the recursion. This suggest simplifying the recursion even further as
+    \begin{align}
+      \label{eq:inside-simplified}
+      \sigma(i, j)
+        &= \bigoplus_{A \in \Lambda} \alpha(A,i,j) \nonumber \\
+        &= \Bigg[ \bigoplus_{A \in \Lambda} \omega(A, i, j) \Bigg] \otimes \Bigg[\bigoplus_{k=i+1}^{j-1} \sigma(i,k) \otimes  \sigma(k,j) \Bigg],
+    \end{align}
+    where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting.
+
+    These values can be computed by visiting the nodes of the parse forest in topological order. This order ensures that the in quantities in the tail of an edge will have been computed when the value at the node at the head is at turn. Given the highly regular for of the parse forest, this order boils down to something quite simple: the nodes are visited by increasing width of the span; the order in which the starting-points are visited does not matter because these nodes are not connected among each other.\footnote{\textit{Cf.} figure \ref{fig:hypergraph}: the width of the span determines the vertical level of the node in the parse forest; for a fixed width, the label and startpoint are all unconnected along this vertical level, and thus independent.}. We choose to visit the starting points from left to right, that is, from 0 to $n$. Algorithm \ref{algo:inside} shows the this recursion as an algorithm.
+
+  \subsection{Outside recursion}
+    The outside algorithm computes the quantities $\beta(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. The general recursion is given by:
+    \begin{align*}
+      \beta(v) =
+        \begin{cases}
+          \bar{1}  & \mbox{if } O(v) = \varnothing, \\
+          \displaystyle\bigoplus_{e \in O(v)} \omega(e) \otimes \beta(H(e)) \otimes \displaystyle\bigotimes_{ \substack{ w \in T(e) \\ w \neq u } } \alpha(w)  & \mbox{otherwise.}
+        \end{cases}
+    \end{align*}
+    Here, $O(v) \subseteq E$ is the set of edges outgoing from $v$, $\ie$ the edges for which $v$ is in the tail, and define $H(e) \in V$ as the node at the head of edge $e$.
+
+    The only node without outgoing edges is the root node, and thus
+    \begin{align*}
+      \beta(S^{\dagger}, 0, n) = \bar{1}.
+    \end{align*}
+    To compute $\beta(A, i, j)$ in the general case we need to sum over all outgoing edges. These come in two kinds: either $(A, i, j)$ combines with $(C, j, k)$ to form constituent $(B, i, k)$; or $(A, i, j)$ combines with $(C, k, i)$ to form constituent $(B, k, j)$. This corresponds to the following expression, that we can simplify by making use of the properties of $\omega$:
+    \begin{align*}
+      \beta(A, i, j)
+        &= \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=1}^{i-1} \omega(B, k, j) \otimes \alpha(C, k, i) \otimes \beta(B, k, j) \\
+          &\qquad \oplus \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=j+1}^{n} \omega(B, i, k) \otimes \beta(B, i, k) \otimes \alpha(C, j, k) \\
+        &=  \bigoplus_{k=1}^{i-1}  \Bigg[ \bigoplus_{B \in \Lambda} \omega(B, k, j)  \otimes \beta(B, k, j) \Bigg] \otimes \Bigg[ \bigoplus_{C \in \Lambda} \alpha(C, k, i) \Bigg] \\
+          &\qquad \oplus \bigoplus_{k=j+1}^{n}  \Bigg[ \bigoplus_{B \in \Lambda}  \omega(B, i, k) \otimes \beta(B, i, k) \Bigg] \otimes  \Bigg[  \bigoplus_{C \in \Lambda} \alpha(C, j, k) \Bigg] \\
+        &=  \bigoplus_{k=1}^{i-1}  \sigma'(k, j) \otimes \sigma(k, i) \oplus \bigoplus_{k=j+1}^{n} \sigma'(i, k) \otimes  \sigma(j, k) \\
+    \end{align*}
+    where
+    \begin{align*}
+        \sigma(i, j) &= \bigoplus_{A \in \Lambda} \alpha(A, i, j),  \\
+        \sigma'(i, j) &= \bigoplus_{A \in \Lambda} \omega(A, i, j) \beta(A, i, j).
     \end{align*}
 
-  \paragraph{Parse}
-    To find the viterbi tree $\hat{ \y } = \arg \max_{ \y } p(\y  \mid \x)$ and its probability $p(\hat{\y} \mid \x)$ we use the Viterbi semirings ($\cf$ examples \ref{ex:vit-weight} and \ref{ex:vit-derivation} in appendix \ref{A3-crf}). We take equation \ref{eq:inside-simplified} and use the Viterbi semiring operations to derive that the value of the best subtree spanning words $i$ to $j$ is given by
-    \begin{align}
-      \label{eq:viterbi-score}
-      \sigma(i,j)
-        &= \max_{A} [ \log \psi(A, i, j) ] + \max_{k} [\sigma(i,k) + \sigma(k,j)].
-    \end{align}
-    The value $\log \Psi(\x, \hat{\y})$ is then given by $\sigma(0, n)$, and  can be normalized with to give the probability
-    \begin{align}
-      p(\hat{y} \mid x) = \sigma(0, n) - \log Z(x).
-    \end{align}
-    The best label and splitpoint $\hat{A}$ and $\hat{k}$ for the span $(i, j)$ are obtained by using the argmax:
-    \begin{align}
-      \label{eq:viterbi-tree}
-      \hat{A} &= \argmax_{ A  } \log \psi(A, i, j)  \\
-      \hat{k} &= \argmax_{ k } \sigma(i, k) + \sigma(k, j),
-    \end{align}
-    and the best tree $\hat{y}$ is found by following back from the root down to the leaves the best splits and labels.
+    These values can be computed by visiting the nodes of the parse forest in \textit{reverse} topological order, exactly the opposite of the inside recursion. This order ensures that the in quantities in the head of an edge will have been computed when the values in the tail are at turn. Again, this this order boils down to something quite simple: the nodes are visited based by decreasing width of their span, and again the order of the start-points are free. Algorithm \ref{algo:outside} shows the this recursion as an algorithm.
 
-  \paragraph{Sample}
-    Unbiased samples from the model can be obtained by recursively sampling incoming edges, starting at the root node $(S^{\dagger}, 0, n)$, ending at the word nodes. The probability of an edges is proportional to the weight of all the trees under that edge. This is precicely what is represented by the inside value $\alpha$ computed in the real-semiring. At node $v = (A, i, j)$ the probability of edge $e = \langle \{ u, w \}, v \rangle$, with $u = (B, i, k)$ and $w = (C, k, j)$, is thus
-    \begin{align}
-      \label{eq:sample}
-      P(E = e \mid V = v)
-        &= \frac{\omega(e) \otimes \bigotimes_{u \in T(e)} \alpha(u)}{\alpha(v)}  \nonumber  \\
-        &= \frac{\psi(A, i, j) \, \alpha(B, i, k) \, \alpha(C, k, j)}{\alpha(A, i, j)}.
-    \end{align}
-    Once an edge is sampled, the process is repeated at the nodes in the tail of that edge. We stop when we reach the nodes that span individual words. The sampled edges together then are guaranteed to form a tree. From a compuational point of view, this sampling is very efficient: the scores for the labeled spans need to be computed only once, followed by a single run of the inside and outside algorithm. Beyond this point, no costly computation is required. In our case, where the scores are predicted by a neural network, this means that we need to perfom just a single forward pass. Compare this with a sequential model such as the discriminative RNNG, where each sample requires an separate forward pass.
+  \subsection{Solutions}
+    Equiped with the two recursions and a handful of semirings we can provide the solutions promised at the outset of this section.
 
-  \paragraph{Entropy}
-    % To compute the entropy $H(Y \mid X = x)$ we need to first introduce the notion of the \textit{maginal probablity} of a node. The marginal of a node $v = (A, i, j)$ in a hypergraph is the probability that it occurs in a tree $\y$ for the sentence $\x$ as governed by the distribution $p$ that we defined on it. Let $V$ be a random variable with the hypergraph nodes $\mathcal{V}(x)$ as sample space, and define
-    % \begin{align}
-    %   P(V = v \mid X = \x)
-    %     &\defeq \expect_Y[ \indicator_{ \{ v \in Y \} } ]  \nonumber \\
-    %     &= \sum_{ \y \in \yieldx } p(\y \mid \x) \indicator_{ \{ v \in y \} }.
-    % \end{align}
-    %
-    % The marginals can be computed from the inside and outside values computed in the real semiring as
-    % \begin{align}
-    %   P(V = v \mid X = \x) = \frac{\alpha(A, i, j) \, \beta(A, i, j)}{Z(\x)},
-    % \end{align}
-    % a result from \citep{goodman1999semiring}.\footnote{This can also be seen by noting that the product of $\alpha(A, i, j)$ and $\beta(A, i, j)$ is the sum over all trees that contain the node $v$, and $Z(\x)$ the sum over all trees in general.} The entropy can then be written as an expectation with respect to these marginals:
-    % \begin{align}
-    %   H(Y \mid X = x)
-    %     &= - \sum_{ \y \in \yieldx } p(\y \mid \x) \log p(\y \mid \x)  \nonumber \\
-    %     &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{v \in \y} \log \psi(\x, v)  \nonumber \\
-    %     &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{ v \in \mathcal{V}(x) } \indicator_{ \{ v \in y \} } \log \psi(\x, v)  \nonumber \\
-    %     &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v)  \sum_{ \y \in \yieldx } \indicator_{ \{ v \in y \} } p(\y \mid \x)  \nonumber \\
-    %     &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v)  P(V = v \mid X = \x)  \nonumber \\
-    %     &=  \log Z(\x) - \expect_V [ \log \psi(\x, V) ].
-    % \end{align}
-    To compute the entropy $H(Y \mid X = x)$ we need to first introduce the notion of a \textit{node maginal}. The marginal of a node $v = (A, i, j)$ in a hypergraph is the probability that it occurs in a tree $\y$ for the sentence $\x$, according to the probability distribution $p$ over trees. The node marginal $\mu(v)$ is defined as the expectation
-    \begin{align}
-      \label{eq:node-marginal}
-      \mu(v)
-        &\defeq \expect_Y[ \indicator_{ \{ v \in Y \} } ]  \nonumber \\
-        &= \sum_{ \y \in \yieldx } p(\y \mid \x) \indicator_{ \{ v \in y \} }.
-    \end{align}
-    This can be computed from the inside and outside values computed in the real semiring as
-    \begin{align}
-      \mu(v) = \frac{\alpha(A, i, j) \, \beta(A, i, j)}{Z(\x)},
-    \end{align}
-    a result from \citep{goodman1999semiring}. This can also be seen by noting that the product of $\alpha(A, i, j)$ and $\beta(A, i, j)$ is the sum over all trees that contain the node $v$, and $Z(\x)$ the sum over all trees in general.
+    \paragraph{Normalizer}
+      When we intantiate the inside recursion with the real semiring, the value of $\alpha$ at the root is the normalizer:
+      \begin{align*}
+        \alpha(\text{S}^{\dagger}, 0, n) = Z(\x),
+      \end{align*}
+      and when we instantiate the inside recursion with the log-real semiring we obtain the log-normalizer
+      \begin{align*}
+        \alpha(\text{S}^{\dagger}, 0, n) = \log Z(\x).
+      \end{align*}
 
-    The entropy, then can then be written in terms of these marginals:
-    \begin{align}
-      H(Y \mid X = x)
-        &= - \sum_{ \y \in \yieldx } p(\y \mid \x) \log p(\y \mid \x)  \nonumber \\
-        &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{v \in \y} \log \psi(\x, v)  \nonumber \\
-        &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{ v \in \mathcal{V}(x) } \indicator_{ \{ v \in y \} } \log \psi(\x, v)  \nonumber \\
-        &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v)  \sum_{ \y \in \yieldx } \indicator_{ \{ v \in y \} } p(\y \mid \x)  \nonumber \\
-        &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v) \mu(v)
-    \end{align}
+    \paragraph{Parse}
+      To find the viterbi tree $\hat{ \y } = \arg \max_{ \y } p(\y  \mid \x)$ and its probability $p(\hat{\y} \mid \x)$ we use the Viterbi semirings ($\cf$ examples \ref{ex:vit-weight} and \ref{ex:vit-derivation} in appendix \ref{A3-crf}). We take equation \ref{eq:inside-simplified} and use the Viterbi semiring operations to derive that the value of the best subtree spanning words $i$ to $j$ is given by
+      \begin{align}
+        \label{eq:viterbi-score}
+        \sigma(i,j)
+          &= \max_{A} [ \log \psi(A, i, j) ] + \max_{k} [\sigma(i,k) + \sigma(k,j)].
+      \end{align}
+      The value $\log \Psi(\x, \hat{\y})$ is then given by $\sigma(0, n)$, and  can be normalized with to give the probability
+      \begin{align}
+        p(\hat{y} \mid x) = \sigma(0, n) - \log Z(x).
+      \end{align}
+      The best label and splitpoint $\hat{A}$ and $\hat{k}$ for the span $(i, j)$ are obtained by using the argmax:
+      \begin{align}
+        \label{eq:viterbi-tree}
+        \hat{A} &= \argmax_{ A  } \log \psi(A, i, j)  \\
+        \hat{k} &= \argmax_{ k } \sigma(i, k) + \sigma(k, j),
+      \end{align}
+      and the best tree $\hat{y}$ is found by following back from the root down to the leaves the best splits and labels.
+
+    \paragraph{Sample}
+      Unbiased samples from the model can be obtained by recursively sampling incoming edges, starting at the root node $(S^{\dagger}, 0, n)$, ending at the word nodes. The probability of an edges is proportional to the weight of all the trees under that edge. This is precicely what is represented by the inside value $\alpha$ computed in the real-semiring. At node $v = (A, i, j)$ the probability of edge $e = \langle \{ u, w \}, v \rangle$, with $u = (B, i, k)$ and $w = (C, k, j)$, is thus
+      \begin{align}
+        \label{eq:sample}
+        P(E = e \mid V = v)
+          &= \frac{\omega(e) \otimes \bigotimes_{u \in T(e)} \alpha(u)}{\alpha(v)}  \nonumber  \\
+          &= \frac{\psi(A, i, j) \, \alpha(B, i, k) \, \alpha(C, k, j)}{\alpha(A, i, j)}.
+      \end{align}
+      Once an edge is sampled, the process is repeated at the nodes in the tail of that edge. We stop when we reach the nodes that span individual words. The sampled edges together then are guaranteed to form a tree. From a compuational point of view, this sampling is very efficient: the scores for the labeled spans need to be computed only once, followed by a single run of the inside and outside algorithm. Beyond this point, no costly computation is required. In our case, where the scores are predicted by a neural network, this means that we need to perfom just a single forward pass. Compare this with a sequential model such as the discriminative RNNG, where each sample requires an separate forward pass.
+
+    \paragraph{Entropy}
+      % To compute the entropy $H(Y \mid X = x)$ we need to first introduce the notion of the \textit{maginal probablity} of a node. The marginal of a node $v = (A, i, j)$ in a hypergraph is the probability that it occurs in a tree $\y$ for the sentence $\x$ as governed by the distribution $p$ that we defined on it. Let $V$ be a random variable with the hypergraph nodes $\mathcal{V}(x)$ as sample space, and define
+      % \begin{align}
+      %   P(V = v \mid X = \x)
+      %     &\defeq \expect_Y[ \indicator_{ \{ v \in Y \} } ]  \nonumber \\
+      %     &= \sum_{ \y \in \yieldx } p(\y \mid \x) \indicator_{ \{ v \in y \} }.
+      % \end{align}
+      %
+      % The marginals can be computed from the inside and outside values computed in the real semiring as
+      % \begin{align}
+      %   P(V = v \mid X = \x) = \frac{\alpha(A, i, j) \, \beta(A, i, j)}{Z(\x)},
+      % \end{align}
+      % a result from \citep{goodman1999semiring}.\footnote{This can also be seen by noting that the product of $\alpha(A, i, j)$ and $\beta(A, i, j)$ is the sum over all trees that contain the node $v$, and $Z(\x)$ the sum over all trees in general.} The entropy can then be written as an expectation with respect to these marginals:
+      % \begin{align}
+      %   H(Y \mid X = x)
+      %     &= - \sum_{ \y \in \yieldx } p(\y \mid \x) \log p(\y \mid \x)  \nonumber \\
+      %     &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{v \in \y} \log \psi(\x, v)  \nonumber \\
+      %     &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{ v \in \mathcal{V}(x) } \indicator_{ \{ v \in y \} } \log \psi(\x, v)  \nonumber \\
+      %     &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v)  \sum_{ \y \in \yieldx } \indicator_{ \{ v \in y \} } p(\y \mid \x)  \nonumber \\
+      %     &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v)  P(V = v \mid X = \x)  \nonumber \\
+      %     &=  \log Z(\x) - \expect_V [ \log \psi(\x, V) ].
+      % \end{align}
+      To compute the entropy $H(Y \mid X = x)$ we need to first introduce the notion of a \textit{node maginal}. The marginal of a node $v = (A, i, j)$ in a hypergraph is the probability that it occurs in a tree $\y$ for the sentence $\x$, according to the probability distribution $p$ over trees. The node marginal $\mu(v)$ is defined as the expectation
+      \begin{align}
+        \label{eq:node-marginal}
+        \mu(v)
+          &\defeq \expect_Y[ \indicator_{ \{ v \in Y \} } ]  \nonumber \\
+          &= \sum_{ \y \in \yieldx } p(\y \mid \x) \indicator_{ \{ v \in y \} }.
+      \end{align}
+      This can be computed from the inside and outside values computed in the real semiring as
+      \begin{align}
+        \mu(v) = \frac{\alpha(A, i, j) \, \beta(A, i, j)}{Z(\x)},
+      \end{align}
+      a result from \citep{goodman1999semiring}. This can also be seen by noting that the product of $\alpha(A, i, j)$ and $\beta(A, i, j)$ is the sum over all trees that contain the node $v$, and $Z(\x)$ the sum over all trees in general.
+
+      The entropy, then can then be written in terms of these marginals:
+      \begin{align}
+        H(Y \mid X = x)
+          &= - \sum_{ \y \in \yieldx } p(\y \mid \x) \log p(\y \mid \x)  \nonumber \\
+          &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{v \in \y} \log \psi(\x, v)  \nonumber \\
+          &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{ v \in \mathcal{V}(x) } \indicator_{ \{ v \in y \} } \log \psi(\x, v)  \nonumber \\
+          &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v)  \sum_{ \y \in \yieldx } \indicator_{ \{ v \in y \} } p(\y \mid \x)  \nonumber \\
+          &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v) \mu(v)
+      \end{align}
 
 \section{Traning}
   The training objective is to maximize the likelihood of the training data
@@ -288,41 +284,176 @@ In this chapter:
     \item We evauluate `how good the model is' as a sampler.
   \end{itemize}
 
-\subsection{Supervised model}
-  We investigate the following.
-  \begin{itemize}
-    \item We have some optimization and hyperparameter choices here. The original paper uses Adam with 0.001 and a LSTM of dimension 250, which gives the model around 2.5 million parameters. For the discriminative RRNG we use SGD with 0.1, and hidden sizes of 128 gives the model around 800,000 parameters.
-    \item I suggest two experiments: (1) use the default setting from \citep{stern2017minimal} and (2) use the settings for the RNNG with a hidden size to match the 800,000 parameters.
-  \end{itemize}
+  \subsection{Supervised model}
+    We investigate the following.
+    \begin{itemize}
+      \item We have some optimization and hyperparameter choices here. The original paper uses Adam with 0.001 and a LSTM of dimension 250, which gives the model around 2.5 million parameters. For the discriminative RRNG we use SGD with 0.1, and hidden sizes of 128 gives the model around 800,000 parameters.
+      \item I suggest two experiments: (1) use the default setting from \citep{stern2017minimal} and (2) use the settings for the RNNG with a hidden size to match the 800,000 parameters.
+    \end{itemize}
 
-\subsection{Proposal model}
-  Discuss that the CRF is not a proper proposal model, for two reasons:
+    \input{../tables/crf-fscores.tex}
+  \subsection{Proposal model}
+    Discuss that the CRF is not a proper proposal model, for two reasons:
+    \begin{enumerate}
+      \item The CRF defines a probability distribution over normal form trees. After collapsing the dummy nodes, and expanding the unary chains we get a very different set of the trees. Over this set of trees, the CRF does not define a distribution. The
+      \item The CRF breaks the required assumption for a proposal model: for some trees $y$, $p(x, y) > 0$, but $q(y | x) = 0$. The CRF supports unary chains (by collapsing them), but only to a limited extend. The RNNG, on the other hand, supports arbitrarily long unary chains (whose number is arbitrarily capped to 100). For those trees $y$ that have these unbouded chains, $p(x, y) > 0$, but $q(y | x) = 0$. This breaks the assumption of the proposal model. Now, a trained RNNG will most likely assign very little probability to such trees, so in the practical marginalization, this will have little effect (hopefully). But theoretically, this is a major problem.
+    \end{enumerate}
+
+    We investigate the following:
+    \begin{itemize}
+      \item We evaluate validation F-score and perplexity.
+      \item We evaluate F-score with 100 samples (as many proposal trees as possible).
+      \item We evaluate perplexity with varying number of samples: 1 (argmax), 10, 20, 50, 100 (default). The peplexity evaluation with the argmax prediction gives an impression of the uncertaty in the model \citep{buys2018exact}.
+    \end{itemize}
+
+  \subsection{Sampler}
+    We investigate the following:
+    \begin{itemize}
+      \item We assess the conditional entropy of the model. This is most quantitative. Recall that conditional entropy is defined as
+      \begin{equation}
+        \text{H}(Y \mid X ) = \sum_{x \in \mathcal{X}} p(x)\text{H}(Y|X = x),
+      \end{equation}
+      where
+      \begin{equation}
+        \text{H}(Y|X = x) = - \sum_{y \in \mathcal{Y}} p(y|x) \log p(y|x).
+      \end{equation}
+      The quantity $\text{H}(Y|X = x)$ can computed exactly with the CRF parser. We estimate the quantity $\text{H}(Y|X)$ by a sum over the development dataset.
+      \item We assess for some cherry picked sentences. This is more qualitative. These sentences should be difficult or ambiguous. Or they can be ungramatical when taken from the syneval dataset. We can evaluate their entropy, and the diversity of samples, for example to see if there are clear modes. We can make violinplots of the probabilities of the samples. We can compute the f-scores of the samples compared with the argmax tree.
+    \end{itemize}
+
+\section{Problems as proposal}
+  We map a treebank tree to \textit{a single} normal form derivation, but many normal form derivations map to a single treebank tree. Let us illustrate this with an example. The two normal form trees in \ref{fig:normal-form-trees} both collapse to the same tree when dummy labels $\varnothing$ are collapsed:
+  \begin{center}
+    (S (NP The other hungry cat) (VP meows) .).
+  \end{center}
+  But when going the other way---applying the normal form transformation to the above tree---we always obtain the left tree, and never the right tree. Let $f: \yieldx \to \mathcal{D}(x)$ be the transformation that we defined that produces normal form trees from treebank trees, and let $g: \mathcal{D}(x) \to \yieldx$ be the transformation that takes a normal form tree and collapses the dummy nodes. Then $f$ is a bijection, but $g$ is not. In fact, for any tree $y$ the preimage of $g$ is the set of derivations $g^{-1}( y ) = D \subseteq \mathcal{D}(x)$ that collapse to the same tree. And generally $\lvert D \rvert > 1$.
+
+  \begin{figure}[h]
+    \begin{subfigure}[b]{0.5\textwidth}
+      \center
+      \begin{tikzpicture}[scale=.6]
+        \input{../figures/normal-form/cnf-valid.tex}
+      \end{tikzpicture}
+  	\end{subfigure}
+  	\begin{subfigure}[b]{0.5\textwidth}
+      \center
+      \begin{tikzpicture}[scale=.6]
+        \input{../figures/normal-form/cnf-invalid.tex}
+      \end{tikzpicture}
+  	\end{subfigure}
+    \caption{Two normal form derivations that collapse to the same tree.}
+    \label{fig:normal-form-trees}
+  \end{figure}
+
+  % \begin{figure}[h]
+  %   \center
+  %   \begin{subfigure}[b]{0.5\textwidth}
+  %     \begin{tikzpicture}[scale=.6]
+  %       \input{../figures/normal-form/un-cnf.tex}
+  %     \end{tikzpicture}
+  %   \end{subfigure}
+  % \end{figure}
+
+  This causes the problems noted above: there is derivational ambiguity. If $y$ is some tree, then our CRF assigns probabilities to all $d \in f^{-1}(y)$. We must thus note that \textit{in fact}, our CRF defines a distribution over $\mathcal{D}(x)$, and that as a result $p(y \mid x) = \sum_{d \in f^{-1}(y)} p(d \mid x)$. And in particular, $p(y \mid x) \neq p(d \mid x)$, for any $d \in f^{-1}(y)$.
+
+  We propose two solutions to this problem:
   \begin{enumerate}
-    \item The CRF defines a probability distribution over normal form trees. After collapsing the dummy nodes, and expanding the unary chains we get a very different set of the trees. Over this set of trees, the CRF does not define a distribution. The
-    \item The CRF breaks the required assumption for a proposal model: for some trees $y$, $p(x, y) > 0$, but $q(y | x) = 0$. The CRF supports unary chains (by collapsing them), but only to a limited extend. The RNNG, on the other hand, supports arbitrarily long unary chains (whose number is arbitrarily capped to 100). For those trees $y$ that have these unbouded chains, $p(x, y) > 0$, but $q(y | x) = 0$. This breaks the assumption of the proposal model. Now, a trained RNNG will most likely assign very little probability to such trees, so in the practical marginalization, this will have little effect (hopefully). But theoretically, this is a major problem.
+    \item We can dispense with the dummy label altogether, and instead alter our CRF so that it can deal directly with $m$-ary trees, for any order $m$.\footnote{The way we deal with unary chains remains unchanched} This means that we add all hyperedges with more than 2 children. The general formulation of the inside and outside recursions remain unaltered, but the specific form becomes less efficient because we now need to deal with a sum over all possible partitions of the span under a node.
+    \item We keep the dummy label, but prune the hyperforest to only contain derivations that are reachable by the normal form transformation. This means that we assign probability zero to all trees that do not correspond to the cannonical normal form that we commited to by choosing the transformation. Because this transformation is very regular, we can easily incorporate this pruning in the inside and outside algorithms.
   \end{enumerate}
 
-  We investigate the following:
-  \begin{itemize}
-    \item We evaluate validation F-score and perplexity.
-    \item We evaluate F-score with 100 samples (as many proposal trees as possible).
-    \item We evaluate perplexity with varying number of samples: 1 (argmax), 10, 20, 50, 100 (default). The peplexity evaluation with the argmax prediction gives an impression of the uncertaty in the model \citep{buys2018exact}.
-  \end{itemize}
+  We now describe either solution, starting with the solution of making the CRF deal directly with $m$-ary trees.
 
-\subsection{Sampler}
-  We investigate the following:
-  \begin{itemize}
-    \item We assess the conditional entropy of the model. This is most quantitative. Recall that conditional entropy is defined as
-    \begin{equation}
-      \text{H}(Y \mid X ) = \sum_{x \in \mathcal{X}} p(x)\text{H}(Y|X = x),
-    \end{equation}
+  \subsection{Unrestricted parse forest}
+    One solution, as noted, is to make the parse-forest deal with $m$-ary trees directly. This requires that for each noterminal node, we add incoming edges that contain more than two children in the tail. This needs to be done for each permissible number of children---determined by the width of the span---and for all possible partitions of that size of the span.
+
+    More formally, let $(A,i,j)$ be a node with $i + 1 < j$, so that it can expand to other noterminal nodes. Then let $i = k_0 < k_1 < k_2 < \cdots < k_m = j$ be a partition of the discrete interval $[i, j]$ into $m$ subspans. Since a span must have a width of at least 1, $m$ can be at most $j-i$ Letting $B_1, \dots, B_m$ be labels for those subspans we can form an edge that connects the set
+    \begin{align*}
+      \Big\{ (B_1, k_0, k_1), (B_2, k_1, k_2), \dots, (B_m, k_{n-1}, k_m) \Big\}
+    \end{align*}
+    at the tail to the node $(A, i, j)$ at the head. Adding \textit{all} such nodes to the parse forest for each $m$ will allow us to deal with trees of unrestricted arity directly.
+
+    The generality of the semiring formulations of the inside and outside algorithms, allows us to seamlesly apply them to this new parse forest. If we let $v = (A, i, j)$ such that $I(v) \neq \varnothing$ we can derive the inside value $\alpha(v)$ as
+    \begin{align*}
+      \alpha(v)
+        &= \displaystyle\bigoplus_{e \in I(v)} \omega(e) \otimes \displaystyle\bigotimes_{u \in T(e)} \alpha(u)  \\
+        &= \displaystyle\bigoplus_{m = 2}^{j - i} \displaystyle\bigoplus_{k_0 < k_1 < \cdots < k_m} \displaystyle\bigoplus_{B_1 \in \Lambda} \cdots \displaystyle\bigoplus_{B_m \in \Lambda} \omega(A, i, j) \otimes \displaystyle\bigotimes_{l=1}^n \alpha(B_l, k_{l-1}, k_l) \\
+        &= \omega(A, i, j) \otimes \displaystyle\bigoplus_{m = 2}^{j - i} \displaystyle\bigoplus_{k_0 < k_1 < \cdots < k_m} \displaystyle\bigotimes_{l=1}^n \displaystyle\bigoplus_{B \in \Lambda} \alpha(B, k_{l-1}, k_l) \\
+        &= \omega(A, i, j) \otimes \displaystyle\bigoplus_{m = 2}^{j - i} \displaystyle\bigoplus_{k_0 < k_1 < \cdots < k_m} \displaystyle\bigotimes_{l=1}^n \sigma(k_{l-1}, k_l), \\
+    \end{align*}
+    where logic that allows us write
+    \begin{align*}
+      \displaystyle\bigoplus_{B_1 \in \Lambda} \cdots \displaystyle\bigoplus_{B_m \in \Lambda} \displaystyle\bigotimes_{l=1}^n \alpha(B_l, k_{l-1}, k_l) = \displaystyle\bigotimes_{l=1}^n \displaystyle\bigoplus_{B \in \Lambda} \alpha(B, k_{l-1}, k_l)
+    \end{align*}
+    is the same as in the binary case, but generalized to $m$ terms.
+
+    For the outside value $\beta(v)$ we can follow a similar derivation. Let
+    \begin{align*}
+      0 \leq k_0 < \cdots < k_a = i < j = k_{a+1} < \cdots < k_m \leq n
+    \end{align*}
+    be a partition of the discrete interval $[k_0, k_m]$ into $m$ pieces, one of which is $[i, j]$, namely the interval $[k_a, k_{a+1}]$. This partition represents one way in wich the interval $[i, j]$ can be completed with $m-1$ other intervals into an interval $[k_0, k_m]$. With this in place, we can derive the outside recursion as
+    \begin{align*}
+      \beta(v)
+        &= \displaystyle\bigoplus_{e \in O(v)} \omega(w) \otimes \beta(H(e)) \otimes \displaystyle\bigotimes_{ \substack{ w \in T(e) \\ w \neq u } } \alpha(w) \\
+        &= \displaystyle\bigoplus_{m = 2}^{n - j + i} \displaystyle\bigoplus_{k_0=0}^{i-1} \displaystyle\bigoplus_{k_m = j}^{n} \displaystyle\bigoplus_{k_0 < \cdots < k_a < k_{a+1} < \cdots < k_m} \displaystyle\bigoplus_{B \in \Lambda}  \\
+          &\qquad\qquad \omega(A, i, j) \otimes \beta(B, k_0, k_m) \otimes \displaystyle\bigotimes_{ \substack{1 \leq l \leq n \\ l \neq a } } \displaystyle\bigotimes_{C \in \Lambda} \alpha(C, k_{l-1}, k_l) \\
+        &= \displaystyle\bigoplus_{m = 2}^{n - j + i} \displaystyle\bigoplus_{k_0=0}^{i-1} \displaystyle\bigoplus_{k_m = j}^{n} \displaystyle\bigoplus_{k_0 < \cdots < k_a < k_{a+1} < \cdots < k_m}  \\
+          &\qquad\qquad \displaystyle\bigoplus_{B \in \Lambda} \omega(B, i, j) \otimes \beta(B, k_0, k_m) \otimes \displaystyle\bigotimes_{ \substack{1 \leq l \leq n \\ l \neq a } } \displaystyle\bigotimes_{C \in \Lambda} \alpha(C, k_{l-1}, k_l)  \\
+        &= \displaystyle\bigoplus_{m = 2}^{n - j + i} \displaystyle\bigoplus_{k_0=0}^{i-1} \displaystyle\bigoplus_{k_m = j}^{n} \displaystyle\bigoplus_{k_0 < \cdots < k_a < k_{a+1} < \cdots < k_m} \sigma'(k_0, k_m) \otimes \displaystyle\bigotimes_{ \substack{1 \leq l \leq n \\ l \neq a } } \sigma(k_{l-1}, k_l).
+    \end{align*}
+
+    The above two recursions show that this approach is challenging, despite its elegance. Enumerating the sets of partitions is in itself already a nontrivial task.
+
+
+  \subsection{Pruned parse forest}
+    Another solution is to prune the parse forest: to keep only those trees that can be obtained by the normal form transformation. Going back to the example at the beginning of the example, this solution asks us to assign probability zero to the right tree, the tree that we cannot obtain by the normal form transformation. Since the transformation that we apply is very regular, we can easily characterize the set of trees that are impossible to derive. In fact, it boils done to one characteristic: a node can have the label $\varnothing$ only when \textit{either} that node spans a single word \textit{or} that node is the right child of its parent node.\footnote{We binarize \textit{rightwards}, thus introducting the dummy labels in that position, and can only ever introduce the dummy label in the left child position when it spans a single word.} That means we should remove from the parse forest all edges of the form illustrated in figure \ref{fig:illegal-edges}.
+    \begin{figure}[h]
+      \center
+      \begin{tikzpicture}[scale=.6]
+        \input{../figures/edges/illegal-edges.tex}
+      \end{tikzpicture}
+      \caption{Edges in the parse forest that produce the derivational ambiguity, whenever $k > i+1$.}
+      \label{fig:illegal-edges}
+    \end{figure}
+
+    With this characterization in hand, we can alter the recursions, starting with the inside algorithm.
+    \begin{align*}
+      \alpha(A, i, j)
+        &= \displaystyle\bigoplus_{B \in \Lambda} \displaystyle\bigoplus_{C \in \Lambda} \omega(A, i, j) \otimes \alpha(B,i,i+1) \otimes \alpha(C,i+1,j) \\
+          &\qquad\oplus \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \displaystyle\bigoplus_{C \in \Lambda} \displaystyle\bigoplus_{k=i+2}^{j-1} \omega(A, i, j) \otimes \alpha(B,i,k) \otimes \alpha(C,k,j) \\
+        &= \omega(A, i, j) \otimes  \Bigg[ \displaystyle\bigoplus_{B \in \Lambda}\alpha(B,i,i+1) \otimes  \displaystyle\bigoplus_{C \in \Lambda} \alpha(C,i+1,j)  \\
+          &\qquad\oplus \displaystyle\bigoplus_{k=i+2}^{j-1} \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \alpha(B,i,k) \otimes \displaystyle\bigoplus_{C \in \Lambda} \alpha(C,k,j)  \Bigg]  \\
+        &= \omega(A, i, j) \otimes \Bigg[ \sigma(i,i+1) \otimes \sigma(i+1,j) \oplus \displaystyle\bigoplus_{k=i+2}^{j-1} \tilde{\sigma}(i,k) \otimes \sigma(k,j) \Bigg]
+    \end{align*}
     where
-    \begin{equation}
-      \text{H}(Y|X = x) = - \sum_{y \in \mathcal{Y}} p(y|x) \log p(y|x).
-    \end{equation}
-    The quantity $\text{H}(Y|X = x)$ can computed exactly with the CRF parser. We estimate the quantity $\text{H}(Y|X)$ by a sum over the development dataset.
-    \item We assess for some cherry picked sentences. This is more qualitative. These sentences should be difficult or ambiguous. Or they can be ungramatical when taken from the syneval dataset. We can evaluate their entropy, and the diversity of samples, for example to see if there are clear modes. We can make violinplots of the probabilities of the samples. We can compute the f-scores of the samples compared with the argmax tree.
-  \end{itemize}
+    \begin{align*}
+      \tilde{\sigma}(i,k) =  \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \alpha(A, i, k).
+    \end{align*}
+
+    For the outside algorithm we need to split cases: the outside algorithm sums over ways to complete a labeled span into a larger labeled span, and as we have noted, the node $(A, i, j)$, for all $A \neq \varnothing$, is allowed to combine in ways that $(\varnothing, i, j)$ is not, whenever $j > i + 1$. Specifically, when $j > i + 1$, the node $(\varnothing, i, j)$ is not allowed to combine \textit{with any node} of the form $(C, j, k)$ for any $C \in \Lambda$. That would constitute an edge that we deemed illegal. We thus split the computation of $\beta(A, i, j)$ into the following two cases: the case where $j > i + 1$ and $ A = \varnothing$, and otherwise.
+
+    First, consider the case where either $A \neq \varnothing$, or $j = i + 1$. In this case, the node $(A, i, j)$ can combine any way it desires, as the left node, and as the right node, but note that when we complete it as the right node---thus adding a node to it on the left---we still need to avoid completing it with $(\varnothing, k, i)$ if $k \neq i-1$. Taking this into account we can derive
+    \begin{align*}
+      \beta(A, i, j)
+        &= \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda}  \omega(B, i-1, j) \otimes \alpha(C, i-1, i) \otimes \beta(B, i-1, j)  \\
+          &\qquad \oplus \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda \setminus \{ \varnothing \}} \bigoplus_{k=1}^{i-2} \omega(B, k, j) \otimes \alpha(C, k, i) \otimes \beta(B, k, j) \\
+          &\qquad \oplus \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=j+1}^{n} \omega(B, i, k) \otimes \beta(B, i, k) \otimes \alpha(C, j, k)  \\
+        &= \sigma'(i-1, j) \otimes \sigma(i-1, i) \oplus \bigoplus_{k=1}^{i-2} \sigma'(k, j) \otimes \tilde{\sigma}(k, i) \oplus \bigoplus_{k=j+1}^{n} \sigma'(i, k) \otimes \sigma(j, k).
+    \end{align*}
+    Now, consider the special case where $ A = \varnothing$ and $j > i + 1$. In this case we must disallow the node to combine in the left position. This corresponds simply to removing that part of the sum; in the above derivation this is the third term. This gives:
+    \begin{align*}
+      \beta(A, i, j) &=
+        \sigma'(i-1, j) \otimes \sigma(i-1, i) \oplus \displaystyle\bigoplus_{k=1}^{i-2} \sigma'(k, j) \otimes \tilde{\sigma}(k, i)
+    \end{align*}
+
+    % Writing this by case gives us
+    % \begin{align*}
+    %   \beta(A, i, j) =
+    %     \begin{cases}
+    %       \sigma'(i-1, j) \otimes \sigma(i-1, i) \oplus \displaystyle\bigoplus_{k=1}^{i-2} \sigma'(k, j) \otimes \tilde{\sigma}(k, i)  &  \mbox{if } A = \varnothing \text{ and } j > i + 1,  \\
+    %       \sigma'(i-1, j) \otimes \sigma(i-1, i) \oplus \displaystyle\bigoplus_{k=1}^{i-2} \sigma'(k, j) \otimes \tilde{\sigma}(k, i) \oplus \displaystyle\bigoplus_{k=j+1}^{n} \sigma'(i, k) \otimes \sigma(j, k)  & \mbox{otherwise.}
+    %     \end{cases}
+    % \end{align*}
 
 \section{Related work}
   The model that we presented regards a constituency tree as a collection of \textit{labeled spans} over a sentence. Earlier CRF models for constituency parsing, both log-linear and neural, factorize trees over \textit{anchored rules} \citep{finkel2008crf,klein2015crf}. This puts most of the expressiveness of the model in the state space of the dynamic program, modelling interactions between subparts of the trees through their interaction in the rules, instead of at the feature level. The model in \citet{stern2017minimal} removes part of this structure, and puts more expressiveness in the input space by using rich neural feature representations conditioning on the entire sentence. The discrete interaction between the local scores remains only at level of labeled spans. This dramatically improves the speed of this model, which will become evident in the next section.

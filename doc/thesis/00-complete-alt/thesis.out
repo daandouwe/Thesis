@@ -45,24 +45,24 @@
 \BOOKMARK [2][-]{subsection.4.5.1}{Supervised model}{section.4.5}% 45
 \BOOKMARK [2][-]{subsection.4.5.2}{Proposal model}{section.4.5}% 46
 \BOOKMARK [2][-]{subsection.4.5.3}{Sampler}{section.4.5}% 47
-\BOOKMARK [1][-]{section.4.6}{Related work}{chapter.4}% 48
-\BOOKMARK [0][-]{chapter.5}{Syntactic evaluation}{}% 49
-\BOOKMARK [1][-]{section.5.1}{Syntactic evaluation}{chapter.5}% 50
-\BOOKMARK [1][-]{section.5.2}{Multitask learning}{chapter.5}% 51
-\BOOKMARK [1][-]{section.5.3}{Experiments}{chapter.5}% 52
-\BOOKMARK [2][-]{subsection.5.3.1}{Baselines}{section.5.3}% 53
-\BOOKMARK [2][-]{subsection.5.3.2}{Setup}{section.5.3}% 54
-\BOOKMARK [2][-]{subsection.5.3.3}{Results}{section.5.3}% 55
-\BOOKMARK [0][-]{chapter.6}{Semisupervised learning}{}% 56
-\BOOKMARK [1][-]{section.6.1}{Objective}{chapter.6}% 57
-\BOOKMARK [1][-]{section.6.2}{Variational approximation}{chapter.6}% 58
-\BOOKMARK [1][-]{section.6.3}{Optimization}{chapter.6}% 59
-\BOOKMARK [1][-]{section.6.4}{Variance reduction}{chapter.6}% 60
-\BOOKMARK [1][-]{section.6.5}{Experiments}{chapter.6}% 61
-\BOOKMARK [1][-]{section.6.6}{Problems with CRF as proposal}{chapter.6}% 62
-\BOOKMARK [2][-]{subsection.6.6.1}{Unrestricted parse forest}{section.6.6}% 63
-\BOOKMARK [2][-]{subsection.6.6.2}{Pruned parse forest}{section.6.6}% 64
-\BOOKMARK [1][-]{section.6.7}{Related work}{chapter.6}% 65
+\BOOKMARK [1][-]{section.4.6}{Problems as proposal}{chapter.4}% 48
+\BOOKMARK [2][-]{subsection.4.6.1}{Unrestricted parse forest}{section.4.6}% 49
+\BOOKMARK [2][-]{subsection.4.6.2}{Pruned parse forest}{section.4.6}% 50
+\BOOKMARK [1][-]{section.4.7}{Related work}{chapter.4}% 51
+\BOOKMARK [0][-]{chapter.5}{Syntactic evaluation}{}% 52
+\BOOKMARK [1][-]{section.5.1}{Syntactic evaluation}{chapter.5}% 53
+\BOOKMARK [1][-]{section.5.2}{Multitask learning}{chapter.5}% 54
+\BOOKMARK [1][-]{section.5.3}{Experiments}{chapter.5}% 55
+\BOOKMARK [2][-]{subsection.5.3.1}{Baselines}{section.5.3}% 56
+\BOOKMARK [2][-]{subsection.5.3.2}{Setup}{section.5.3}% 57
+\BOOKMARK [2][-]{subsection.5.3.3}{Results}{section.5.3}% 58
+\BOOKMARK [0][-]{chapter.6}{Semisupervised learning}{}% 59
+\BOOKMARK [1][-]{section.6.1}{Objective}{chapter.6}% 60
+\BOOKMARK [1][-]{section.6.2}{Variational approximation}{chapter.6}% 61
+\BOOKMARK [1][-]{section.6.3}{Optimization}{chapter.6}% 62
+\BOOKMARK [1][-]{section.6.4}{Variance reduction}{chapter.6}% 63
+\BOOKMARK [1][-]{section.6.5}{Experiments}{chapter.6}% 64
+\BOOKMARK [1][-]{section.6.6}{Related work}{chapter.6}% 65
 \BOOKMARK [0][-]{chapter.7}{Conclusion}{}% 66
 \BOOKMARK [1][-]{section.7.1}{Main contributions}{chapter.7}% 67
 \BOOKMARK [1][-]{section.7.2}{Future work}{chapter.7}% 68

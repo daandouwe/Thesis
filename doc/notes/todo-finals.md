@@ -252,42 +252,54 @@ This is how I solved it:
   - [X] The perplexity is waay too low, and that is because of the extremely skewed proposal samples. The perplexity will be much higher when we amp the temperature.
 
 2. Pretrain the models unlabeled.
-- [X] Decoder unlabelize the proposal samples.
-  * DiscRNNG and GenRNNG not much faster...
-  * CRF model is _much_ faster.
+  - [X] Decoder unlabelize the proposal samples.
+    * DiscRNNG and GenRNNG not much faster...
+    * CRF model is _much_ faster.
 
 
 # April 16
 Writing
 
 1. RNNG
-  - [ ] Introduction
-  - [ ] Composition and attention section
+  - [X] Introduction
+  - [X] Composition and attention section
   - [ ] Emphasize that the support of the RNNG is practically unbouded.
-  - [ ] Results: plots, numbers
+  - [ ] Subsection of training: speed and complexity.
+  - [X] Result tables
+  - [ ] Entropy figures
+  - [ ] Perplexity figures.
+  - [ ] Helemaal rechtrekken.
 
 2. CRF
-  - [ ] Introduction
+  - [X] Introduction
+  - [ ] Describe time complexity.
   - [ ] Results: plots, numbers
   - [ ] Binarization, dummy label, impact on inside and outside, and entropy computation
-  - [ ] CRF is misplaced as proposal.
+  - [ ] CRF has ambiguity in derivation: CRF describes distribution over 'derivations', not over 'trees'. So entropy computation is   over the derivations, _not_ over the trees: this explains the semisupervised behaviour.
     * CRF is distribution over binary trees, not over collapsed trees! So actually not porperly suitable as proposal distribution. This is not so strongly noticable when dealing with large (100+) label-set, but becomes totally untenable in case of unlabeled (1 label).
     * Also: the support of the GenRNNG is strictly greater than the support of the CRF: unbounded unary chains are not supported by CRF, only small unary chains that are in the PTB. This is not a problem really for the pretrained models; it is a problem for training from scratch.
-    * Cannot find an easy solution for this. If we not count dummy nodes in tree score and not in normalization, then viterbi and sampling become impossible, because these depend on the inside values. Also, the node scores cannot be fixed, because we would end up with the same problem.
-  - [ ] Describe time complexity.
-  - [ ] Check: is the MC estimate still valid, given that the CRF models derivations?
-  - [ ] CRF describes distribution over 'derivations', not over 'trees'. So entropy computation is over the derivations, _not_ over the trees: this explains the semisupervised behaviour.
-
+  - [X] Check: is the MC estimate still valid, given that the CRF models derivations?
 
 3. Semisup
-- [ ] DiscRNNG: (labeled and unlabeled) from scratch impossible; from pretraining unrails completely
-- [ ] CRF: from pretraining impossible (tooo slow); from scratch looks promising, but we run into the problem that a
-- [ ] When move to unbinarized trees the approach is possible!
-- [ ] Very practical way to sort-of support the notion of unlabeled constituent is to introduce labels into the binary tree: `(X (X The (@ binarized sentence)) collapses)` and use a TreeLSTM that incoporates the label: `TreeLSTM(a, b, l)`
-- [ ] Describe CRF as fully connected forest, then it is possible.
-
+  - [ ] DiscRNNG: (labeled and unlabeled) from scratch impossible; from pretraining unrails completely.
+  - [ ] CRF: from pretraining impossible (tooo slow); from scratch looks promising, but we run into the problem of distribution.
+  - [ ] When move to unbinarized trees the approach is possible!
+  - [X] Describe CRF as fully connected forest, then it is possible.
+  - [X] Describe how to prune CRF forest.
 
 4. Syneval
-- [ ] Incorporate the results
+  - [ ] Introduction
+  - [ ] Incorporate results
 
 5. Conclusion
+
+
+## April 23
+
+## Bureacracy
+1. Read MoL graduation guide: is everything under control? How is my datanose status etc?
+2. Get access to lisa again.
+
+## Writing
+1. Wrap up RNNG chapter, see checklist.
+2. Start working on semisupervised chapter
