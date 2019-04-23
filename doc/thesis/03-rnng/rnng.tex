@@ -78,50 +78,48 @@ In this chapter:
 
     \begin{definition}{(Discriminative RNNG)}
       Let $a$ be a sequence over $\discactions$ of length $T$. Then the model for the discrminative RNNG is
-      \begin{align}
+      \begin{align*}
         \label{eq:disc-model}
         p(\y \mid \x) = p(a \mid \x) = \prod_{t=1}^T P( a_t \mid \x, a_{<t}),
-      \end{align}
+      \end{align*}
       where
-      \begin{equation}
-        \label{eq:disc-model}
+      \begin{equation*}
         P( a_t \mid \x, a_{<t}) =
         \begin{cases}
           p( a_t \mid \x, a_{<t} ) p( n_{ \mu(t) } \mid \x, a_{<t} ) & \text{if } a_t = \open,  \\
           p( a_t \mid \x, a_{<t} ) & \text{otherwise.}  \\
         \end{cases}
-      \end{equation}
+      \end{equation*}
     Whenever the prediction is to open a new nonterminal the action probability factorizes as the product of two separate probabilities: the product of the probability of the action itself, and the probability of the next upcoming label in $n$, which is indexed by $\mu(t)$.
     \end{definition}
 
     \begin{definition}{(Generative RNNG)}
       Let $a$ be a sequence over $\genactions$ of length $T$, which include the actions that generate words.\footnote{Note that under this action set $p(a_t \mid a_{<t}, \x_{<\nu(t)}) = p(a_t \mid a_{<t})$, given the fact that the words in $\x_{<\nu(t)}$ are contained in $a_{<t}$.} The model for the generative RNNG then is
-      \begin{align}
-        \label{eq:disc-model}
-        p(\y \mid \x) = p(a) = \prod_{t=1}^T P( a_t \mid a_{<t}),
-      \end{align}
-      where
-      \begin{equation}
+      \begin{align*}
         \label{eq:gen-model}
+        p(\y \mid \x) = p(a) = \prod_{t=1}^T P( a_t \mid a_{<t}),
+      \end{align*}
+      where
+      \begin{equation*}
         P( a_t \mid a_{<t} ) =
         \begin{cases}
           p( a_t \mid a_{<t} ) p(n_{ \mu(t) } \mid a_{<t} ) & \text{if } a_t = \open,  \\
           p( a_t \mid a_{<t} ) p(x_{ \nu(t) } \mid a_{<t} ) & \text{if } a_t = \gen,  \\
           p( a_t \mid a_{<t} ) & \text{otherwise.}  \\
         \end{cases}
-      \end{equation}
+      \end{equation*}
       This corresponds with the discriminative model on the actions that they share. For the action that predicts the next word, the factorization is identical to that of the action that predicts the next nonterminal, with the difference that the next word in $x$ is instead indexed by $\nu(t)$.
     \end{definition}
 
-    The probabilities over next actions at time step $t$ are given by classifiers on a vector $\vecu_t$,\footnote{For brevity we omit the conditioning on $\x$, which was redundant already in the case of the generative model.} which represents the parser configuration at that timestep:\footnote{Where we pretend that $a_t$, $n_t$, and $x_t$ double as indices.}}
+    The probabilities over next actions at time step $t$ are given by classifiers on a vector $\vecu_t$,\footnote{For brevity we omit the conditioning on $\x$, which was redundant already in the case of the generative model.} which represents the parser configuration at that timestep:\footnote{Where we pretend that $a_t$, $n_t$, and $x_t$ double as indices.}
     \begin{align}
-      \label{eq:action-regression}
       p(a_t \mid a_{<t})
         &\propto \exp \Big\{ [\ff_{\alpha}( \vecu_t )]_{a_t}  \Big\}  \\
       p(n_{\mu(t)} \mid a_{<t})
         &\propto \exp \Big\{ [\ff_{\beta}( \vecu_t )]_{n_{\mu(t)}}  \Big\}  \\
       p(x_{\nu(t)} \mid a_{<t})
         &\propto \exp \Big\{ [\ff_{\gamma}( \vecu_t )]_{x_{\nu(t)}}  \Big\}
+      \label{eq:action-regression}
     \end{align}
     The parameters $\alpha$, $\beta$, and $\gamma$ are separate sets of parameters. The computation of the vector $\vecu_t$ is described in the next section.
 
@@ -171,20 +169,19 @@ In this chapter:
   \subsection{Composition function}
     Two kinds of functions have been proposed to for the composition described above: the original function based on a bidirectional RNN \citep{dyer2016rnng}, and a more elaborate one that additionally incorporates an attention mechanism \citep{kuncoro2017syntax}. Both methods encode the invidual items that make up the constituent with a bidirectional RNN, but where the simpler version merely concatenates the endpoint vectors, the attention based method computes a convex combination of all these vectors, weighted by predicted attention weights. \citet{kuncoro2017syntax} show that the models with the attention-based composition outperform the models with the simpler composition, and that the attention mechanism adds interpretability to the composition. For these reasons we only consider the attention-based composition.
 
-    The attention-based composition is defined as follows. Let $[ \vech_1, \dots, \vech_m ]$ be the vector representations computed by a dedidacted bidirectional LSTM for the $m$ words making up the constituent that is to be compressed, and let $\mathbf{n}$ be the learned embedding for the nonterminal category of that constituent. The attention weight $a_i$ for the $i$-th position is computed as the bilinear product
+    The attention-based composition is defined as follows. Let $\h_1, \dots, \h_m$ be the vector representations computed by a dedicated bidirectional LSTM for the $m$ words making up the constituent that is to be compressed, and let $\mathbf{n}$ be the learned embedding for the nonterminal category of that constituent. The attention weight $a_i$ for the $i$-th position is computed as the exponentiated bilinear product
     \begin{align*}
-      a_i &= \frac{a_i}{\sum_{i=1}^m \tilde{a}_i}  \\
-      \tilde{a}_i &= \exp \{ \vech_i^{\top} \mathbf{V} [\vecu_t ; \mathbf{n}] \}
+      a_i &\propto \exp \Big\{ \h_i^{\top} \mathbf{V} \, [\vecu_t ; \mathbf{n}] \Big\}
     \end{align*}
-    between the vector representation $\vech_i$ and the concatenation of current parser state representation $\vecu_t$ and nonterminal representation $\mathbf{n}$. The matrix $\mathbf{V}$ is part of the trainable parameters. The vector
+    between the vector representation $\h_i$ and the concatenation of current parser state representation $\vecu_t$ and nonterminal representation $\mathbf{n}$. The values $a_1, \dots, a_m$ are normalized to sum to 1, and the matrix $\mathbf{V}$ is part of the trainable parameters. The convex combination of the vectors $\h_i$ weighted by values $a_i$ gives the vector
     \begin{align*}
-      \mathbf{m} = \sum_{i=1}^m a_i \mathbf{h}_i
+      \mathbf{m} = \sum_{i=1}^m a_i \mathbf{h}_i,
     \end{align*}
-    then represents the words in the constituent, and the final representation of the constituent is the gated sum
+    which represents the words in the constituent, and the final representation of the constituent is the gated sum
     \begin{align*}
       \mathbf{c} = \mathbf{g} \circ \mathbf{n} + (1 - \mathbf{g}) \circ \mathbf{m}.
     \end{align*}
-    of this vector and the vector $n$.\footnote{The operation $\circ$ denotes the Hadamard product, or elementwise multiplication: $(A \circ B)_{ij} = (A)_{ij}(B)_{ij}$.} The vector of gates $\mathbf{g}$ is computed by an affine transformation on $[ \mathbf{n}; \mathbf{m} ]$ followed by an elementwise application of the logistic function.\footnote{Our definition of $\mathbf{c}$ is slightly different from that of \citet{kuncoro2017syntax}: where they use another vector representation $\mathbf{t}$ different from $\mathbf{n}$ in the above definition; we use just $n$ to compute both the attention weights and the final vector.}.
+    of this vector and the vector $\mathbf{n}$ representing the nonterminal, weighted by a gating vector $\mathbf{g}$.\footnote{The operation $\circ$ denotes the Hadamard product, or elementwise multiplication: $(A \circ B)_{ij} = (A)_{ij}(B)_{ij}$.} The vector of gates $\mathbf{g}$ is computed by an affine transformation on $[ \mathbf{n}; \mathbf{m} ]$ followed by an elementwise application of the logistic function.\footnote{Our definition of $\mathbf{c}$ is slightly different from that of \citet{kuncoro2017syntax}: where they use another vector representation $\mathbf{t}$ different from $\mathbf{n}$ in the above definition; we use just $n$ to compute both the attention weights and the final vector.} This final representation can weigh the contribution to the final representation of the words and their nonterminal category, depending on the context.
 
 \section{Training}
   The discriminative and generative model are trained to maximize the objective
@@ -248,7 +245,7 @@ In this chapter:
     We additionally want that samples can be obtained efficiently, and that their conditional probability can be computed. All these requirements are met by the discriminative RNNG: samples can be obtained by ancestral sampling over the transition sequences. For this reason \citet{dyer2016rnng} use this as their proposal. However, any discriminatively trained parser that meets these requirements can be used alternatively, and in chapter \ref{04-crf} we will propose such an alternative.
 
 \section{Experiments}
-  This section reports the results of the experiments performed with our own implementation of the RNNG. We train the discriminative and generative model on the Penn Treebank with the same hyperparameters as \citep{dyer2016rnng} and compare our results to conclude the correctness of our implementation. We then investigate how the approximate marginalization depends on two parameters: the number of samples, and the temperature used to scale the distribution of the proposal model. For the general training setup, including details about data preprocessing, we refer the reader to appendix \ref{A2-implementation}.
+  This section reports the results of the experiments performed with our own implementation of the RNNG. We train the discriminative and generative model on the Penn Treebank with the same hyperparameters as \citep{dyer2016rnng}, and compare our results to conclude the correctness of our implementation. We then investigate how the approximate marginalization depends on two parameters: the number of samples, and the temperature used to scale the distribution of the proposal model. For the general training setup, including details about data preprocessing, we refer the reader to appendix \ref{A2-implementation}.
 
   \subsection{Models}
     We use the same hyperparameters as \citep{dyer2016rnng}. For both models the embeddings are of size 100, and the LSTMs have 2 layers. The LSTMs have dimension 128 in the discriminative model and 256 in the generative model, and the dimension of the feedforward networks that compute the action distributions are the same as the LSTMs. We apply dropout to all layers including the recurrent connections\footnote{Also called \textit{variational dropout} \citep{gal2016theoretically}, which is implemented by default in Dynet \citep{neubig2017dynet}.} and use a dropout ratio of 0.2 in the discriminative model, and 0.3 in the generative model. Given the above dimensions, the total number of trainable parameters is approximately 800,000 (798,078) for the discriminative model and 9,500,000 (9,610,736) for the generative model.
@@ -256,7 +253,7 @@ In this chapter:
     Our discriminative model does not make use of predicted tags, which contrasts with \citet{dyer2016rnng}. This decision was made with the application of the RNNG as language model in mind, in which case tags are not available, but this choice will affect the parsing accuracy of the discriminative model. For a more elaborate justification of this choice we refer the reader to section \label{sec:impl-embedding} of the implementation appendix.
 
   \subsection{Results}
-    We train 10 separate models from different random seeds.\footnote{The random seeds control both the random initialization of the model parameters, as well as the order in which the training data is presented.} We report mean and standard deviation to give a sense of the variability of the accuracy, as well as the value of the model with the best development performance. Model selection is based on development F1 for the discriminative model, and based on development perplexity for the generative model. The parsing F1 of the discriminate model can be seen in table \ref{tab:disc-fscores}. The result of the generative model can be seen in tables \ref{tab:gen-fscores} (F1) and \ref{tab:gen-perplexities} (perplexity).
+    We train 10 separate models from different random seeds.\footnote{The random seeds control both the random initialization of the model parameters as well as the order in which the training data is presented.} We report mean and standard deviation to give a sense of the variability of the accuracy, as well as the value of the model with the best development performance. Model selection is based on development F1 for the discriminative model, and based on development perplexity for the generative model.
 
     \input{../tables/disc-fscores.tex}
 
@@ -264,9 +261,8 @@ In this chapter:
 
     \input{../tables/gen-perplexities.tex}
 
-    The accuracy of our discriminative model is below that of \citet{dyer2016rnng}, a gap that can reasonably be attributed to the absence of tag information in our model. This gap in F1 is carried through to the generative model, resulting in a lower F1 than reported by \citet{dyer2016rnng} when using our own samples. The reranking by the generative models still finds better trees than the greedy decoding of the discriminative model, as evidenced by the higher F1 score, and when we evaluate with the proposal samples used in the original work we find that the F1 agrees perfectly. The difference in perplexity is much less pronounced, and our samples 
+    The parsing F1 of the discriminate model can be seen in table \ref{tab:disc-fscores}, and the results of the generative model can be seen in tables \ref{tab:gen-fscores} (F1) and \ref{tab:gen-perplexities} (perplexity). The value between brackets is the value based on model selection. The accuracy of our discriminative model is below that of \citet{dyer2016rnng}, a gap that can reasonably be attributed to the absence of tag information in our model. This gap in F1 is carried through in a lesser degree to the generative model, resulting in a lower F1 than reported by \citet{dyer2016rnng} when using our own samples. The reranking by the generative models still finds better trees than the greedy decoding of the discriminative model, as evidenced by the higher F1 score, and when we evaluate with the proposal samples used in the original work we find that the F1 agrees perfectly with that of \citet{dyer2016rnng}.\footnote{The proposal samples used by \citet{dyer2016rnng} are availlable at \url{https://github.com/clab/rnng}.}. The difference in perplexity is much less pronounced, and our samples manage
 
-    The generative models are evaluated using proposal samples. The quality of these samples affects the model's parsing F1 and the accuracy of the approximate marginalization.
 
   \subsection{Sampler}
     We investigate the following:

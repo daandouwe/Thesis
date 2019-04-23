@@ -142,9 +142,9 @@ From the equality above we can see that this will be the case whenever $f(X)$ an
     \hat{f}(X) \defeq f(X) - a(g(X) - \expect [ g(X) ])
 \end{align*}
 with variance
-\begin{equation*}
-  \var [ \hat{f}(X) ] = \var [ f(X) ] - 2a  \cov [ f(X), g(X) ] + a^2 \var [ g(X) ] \\
-\end{equation*}
+\begin{align*}
+  \var [ \hat{f}(X) ] = \var [ f(X) ] - 2a  \cov [ f(X), g(X) ] + a^2 \var [ g(X) ]
+\end{align*}
 We take a derivative of this with respect to $a$
 \begin{align*}
     \frac{d}{d a}\var [ \hat{f}(X) ] &= - 2  \cov [ f(X), g(X) ] + 2a \var [ g(X) ]

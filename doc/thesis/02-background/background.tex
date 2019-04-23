@@ -20,7 +20,7 @@ Sentences consist of parts that may themselves have parts. The parts are groups 
 \exi. [ [ A bird ] [ hit [ the car ] ] ]
 
 or less succinctly as a tree diagram.
-\begin{figure}[h]{\textwidth}
+\begin{figure}[h]
   \center
   \begin{tikzpicture}[scale=.8]
     \Tree [.$\cdot$ [.$\cdot$ A bird ] [.$\cdot$ hit [.$\cdot$ the car ] ] ]
@@ -39,7 +39,7 @@ Based on the bracketing that we proposed for this sentence we can formulate a ge
 
 \subsection{Categories}
 The constituents of a sentence belong to a limited range of types that form the set of syntactic categories. Two types of categories are distinguished: lexical and phrasal. The lexical categories are also known as part-of-speech tags. A tree can be represented in more detail by adding lexical (D, N, V) and phrasal categories (S, NP, VP).
-\begin{figure}[h]{\textwidth}
+\begin{figure}[h]
   \center
   \begin{tikzpicture}[scale=.8]
     \Tree [.S [.NP [.D A ] [.N bird ]] [.VP [.V hit ] [.NP [.D the ] [.N car ] ] ] ]

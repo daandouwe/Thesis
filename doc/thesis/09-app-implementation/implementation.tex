@@ -28,11 +28,11 @@ This appendix reports all details about the implementation of the models, includ
     \label{sec:impl-embedding}
     All word embeddings are learned from scratch: the embeddings are considered part of the model's parameters and are optimized jointly with the rest of them, starting from random initialization \citep{glorot2010understanding}. We surmise that more elaborate embeddings should improve performance of the models,\footnote{See for example the impact of ELMo embeddings \citep{peters2018elmo} on the performance of the parser in \citet{kitaev2018attentive} (an adaptation of the chart parser in \citet{stern2017minimal}).} but such investigation is in principle othogonal to our work. We furthermore do not experiment with any kind of subword information in the embeddings and, as noted before, make no use of tags in any of the models. The influence of such embeddings on the discriminate parser of \citet{stern2017minimal} is analysed extensively by \citet{stern2018analyis}, who investigate all combinations of word, tag, and character-LSTM embeddings, and find that the best model\footnote{A tie between the model that uses all embeddings concatenated and the model that uses just the character-LSTM, both with an F1 of 92.24.} improves on the worst model\footnote{Using only word embeddings, at an F1 of 91.44.} by only 0.8 F1, which is a relative improvement of just 1\%. We believe this justifies our basic approach.
 
-    \begin{table}
-      \caption{Vocabularies}
-      \label{tab:vocabularies}
-      % Dataset statistics (number of sentences and number of tokens) and vocabulary sizes
-    \end{table}
+    % \begin{table}
+    %   \caption{Vocabularies}
+    %   \label{tab:vocabularies}
+    %   % Dataset statistics (number of sentences and number of tokens) and vocabulary sizes
+    % \end{table}
 
 
 \section{Implementation}
@@ -43,25 +43,24 @@ This appendix reports all details about the implementation of the models, includ
 
   % We normalize the learning signal: \say{This variability makes training an inference network using a fixed learning rate difficult. We address this issue by dividing the centered learning signal by a running estimate of its standard deviation. This normalization ensures that the signal is approximately unit variance, and can be seen as a simple and efficient way of adapting the learning rate.} \citep{mnih2014nvil}.
 
-  \begin{table}
-    \caption{Optimization}
-    \label{tab:optimization}
-    % Optimizers, learning rates, batch sizes.
-  \end{table}
+  % \begin{table}
+  %   \caption{Optimization}
+  %   \label{tab:optimization}
+  %   % Optimizers, learning rates, batch sizes.
+  % \end{table}
 
-  \item Surrogate objective and gradient blocking \cite{schulman2015gradient}.
-  \end{itemize}
+  Surrogate objective and gradient blocking \cite{schulman2015gradient}.
 
-  \paragraph{Hyperparameters}
-  For the RNNG we follow exactly the hyperparameters from the published papers.
+  % \paragraph{Hyperparameters}
+  % For the RNNG we follow exactly the hyperparameters from the published papers.
+  %
+  % For the CRF parser
+  % \begin{itemize}
+  %   \item Dropout of ...
+  % \end{itemize}
 
-  For the CRF parser
-  \begin{itemize}
-    \item Dropout of ...
-  \end{itemize}
-
-  \begin{table}
-    \caption{Model parameters}
-    \label{tab:model-parameters}
-
-  \end{table}
+  % \begin{table}
+  %   \caption{Model parameters}
+  %   \label{tab:model-parameters}
+  %
+  % \end{table}

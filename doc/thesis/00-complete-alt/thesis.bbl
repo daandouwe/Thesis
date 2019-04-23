@@ -1,4 +1,4 @@
-\begin{thebibliography}{111}
+\begin{thebibliography}{112}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -272,6 +272,13 @@ David Gaddy, Mitchell Stern, and Dan Klein.
   Chapter of the Association for Computational Linguistics: Human Language
   Technologies, Volume 1 (Long Papers)}, pages 999--1010. Association for
   Computational Linguistics, 2018.
+
+\bibitem[Gal and Ghahramani(2016)]{gal2016theoretically}
+Yarin Gal and Zoubin Ghahramani.
+\newblock A theoretically grounded application of dropout in recurrent neural
+  networks.
+\newblock In \emph{Advances in neural information processing systems}, pages
+  1019--1027, 2016.
 
 \bibitem[Gallo et~al.(1993)Gallo, Longo, Pallottino, and
   Nguyen]{gallo1993directed}
