@@ -1,16 +1,16 @@
 # Fdb version 3
-["bibtex thesis"] 1556041617 "thesis.aux" "thesis.bbl" "thesis" 1556041702
+["bibtex thesis"] 1556105227 "thesis.aux" "thesis.bbl" "thesis" 1556105252
   "../src/bibliography.bib" 1556032149 44688 06abf518bd32574401c049f0a95077dc ""
   "/usr/local/texlive/2016/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "thesis.aux" 1556041625 38699 7b7d959b8fe94176a7de6ae0554a85ce ""
+  "thesis.aux" 1556105220 39284 21363765d4b55da48a6a83ea40578398 ""
   "thesis.bcf" 0 -1 0 ""
   (generated)
   "thesis.blg"
   "thesis.bbl"
-["pdflatex"] 1556041702 "thesis.tex" "thesis.pdf" "thesis" 1556041702
+["pdflatex"] 1556105252 "thesis.tex" "thesis.pdf" "thesis" 1556105252
   "../01-introduction/introduction.tex" 1551880436 5096 18ba29c7fcaa1edb1c670f407a9a4ecc ""
-  "../02-background/background.tex" 1556040488 30787 a86703968631f4145a26b4210bfe11a7 ""
-  "../03-rnng/rnng.tex" 1556041611 32041 fecd006bb828726dbf75d4a68d1a7252 ""
+  "../02-background/background.tex" 1556104531 30787 a86703968631f4145a26b4210bfe11a7 ""
+  "../03-rnng/rnng.tex" 1556105249 35683 6c5d53d9fcbc8273a6f3bda1a32560ab ""
   "../04-crf-parser/crf-parser.tex" 1556030992 50650 c177665e1f3e9274c6e21d051dabc028 ""
   "../05-semisupervised/semisupervised.tex" 1556032159 8849 7c00cab2c56c1d70fa65194fe37d2a09 ""
   "../06-syneval/syneval.tex" 1556032165 15054 d367dcccbc8b86f6bad92c08073e9354 ""
@@ -24,6 +24,7 @@
   "../figures/hypergraph/hypergraph.tex" 1552307033 2339 cbffb1f6507d6d883bc0f034f23453a4 ""
   "../figures/normal-form/cnf-invalid.tex" 1555512703 235 3573908c87b6560d7c9ef609c9202cea ""
   "../figures/normal-form/cnf-valid.tex" 1555512115 235 ce6acca525ccf81fd3fa0203201512b6 ""
+  "../figures/sample-experiment/entropy/disc_temp.pdf" 1554734131 38458 3bd29c479246b9800cf4f9b3550da096 ""
   "../figures/sample-experiment/fscore/disc_temp.pdf" 1554900653 31509 d2153fc3d7208f3dc499e6eecd63e8ae ""
   "../figures/sample-experiment/ppl/disc_temp.pdf" 1554900768 30644 4e892a619d689bdd86bc271c2d32a1b5 ""
   "../figures/span-encoding.pdf" 1550244452 184297 f934d5d9d9c951f5e4f0ab8ee72d6b2d ""
@@ -286,16 +287,16 @@
   "/usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt" 1485894833 3873397 68ff021935db8719c30e28db2297c232 ""
   "/usr/local/texlive/2016/texmf.cnf" 1463979140 577 2938757e76f31531e65cc647e3507693 ""
   "UvaLogoTekst" 0 -1 0 ""
-  "thesis.aux" 1556041625 38699 7b7d959b8fe94176a7de6ae0554a85ce ""
-  "thesis.bbl" 1556041617 35366 247bcfc917b44c068c6ffd6b651ab186 "bibtex thesis"
-  "thesis.out" 1556041625 5187 913cc2493b26b619a38fafc3654bbfc9 ""
-  "thesis.tex" 1556041701 6279 2798c9cbf4f7fb842f06b78720837ef0 ""
-  "thesis.toc" 1556041625 9137 683f121a2b6509303170eb140efce5da ""
+  "thesis.aux" 1556105220 39284 21363765d4b55da48a6a83ea40578398 ""
+  "thesis.bbl" 1556105227 35366 247bcfc917b44c068c6ffd6b651ab186 "bibtex thesis"
+  "thesis.out" 1556105220 5187 913cc2493b26b619a38fafc3654bbfc9 ""
+  "thesis.tex" 1556105250 6326 2ec78c58d629eda9ee915e99ead00ad2 ""
+  "thesis.toc" 1556105220 9134 b66479c35d8dfd70137626108b855f27 ""
   "uvalogo" 0 -1 0 ""
   "uvamath.cls" 1554465603 4475 791ea0e26f77a82850a230826b70affc ""
   (generated)
-  "thesis.log"
   "thesis.out"
+  "thesis.log"
+  "thesis.aux"
   "thesis.pdf"
   "thesis.toc"
-  "thesis.aux"

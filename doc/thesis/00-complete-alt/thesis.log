@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  23 APR 2019 19:48
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  24 APR 2019 13:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1236,24 +1236,36 @@ LaTeX Warning: Label `tab:disc-fscores' multiply defined.
 
 LaTeX Warning: Label `sec:impl-embedding' multiply defined.
 
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.576 c
+       sname
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
 )
 \openout1 = `thesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 136.
-LaTeX Font Info:    ... okay on input line 136.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 136.
-LaTeX Font Info:    ... okay on input line 136.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 136.
-LaTeX Font Info:    ... okay on input line 136.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 136.
-LaTeX Font Info:    ... okay on input line 136.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 136.
-LaTeX Font Info:    ... okay on input line 136.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 136.
-LaTeX Font Info:    ... okay on input line 136.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 136.
-LaTeX Font Info:    ... okay on input line 136.
-LaTeX Font Info:    Try loading font information for OT1+ppl on input line 136.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 137.
+LaTeX Font Info:    ... okay on input line 137.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 137.
+LaTeX Font Info:    ... okay on input line 137.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 137.
+LaTeX Font Info:    ... okay on input line 137.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 137.
+LaTeX Font Info:    ... okay on input line 137.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 137.
+LaTeX Font Info:    ... okay on input line 137.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 137.
+LaTeX Font Info:    ... okay on input line 137.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 137.
+LaTeX Font Info:    ... okay on input line 137.
+LaTeX Font Info:    Try loading font information for OT1+ppl on input line 137.
 
  (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1ppl.fd
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
@@ -1287,10 +1299,10 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \AtBeginShipoutBox=\box51
-Package hyperref Info: Link coloring OFF on input line 136.
-LaTeX Info: Redefining \ref on input line 136.
-LaTeX Info: Redefining \pageref on input line 136.
-LaTeX Info: Redefining \nameref on input line 136.
+Package hyperref Info: Link coloring OFF on input line 137.
+LaTeX Info: Redefining \ref on input line 137.
+LaTeX Info: Redefining \pageref on input line 137.
+LaTeX Info: Redefining \nameref on input line 137.
 
 (./thesis.out) (./thesis.out)
 \@outlinefile=\write4
@@ -1340,7 +1352,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.138 
+l.139 
       
 I could not locate the file with any of these extensions:
 .png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPEG,.JBIG2,.JB2,.eps
@@ -1354,32 +1366,32 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.138 
+l.139 
       
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <20.74> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 138.
-LaTeX Font Info:    Try loading font information for U+msa on input line 138.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 139.
+LaTeX Font Info:    Try loading font information for U+msa on input line 139.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 138.
+LaTeX Font Info:    Try loading font information for U+msb on input line 139.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+lasy on input line 138.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 139.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/base/ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <8> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 138.
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 139.
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <6> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 138.
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 139.
 
 
 ! LaTeX Error: File `uvalogo' not found.
@@ -1388,7 +1400,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.138 
+l.139 
       
 I could not locate the file with any of these extensions:
 .png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPEG,.JBIG2,.JB2,.eps
@@ -1399,29 +1411,29 @@ If that doesn't work, type  X <return>  to quit.
 
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 139.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 140.
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 139.
-LaTeX Font Info:    Try loading font information for OMS+ppl on input line 144.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 140.
+LaTeX Font Info:    Try loading font information for OMS+ppl on input line 145.
 
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omsppl.fd
 File: omsppl.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 144.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 145.
 
-Overfull \hbox (5.19946pt too wide) in paragraph at lines 146--147
+Overfull \hbox (5.19946pt too wide) in paragraph at lines 147--148
 []\OT1/ppl/m/n/10.95 propose ef-fec-tive meth-ods for semisu-per-vised learn-in
 g, mak-ing the syn-tac-tic struc-
  []
 
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 149.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 150.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-Underfull \hbox (badness 10000) in paragraph at lines 149--149
+Underfull \hbox (badness 10000) in paragraph at lines 150--150
 
  []
 
@@ -1709,102 +1721,105 @@ Overfull \hbox (21.0442pt too wide) in paragraph at lines 223--224
 o-posal dis-tri-bu-tion al-lows us to rewrite the marginal
  []
 
-[29] (../tables/disc-fscores.tex
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-) (../tables/gen-fscores.tex
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-) (../tables/gen-perplexities.tex
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-) [30]
-<../figures/sample-experiment/fscore/disc_temp.pdf, id=1145, 722.7pt x 361.35pt
+[29] [30] (../tables/disc-fscores.tex) (../tables/gen-fscores.tex)
+(../tables/gen-perplexities.tex) [31]
+<../figures/sample-experiment/fscore/disc_temp.pdf, id=1156, 722.7pt x 361.35pt
 >
 File: ../figures/sample-experiment/fscore/disc_temp.pdf Graphic file (type pdf)
 
  <use ../figures/sample-experiment/fscore/disc_temp.pdf>
 Package pdftex.def Info: ../figures/sample-experiment/fscore/disc_temp.pdf used
- on input line 275.
+ on input line 274.
 (pdftex.def)             Requested size: 376.4258pt x 188.21185pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<../figures/sample-experiment/ppl/disc_temp.pdf, id=1146, 722.7pt x 361.35pt>
+<../figures/sample-experiment/ppl/disc_temp.pdf, id=1157, 722.7pt x 361.35pt>
 File: ../figures/sample-experiment/ppl/disc_temp.pdf Graphic file (type pdf)
 
 <use ../figures/sample-experiment/ppl/disc_temp.pdf>
 Package pdftex.def Info: ../figures/sample-experiment/ppl/disc_temp.pdf used on
- input line 282.
+ input line 281.
 (pdftex.def)             Requested size: 376.4258pt x 188.21185pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[31]) [32 <../figures/sample-experiment/fscore/disc_temp.pdf>] [33 <../figures/
-sample-experiment/ppl/disc_temp.pdf>]
-chapter 4.
-(../04-crf-parser/crf-parser.tex [34
+[32]
+<../figures/sample-experiment/entropy/disc_temp.pdf, id=1168, 361.35pt x 722.7p
+t>
+File: ../figures/sample-experiment/entropy/disc_temp.pdf Graphic file (type pdf
+)
+ <use ../figures/sample-experiment/entropy/disc_temp.pdf>
+Package pdftex.def Info: ../figures/sample-experiment/entropy/disc_temp.pdf use
+d on input line 311.
+(pdftex.def)             Requested size: 209.12686pt x 418.251pt.
 
-] [35]
-<../figures/span-encoding.pdf, id=1292, 464.0005pt x 150.49072pt>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[33 <../figures/sample-experiment/fscore/disc_temp.pdf>]) [34 <../figures/sampl
+e-experiment/ppl/disc_temp.pdf>] [35] [36 <../figures/sample-experiment/entropy
+/disc_temp.pdf>]
+chapter 4.
+(../04-crf-parser/crf-parser.tex [37
+
+] [38]
+<../figures/span-encoding.pdf, id=1343, 464.0005pt x 150.49072pt>
 File: ../figures/span-encoding.pdf Graphic file (type pdf)
 
 <use ../figures/span-encoding.pdf>
 Package pdftex.def Info: ../figures/span-encoding.pdf used on input line 50.
 (pdftex.def)             Requested size: 418.25372pt x 135.66083pt.
- [36 <../figures/span-encoding.pdf>]
+ [39 <../figures/span-encoding.pdf>]
 
 Package caption Warning: \label without proper reference on input line 85.
 See the caption package documentation for explanation.
 
 
-LaTeX Warning: Reference `fig:crf-edges' on page 37 undefined on input line 82.
+LaTeX Warning: Reference `fig:crf-edges' on page 40 undefined on input line 82.
 
 
 (../figures/edges/edges.tex)
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[37] [38]
+[40] [41]
 
-LaTeX Warning: Reference `algo:inside' on page 39 undefined on input line 138.
+LaTeX Warning: Reference `algo:inside' on page 42 undefined on input line 138.
 
-[39]
+[42]
 
-LaTeX Warning: Reference `algo:outside' on page 40 undefined on input line 170.
+LaTeX Warning: Reference `algo:outside' on page 43 undefined on input line 170.
 
 
-[40] [41] [42] [43] (../tables/crf-fscores.tex) [44] [45]
+[43] [44] [45] [46] (../tables/crf-fscores.tex) [47] [48]
 (../figures/normal-form/cnf-valid.tex) (../figures/normal-form/cnf-invalid.tex)
 
 Overfull \hbox (2.0805pt too wide) in paragraph at lines 332--344
 [][] [] 
  []
 
-[46] [47] (../figures/edges/illegal-edges.tex)
+[49] [50] (../figures/edges/illegal-edges.tex)
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[48] [49] [50]) [51]
+[51] [52] [53]) [54]
 chapter 5.
-(../06-syneval/syneval.tex [52
+(../06-syneval/syneval.tex [55
 
-] [53] [54] [55]
+] [56] [57] [58]
 Overfull \hbox (0.81944pt too wide) in paragraph at lines 83--85
 \OT1/ppl/m/n/10.95 and the dis-tri-bu-tion over la-bels is com-puted us-ing a f
 eed-for-ward net-work parametrized
  []
 
-) [56] [57]
+) [59] [60]
 chapter 6.
-(../05-semisupervised/semisupervised.tex [58
+(../05-semisupervised/semisupervised.tex [61
 
-] [59]
+] [62]
 Overfull \hbox (0.86298pt too wide) in paragraph at lines 81--82
 \OT1/ppl/m/n/10.95 miza-tion, which means that we need to com-pute the gra-di-e
 nts $\OMS/cmsy/m/n/10.95 r[] []\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 ^^R; ^^U
@@ -1813,44 +1828,44 @@ r/m/n/10.95 (\OML/cmm/m/it/10.95 ^^R; ^^U\OT1/cmr/m/n/10.95 )$\OT1/ppl/m/n/10.9
 5 . 
  []
 
-[60] [61]) [62]
+[63] [64]) [65]
 chapter 7.
-(../07-conclusion/conclusion.tex) [63
+(../07-conclusion/conclusion.tex) [66
 
 ]
 chapter A.
-(../09-app-implementation/implementation.tex [64
+(../09-app-implementation/implementation.tex [67
 
-] [65] [66]) [67]
+] [68] [69]) [70]
 chapter B.
-(../10-app-crf/crf.tex (../figures/hypergraph/hypergraph.tex) [68
+(../10-app-crf/crf.tex (../figures/hypergraph/hypergraph.tex) [71
 
-] [69]
-[70] [71] [72]) [73]
+] [72]
+[73] [74] [75]) [76]
 chapter C.
-(../11-app-vi/vi.tex [74
+(../11-app-vi/vi.tex [77
 
 ]
 
-Package natbib Warning: Citation `baydin2017automatic' on page 75 undefined on 
+Package natbib Warning: Citation `baydin2017automatic' on page 78 undefined on 
 input line 59.
 
-[75] [76] [77]) [78]
+[78] [79] [80]) [81]
 chapter D.
 (../12-app-syneval/syneval.tex
 LaTeX Font Info:    Font shape `OT1/ppl/bx/it' in size <10.95> not available
 (Font)              Font shape `OT1/ppl/b/it' tried instead on input line 41.
- [79
+ [82
 
-]) (./thesis.bbl [80] [81
+]) (./thesis.bbl [83] [84
 
-] [82] [83]
+] [85] [86]
 Underfull \hbox (badness 2698) in paragraph at lines 317--321
 []\OT1/ppl/m/n/10.95 Yoav Gold-berg and Joakim Nivre.  Train-ing de-ter-min-is-
 tic parsers with non-
  []
 
-[84] [85] [86] [87]
+[87] [88] [89] [90]
 ! Misplaced alignment tab character &.
 <argument> Computer Speech &
                              Language
@@ -1863,11 +1878,11 @@ up above has ended a previous alignment prematurely,
 you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
-[88] [89])
+[91] [92])
 
 Package natbib Warning: There were undefined citations.
 
-[90]
+[93]
 
 ! LaTeX Error: \begin{example} on input line 173 ended by \end{document}.
 
@@ -1875,17 +1890,17 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.232 \end{document}
+l.233 \end{document}
                     
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 232.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 232.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 233.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 233.
 (./thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 232.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 232.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 233.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 233.
 Package rerunfilecheck Info: File `thesis.out' has not changed.
 (rerunfilecheck)             Checksum: 913CC2493B26B619A38FAFC3654BBFC9;5187.
 
@@ -1895,17 +1910,17 @@ LaTeX Warning: There were undefined references.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 232.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 233.
  )
 (\end occurred inside a group at level 1)
 
 ### semi simple group (level 1) entered at line 173 (\begingroup)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 26934 strings out of 493014
- 500742 string characters out of 6133351
- 726755 words of memory out of 5000000
- 29327 multiletter control sequences out of 15000+600000
+ 26950 strings out of 493014
+ 501138 string characters out of 6133351
+ 727017 words of memory out of 5000000
+ 29334 multiletter control sequences out of 15000+600000
  44359 words of font info for 126 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  73i,19n,77p,8522b,1414s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1935,10 +1950,10 @@ nts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/typ
 e1/urw/palatino/uplri8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw
 /times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utm
 r8a.pfb>
-Output written on thesis.pdf (90 pages, 1002502 bytes).
+Output written on thesis.pdf (93 pages, 1046514 bytes).
 PDF statistics:
- 2322 PDF objects out of 2487 (max. 8388607)
- 2087 compressed objects within 21 object streams
- 544 named destinations out of 1000 (max. 500000)
- 710 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 2375 PDF objects out of 2487 (max. 8388607)
+ 2112 compressed objects within 22 object streams
+ 551 named destinations out of 1000 (max. 500000)
+ 715 words of extra memory for PDF output out of 10000 (max. 10000000)
 

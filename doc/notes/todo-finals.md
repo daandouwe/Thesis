@@ -266,7 +266,7 @@ Writing
   - [ ] Emphasize that the support of the RNNG is practically unbouded.
   - [ ] Subsection of training: speed and complexity.
   - [X] Result tables
-  - [ ] Entropy figures
+  - [X] Entropy figures
   - [X] Perplexity figures.
   - [ ] Helemaal rechtrekken.
 
