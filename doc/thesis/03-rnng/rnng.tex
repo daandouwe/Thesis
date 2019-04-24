@@ -1,5 +1,3 @@
-% \bibliography{../src/bibliography}
-
 This chapter describes the Recurrent Neural Network Grammar (RNNG), a probabilistic model of sentences with explicit phrase structure introduced by \citet{dyer2016rnng}. The model has a discriminative and generative formulation, but both are based on a shift-reduce transition system that builds trees in top-down order and define locally normalized probability distributions over action sequences. While the discriminative model is a constituency parser, the generative model is a joint model that can be evaluated both as constituency parser and as language model. The strength of both models lies in their unbouded history: at each step the model can condition on the entire derivation constructed thus far. This derivation is summarized by a syntax-dependent recurrent neural networks. This parametrization without independence assumptions, however, does preclude the use of exact inference---for example based on dynamic programming---but approximate inference based on greedy decoding and importance sampling provides tractable solutions.
 
 In this chapter:
@@ -30,7 +28,7 @@ In this chapter:
      The actions are constrained in order to only derive well-formed trees:
     \begin{itemize}
       \item $\shift$ can only be excecuted if there is at least one open nonterminal (all words must be under some nonterminal symbol).
-      \item \open(X) requires there to be words left on the buffer (all constituents must eventually hold terminals).
+      \item \open(X) requires there to be words left on the buffer (all constituents must eventually hold terminals).\footnote{Additionally, the number of open nonterminals can be at most some arbitrary number $n$, in practice 100. This constraint prevents the model from generating trees with arbitrarily long unary chains.}
       \item $\reduce$ requires there to be at least one terminal following the open nonterminal, and the topmost nonterminal can only be closed when the buffer is empty (all nodes must end under a single root node).
     \end{itemize}
     The generative transition system is derived from this system by replacing the $\shift$ action, which moves the word $x$ from the buffer into the open constituent on the stack, with an action that \textit{predicts} the word:
@@ -47,7 +45,7 @@ In this chapter:
     With the transition system in place, we now move to describe how the RNNG defines a probability distribution over the sequeunces of transition actions.
 
   \subsection{Model}
-    Fundamentally, the model is a probability distribution over transition action sequences $a = \langle a_1, \dots, a_T \rangle$ that generate trees $\y$.  Conditionally---given a sequence of words $\x$---in the discriminative model, and jointly---predicting the sequence $\x$---in the generative model. The model then defines a distribution over trees $\yieldx$ through the bijective transformation that maps transition sequences $a$ to trees $y$ and vice versa.\footnote{ As a result of the transition system, the trees in the set $\yieldx$ are totally unrestrained: the trees can have any arity, and can contain arbitrarily long unary chains. This contrasts with grammar based parsing models that do put such restrictions on the trees in their support.} Put simply, the model is thus defined as
+    Fundamentally, the model is a probability distribution over transition action sequences $a = \langle a_1, \dots, a_T \rangle$ that generate trees $\y$.  Conditionally---given a sequence of words $\x$---in the discriminative model, and jointly---predicting the sequence $\x$---in the generative model. The model then defines a distribution over trees $\yieldx$ through the bijective transformation that maps transition sequences $a$ to trees $y$ and vice versa.\footnote{ Note that as a result of the transition system, the trees in the set $\yieldx$ are rather unconstrained: the trees can have any arity, and can contain arbitrarily long unary chains, depending on the maximum number of open nonterminals $n$ chosen.} Put simply, the model is thus defined as
     \begin{equation}
       \label{eq:naive-rnng-model}
       p( a ) = \prod_{t=1}^T p( a_t \mid a_{<t} ),
@@ -308,7 +306,7 @@ In this chapter:
 
     \begin{figure}[h]
       \center
-    	\includegraphics[width=0.5\textwidth]{sample-experiment/entropy/disc_temp.pdf}
+    	\includegraphics[width=0.4\textwidth]{sample-experiment/entropy/disc_temp.pdf}
     \caption{Conditional entropy estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.}
     \label{fig:samples-entropy}
     \end{figure}

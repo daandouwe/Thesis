@@ -1,4 +1,4 @@
-\begin{thebibliography}{112}
+\begin{thebibliography}{114}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -387,6 +387,12 @@ Richard Hudson.
 Frederick Jelinek.
 \newblock Information extraction from speech and text, chapter 8, 1997.
 
+\bibitem[Jordan et~al.(1999)Jordan, Ghahramani, Jaakkola, and
+  Saul]{jordan1999vi}
+MichaelI. Jordan, Zoubin Ghahramani, TommiS. Jaakkola, and LawrenceK. Saul.
+\newblock An introduction to variational methods for graphical models.
+\newblock \emph{Machine Learning}, 37\penalty0 (2):\penalty0 183--233, 1999.
+
 \bibitem[Jozefowicz et~al.(2016)Jozefowicz, Vinyals, Schuster, Shazeer, and
   Wu]{jozefowicz2016exploring}
 Rafal Jozefowicz, Oriol Vinyals, Mike Schuster, Noam Shazeer, and Yonghui Wu.
@@ -408,6 +414,11 @@ Yoon Kim, Carl Denton, Luong Hoang, and Alexander~M Rush.
 Diederik~P. Kingma and Jimmy Ba.
 \newblock Adam: {A} method for stochastic optimization.
 \newblock \emph{CoRR}, abs/1412.6980, 2014.
+
+\bibitem[Kingma and Welling(2014)]{kingma2014vae}
+Diederik~P. Kingma and Max Welling.
+\newblock Auto-encoding variational bayes.
+\newblock In \emph{International Conference on Learning Representations}, 2014.
 
 \bibitem[Kitaev and Klein(2018)]{kitaev2018attentive}
 Nikita Kitaev and Dan Klein.

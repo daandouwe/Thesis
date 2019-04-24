@@ -263,8 +263,8 @@ Writing
 1. RNNG
   - [X] Introduction
   - [X] Composition and attention section
-  - [ ] Emphasize that the support of the RNNG is practically unbouded.
-  - [ ] Subsection of training: speed and complexity.
+  - [X] Emphasize that the support of the RNNG is practically unbouded.
+  - [X] Subsection of training: speed and complexity. (in background!)
   - [X] Result tables
   - [X] Entropy figures
   - [X] Perplexity figures.
