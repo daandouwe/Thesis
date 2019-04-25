@@ -260,86 +260,127 @@ In this chapter:
     \mathcal{L}(\theta)
       &= \sum_{(\x, \y) \in \dataset} \log \ptheta(\y \mid \x)
   \end{align*}
-  with respect to the model parameters $\theta$. Writing out the objective for a single example as
-  \begin{align*}
-    \log \ptheta(\y \mid \x) = \log \Psi(\x, \y) - \log Z(x)
-  \end{align*}
-  reveals that the maximization of this value decomposes as two separate optimizationproblems: to maximize the log-score of the example tree $\log \Psi(\x, \y)$, whilst minimizing the total weight of the parse forest $\log Z(x)$. The solution is thus to move probability mass onto the gold tree, and move mass away from \textit{all} other trees. Because the log-score of the tree decomposes as a sum of log-scores of the nodes that comprise it, the objective is effectively to \textit{increase} the scores of the labeled spans that make up the gold tree, and \textit{decrease} the scores of all other labeled spans not observed. Another effect of the factorization over parts is that this increases not only the probability of the gold tree, but the probability of all trees that share substantial substructure. It is in this precise sense that we mean that the model learns about all substructures.
+  with respect to the model parameters $\theta$.
 
-  We rely on automatic differentiation to compute the derivatives, but note that in principle it is possible to efficiently combine the computation of the inside and outside values with their derivatives, a fact demonstrated in \citep{eisner2009semirings} and \citep{eisner2016backprop}, and implemented in \citep{kim2017structured}. Instead, for convenience and simplicity compute the quantity $Z(x)$ and let automatic differentation do the rest.
+  \subsection{Objective}
+    Writing out the objective for a single example as
+    \begin{align*}
+      \log \ptheta(\y \mid \x) = \log \Psi(\x, \y) - \log Z(x)
+    \end{align*}
+    reveals that the maximization of this value decomposes as two separate optimizationproblems: to maximize the log-score of the example tree $\log \Psi(\x, \y)$, whilst minimizing the total weight of the parse forest $\log Z(x)$. The solution is thus to move probability mass onto the gold tree, and move mass away from \textit{all} other trees. Because the log-score of the tree decomposes as a sum of log-scores of the nodes that comprise it, the objective is effectively to \textit{increase} the scores of the labeled spans that make up the gold tree, and \textit{decrease} the scores of all other labeled spans not observed. Another effect of the factorization over parts is that this increases not only the probability of the gold tree, but the probability of all trees that share substantial substructure. It is in this precise sense that we mean that the model learns about all substructures.
 
-  It is fruitful to see how our global objective differs from the margin-based objective in \citep{stern2017minimal}. The margin-based objective is to maximize the difference, or `margin', between the score of the gold tree and the highest scoring, incorrect tree. Given an example pair $(\x, \y)$, the model computes the predicted tree $\hat{y}$. If the predicted tree equals the example tree, $\hat{y} = \y$, then no changes to the model are made. Otherwise, the model is updated to maximize the difference between their scores
-  \begin{align*}
-    \Psi(\x, \y) - \Psi(\x, \hat{\y}),
-  \end{align*}
-  maximizing the score of the correct tree, and minimizing the score of the predicted tree.\footnote{The objective reported in the paper is minimizing the hinge loss $\max \Big(0, 1 - \Psi(\x, \y) + \Psi(\x, \hat{\y}) \Big)$, but the above is what is actually implementated in their code.} This objective shows a striking similarity with our CRF objective, with one very particular difference. The goal is still to maximize the score of the gold tree. But the minimization that in the CRF objective concerns all possible trees through $Z(x)$, in this objective concerns just the single tree $\hat{\y}$ that was incorrectly predicted. The scores of all other nodes not observed in either tree remain unchanched.
+    We rely on automatic differentiation to compute the derivatives, but note that in principle it is possible to efficiently combine the computation of the inside and outside values with their derivatives, a fact demonstrated in \citep{eisner2009semirings} and \citep{eisner2016backprop}, and implemented in \citep{kim2017structured}. Instead, for convenience and simplicity compute the quantity $Z(x)$ and let automatic differentation do the rest.
+
+    It is fruitful to see how our global objective differs from the margin-based objective in \citep{stern2017minimal}. The margin-based objective is to maximize the difference, or `margin', between the score of the gold tree and the highest scoring, incorrect tree. Given an example pair $(\x, \y)$, the model computes the predicted tree $\hat{y}$. If the predicted tree equals the example tree, $\hat{y} = \y$, then no changes to the model are made. Otherwise, the model is updated to maximize the difference between their scores
+    \begin{align*}
+      \Psi(\x, \y) - \Psi(\x, \hat{\y}),
+    \end{align*}
+    maximizing the score of the correct tree, and minimizing the score of the predicted tree.\footnote{The objective reported in the paper is minimizing the hinge loss $\max \Big(0, 1 - \Psi(\x, \y) + \Psi(\x, \hat{\y}) \Big)$. The above is what is actually implementated in their code.} This objective shows a striking similarity with our CRF objective, with one very particular difference. The goal is still to maximize the score of the gold tree. But the minimization that in the CRF objective concerns all possible trees through $Z(x)$, in this objective concerns just the single tree $\hat{\y}$ that was incorrectly predicted. The scores of all other nodes not observed in either tree are not directly.
+
+  \subsection{Speed and complexity}
+    The model is slow. Here we will describe how slow it is, and what can be done about it.
+    \begin{itemize}
+      \item Describe the time complexity and how it depends on both label size and sentence length
+      \item Describe how slow the model is to train of CPU (use Lisa times): around 7 hours per epoch, so around 15 days for convergence (around 50 epochs).
+      \item Describe how we can speed up linearly by pruning the labelset: we can remove 70\% of labels while keeping 98\% of the training sentences. These labels are mostly very rare unary chains. The speedup we get from this is linear!
+      \item Our model is X times slower than the model of \citet{stern2017minimal}. This difference bust be in the inside algorithm. The inside algorithm used by us and the viterbi algorithm used by \citet{stern2017minimal} have the same structure and time complexity. The difference must be in the computation graph built by either computation. The viterbi algorithm builds a sparse computation graph, connecting only nodes that are in a single tree, whereas the computation graph built by the inside algorithm is dense with all trees.   
+    \end{itemize}
 
 \section{Experiments}
-  This section reports the results of the experiments performed with the CRF parser. We first train the model on the Penn Treebank and show that it is a strong parser. The CRF obtains a higher F1 than the discriminative RNNG when trained with the same number of parameters; an even higher F1 is obtained when or models is trained with the same hyperparameters as the model in \citet{stern2017minimal}. However, this larger model falls short of the F1 reported in \citet{stern2017minimal}---a gap that we attribute to the absence of tags in our model. We then use the CRF as an alternative proposal model for the generative RNNG and perform analysis similar to those in chapter \ref{03-rnng}. This use of the CRF leads to some theoretical challenges. We note these challenge, but discuss them in detail in the next section.
+  This section reports the results of the experiments performed with the CRF parser. We first train the model on the Penn Treebank and show that it is a strong parser. The CRF obtains a higher F1 than the discriminative RNNG when trained with the same number of parameters; an even higher F1 is obtained when or models is trained with the same hyperparameters as the model in \citet{stern2017minimal}. We then use the CRF as an alternative proposal model for the generative RNNG and perform analyses similar to those in chapter \ref{03-rnng}. This use of the CRF leads to some theoretical challenges. We note these, but discuss them in detail in the next section.
 
   \subsection{Setup}
-    We train two versions of the model on the Penn Treebank: a small version and a large version. The smaller model allows us to compare the CRF parser to the discriminative RNNG, while the larger model allows us to compare it to the parser of \citet{stern2017minimal}. The smaller model has dimensions to match the number of parameters in the discriminative RNNG from chapter \ref{03-rnng} and is trained with the same optimizer and learning rate as the RNNG. The larger model follows the dimensions and optimization of \citet{stern2017minimal}.
+    We train two versions of the model on the Penn Treebank: a small version and a large version. The smaller model allows us to compare the CRF parser to the discriminative RNNG, while the larger model allows us to compare it to the parser of \citet{stern2017minimal}. The smaller model has dimensions to match the number of parameters in the discriminative RNNG from chapter \ref{03-rnng} and is trained with the same optimizer and learning rate as the RNNG models. For the larger model follows the dimensions and optimization details of \citet{stern2017minimal}.
 
-    For both models the embeddings are of dimension 100, and the LSTMs have 2 layers. For the smaller model the dimension of forward and backward the LSTM is 128, and the feedforward network has one hidden layer with dimension 256. For the larger model we follow the hyperparameters of \citet{stern2017minimal}: the LSTMs have dimesion 250, just as the feedforward network. Given these dimensions, the total number of parameters in the small model is around 750,000 and around 2,500,000 for the large model (the exact numbers are in table \ref{tab:num-params}). The small CRF is comparable in size with the discriminative RNNG (around 800,000 parameters) and less than a third in size of the larger model. The smaller model is optimized following the RNNG, with standard SGD and learning rate 0.1, and for the larger model we use Adam \citep{kingma2014adam} with 0.001 following \citet{stern2017minimal}.
+    For both models the embeddings are of dimension 100, and the LSTMs have 2 layers. For the smaller model the dimension of forward and backward the LSTM is 128, and the feedforward network has one hidden layer with dimension 256. For the larger model we follow the hyperparameters of \citet{stern2017minimal}: the LSTMs have dimesion 250, just as the feedforward network. Given these dimensions, the total number of parameters in the small model is around 750,000 and around 2,500,000 for the large model (the exact numbers are in table \ref{tab:num-params}). The small CRF is comparable in size with the discriminative RNNG (around 800,000 parameters) and less than a third in size of the larger model. The smaller model is optimized following the RNNG, with standard SGD and learning rate 0.1, and for the larger model we use Adam \citep{kingma2014adam} with 0.001 exactly following \citet{stern2017minimal}.
 
   \subsection{Results}
     The evaluation setup is the same as in the previous chapter. We train 10 models from different random seeds, and we report mean and standard deviations, as well as scores of the best model selected by development F1.
 
     \input{../tables/crf-fscores.tex}
 
-    The results are shown in \ref{tab:disc-fscores}. Both models perform well, achieving on average 89.94 F1 for the smaller model and 90.31 F1 for the larger model. The small difference in F1 between the two is surprising given difference in size and optimization, and speaks for the relative robustness of our model with respect to these choices. Our best small CRF (90.04 F1) surpasses the best discriminative RNNG (88.58) by almost 2.5 F1. Our best large CRF (90.43) performs below the model of \citet{stern2017minimal} (91.79). Just as for the RNNG, we believe this can be attributed to the absence of tags. However, we can note that---in case this is true---the impact is much greater in the RNNG (around 3.1 F1) than in the CRF (around 1.4 F1).
+    The results are shown in \ref{tab:disc-fscores}. Both models perform well, achieving on average 89.94 F1 for the smaller model and 90.31 F1 for the larger model. The small difference in F1 between the two is surprising given difference in size and optimization, and speaks for the relative robustness of our model with respect to these choices. Our best small CRF (90.04 F1) surpasses the best discriminative RNNG (88.58) by almost 2.5 F1, but our best large CRF (90.43) performs below the model of \citet{stern2017minimal} (91.79). Just as for the RNNG, we believe this can be attributed to the absence of tags. However, we can note that---in case this is true---the negative impact is much greater for the RNNG (around 3.1 F1 lower) than in the CRF (around 1.4 F1 lower).
 
   \subsection{Proposal distribution}
-    First discuss that the CRF is not a proper proposal model, for two reasons:
-    \begin{enumerate}
-      \item The CRF defines a probability distribution over normal form trees. After collapsing the dummy nodes, and expanding the unary chains we get a very different set of the trees. Over this set of trees, the CRF does not define a distribution. The
-      \item The CRF breaks the required assumption for a proposal model: for some trees $y$, $p(x, y) > 0$, but $q(y | x) = 0$. The CRF supports unary chains (by collapsing them), but only to a limited extend. The RNNG, on the other hand, supports arbitrarily long unary chains (whose number is arbitrarily capped to 100). For those trees $y$ that have these unbouded chains, $p(x, y) > 0$, but $q(y | x) = 0$. This breaks the assumption of the proposal model. Now, a trained RNNG will most likely assign very little probability to such trees, so in the practical marginalization, this will have little effect (hopefully). But theoretically, this is a major problem.
-    \end{enumerate}
+    We have introduced the CRF parser as an alternative proposal model for the generative RNNG, and we now evaluate the CRF in this role. We repeat the same inference procedure as in chapter \ref{03-rnng}: we sample 100 trees from the small CRF with the highest development F1, and use these to evaluate the same generative RNNG as before. The results are shown in tables \ref{tab:gen-fscores-crf} (F1) and \ref{tab:gen-perplexities-crf} (perplexity), and include the previous results for comparison.
+
+    \input{../tables/gen-fscores-crf.tex}
+
+    \input{../tables/gen-perplexities-crf.tex}
+
+    The results for the F1 are virtually the same. Interestingly, although the CRF is the better parser by F1, both are equivalent with respect to generative RNNG. On average, because the discriminative RNNG proposals performs better on the selected model. A real difference can be observed in the perplexity, with a difference of over 9 nats in favour of the RNNG. This comes as a surprise
+
+  %   First discuss that the CRF is not a proper proposal model, for two reasons:
+  %   \begin{enumerate}
+  %     \item The CRF defines a probability distribution over normal form trees. After collapsing the dummy nodes, and expanding the unary chains we get a very different set of the trees.
+  %     \item The CRF breaks the required assumption for a proposal model: for some trees $y$, $p(x, y) > 0$, but $q(y | x) = 0$. The CRF supports unary chains (by collapsing them), but only to a limited extend. The RNNG, on the other hand, supports arbitrarily long unary chains (whose number is arbitrarily capped to 100). For those trees $y$ that have these unbouded chains, $p(x, y) > 0$, but $q(y | x) = 0$. This breaks the assumption of the proposal model. Now, a trained RNNG will most likely assign very little probability to such trees, so in the practical marginalization, this will have little effect (hopefully). But theoretically, this is a major problem.
+  %   \end{enumerate}
 
   \subsection{Analysis}
 
+    We perform the same analyses of the approximate inference as in chapter \ref{03-rnng}, this time with the CRF as proposal model.
+
+    The results of the experiment on aproximate inference are shown in figure \ref{fig:samples-fscores} (F1) and \ref{fig:samples-perplexities} (perplexity), where they are compared to the results of the annealed RNNG. With respect to parsing F1, the CRF is the better choice when using few samples, but for this difference disappears for larger number of samples.
+
+    \begin{figure}[h]
+      \center
+    	\includegraphics[width=0.9\textwidth]{sample-experiment/fscore/crf_disc_08.pdf}
+    \caption{F1 estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha=0.8$, for 10 independent repetitions.}
+    \label{fig:samples-fscores}
+    \end{figure}
+
+    \begin{figure}[h]
+      \center
+    	\includegraphics[width=0.9\textwidth]{sample-experiment/ppl/crf_disc08.pdf}
+    \caption{Perplexity estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha=0.8$, for 10 independent repetitions.}
+    \label{fig:samples-perplexities}
+    \end{figure}
+
+    \begin{figure}[h]
+      \center
+      \includegraphics[width=0.4\textwidth]{sample-experiment/entropy/all.pdf}
+    \caption{Conditional entropy estimated with increasing number of samples.}
+    \label{fig:samples-entropy}
+    \end{figure}
+
+    Figure \ref{fig:samples-entropy} shows the estimation of the conditional entropy, now including the results for the CRF. The estimates of the CRF converge to the true conditional entropy, which can be computed exactly and equals 2.84.\footnote{To be precise, the values $\entropy(Y \mid X = x)$ can be computed exactly, the value $\entropy(Y \mid X)$ is still estimated by a mean over the test set.} Furthermore we can note that the conditional entropy of the CRF is higher than that of the discriminative RNNG when not annealed. This could indicate that the CRF maintains a higher number of alternative parses per sentence on average than the RNNG. Another plausible explanation is that the higher entropy is caused by the derivational ambiguity: the higher entropy reflects that each tree has multiple derivations.
+
 \section{Problems as proposal}
-  We map a treebank tree to \textit{a single} normal form derivation, but many normal form derivations map to a single treebank tree. Let us illustrate this with an example. The two normal form trees in \ref{fig:normal-form-trees} both collapse to the same tree when dummy labels $\varnothing$ are collapsed:
-  \begin{center}
-    (S (NP The other hungry cat) (VP meows) .).
-  \end{center}
-  But when going the other way---applying the normal form transformation to the above tree---we always obtain the left tree, and never the right tree. Let $f: \yieldx \to \mathcal{D}(x)$ be the transformation that we defined that produces normal form trees from treebank trees, and let $g: \mathcal{D}(x) \to \yieldx$ be the transformation that takes a normal form tree and collapses the dummy nodes. Then $f$ is a bijection, but $g$ is not. In fact, for any tree $y$ the preimage of $g$ is the set of derivations $g^{-1}( y ) = D \subseteq \mathcal{D}(x)$ that collapse to the same tree. And generally $\lvert D \rvert > 1$.
+  The use of the CRF as a proposal distribution has brought to light a subtle issue: our choice of binarizing has introduced derivational ambiguity, and this affects the approximate marginalization. In this section we will describe this issue,
 
-  \begin{figure}[h]
-    \begin{subfigure}[b]{0.5\textwidth}
-      \center
-      \begin{tikzpicture}[scale=.6]
-        \input{../figures/normal-form/cnf-valid.tex}
-      \end{tikzpicture}
-  	\end{subfigure}
-  	\begin{subfigure}[b]{0.5\textwidth}
-      \center
-      \begin{tikzpicture}[scale=.6]
-        \input{../figures/normal-form/cnf-invalid.tex}
-      \end{tikzpicture}
-  	\end{subfigure}
-    \caption{Two normal form derivations that collapse to the same tree.}
-    \label{fig:normal-form-trees}
-  \end{figure}
+  \subsection{Derivational ambiguity}
+    The way our CRF deals with binarization and its inverse introduces the problem derivational ambiguity: many binary derivation $d$ modelled by the CRF as distinct map to the same tree $y$ when the dummy node is collapsed. In other words: we map a treebank tree to \textit{a single} normal form derivation, but many normal form derivations map to a single treebank tree. Let us illustrate this with an example. The two normal form trees in \ref{fig:normal-form-trees} both collapse to the same tree when dummy labels $\varnothing$ are collapsed:
+    \begin{center}
+      (S (NP The other hungry cat) (VP meows) .).
+    \end{center}
+    But when going the other way---applying the normal form transformation to the above tree---we always obtain the left tree, and never the right tree. Let $f: \yieldx \to \mathcal{D}(x)$ be the transformation that we defined that produces normal form trees from treebank trees, and let $g: \mathcal{D}(x) \to \yieldx$ be the transformation that takes a normal form tree and collapses the dummy nodes. Then $f$ is a bijection, but $g$ is not. In fact, for any tree $y$ the preimage of $g$ is the set of derivations $g^{-1}( y ) = D \subseteq \mathcal{D}(x)$ that collapse to the same tree. And generally $\lvert D \rvert > 1$.
 
-  % \begin{figure}[h]
-  %   \center
-  %   \begin{subfigure}[b]{0.5\textwidth}
-  %     \begin{tikzpicture}[scale=.6]
-  %       \input{../figures/normal-form/un-cnf.tex}
-  %     \end{tikzpicture}
-  %   \end{subfigure}
-  % \end{figure}
+    \begin{figure}[h]
+      \begin{subfigure}[b]{0.5\textwidth}
+        \center
+        \begin{tikzpicture}[scale=.8]
+          \input{../figures/normal-form/cnf-valid.tex}
+        \end{tikzpicture}
+    	\end{subfigure}
+    	\begin{subfigure}[b]{0.5\textwidth}
+        \center
+        \begin{tikzpicture}[scale=.8]
+          \input{../figures/normal-form/cnf-invalid.tex}
+        \end{tikzpicture}
+    	\end{subfigure}
+      \caption{Two normal form derivations that collapse to the same tree.}
+      \label{fig:normal-form-trees}
+    \end{figure}
 
-  This causes the problems noted above: there is derivational ambiguity. If $y$ is some tree, then our CRF assigns probabilities to all $d \in f^{-1}(y)$. We must thus note that \textit{in fact}, our CRF defines a distribution over $\mathcal{D}(x)$, and that as a result $p(y \mid x) = \sum_{d \in f^{-1}(y)} p(d \mid x)$. And in particular, $p(y \mid x) \neq p(d \mid x)$, for any $d \in f^{-1}(y)$.
+    This causes the problems noted above: there is derivational ambiguity. If $y$ is some general tree, then our CRF assigns probabilities to all $d \in f^{-1}(y)$. Thus \textit{in fact}, our CRF defines a distribution over $\mathcal{D}(x)$. The distribution that our CRF over $\yieldx$  as $p(y \mid x) = \sum_{d \in f^{-1}(y)} p(d \mid x)$. And in particular, $p(y \mid x) \neq p(d \mid x)$, for any $d \in f^{-1}(y)$.
 
-  We propose two solutions to this problem:
-  \begin{enumerate}
-    \item We can dispense with the dummy label altogether, and instead alter our CRF so that it can deal directly with $m$-ary trees, for any order $m$.\footnote{The way we deal with unary chains remains unchanched} This means that we add all hyperedges with more than 2 children. The general formulation of the inside and outside recursions remain unaltered, but the specific form becomes less efficient because we now need to deal with a sum over all possible partitions of the span under a node.
-    \item We keep the dummy label, but prune the hyperforest to only contain derivations that are reachable by the normal form transformation. This means that we assign probability zero to all trees that do not correspond to the cannonical normal form that we commited to by choosing the transformation. Because this transformation is very regular, we can easily incorporate this pruning in the inside and outside algorithms.
-  \end{enumerate}
+    We propose two solutions to this problem:
+    \begin{enumerate}
+      \item We can dispense with the dummy label altogether, and instead alter our CRF so that it can deal directly with $m$-ary trees, for any order $m$.\footnote{The way we deal with unary chains remains unchanched} This means that we add all hyperedges with more than 2 children. The general formulation of the inside and outside recursions remain unaltered, but the specific form becomes less efficient because we now need to deal with a sum over all possible partitions of the span under a node.
+      \item We keep the dummy label, but prune the hyperforest to only contain derivations that are reachable by the normal form transformation. This means that we assign probability zero to all trees that do not correspond to the cannonical normal form that we commited to by choosing the transformation. Because this transformation is very regular, we can easily incorporate this pruning in the inside and outside algorithms.
+    \end{enumerate}
 
-  We now describe either solution, starting with the solution of making the CRF deal directly with $m$-ary trees.
+    We now describe either solution, starting with the solution of making the CRF deal directly with $m$-ary trees.
 
   \subsection{Unrestricted parse forest}
     One solution, as noted, is to make the parse-forest deal with $m$-ary trees directly. This requires that for each noterminal node, we add incoming edges that contain more than two children in the tail. This needs to be done for each permissible number of children---determined by the width of the span---and for all possible partitions of that size of the span.
@@ -380,7 +421,6 @@ In this chapter:
     \end{align*}
 
     The above two recursions show that this approach is challenging, despite its elegance. Enumerating the sets of partitions is in itself already a nontrivial task.
-
 
   \subsection{Pruned parse forest}
     Another solution is to prune the parse forest: to keep only those trees that can be obtained by the normal form transformation. Going back to the example at the beginning of the example, this solution asks us to assign probability zero to the right tree, the tree that we cannot obtain by the normal form transformation. Since the transformation that we apply is very regular, we can easily characterize the set of trees that are impossible to derive. In fact, it boils done to one characteristic: a node can have the label $\varnothing$ only when \textit{either} that node spans a single word \textit{or} that node is the right child of its parent node.\footnote{We binarize \textit{rightwards}, thus introducting the dummy labels in that position, and can only ever introduce the dummy label in the left child position when it spans a single word.} That means we should remove from the parse forest all edges of the form illustrated in figure \ref{fig:illegal-edges}.
@@ -433,7 +473,7 @@ In this chapter:
     % \end{align*}
 
 \section{Related work}
-  The model that we presented regards a constituency tree as a collection of \textit{labeled spans} over a sentence. Earlier CRF models for constituency parsing, both log-linear and neural, factorize trees over \textit{anchored rules} \citep{finkel2008crf,klein2015crf}. This puts most of the expressiveness of the model in the state space of the dynamic program, modelling interactions between subparts of the trees through their interaction in the rules, instead of at the feature level. The model in \citet{stern2017minimal} removes part of this structure, and puts more expressiveness in the input space by using rich neural feature representations conditioning on the entire sentence. The discrete interaction between the local scores remains only at level of labeled spans. This dramatically improves the speed of this model, which will become evident in the next section.
+  The model that we presented regards a constituency tree as a collection of \textit{labeled spans} over a sentence. Earlier CRF models for constituency parsing, both log-linear and neural, factorize trees over \textit{anchored rules} \citep{finkel2008crf,klein2015crf}. This puts most of the expressiveness of the model in the state space of the dynamic program---modelling interactions between subparts of the trees through their interaction in the rules---instead of at the feature level. The model in \citet{stern2017minimal} removes part of this structure, and puts more expressiveness in the input space by using rich neural feature representations conditioning on the entire sentence. The discrete interaction between the local scores remains only at level of labeled spans. This dramatically improves the speed of this model, which will become evident in the next section.
 
   In recent decades, discriminative chart-parsing has moved from grammar to features. \citet{hall2014less} show how the log-linear CRF model of \cite{finkel2008crf} can work with bare unnanotated grammars when relying more heavily on surface features of the sentence. \citet{klein2015crf} show how the linear scoring function in the model of \citet{hall2014less} can be replaced by a neural network. The work of \citep{stern2017minimal} moves one step further: the model is span-factored---thus dispensing with the structure of a grammar altogether---and the scoring function can condition on the surface features of the entire sentence with the use of recurrent neural networks.
 

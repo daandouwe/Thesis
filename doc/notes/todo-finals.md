@@ -272,10 +272,10 @@ Writing
 
 2. CRF
   - [X] Introduction
-  - [ ] Describe time complexity.
-  - [ ] Results: plots, numbers
-  - [ ] Binarization, dummy label, impact on inside and outside, and entropy computation
-  - [ ] CRF has ambiguity in derivation: CRF describes distribution over 'derivations', not over 'trees'. So entropy computation is   over the derivations, _not_ over the trees: this explains the semisupervised behaviour.
+  - [X] Describe time complexity.
+  - [X] Results: plots, numbers
+  - [X] Binarization, dummy label, impact on inside and outside, and entropy computation
+  - [X] CRF has ambiguity in derivation: CRF describes distribution over 'derivations', not over 'trees'. So entropy computation is   over the derivations, _not_ over the trees: this explains the semisupervised behaviour.
     * CRF is distribution over binary trees, not over collapsed trees! So actually not porperly suitable as proposal distribution. This is not so strongly noticable when dealing with large (100+) label-set, but becomes totally untenable in case of unlabeled (1 label).
     * Also: the support of the GenRNNG is strictly greater than the support of the CRF: unbounded unary chains are not supported by CRF, only small unary chains that are in the PTB. This is not a problem really for the pretrained models; it is a problem for training from scratch.
   - [X] Check: is the MC estimate still valid, given that the CRF models derivations?
