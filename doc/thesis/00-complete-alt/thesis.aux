@@ -160,7 +160,7 @@
 \@writefile{toc}{\contentsline {paragraph}{\nonumberline Approximate MAP tree}{30}{section*.16}}
 \@writefile{toc}{\contentsline {paragraph}{\nonumberline Proposal distribution}{30}{section*.17}}
 \@writefile{toc}{\contentsline {section}{\numberline {3.5}Experiments}{30}{section.3.5}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.1}Models}{30}{subsection.3.5.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.1}Setup}{30}{subsection.3.5.1}}
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
@@ -176,7 +176,7 @@
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
 \citation{kuncoro2017syntax}
-\newlabel{sec:impl-embedding}{{3.5.1}{31}{Models}{subsection.3.5.1}{}}
+\newlabel{sec:impl-embedding}{{3.5.1}{31}{Setup}{subsection.3.5.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.5.2}Results}{31}{subsection.3.5.2}}
 \@writefile{lot}{\contentsline {table}{\numberline {3.1}{\ignorespaces F1 scores for the discriminative RNNG.\relax }}{31}{table.caption.18}}
 \newlabel{tab:disc-fscores}{{3.1}{31}{F1 scores for the discriminative RNNG.\relax }{table.caption.18}{}}
@@ -184,7 +184,7 @@
 \newlabel{tab:gen-fscores}{{3.2}{31}{F1 scores for the generative RNNG for different proposal models.\relax }{table.caption.19}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {3.3}{\ignorespaces Perplexity of the generative RNNG for different proposal models.\relax }}{31}{table.caption.20}}
 \newlabel{tab:gen-perplexities}{{3.3}{31}{Perplexity of the generative RNNG for different proposal models.\relax }{table.caption.20}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.3}Samples}{32}{subsection.3.5.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.3}Analysis}{32}{subsection.3.5.3}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces F1 estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.\relax }}{33}{figure.caption.21}}
 \newlabel{fig:samples-fscores}{{3.1}{33}{F1 estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.\relax }{figure.caption.21}{}}
 \citation{titov2007generative,buys2015bayesian,buys2015generative,buys2018exact}
@@ -227,8 +227,8 @@
 \citation{goodman1999semiring,eisner2009semirings}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}Weighted parse forest}{40}{subsection.4.3.1}}
 \citation{goodman1999semiring}
-\newlabel{fig:crf-edges}{{\caption@xref {fig:crf-edges}{ on input line 83}}{41}{Weighted parse forest}{figure.caption.25}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces The edge-types making up the hypergraph. The edges are instatiated for all $A, B, C \in \Lambda $ and all $0 \leq i < j \leq n$. Only for the rightmost edge holds the restriction $A \not =\varnothing $, to ensure that the dummy label cannot be the top node.\relax }}{41}{figure.caption.25}}
+\newlabel{fig:crf-edges}{{4.2}{41}{The edge-types making up the hypergraph. The edges are instatiated for all $A, B, C \in \Lambda $ and all $0 \leq i < j \leq n$. Only for the rightmost edge holds the restriction $A \neq \varnothing $, to ensure that the dummy label cannot be the top node.\relax }{figure.caption.25}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}Inside recursion}{41}{subsection.4.3.2}}
 \newlabel{eq:inside-base}{{4.5}{42}{Inside recursion}{equation.4.3.5}{}}
 \newlabel{eq:inside}{{4.6}{42}{Inside recursion}{equation.4.3.6}{}}
@@ -251,13 +251,19 @@
 \@writefile{toc}{\contentsline {section}{\numberline {4.4}Traning}{46}{section.4.4}}
 \citation{stern2017minimal}
 \citation{stern2017minimal}
+\citation{stern2017minimal}
+\citation{stern2017minimal}
+\citation{kingma2014adam}
+\citation{stern2017minimal}
 \@writefile{toc}{\contentsline {section}{\numberline {4.5}Experiments}{47}{section.4.5}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.1}Supervised model}{47}{subsection.4.5.1}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces F1 scores for the CRF.\relax }}{47}{table.caption.30}}
-\newlabel{tab:disc-fscores}{{4.1}{47}{F1 scores for the CRF.\relax }{table.caption.30}{}}
-\citation{buys2018exact}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.2}Proposal model}{48}{subsection.4.5.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.3}Sampler}{48}{subsection.4.5.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.1}Setup}{47}{subsection.4.5.1}}
+\citation{stern2017minimal}
+\citation{stern2017minimal}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.2}Results}{48}{subsection.4.5.2}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces F1 scores for the CRF.\relax }}{48}{table.caption.30}}
+\newlabel{tab:disc-fscores}{{4.1}{48}{F1 scores for the CRF.\relax }{table.caption.30}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.3}Proposal distribution}{48}{subsection.4.5.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.4}Analysis}{49}{subsection.4.5.4}}
 \@writefile{toc}{\contentsline {section}{\numberline {4.6}Problems as proposal}{49}{section.4.6}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Two normal form derivations that collapse to the same tree.\relax }}{49}{figure.caption.31}}
 \newlabel{fig:normal-form-trees}{{4.3}{49}{Two normal form derivations that collapse to the same tree.\relax }{figure.caption.31}{}}
@@ -270,6 +276,7 @@
 \citation{hall2014less}
 \citation{finkel2008crf}
 \citation{klein2015crf}
+\citation{hall2014less}
 \citation{stern2017minimal}
 \citation{collins2003head}
 \citation{klein2003accurate}
@@ -336,11 +343,11 @@
 \newlabel{eq:lowerbound}{{6.1}{62}{Variational approximation}{equation.6.1.1}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {6.2}Approximate posterior}{62}{section.6.2}}
 \citation{fu2006gradient}
+\citation{williams1992reinforce,paisley2012viss,mnih2014nvil,ranganath2014black,miao2016discrete}
+\citation{williams1992reinforce}
 \@writefile{toc}{\contentsline {section}{\numberline {6.3}Training}{63}{section.6.3}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.3.1}Gradients of joint parameters}{63}{subsection.6.3.1}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.3.2}Gradients of posterior parameters}{63}{subsection.6.3.2}}
-\citation{williams1992reinforce,paisley2012viss,mnih2014nvil,ranganath2014black,miao2016discrete}
-\citation{williams1992reinforce}
 \citation{miao2016discrete}
 \citation{rennie2017argmax}
 \citation{miao2016discrete,yin2018structvae}

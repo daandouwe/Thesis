@@ -33,9 +33,9 @@
 \contentsline {paragraph}{\nonumberline Approximate MAP tree}{30}{section*.16}
 \contentsline {paragraph}{\nonumberline Proposal distribution}{30}{section*.17}
 \contentsline {section}{\numberline {3.5}Experiments}{30}{section.3.5}
-\contentsline {subsection}{\numberline {3.5.1}Models}{30}{subsection.3.5.1}
+\contentsline {subsection}{\numberline {3.5.1}Setup}{30}{subsection.3.5.1}
 \contentsline {subsection}{\numberline {3.5.2}Results}{31}{subsection.3.5.2}
-\contentsline {subsection}{\numberline {3.5.3}Samples}{32}{subsection.3.5.3}
+\contentsline {subsection}{\numberline {3.5.3}Analysis}{32}{subsection.3.5.3}
 \contentsline {section}{\numberline {3.6}Related work}{35}{section.3.6}
 \contentsline {chapter}{\numberline {4}Conditional Random Field parser}{37}{chapter.4}
 \contentsline {section}{\numberline {4.1}Model}{37}{section.4.1}
@@ -51,9 +51,10 @@
 \contentsline {paragraph}{\nonumberline Entropy}{45}{section*.29}
 \contentsline {section}{\numberline {4.4}Traning}{46}{section.4.4}
 \contentsline {section}{\numberline {4.5}Experiments}{47}{section.4.5}
-\contentsline {subsection}{\numberline {4.5.1}Supervised model}{47}{subsection.4.5.1}
-\contentsline {subsection}{\numberline {4.5.2}Proposal model}{48}{subsection.4.5.2}
-\contentsline {subsection}{\numberline {4.5.3}Sampler}{48}{subsection.4.5.3}
+\contentsline {subsection}{\numberline {4.5.1}Setup}{47}{subsection.4.5.1}
+\contentsline {subsection}{\numberline {4.5.2}Results}{48}{subsection.4.5.2}
+\contentsline {subsection}{\numberline {4.5.3}Proposal distribution}{48}{subsection.4.5.3}
+\contentsline {subsection}{\numberline {4.5.4}Analysis}{49}{subsection.4.5.4}
 \contentsline {section}{\numberline {4.6}Problems as proposal}{49}{section.4.6}
 \contentsline {subsection}{\numberline {4.6.1}Unrestricted parse forest}{50}{subsection.4.6.1}
 \contentsline {subsection}{\numberline {4.6.2}Pruned parse forest}{51}{subsection.4.6.2}

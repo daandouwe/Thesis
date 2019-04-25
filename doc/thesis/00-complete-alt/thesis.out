@@ -26,9 +26,9 @@
 \BOOKMARK [2][-]{subsection.3.4.1}{Discriminative model}{section.3.4}% 26
 \BOOKMARK [2][-]{subsection.3.4.2}{Generative model}{section.3.4}% 27
 \BOOKMARK [1][-]{section.3.5}{Experiments}{chapter.3}% 28
-\BOOKMARK [2][-]{subsection.3.5.1}{Models}{section.3.5}% 29
+\BOOKMARK [2][-]{subsection.3.5.1}{Setup}{section.3.5}% 29
 \BOOKMARK [2][-]{subsection.3.5.2}{Results}{section.3.5}% 30
-\BOOKMARK [2][-]{subsection.3.5.3}{Samples}{section.3.5}% 31
+\BOOKMARK [2][-]{subsection.3.5.3}{Analysis}{section.3.5}% 31
 \BOOKMARK [1][-]{section.3.6}{Related work}{chapter.3}% 32
 \BOOKMARK [0][-]{chapter.4}{Conditional Random Field parser}{}% 33
 \BOOKMARK [1][-]{section.4.1}{Model}{chapter.4}% 34
@@ -40,48 +40,49 @@
 \BOOKMARK [2][-]{subsection.4.3.4}{Solutions}{section.4.3}% 40
 \BOOKMARK [1][-]{section.4.4}{Traning}{chapter.4}% 41
 \BOOKMARK [1][-]{section.4.5}{Experiments}{chapter.4}% 42
-\BOOKMARK [2][-]{subsection.4.5.1}{Supervised model}{section.4.5}% 43
-\BOOKMARK [2][-]{subsection.4.5.2}{Proposal model}{section.4.5}% 44
-\BOOKMARK [2][-]{subsection.4.5.3}{Sampler}{section.4.5}% 45
-\BOOKMARK [1][-]{section.4.6}{Problems as proposal}{chapter.4}% 46
-\BOOKMARK [2][-]{subsection.4.6.1}{Unrestricted parse forest}{section.4.6}% 47
-\BOOKMARK [2][-]{subsection.4.6.2}{Pruned parse forest}{section.4.6}% 48
-\BOOKMARK [1][-]{section.4.7}{Related work}{chapter.4}% 49
-\BOOKMARK [0][-]{chapter.5}{Syntactic evaluation}{}% 50
-\BOOKMARK [1][-]{section.5.1}{Syntactic evaluation}{chapter.5}% 51
-\BOOKMARK [1][-]{section.5.2}{Multitask learning}{chapter.5}% 52
-\BOOKMARK [1][-]{section.5.3}{Experiments}{chapter.5}% 53
-\BOOKMARK [2][-]{subsection.5.3.1}{Baselines}{section.5.3}% 54
-\BOOKMARK [2][-]{subsection.5.3.2}{Setup}{section.5.3}% 55
-\BOOKMARK [2][-]{subsection.5.3.3}{Results}{section.5.3}% 56
-\BOOKMARK [0][-]{chapter.6}{Semisupervised learning}{}% 57
-\BOOKMARK [1][-]{section.6.1}{Unsupervised learning}{chapter.6}% 58
-\BOOKMARK [2][-]{subsection.6.1.1}{Variational approximation}{section.6.1}% 59
-\BOOKMARK [1][-]{section.6.2}{Approximate posterior}{chapter.6}% 60
-\BOOKMARK [1][-]{section.6.3}{Training}{chapter.6}% 61
-\BOOKMARK [2][-]{subsection.6.3.1}{Gradients of joint parameters}{section.6.3}% 62
-\BOOKMARK [2][-]{subsection.6.3.2}{Gradients of posterior parameters}{section.6.3}% 63
-\BOOKMARK [1][-]{section.6.4}{Variance reduction}{chapter.6}% 64
-\BOOKMARK [1][-]{section.6.5}{Experiments}{chapter.6}% 65
-\BOOKMARK [1][-]{section.6.6}{Related work}{chapter.6}% 66
-\BOOKMARK [0][-]{chapter.7}{Conclusion}{}% 67
-\BOOKMARK [1][-]{section.7.1}{Main contributions}{chapter.7}% 68
-\BOOKMARK [1][-]{section.7.2}{Future work}{chapter.7}% 69
-\BOOKMARK [0][-]{appendix.A}{Implementation}{}% 70
-\BOOKMARK [1][-]{section.A.1}{Data}{appendix.A}% 71
-\BOOKMARK [2][-]{subsection.A.1.1}{Datasets}{section.A.1}% 72
-\BOOKMARK [2][-]{subsection.A.1.2}{Vocabularies}{section.A.1}% 73
-\BOOKMARK [1][-]{section.A.2}{Implementation}{appendix.A}% 74
-\BOOKMARK [0][-]{appendix.B}{Semiring parsing}{}% 75
-\BOOKMARK [1][-]{section.B.1}{Hypergraph}{appendix.B}% 76
-\BOOKMARK [1][-]{section.B.2}{Semiring}{appendix.B}% 77
-\BOOKMARK [1][-]{section.B.3}{Semiring parsing}{appendix.B}% 78
-\BOOKMARK [2][-]{subsection.B.3.1}{Inside and outside recursions}{section.B.3}% 79
-\BOOKMARK [2][-]{subsection.B.3.2}{Instantiated recursions}{section.B.3}% 80
-\BOOKMARK [0][-]{appendix.C}{Score function estimator}{}% 81
-\BOOKMARK [1][-]{section.C.1}{Derivation}{appendix.C}% 82
-\BOOKMARK [1][-]{section.C.2}{Optimization}{appendix.C}% 83
-\BOOKMARK [1][-]{section.C.3}{Variance reduction}{appendix.C}% 84
-\BOOKMARK [2][-]{subsection.C.3.1}{Variance}{section.C.3}% 85
-\BOOKMARK [2][-]{subsection.C.3.2}{Control variates}{section.C.3}% 86
-\BOOKMARK [0][-]{appendix.D}{Syneval dataset}{}% 87
+\BOOKMARK [2][-]{subsection.4.5.1}{Setup}{section.4.5}% 43
+\BOOKMARK [2][-]{subsection.4.5.2}{Results}{section.4.5}% 44
+\BOOKMARK [2][-]{subsection.4.5.3}{Proposal distribution}{section.4.5}% 45
+\BOOKMARK [2][-]{subsection.4.5.4}{Analysis}{section.4.5}% 46
+\BOOKMARK [1][-]{section.4.6}{Problems as proposal}{chapter.4}% 47
+\BOOKMARK [2][-]{subsection.4.6.1}{Unrestricted parse forest}{section.4.6}% 48
+\BOOKMARK [2][-]{subsection.4.6.2}{Pruned parse forest}{section.4.6}% 49
+\BOOKMARK [1][-]{section.4.7}{Related work}{chapter.4}% 50
+\BOOKMARK [0][-]{chapter.5}{Syntactic evaluation}{}% 51
+\BOOKMARK [1][-]{section.5.1}{Syntactic evaluation}{chapter.5}% 52
+\BOOKMARK [1][-]{section.5.2}{Multitask learning}{chapter.5}% 53
+\BOOKMARK [1][-]{section.5.3}{Experiments}{chapter.5}% 54
+\BOOKMARK [2][-]{subsection.5.3.1}{Baselines}{section.5.3}% 55
+\BOOKMARK [2][-]{subsection.5.3.2}{Setup}{section.5.3}% 56
+\BOOKMARK [2][-]{subsection.5.3.3}{Results}{section.5.3}% 57
+\BOOKMARK [0][-]{chapter.6}{Semisupervised learning}{}% 58
+\BOOKMARK [1][-]{section.6.1}{Unsupervised learning}{chapter.6}% 59
+\BOOKMARK [2][-]{subsection.6.1.1}{Variational approximation}{section.6.1}% 60
+\BOOKMARK [1][-]{section.6.2}{Approximate posterior}{chapter.6}% 61
+\BOOKMARK [1][-]{section.6.3}{Training}{chapter.6}% 62
+\BOOKMARK [2][-]{subsection.6.3.1}{Gradients of joint parameters}{section.6.3}% 63
+\BOOKMARK [2][-]{subsection.6.3.2}{Gradients of posterior parameters}{section.6.3}% 64
+\BOOKMARK [1][-]{section.6.4}{Variance reduction}{chapter.6}% 65
+\BOOKMARK [1][-]{section.6.5}{Experiments}{chapter.6}% 66
+\BOOKMARK [1][-]{section.6.6}{Related work}{chapter.6}% 67
+\BOOKMARK [0][-]{chapter.7}{Conclusion}{}% 68
+\BOOKMARK [1][-]{section.7.1}{Main contributions}{chapter.7}% 69
+\BOOKMARK [1][-]{section.7.2}{Future work}{chapter.7}% 70
+\BOOKMARK [0][-]{appendix.A}{Implementation}{}% 71
+\BOOKMARK [1][-]{section.A.1}{Data}{appendix.A}% 72
+\BOOKMARK [2][-]{subsection.A.1.1}{Datasets}{section.A.1}% 73
+\BOOKMARK [2][-]{subsection.A.1.2}{Vocabularies}{section.A.1}% 74
+\BOOKMARK [1][-]{section.A.2}{Implementation}{appendix.A}% 75
+\BOOKMARK [0][-]{appendix.B}{Semiring parsing}{}% 76
+\BOOKMARK [1][-]{section.B.1}{Hypergraph}{appendix.B}% 77
+\BOOKMARK [1][-]{section.B.2}{Semiring}{appendix.B}% 78
+\BOOKMARK [1][-]{section.B.3}{Semiring parsing}{appendix.B}% 79
+\BOOKMARK [2][-]{subsection.B.3.1}{Inside and outside recursions}{section.B.3}% 80
+\BOOKMARK [2][-]{subsection.B.3.2}{Instantiated recursions}{section.B.3}% 81
+\BOOKMARK [0][-]{appendix.C}{Score function estimator}{}% 82
+\BOOKMARK [1][-]{section.C.1}{Derivation}{appendix.C}% 83
+\BOOKMARK [1][-]{section.C.2}{Optimization}{appendix.C}% 84
+\BOOKMARK [1][-]{section.C.3}{Variance reduction}{appendix.C}% 85
+\BOOKMARK [2][-]{subsection.C.3.1}{Variance}{section.C.3}% 86
+\BOOKMARK [2][-]{subsection.C.3.2}{Control variates}{section.C.3}% 87
+\BOOKMARK [0][-]{appendix.D}{Syneval dataset}{}% 88
