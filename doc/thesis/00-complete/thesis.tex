@@ -1,9 +1,13 @@
 % !Mode:: "TeX:DE:UTF-8:Main"
 
 % \documentclass[examplefnt,biber]{../src/nowfnt}
+\documentclass{uvamath}
+% \documentclass{report}
+% \documentclass[11pt,twoside,a4paper]{article}
+
+% \usepackage{illcmolthesis}
 
 \usepackage[utf8]{inputenc}
-
 \usepackage{amsmath,amssymb,amsfonts,latexsym,dsfont,xspace}
 \usepackage{hyperref}
 \usepackage{enumitem}
@@ -13,6 +17,29 @@
 \usepackage{subcaption}
 \usepackage{tikz-qtree}
 \usepackage{linguex}
+
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{multirow}
+% \usepackage{enumerate}
+\usepackage{bbm}
+\usepackage{bm}
+
+\usepackage{natbib}
+\usepackage{todonotes}
+\usepackage{mathtools}
+\usepackage{appendix}
+\usepackage{url}
+\usepackage{nameref}
+\usepackage[colorlinks=true, allcolors = blue]{hyperref}
+
+%Indexing
+%\usepackage{makeidx}
+%\makeindex
+
+\usepackage{palatino}
 
 \usetikzlibrary{arrows,calc}
 
@@ -70,42 +97,71 @@
 \DeclareMathOperator{\var}{Var} % variance
 \DeclareMathOperator{\cov}{Cov} % covariance
 \DeclareMathOperator{\corr}{corr} % covariance
+\DeclareMathOperator{\entropy}{\textit{H}} % entropy
+\DeclareMathOperator{\kl}{KL} % kl
 \DeclareMathOperator{\objective}{\mathcal{L}}  % objective function
 \DeclareMathOperator{\elbo}{\mathcal{E}}  % elbo objective
 
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
 
-%ARTICLE SUB-TITLE
-\subtitle{Neural language models with latent syntax}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
 
-\maintitleauthorlist{
-  Daan van Stigt \\
-  Institute for Logic, Language and Computation \\
-}
+\theoremstyle{definition}
+\newtheorem{counterexample}[theorem]{Counterexample}
 
-%BIBLIOGRAPHY FILE
-\addbibresource{../src/bibliography.bib}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+\theoremstyle{definition}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{definition}
+\newtheorem{lemma}[theorem]{Lemma}
+
+\theoremstyle{definition}
+\newtheorem{condition}{Condition}
+
+
+\title{Neural language models with latent syntax}
+\author{Daan van Stigt}
+
+% \birthdate{August 17, 1992}
+% \birthplace{Amsterdam, Netherlands}
+% \defensedate{May 10, 2019}
+% \supervisor{Dr. Wilker Aziz}
+% \committeemember{Prof. Dr. Khalil Sima`an}
+% \committeemember{Dr. Caio Corro}
+
 
 \begin{document}
-
-\makeabstracttitle
+\maketitle
 
 \begin{abstract}
-In this thesis I investigate the question: \textit{What are effective ways of incorporating syntactic structure into neural language models?}
+  In this thesis I investigate the question: \textit{What are effective ways of incorporating syntactic structure into neural language models?}
 
-In this thesis I:
-\begin{itemize}
-  \item study a class of neural language models that merges generative transition-based parsing with recurrent neural networks in order to model sentences together with their latent syntactic structure;
-  \item propose a new globally trained chart-based parser as an alternative proposal distribution used in the approximate marginalization;
-  \item propose effective methods for semisupervised learning, making the syntactic structure a latent variable;
-  \item perform targeted syntactic evaluation and compare the model's performance with that of alternative models that are based on multitask learning.
-\end{itemize}
+  In this thesis I:
+  \begin{itemize}
+    \item study a class of neural language models that merges generative transition-based parsing with recurrent neural networks in order to model sentences together with their latent syntactic structure;
+    \item propose a new globally trained chart-based parser as an alternative proposal distribution used in the approximate marginalization;
+    \item propose effective methods for semisupervised learning, making the syntactic structure a latent variable;
+    \item perform targeted syntactic evaluation and compare the model's performance with that of alternative models that are based on multitask learning.
+  \end{itemize}
 \end{abstract}
 
-% end of main matter
-\begin{acknowledgements}
-\end{acknowledgements}
 
 \input{../tables/notation.tex}
+
+
+{\hypersetup{linkcolor=black}
+% or \hypersetup{linkcolor=black}, if the colorlinks=true option of hyperref is used
+\tableofcontents
+}
+
+% end of main matter
+% \begin{acknowledgements}
+% \end{acknowledgements}
 
 
 \chapter{Introduction}
@@ -128,14 +184,14 @@ In this thesis I:
 \input{../04-crf-parser/crf-parser}
 
 
-\chapter{Semisupervised learning}
-\label{05-semisupervised}
-\input{../05-semisupervised/semisupervised}
-
-
 \chapter{Syntactic evaluation}
 \label{06-syneval}
 \input{../06-syneval/syneval}
+
+
+\chapter{Semisupervised learning}
+\label{05-semisupervised}
+\input{../05-semisupervised/semisupervised}
 
 
 \chapter{Conclusion}
@@ -144,9 +200,10 @@ In this thesis I:
 
 
 \appendix
-\chapter{Figures}
-\label{A1-figures}
-\input{../08-app-figures/figures.tex}
+
+% \chapter{Figures}
+% \label{A1-figures}
+% \input{../08-app-figures/figures.tex}
 
 
 \chapter{Implementation}
@@ -169,11 +226,9 @@ In this thesis I:
 \input{../12-app-syneval/syneval.tex}
 
 
-\printbibliography
-
-
-%BACKMATTER SEE DOCUMENTATION
-\backmatter  % references, restarts sample
+% \printbibliography
+\bibliographystyle{plainnat}
+\bibliography{../src/bibliography.bib}
 
 
 \end{document}

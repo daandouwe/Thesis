@@ -1,6 +1,4 @@
-% \bibliography{../src/bibliography.bib}
-
-Language models are typically evaluated by the perplexity they assign to held out data, and thus did we evaluate our language models in the previous chapters. In this chapter we look at alternatives. In particular, we look at evaluation that specifically probes the syntactic abilities of a language model. To this end we take the dataset introduced by \citet{linzen2018targeted}, which presents a comprehensive set of syntactic challenges, and evaluate the models presented thus far against them. The dataset consists of constructed sentence pairs that differ in only one word, where one sentence is grammatical and the other is not, and the task is to assign higher probability to the grammatical sentence. We can think of this task as soliciting comparative \textit{acceptability judgements}, which is a key concept in linguistics. We will refer to this dataset as Syneval, for \textit{syntactic evaluation}.
+Language models are typically evaluated by the perplexity they assign to held out data, and thus did we evaluate our language models in the previous chapters. In this chapter we look at alternatives. In particular, we look at evaluation that specifically probes the syntactic abilities of a language model. To this end we take the dataset introduced by \citet{linzen2018targeted}, which presents a comprehensive set of syntactic challenges, and evaluate the models presented thus far against them. The dataset consists of constructed sentence pairs that differ in only one word, making one sentence grammatical and the other not. The task is to assign higher probability to the grammatical sentence. We can think of this task as soliciting comparative \textit{acceptability judgements}---a key concept in linguistics. We will refer to this dataset as Syneval, for \textit{syntactic evaluation}.
 
 In this chapter:
 \begin{itemize}
@@ -14,106 +12,114 @@ A shortcoming of perplexity is that the metric conflates various sources of succ
 
 Recently, a series of papers has introduced tasks that specifically evaluate the syntactic abilities of language models \citep{linzen2016syntax,gulordava2018colorless,linzen2018targeted}. And such tasks can be very revealing. The task introduced by \citet{linzen2016syntax} is to predict the correct conjugation of a verb given an earlier occuring subject---especially in the presence of distracting subjects that intervene\footnote{E.g. \textit{Parts} of the river valley \textit{have}/\textit{has}.}. This task has revealed that lower perplexity does not imply greater success on this task \citep{tran2018recurrent}, and that an explicitly syntactic model like the RNNG significanlty outperforms purely sequential models, especially with increasing distance between the subject and the verb \citep{kuncoro2018learn}. This type of agreement is one of the phenomena evaluated in Syneval.
 
-\paragraph{Dataset}
-The Syneval dataset consists of contrastive sentence pairs that differ in only one word. Let $(\x, \x')$ be this minimal pair, with grammatical sentence $\x$ and an ungrammatical sentence $\x'$. Then a language model $p$ makes a correct prediction on this pair if $p(\x) > p(\x')$.
+\subsection{Dataset}
+  The Syneval dataset consists of contrastive sentence pairs that differ in only one word. Let $(\x, \x')$ be this minimal pair, with grammatical sentence $\x$ and an ungrammatical sentence $\x'$. Then a language model $p$ makes a correct prediction on this pair if $p(\x) > p(\x')$.
 
-The classification is based on the probability of the entire sequence. This makes the task applicable to grammatical phenomena that involve interaction between multiple words, or where the word of contention does not have any left context. This contrasts with the task introduced in \citet{linzen2016syntax}. This approach is also more natural for a model like the RNNG, where the probability of the sentence is computed by marginalizing over all latent structures, whereas individual word probabilities can only be obtained when conditioning on a single structure---for example a predicted parse---as is done in \cite{kuncoro2018learn}.
+  The classification is based on the probability of the entire sequence. This makes the task applicable to grammatical phenomena that involve interaction between multiple words, or where the word of contention does not have any left context. This contrasts with the task introduced in \citet{linzen2016syntax}. This approach is also more natural for a model like the RNNG, where the probability of the sentence is computed by marginalizing over all latent structures, whereas individual word probabilities can only be obtained when conditioning on a single structure---for example a predicted parse---as is done in \cite{kuncoro2018learn}.
 
-The sentence pairs fall into three categories that linguists consider to depend crucially on hierachical syntactic structure \citep{everaert2015structures,xiang2009illusory}:
-  \begin{enumerate}[noitemsep]
-    \item Subject-verb agreement (The farmer \textit{smiles}.)
-    \item Reflexive anaphora (The senators embarassed \textit{themselves}.)
-    \item Negative polarity items (\textit{No} authors have \textit{ever} been famous.)
-  \end{enumerate}
-The dataset contains constructions of increasing difficulty for each of these categories. For example, the distance between two words in a syntactic dependency can be increased by separating them with a prepositional phrase: \textit{The farmer next to the guards smiles}. In this example \textit{the guards} additionally forms a distractor for the proper conjugation of \textit{smiles}, making the example extra challenging.
+  The sentence pairs fall into three categories that linguists consider to depend crucially on hierachical syntactic structure \citep{everaert2015structures,xiang2009illusory}:
+    \begin{enumerate}[noitemsep]
+      \item Subject-verb agreement (The farmer \textit{smiles}.)
+      \item Reflexive anaphora (The senators embarassed \textit{themselves}.)
+      \item Negative polarity items (\textit{No} authors have \textit{ever} been famous.)
+    \end{enumerate}
+  The dataset contains constructions of increasing difficulty for each of these categories. For example, the distance between two words in a syntactic dependency can be increased by separating them with a prepositional phrase: \textit{The farmer next to the guards smiles}. In this example \textit{the guards} additionally forms a distractor for the proper conjugation of \textit{smiles}, making the example extra challenging.
 
-The dataset is constructed automatically using handcrafted context-free grammars. The lexical rules are finegrained so that the resulting sentences are semantically plausible. In particular there are rules for animate and innanimate objects so a sentence like \textit{The apple laughs} cannot be constructed. The total dataset consists of around 350,000 sentence pairs.
+  The dataset is constructed automatically using handcrafted context-free grammars. The lexical rules are finegrained so that the resulting sentences are semantically plausible. In particular there are rules for animate and innanimate objects so a sentence like \textit{The apple laughs} cannot be constructed. The total dataset consists of around 350,000 sentence pairs. For the full list of categories that are evaulated in the Syneval dataset, including examples, we refer the reader to appendix \ref{A5-syneval}.
 
-\paragraph{Categories} For the full list of categories that are evaulated in the Syneval dataset we refer the reader to appendix \ref{A5-syneval}.
+\subsection{Related work}
+  There has been a surge recently of work on syntactic evaluation. \citet{linzen2016syntax} introduce the task of long distance subject-verb agreement and \citet{gulordava2018colorless} make this test more challenging by turning the sentences nonsensical while keeping them grammatical. Both datasets are extracted from a wikipedia corpus based on properties of their predicted dependency parse. To make the sentences nonsensical, \citet{gulordava2018colorless} randomly substitute words from the same grammatical category.\footnote{An approach inspired by Chomsky's (in)famous sentence \textit{Colorless green ideas sleep furiously} that is both grammatical and nonsensical.} \citet{warstadt2018acceptability} fine-tune neural models to learn to immitate grammatical acceptability judgments gathered from linguistics textbooks.
 
-\paragraph{Related work} There has been a surge recently of work on syntactic evaluation. \citet{linzen2016syntax} introduce the task of long distance subject-verb agreement and \citet{gulordava2018colorless} make this test more challenging by turning the sentences nonsensical while keeping them grammatical. Both datasets are extracted from a wikipedia corpus based on properties of their predicted dependency parse. To make the sentences nonsensical, \citet{gulordava2018colorless} randomly substitute words from the same grammatical category.\footnote{An approach inspired by Chomsky's (in)famous sentence \textit{Colorless green ideas sleep furiously} that is both grammatical and nonsensical.} \citet{warstadt2018acceptability} fine-tune neural models to learn to immitate grammatical acceptability judgments gathered from linguistics textbooks.
-\citet{mccoy2018revisiting} train a neural machine translation that turns a declarative sentence into a question, a kind of transformation that linguists have argued requires the existence of hierarchical structure in language \citep{everaert2015structures}.\footnote{Such declarative-question pairs play a central role as empirical evidence in the argument---known as the \textit{argument from the poverty of the stimulus}---that humans have an innate predisposition for generalizations that rely on hierarchical structure rather than linear order \citep{chomsky1980rules}. Sequence-to-sequence neural machine translation, on the other hand, is a fully sequential model.} Finally, targeted evaluation has been introduced previously for semantic comprehension by \citet{zweig2011microsoft} in a sentence completion task, and minimal contrastive sentence pairs have been used to evaluate neural machine translation by \citet{sennrich2017grammatical}.
+  \citet{mccoy2018revisiting} train a neural machine translation that turns a declarative sentence into a question, a kind of transformation that linguists have argued requires the existence of hierarchical structure in language \citep{everaert2015structures}.\footnote{Such declarative-question pairs play a central role as empirical evidence in the argument---known as the \textit{argument from the poverty of the stimulus}---that humans have an innate predisposition for generalizations that rely on hierarchical structure rather than linear order \citep{chomsky1980rules}. Sequence-to-sequence neural machine translation, on the other hand, is a fully sequential model.}
+
+  Finally, targeted evaluation has been introduced previously for semantic comprehension by \citet{zweig2011microsoft} in a sentence completion task, and minimal contrastive sentence pairs have been used to evaluate neural machine translation by \citet{sennrich2017grammatical}.
 
 
 \section{Multitask learning}
-One method that makes language models perform better in the tasks described in this chapter is to provide stronger syntactic supervision by using multitask learning \citep{enguehard2017multitask,linzen2018targeted}. Multitask learning is a simple yet effective way of providing additional supervision to neural network models by combining multiple tasks in a single objective while sharing parameters \citep{caruana1997multitask}, and has been succcesfully applied in natural language processing \citep{collobert2008unified,collobert2011natural,zhang2016multitask,goldberg2016multitask}. By combining objectives that share parameters the model is encouraged to learn representations that are useful in all the tasks.
+  One method that makes language models perform better in the tasks described in this chapter is to provide stronger syntactic supervision by using multitask learning \citep{enguehard2017multitask,linzen2018targeted}. Multitask learning is a simple yet effective way of providing additional supervision to neural network models by combining multiple tasks in a single objective while sharing parameters \citep{caruana1997multitask}, and has been succcesfully applied in natural language processing \citep{collobert2008unified,collobert2011natural,zhang2016multitask,goldberg2016multitask}. By combining objectives that share parameters the model is encouraged to learn representations that are useful in all the tasks.
 
-In this section I describe two simple baselines for the syntactic evaluation task that are based on multitask learning. Both methods are based on language modelling with a syntactic side objective. The first side objective is to predict combinatory categorical grammar (CCG) supertags \citep{bangalore1999supertagging} for each word in the sentence, and is proposed in \citep{enguehard2017multitask}. The second side objective is to label spans of words with their category. This objective is inspired by the label scoring function in the CRF parser introduced in chapter \ref{04-crf}.\footnote{This is similar to an approach found in recent work on semantic parsing where a similar side-objective is used and where it is called a `syntactic scaffold' \citep{swayamdipta2018scaffold}. The exact form of our side-objective is novel, as far as the author is aware of, and is parametrized in a considerably simpler way.} Both objectives are challenging and should require representations that encode a fair amount of syntactic information.
+  In this section we describe two simple baselines for the syntactic evaluation task that are based on multitask learning. Both methods are based on language modelling with a syntactic side objective. The first side objective is to predict combinatory categorical grammar (CCG) supertags \citep{bangalore1999supertagging} for each word in the sentence, and is proposed in \citep{enguehard2017multitask}. The second side objective is to label spans of words with their category. This objective is inspired by the label scoring function in the CRF parser introduced in chapter \ref{04-crf}.\footnote{This is similar to an approach found in recent work on semantic parsing where a similar side-objective is used and where it is called a `syntactic scaffold' \citep{swayamdipta2018scaffold}. The exact form of our side-objective is novel, as far as the author is aware of, and is parametrized in a considerably simpler way.} Both objectives are challenging and should require representations that encode a fair amount of syntactic information.
 
-\paragraph{Multitask objective}
-In our case we combine a language model $p$ with a syntactic model $q$, and optimize these jointly over a single labeled dataset $\dataset$\footnote{Note that it is our choice to focus on only a single dataset, and that multitask learning is principle more flexible than that, providing the option to combine multiple disjoint datasets in a single objective.}. In this case, we maximize the objective
-\begin{equation}
-  \label{eq:multitask-objective}
-  \mathcal{L}(\theta, \lambda, \xi) = \sum_{ (\x, \y) \in \mathcal{D} }\log p_{\theta, \lambda}(\x) + \log q_{\theta,\xi}(\y | \x)
-\end{equation}
-with respect to the parameters $\theta$, $\lambda$ and $\xi$. The key feature of multitask learning is that the two models $p$ and $q$ share the set of parameters $\theta$ and that in objective \ref{eq:multitask-objective} these parameters will thus be optimized to fit \textit{both} the models well. The parameters in $\lambda$ and $\xi$ are optimized for their respective objectives separately. The proportion and the nature of the parameters that belong to $\theta$ is a choice of the modeller and determines how both objectives influence one another. In the following paragraphs we specify this parametrization.
+\subsection{Multitask objective}
+  In our case we combine a language model $p$ with a syntactic model $q$, and optimize these jointly over a single labeled dataset $\dataset$\footnote{Note that it is our choice to focus on only a single dataset, and that multitask learning is principle more flexible than that, providing the option to combine multiple disjoint datasets in a single objective.}. In this case, we maximize the objective
+  \begin{equation}
+    \label{eq:multitask-objective}
+    \mathcal{L}(\theta, \lambda, \xi) = \sum_{ (\x, \y) \in \mathcal{D} }\log p_{\theta, \lambda}(\x) + \log q_{\theta,\xi}(\y | \x)
+  \end{equation}
+  with respect to the parameters $\theta$, $\lambda$ and $\xi$. The key feature of multitask learning is that the two models $p$ and $q$ share the set of parameters $\theta$ and that in objective \ref{eq:multitask-objective} these parameters will thus be optimized to fit \textit{both} the models well. The parameters in $\lambda$ and $\xi$ are optimized for their respective objectives separately. The proportion and the nature of the parameters that belong to $\theta$ is a choice of the modeller and determines how both objectives influence one another. In the following paragraphs we specify this parametrization.
 
-\paragraph{Language model}
-The main model $p$ is a regular RNN language model on sentences $\x$:
-\begin{align*}
-  \log p_{\theta, \lambda}(x) = \sum_{i=1}^n \log p_{\theta, \lambda}(x_i \mid \x_{<i}),
-\end{align*}
-where the conditional probabilities of $x_i$ are computed by linear regression on forward RNN vectors $\fw_{i-1}$ as
-\begin{align*}
-  p_{\theta, \lambda}( x \mid \x_{<i}) &\propto \exp \Big \{ [ \vecW^{\top} \fw_{i-1} + \vecb ]_{x} \Big\},
-\end{align*}
-where $x$ doubles as an index. The parameters $\lambda = \{ \vecW, \vecb \}$ are specific to the language model, and the vectors $\fw_i$ are computed using a forward RNN parametrized by $\theta$. The vectors $\fw_i$ are used in the side objective as well, and it is in this precise sense that the parameters $\theta$ are shared between $p$ and $q$.
+\subsection{Models}
+  We have introduced the multitask model as consisting of 2 models, $p$ and $q$. The main model $p$ is a regular RNN language model on sentences $\x$:
+  \begin{align*}
+    \log p_{\theta, \lambda}(x) = \sum_{i=1}^n \log p_{\theta, \lambda}(x_i \mid \x_{<i}),
+  \end{align*}
+  where the conditional probabilities of $x_i$ are computed by linear regression on forward RNN vectors $\fw_{i-1}$ as
+  \begin{align*}
+    p_{\theta, \lambda}( x \mid \x_{<i}) &\propto \exp \Big \{ [ \vecW^{\top} \fw_{i-1} + \vecb ]_{x} \Big\},
+  \end{align*}
+  where $x$ doubles as an index. The parameters $\lambda = \{ \vecW, \vecb \}$ are specific to the language model, and the vectors $\fw_i$ are computed using a forward RNN parametrized by $\theta$. The vectors $\fw_i$ are used in the side objective as well, and it is in this precise sense that the parameters $\theta$ are shared between $p$ and $q$.
 
-\paragraph{Word labeling}
-Let $\y = \langle y_1, \dots, y_n \rangle$ be a sequence of CCG supertags for the sentence $\x$, with one tag for each word. The side model is then a simple greedy tagging model:
-\begin{align*}
-  \log q_{\theta, \xi}(\y \mid \x)
-    &= \sum_{i=1}^n \log q_{\theta, \xi}( y_i \mid \x).  \\
-\end{align*}
-The probability over tags for position $i$ are computed from $\fw_i$ using a feedforward network parametrized by $\xi$
-\begin{align*}
-  q_{\theta, \xi}( y_i \mid \x) &\propto \exp \Big \{ [ \ff_{\xi}( \fw_{i} ) ]_{y_i} \Big\},
-\end{align*}
-where $y_i$ doubles as index. This side objective is taken from \citet{enguehard2017multitask} and is the side objective that is used in the multitask model of \citet{linzen2018targeted}.
+  \paragraph{Word labeling}
+    Let $\y = \langle y_1, \dots, y_n \rangle$ be a sequence of CCG supertags for the sentence $\x$, with one tag for each word. The side model is then a simple greedy tagging model:
+    \begin{align*}
+      \log q_{\theta, \xi}(\y \mid \x)
+        &= \sum_{i=1}^n \log q_{\theta, \xi}( y_i \mid \x).  \\
+    \end{align*}
+    The probability over tags for position $i$ are computed from $\fw_i$ using a feedforward network parametrized by $\xi$
+    \begin{align*}
+      q_{\theta, \xi}( y_i \mid \x) &\propto \exp \Big \{ [ \ff_{\xi}( \fw_{i} ) ]_{y_i} \Big\},
+    \end{align*}
+    where $y_i$ doubles as index. This side objective is taken from \citet{enguehard2017multitask} and is the side objective that is used in the multitask model of \citet{linzen2018targeted}.
 
-\paragraph{Span labeling}
-Let $\y$ be a sequence of labeled spans $(A_k, i_k, j_k)$ obtained from a gold parse tree for $\x$. Given span endpoints $i$ and $j$ and the sentence $x$, the side model $q$ predicts a label $A$:
-\begin{align*}
-  \log q_{\theta, \xi}(\y \mid \x)
-    &= \sum_{k=1}^K \log q_{\theta, \xi}( A_k \mid \x, i_k, j_k).
-\end{align*}
-The representation for the span is defined as in the CRF parser as
-\begin{align*}
-  \vecs_{ij} = \fw_j - \fw_i,
-\end{align*}
-and the distribution over labels is computed using a feedforward network parametrized by $\xi$ as
-\begin{align*}
-  q_{\theta, \xi}( A \mid \x, i, j) &\propto \exp \Big \{ [ \ff_{\xi}( \vecs_{ij} ) ]_{A} \Big\},
-\end{align*}
-where $A$ doubles as index. This model differs from the supertagging model in the interaction of the vectors $\fw$ in the definition of $\vecs_{ij}$. This linear defintion puts significant restriction on the encodings, which is precisely what we want. This side objective is inspired by the label scoring function of the CRF parser, and is novel as a multitask objective, as far as I know.
+  \paragraph{Span labeling}
+    Let $\y$ be a sequence of labeled spans $(A_k, i_k, j_k)$ obtained from a gold parse tree for $\x$. Given span endpoints $i$ and $j$ and the sentence $x$, the side model $q$ predicts a label $A$:
+    \begin{align*}
+      \log q_{\theta, \xi}(\y \mid \x)
+        &= \sum_{k=1}^K \log q_{\theta, \xi}( A_k \mid \x, i_k, j_k).
+    \end{align*}
+    The representation for the span is defined as in the CRF parser as
+    \begin{align*}
+      \vecs_{ij} = \fw_j - \fw_i,
+    \end{align*}
+    and the distribution over labels is computed using a feedforward network parametrized by $\xi$ as
+    \begin{align*}
+      q_{\theta, \xi}( A \mid \x, i, j) &\propto \exp \Big \{ [ \ff_{\xi}( \vecs_{ij} ) ]_{A} \Big\},
+    \end{align*}
+    where $A$ doubles as index. This model differs from the supertagging model in the interaction of the vectors $\fw$ in the definition of $\vecs_{ij}$. This linear defintion puts significant restriction on the encodings, which is precisely what we want. This side objective is inspired by the label scoring function of the CRF parser, and is novel as a multitask objective, as far as we know.
 
-% \begin{itemize}
-%   \item I hypothesize a bit about their comparative (dis)advantages. In particular the subject argument structure that is encoded in CCG tags that is not in the CFG spans.
-%   \item I compare the effect of these two multitask objectives in the syneval setting.
-%   \item I compare the two methods with respect to perplexity. \citet{enguehard2017multitask} show that the CCG side objective helps the model perform much better on the syntactic task, as well as reach much lower perplexity. Preliminary experiments with the labeld span side-objective showed that it also makes the model perform much better on the syntactic task, but that the perplexity is worse. This more in line with the findings in \citet{tran2018recurrent}.
-% \end{itemize}
-
+  % \begin{itemize}
+  %   \item I hypothesize a bit about their comparative (dis)advantages. In particular the subject argument structure that is encoded in CCG tags that is not in the CFG spans.
+  %   \item I compare the effect of these two multitask objectives in the syneval setting.
+  %   \item I compare the two methods with respect to perplexity. \citet{enguehard2017multitask} show that the CCG side objective helps the model perform much better on the syntactic task, as well as reach much lower perplexity. Preliminary experiments with the labeld span side-objective showed that it also makes the model perform much better on the syntactic task, but that the perplexity is worse. This more in line with the findings in \citet{tran2018recurrent}.
+  % \end{itemize}
 
 \section{Experiments}
+  In this section we report the results of the evaluation on the Syneval dataset. We evaluate all the models proposed thus far: the generative RNNG with the two proposal models as described in chapters \ref{03-rnng} and \ref{04-crf}; the multitask models described in the previous section; and a baseline RNN language model. We first describe the training setup and results of the (multitask) RNN language models. We then describe the evaluation setup and discuss the results.
 
-In this section we report the results on the dataset.
+  \subsection{Setup}
+    We first train the three language models. We train one baseline RNN language model (RNNLM), and two RNN language models trained with multitask learning using the span side objective (RNNLM-span) and the CCG side objective (RNNLM-CCG). Because the RNNLM will function as a baseline comparison to the RNNG we choose the dimensions of the states to result in a similar number of parameters. The models use the same vocabulary as the generative RNNG, and the embeddings are of size 100 as well. The LSTM has dimension 330 and has 2 layers. The feedforward networks used by the side models $q$ in the multitask models have 1 hidden layer with dimension 250. The number of parameters the models totals around 9,300,00 parameters, not counting the parameters of $q$ which we discard after training. We train the three language models exactly as the generative RNNG, using SGD with a learning rate of 0.1, and dropout of 0.3.
 
-\subsection{Baselines}
-\citet{linzen2018targeted} provide a number of baselines:
-\begin{itemize}
-  \item Human evaluation via amazon mechanical turk.
-  \item N-gram language model with kneser ney smoothing.
-  \item RNN language model (LSTM).
-  \item RNN language model with multitask learning.
-\end{itemize}
-We reproduce the RNN language model and the RNN multitask language model,
+    \input{../tables/lm-perplexities.tex}
 
-\subsection{Setup}
-\begin{itemize}
-  \item Following the example of \citet{linzen2018targeted} we train a regular LSTM language model, and a multitask LSTM language model with CCG supertagging. We additionally train
-  \item For the language train 10 independent runs of each model and report means and standard deviations of their accuracy on the Syneval dataset.
-\end{itemize}
+    We train 10 separate seperate runs of each model. The perplexity results are shown in table \ref{tab}. The multitask models take considerably more epochs to converge\footnote{Around 150 versus 100.} and both obtain higher perplexity than the single task language model. The gap with the RNNLM-CCG model is particularly large. This finding contrasts with \citet{linzen2018targeted} who obtain a lower perplexity with CCG tagging than without. This opposite result is probably caused by a difference in training data. \citet{linzen2018targeted} use an unlabeled dataset of 90 million words, which is almost 100 times the size of the PTB. This data composition puts much more weight on the language modelling part of the multitask objective, favoring the word prediction over the tagging.}
 
-Details about training can be found in appendix \ref{A2-implementation}
+  \subsection{Results}
 
-\subsection{Results}
+    \newgeometry{top=5mm, bottom=5mm}
+
+      \begin{figure}[h]
+        \center
+        \includegraphics[width=0.7\textwidth]{syneval/all.pdf}
+      \caption{Syneval results for all categories.}
+      \label{fig:syneval-all}
+      \end{figure}
+
+    \restoregeometry
+
+
+    \begin{figure}[h]
+      \center
+      \includegraphics[width=0.9\textwidth]{syneval/all-averaged.pdf}
+    \caption{Syneval results for all categories.}
+    \label{fig:syneval-all-averaged}
+    \end{figure}

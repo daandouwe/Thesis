@@ -58,17 +58,17 @@ From sentences (a) and (b) we might formulate the hypothesis that the word \text
   \begin{subfigure}[b]{0.5\textwidth}
 		\includegraphics[width=\textwidth]{trees/npi-licensed.pdf}
 	\end{subfigure}
-	\begin{subfigure}[b]{0.5\textwidth}
+	\begin{subfigure}[b]{0.3\textwidth}
 		\includegraphics[width=\textwidth]{trees/npi-unlicensed.pdf}
 	\end{subfigure}
-\caption{Hierarchical dependance of negative polarity items. Left shows the word \textit{anybody} in the licensing context of \textit{not}, while right shows the ungrammatical sentence where the word is not. Figure taken without permission from \cite{everaert2015structures}.}
+\caption{Hierarchical dependance of negative polarity items. Left shows the word \textit{anybody} in the licensing context of \textit{not}, while right shows the ungrammatical sentence where the word is not. Figure taken from \cite{everaert2015structures}.}
 \label{fig:trees-npi}
 \end{figure}
 Instead, it is argued, the constraints that govern this particular pattern depend on hierarchical structure: the word \textit{not} must `structurally precede' the word \textit{anybody} \citep{everaert2015structures}. Figure \label{ref:trees-npi} shows the constituent structure of both sentences. The explanation goes as follows (put this in my own words): \say{In sentence \ref{fig:trees-npi} (a) the hierarchical structure dominating \textit{not} also immediately dominates the hierarchical structure containing \textit{anybody}. In sentence \ref{fig:trees-npi} (b), by contrast, \textit{not} sequentially precedes \textit{anybody}, but the triangle dominating \textit{not} fails to also dominate the structure containing \textit{anybody}.}
 
 
 \subsection{Controversy}
-Theoretical syntax is rife with controversy, and wildly differing viewpoints exist. In fact, for each point made in our short discussion, the exact opposite point has been made as well:
+Theoretical syntax is rife with controversy, and wildly differing viewpoints exist. In fact, for each point made in our short discussion the exact opposite point has been made as well:
 
 \begin{itemize}
   \item Work in dependency grammar and other word-based grammar formalisms departs from the idea that lexical relations between individual words are more fundamental than constituents and their hierarchical organization \citep{tesniere1959elements,nivre2005dependency,hudson2010introduction}, and dispenses with the notion of constituents altogether.
@@ -77,7 +77,7 @@ Theoretical syntax is rife with controversy, and wildly differing viewpoints exi
 
   \item Research in cognitive neuroscience and psycholinguistics shows that human sentence processing is hierachical, giving evidence that processing crucially depends on the kind of structures introduced in the sections above \citep{hale2001earley,levy2008expectation,brennan2016abstract}. However, research also exists that shows that purely linear predictors are sufficient for modeling sentence comprehension, thus showing the exact opposite to be true \citep{conway2008neurocognitive,gillespie2011hierarchy,christiansen2012similar,gillespie2013against,frank2012hierarchical}.
 \end{itemize}
-Our work, however, takes a pragmatic position with respect to such questions: syntax, we assume, is whatever our dataset says it is. Whether language is hierachical or linear is a question that this thesis engages with from a statistical and computational standpoint.
+Our work, however, takes a pragmatic position with respect to such questions: syntax, we assume, is whatever our dataset says it is. And to some degree, the question whether language is hierachical or linear is a question that this thesis engages with from a statistical and computational standpoint.
 
 \section{Parsing}
   Parsing is the task of predicting a tree $\y$ for a sentence $\x$. Probabilitic parsers solve this problem by learning a probabilistic model $p$ that describes a probability distribution over \textit{all} the possible parses $\y$ of a sentence $\x$. This distribution quantifies the uncertainty over the syntactic analyses of the sentence, and can be used to make predictions by finding the trees with highest probability. A further benefit of the probabilistic formulation is that the uncertainty over the parses can be determined quantitatively by computing the entropy of the distribution, and qualitatively by obtaining samples from the distribution. This section describes the form that such probabilistic models take, and the data from which they are estimated.
