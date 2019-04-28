@@ -179,7 +179,7 @@ In this chapter:
     \begin{align*}
       \mathbf{c} = \mathbf{g} \circ \mathbf{n} + (1 - \mathbf{g}) \circ \mathbf{m}.
     \end{align*}
-    of this vector and the vector $\mathbf{n}$ representing the nonterminal, weighted by a gating vector $\mathbf{g}$.\footnote{The operation $\circ$ denotes the Hadamard product, or elementwise multiplication: $(A \circ B)_{ij} = (A)_{ij}(B)_{ij}$.} The vector of gates $\mathbf{g}$ is computed by an affine transformation on $[ \mathbf{n}; \mathbf{m} ]$ followed by an elementwise application of the logistic function.\footnote{Our definition of $\mathbf{c}$ is slightly different from that of \citet{kuncoro2017syntax}: where they use another vector representation $\mathbf{t}$ different from $\mathbf{n}$ in the above definition; we use just $n$ to compute both the attention weights and the final vector.} This final representation can weigh the contribution to the final representation of the words and their nonterminal category, depending on the context.
+    of this vector and the vector $\mathbf{n}$ representing the nonterminal, weighted by a gating vector $\mathbf{g}$.\footnote{The operation $\circ$ denotes the Hadamard product, or elementwise multiplication, defined as $(\mathbf{A} \circ \mathbf{B})_{ij} = (\mathbf{A})_{ij}(\mathbf{B})_{ij}$.} The vector of gates $\mathbf{g}$ is computed by an affine transformation on $[ \mathbf{n}; \mathbf{m} ]$ followed by an elementwise application of the logistic function.\footnote{Our definition of $\mathbf{c}$ is slightly different from that of \citet{kuncoro2017syntax}: where they use another vector representation $\mathbf{t}$ different from $\mathbf{n}$ in the above definition; we use just $n$ to compute both the attention weights and the final vector.} This final representation can weigh the contribution to the final representation of the words and their nonterminal category, depending on the context.
 
 \section{Training}
   The discriminative and generative model are trained to maximize the objective
@@ -191,6 +191,10 @@ In this chapter:
     \mathcal{L}(\theta) = \sum_{(\x, \y) \in \dataset} \log \ptheta (\x, \y),
   \end{align*}
   by gradient-based optimization on the parameters $\theta$.
+  \begin{itemize}
+    \item Use stochastic gradient optimization, subsampling a batch, computing update.
+    \item Training complexity is $O(n)$ for sentences of length $n$.
+  \end{itemize}
 
 \section{Inference}
   The two formulations of the RNNG have complementary applications: both models can be used for parsing, but the generative model can additionally be used as a language model. How these problems can be solved is the topic of this section.
@@ -250,6 +254,11 @@ In this chapter:
 
     Our discriminative model does not use tags. This contrasts with \citet{dyer2016rnng}, who use tags predicted by an external tagger. This decision was made with the application of the RNNG as language model in mind, in which case tags are not available, but this choice will affect the parsing accuracy of the discriminative model. For a more elaborate justification of this choice we refer the reader to section \label{sec:impl-embedding} of the implementation appendix.
 
+    \begin{itemize}
+      \item Training on a single CPU takes ... per epoch for the discriminative model, and ... for the generative model.
+      \item The models take ... days to converge.
+    \end{itemize}
+
   \subsection{Results}
     We train 10 separate models from different random seeds.\footnote{The random seeds control both the random initialization of the model parameters as well as the order in which the training data is presented.} We report mean and standard deviation to give a sense of the variability of the accuracy, as well as the value of the model with the best development performance. Model selection is based on development F1 for the discriminative model, and based on development perplexity for the generative model. For inference with the generative model we follow \citet{dyer2016rnng} and sample 100 trees from our best discriminative model. The samples are obtained by ancestral sampling on the action sequeunces, and we flatten this ditribution by raising each action distribution to the power $\alpha = 0.8$ and renormalizing it.
 
@@ -268,14 +277,14 @@ In this chapter:
 
     For the first experiment we evaluate the generative RNNG as in the above setting, while varying the number of samples, and the temperature $\alpha$: we let the number of samples be in $\{ 10, 25, 50, 75, 100 \}$ and let $\alpha$ be in $\{ 0.8, 1 \}$.\footnote{When $\alpha=1$, the distribution is left unchanched.}. To quantify the variability of the proposal model in this we repeat the experiment 10 times. Figure \ref{fig:samples-fscores} shows the results of this experiment for the parsing F1, and \ref{fig:samples-perplexities} shows the results for the perplexity. The F1 of the generative model increases with the number of samples, but clearly converges at around 100 samples; the difference between 10 and 100 samples is about 1 F1 on average. This appears to tell us that the generative model finds the better trees at the tails of the proposal distribution---the trees that are only observed, on expectation, given enough samples. There is little difference between the different temperature values when using many samples, but when few samples are used the proposal model that is left unchanged performs best. In the case of perplexity we can see a consistent difference between the values of $\alpha$, always favoring the proposal model where $\alpha = 0.8$. A striking feature that can be observed in the plot is that the perplexity estimates lie in small regions that decrease with increasing number of samples. The estimate is in fact an \textit{upper bound} on the perplexity, a result of our estimator, the definition of perplexity, and Jensen's inequality.\footnote{We compute $p(x)$ as an expectation $\expect [p(x,y)]$, and because $\log \expect [p(x,y)] \leq \expect [\log p(x,y)]$ by Jensen's inequality we find for our perplexity estimate that $\exp \{ - \frac{1}{m} \log \expect [p(x,y)] \} \geq \exp \{ - \frac{1}{m} \expect [\log p(x,y)] \} $.} Each of the independent estimates vary litle between each other, but the gap between 10 and 100 samples is a significant 10 nats in perplexity, on avergare. It moreover appears from the trend of the curve that 100 samples is not yet enough to close the bound, and that more samples would still further lower the perplexity---an unfortunate finding given our concerns about computational efficiency.
 
-    \begin{figure}[h]
+    \begin{figure}[ht]
       \center
     	\includegraphics[width=0.9\textwidth]{sample-experiment/fscore/disc_temp.pdf}
     \caption{F1 estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.}
     \label{fig:samples-fscores}
     \end{figure}
 
-    \begin{figure}[h]
+    \begin{figure}[ht]
       \center
     	\includegraphics[width=0.9\textwidth]{sample-experiment/ppl/disc_temp.pdf}
     \caption{Perplexity estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.}
@@ -305,7 +314,7 @@ In this chapter:
     \end{align*}
     What this means effectively is that we compute the average negative log-likelihood over all samples, for all sentences in the test set. We repeat this for each of the 10 sets of samples, for the same increasing number of samples. The results are show in figure \ref{fig:samples-entropy}. The results are as expected: the estimate converges as the number of samples increases, and the entropy of the proposal model flattened with $\alpha = 0.8$ is much higher than that of the original.
 
-    \begin{figure}[h]
+    \begin{figure}[ht]
       \center
     	\includegraphics[width=0.4\textwidth]{sample-experiment/entropy/disc_temp.pdf}
     \caption{Conditional entropy estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.}

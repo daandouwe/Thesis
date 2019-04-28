@@ -1,8 +1,8 @@
 \contentsline {chapter}{\numberline {1}Introduction}{7}{chapter.1}
-\contentsline {paragraph}{\nonumberline The approximate marginalization}{7}{section*.4}
-\contentsline {paragraph}{\nonumberline Semi-supervised training by including unlabeled data}{8}{section*.5}
-\contentsline {paragraph}{\nonumberline Alternative, simpler, models}{8}{section*.6}
-\contentsline {paragraph}{\nonumberline Targeted syntactic evaluation}{8}{section*.7}
+\contentsline {paragraph}{\nonumberline The approximate marginalization}{7}{section*.5}
+\contentsline {paragraph}{\nonumberline Semi-supervised training by including unlabeled data}{8}{section*.6}
+\contentsline {paragraph}{\nonumberline Alternative, simpler, models}{8}{section*.7}
+\contentsline {paragraph}{\nonumberline Targeted syntactic evaluation}{8}{section*.8}
 \contentsline {chapter}{\numberline {2}Background}{9}{chapter.2}
 \contentsline {section}{\numberline {2.1}Syntax}{9}{section.2.1}
 \contentsline {subsection}{\numberline {2.1.1}Constituents}{9}{subsection.2.1.1}
@@ -29,9 +29,9 @@
 \contentsline {section}{\numberline {3.4}Inference}{28}{section.3.4}
 \contentsline {subsection}{\numberline {3.4.1}Discriminative model}{28}{subsection.3.4.1}
 \contentsline {subsection}{\numberline {3.4.2}Generative model}{29}{subsection.3.4.2}
-\contentsline {paragraph}{\nonumberline Approximate marginalization}{29}{section*.15}
-\contentsline {paragraph}{\nonumberline Approximate MAP tree}{30}{section*.16}
-\contentsline {paragraph}{\nonumberline Proposal distribution}{30}{section*.17}
+\contentsline {paragraph}{\nonumberline Approximate marginalization}{29}{section*.16}
+\contentsline {paragraph}{\nonumberline Approximate MAP tree}{30}{section*.17}
+\contentsline {paragraph}{\nonumberline Proposal distribution}{30}{section*.18}
 \contentsline {section}{\numberline {3.5}Experiments}{30}{section.3.5}
 \contentsline {subsection}{\numberline {3.5.1}Setup}{30}{subsection.3.5.1}
 \contentsline {subsection}{\numberline {3.5.2}Results}{31}{subsection.3.5.2}
@@ -45,10 +45,10 @@
 \contentsline {subsection}{\numberline {4.3.2}Inside recursion}{41}{subsection.4.3.2}
 \contentsline {subsection}{\numberline {4.3.3}Outside recursion}{43}{subsection.4.3.3}
 \contentsline {subsection}{\numberline {4.3.4}Solutions}{44}{subsection.4.3.4}
-\contentsline {paragraph}{\nonumberline Normalizer}{44}{section*.26}
-\contentsline {paragraph}{\nonumberline Parse}{44}{section*.27}
-\contentsline {paragraph}{\nonumberline Sample}{45}{section*.28}
-\contentsline {paragraph}{\nonumberline Entropy}{45}{section*.29}
+\contentsline {paragraph}{\nonumberline Normalizer}{44}{section*.27}
+\contentsline {paragraph}{\nonumberline Parse}{44}{section*.28}
+\contentsline {paragraph}{\nonumberline Sample}{45}{section*.29}
+\contentsline {paragraph}{\nonumberline Entropy}{45}{section*.30}
 \contentsline {section}{\numberline {4.4}Traning}{46}{section.4.4}
 \contentsline {subsection}{\numberline {4.4.1}Objective}{46}{subsection.4.4.1}
 \contentsline {subsection}{\numberline {4.4.2}Speed and complexity}{47}{subsection.4.4.2}
@@ -69,49 +69,51 @@
 \contentsline {section}{\numberline {5.2}Multitask learning}{61}{section.5.2}
 \contentsline {subsection}{\numberline {5.2.1}Multitask objective}{62}{subsection.5.2.1}
 \contentsline {subsection}{\numberline {5.2.2}Models}{62}{subsection.5.2.2}
-\contentsline {paragraph}{\nonumberline Word labeling}{62}{section*.38}
-\contentsline {paragraph}{\nonumberline Span labeling}{63}{section*.39}
+\contentsline {paragraph}{\nonumberline Word labeling}{62}{section*.39}
+\contentsline {paragraph}{\nonumberline Span labeling}{63}{section*.40}
 \contentsline {section}{\numberline {5.3}Experiments}{63}{section.5.3}
 \contentsline {subsection}{\numberline {5.3.1}Setup}{63}{subsection.5.3.1}
 \contentsline {subsection}{\numberline {5.3.2}Results}{64}{subsection.5.3.2}
-\contentsline {chapter}{\numberline {6}Semisupervised learning}{67}{chapter.6}
-\contentsline {section}{\numberline {6.1}Unsupervised learning}{67}{section.6.1}
-\contentsline {subsection}{\numberline {6.1.1}Variational approximation}{67}{subsection.6.1.1}
-\contentsline {section}{\numberline {6.2}Approximate posterior}{68}{section.6.2}
-\contentsline {section}{\numberline {6.3}Training}{69}{section.6.3}
-\contentsline {subsection}{\numberline {6.3.1}Gradients of joint parameters}{69}{subsection.6.3.1}
-\contentsline {subsection}{\numberline {6.3.2}Gradients of posterior parameters}{69}{subsection.6.3.2}
-\contentsline {section}{\numberline {6.4}Variance reduction}{70}{section.6.4}
-\contentsline {section}{\numberline {6.5}Experiments}{70}{section.6.5}
-\contentsline {section}{\numberline {6.6}Related work}{70}{section.6.6}
-\contentsline {chapter}{\numberline {7}Conclusion}{71}{chapter.7}
-\contentsline {section}{\numberline {7.1}Main contributions}{71}{section.7.1}
-\contentsline {paragraph}{\nonumberline Global training of a chart based neural parser.}{71}{section*.43}
-\contentsline {paragraph}{\nonumberline Semisupervised training of RNNGs.}{71}{section*.44}
-\contentsline {paragraph}{\nonumberline Effective baselines for the score function estimator.}{71}{section*.45}
-\contentsline {section}{\numberline {7.2}Future work}{71}{section.7.2}
-\contentsline {paragraph}{\nonumberline Something.}{71}{section*.46}
-\contentsline {chapter}{\numberline {A}Implementation}{72}{appendix.A}
-\contentsline {section}{\numberline {A.1}Data}{72}{section.A.1}
-\contentsline {subsection}{\numberline {A.1.1}Datasets}{72}{subsection.A.1.1}
-\contentsline {paragraph}{\nonumberline Penn Treebank}{72}{section*.47}
-\contentsline {paragraph}{\nonumberline One Billion Word Benchmark}{72}{section*.48}
-\contentsline {paragraph}{\nonumberline CCG supertags}{73}{section*.49}
-\contentsline {subsection}{\numberline {A.1.2}Vocabularies}{73}{subsection.A.1.2}
-\contentsline {paragraph}{\nonumberline Unknown words}{73}{section*.50}
-\contentsline {paragraph}{\nonumberline Embeddings}{74}{section*.51}
-\contentsline {section}{\numberline {A.2}Implementation}{74}{section.A.2}
-\contentsline {paragraph}{\nonumberline Optimization}{74}{section*.54}
-\contentsline {chapter}{\numberline {B}Semiring parsing}{76}{appendix.B}
-\contentsline {section}{\numberline {B.1}Hypergraph}{76}{section.B.1}
-\contentsline {section}{\numberline {B.2}Semiring}{77}{section.B.2}
-\contentsline {section}{\numberline {B.3}Semiring parsing}{78}{section.B.3}
-\contentsline {subsection}{\numberline {B.3.1}Inside and outside recursions}{79}{subsection.B.3.1}
-\contentsline {subsection}{\numberline {B.3.2}Instantiated recursions}{80}{subsection.B.3.2}
-\contentsline {chapter}{\numberline {C}Score function estimator}{82}{appendix.C}
-\contentsline {section}{\numberline {C.1}Derivation}{82}{section.C.1}
-\contentsline {section}{\numberline {C.2}Optimization}{83}{section.C.2}
-\contentsline {section}{\numberline {C.3}Variance reduction}{83}{section.C.3}
-\contentsline {subsection}{\numberline {C.3.1}Variance}{84}{subsection.C.3.1}
-\contentsline {subsection}{\numberline {C.3.2}Control variates}{84}{subsection.C.3.2}
-\contentsline {chapter}{\numberline {D}Syneval dataset}{87}{appendix.D}
+\contentsline {chapter}{\numberline {6}Semisupervised learning}{69}{chapter.6}
+\contentsline {section}{\numberline {6.1}Unsupervised learning}{70}{section.6.1}
+\contentsline {subsection}{\numberline {6.1.1}Variational approximation}{70}{subsection.6.1.1}
+\contentsline {subsection}{\numberline {6.1.2}Approximate posterior}{71}{subsection.6.1.2}
+\contentsline {section}{\numberline {6.2}Training}{71}{section.6.2}
+\contentsline {subsection}{\numberline {6.2.1}Gradients of joint parameters}{72}{subsection.6.2.1}
+\contentsline {subsection}{\numberline {6.2.2}Gradients of posterior parameters}{72}{subsection.6.2.2}
+\contentsline {subsection}{\numberline {6.2.3}Variance reduction}{73}{subsection.6.2.3}
+\contentsline {section}{\numberline {6.3}Experiments}{73}{section.6.3}
+\contentsline {section}{\numberline {6.4}Related work}{73}{section.6.4}
+\contentsline {chapter}{\numberline {7}Conclusion}{74}{chapter.7}
+\contentsline {section}{\numberline {7.1}Main contributions}{74}{section.7.1}
+\contentsline {paragraph}{\nonumberline Neural CRF parser}{74}{section*.46}
+\contentsline {paragraph}{\nonumberline Syntactic evaluation of RNNG}{75}{section*.47}
+\contentsline {paragraph}{\nonumberline Comparison with multitask learning}{75}{section*.48}
+\contentsline {paragraph}{\nonumberline Semisupervised learning of RNNG}{75}{section*.49}
+\contentsline {section}{\numberline {7.2}Future work}{75}{section.7.2}
+\contentsline {paragraph}{\nonumberline Unsupervised RNNG with CRF posterior}{75}{section*.50}
+\contentsline {paragraph}{\nonumberline SparseMAP inference}{76}{section*.51}
+\contentsline {chapter}{\numberline {A}Implementation}{77}{appendix.A}
+\contentsline {section}{\numberline {A.1}Data}{77}{section.A.1}
+\contentsline {subsection}{\numberline {A.1.1}Datasets}{77}{subsection.A.1.1}
+\contentsline {paragraph}{\nonumberline Penn Treebank}{77}{section*.52}
+\contentsline {paragraph}{\nonumberline CCG supertags}{77}{section*.53}
+\contentsline {paragraph}{\nonumberline One Billion Word Benchmark}{78}{section*.54}
+\contentsline {subsection}{\numberline {A.1.2}Vocabularies}{78}{subsection.A.1.2}
+\contentsline {paragraph}{\nonumberline Unknown words}{78}{section*.55}
+\contentsline {paragraph}{\nonumberline Embeddings}{79}{section*.56}
+\contentsline {section}{\numberline {A.2}Implementation}{79}{section.A.2}
+\contentsline {paragraph}{\nonumberline Optimization}{79}{section*.58}
+\contentsline {chapter}{\numberline {B}Semiring parsing}{81}{appendix.B}
+\contentsline {section}{\numberline {B.1}Hypergraph}{81}{section.B.1}
+\contentsline {section}{\numberline {B.2}Semiring}{82}{section.B.2}
+\contentsline {section}{\numberline {B.3}Semiring parsing}{83}{section.B.3}
+\contentsline {subsection}{\numberline {B.3.1}Inside and outside recursions}{84}{subsection.B.3.1}
+\contentsline {subsection}{\numberline {B.3.2}Instantiated recursions}{85}{subsection.B.3.2}
+\contentsline {chapter}{\numberline {C}Variational inference}{87}{appendix.C}
+\contentsline {section}{\numberline {C.1}Score function estimator}{87}{section.C.1}
+\contentsline {section}{\numberline {C.2}Variance reduction}{88}{section.C.2}
+\contentsline {subsection}{\numberline {C.2.1}Variance}{88}{subsection.C.2.1}
+\contentsline {subsection}{\numberline {C.2.2}Control variates}{89}{subsection.C.2.2}
+\contentsline {section}{\numberline {C.3}Optimization}{91}{section.C.3}
+\contentsline {chapter}{\numberline {D}Syneval dataset}{93}{appendix.D}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  26 APR 2019 16:24
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  28 APR 2019 17:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1186,7 +1186,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.37 
+l.36 
      
 The package hyperref has already been loaded with options:
   []
@@ -1221,7 +1221,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.50 \newcommand{\eg}{\emph{e.g.}}
+l.49 \newcommand{\eg}{\emph{e.g.}}
                                   
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1251,21 +1251,21 @@ LaTeX Warning: Label `sec:impl-embedding' multiply defined.
 )
 \openout1 = `thesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 138.
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 138.
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 138.
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 138.
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 138.
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 138.
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 138.
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Try loading font information for OT1+ppl on input line 138.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 137.
+LaTeX Font Info:    ... okay on input line 137.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 137.
+LaTeX Font Info:    ... okay on input line 137.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 137.
+LaTeX Font Info:    ... okay on input line 137.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 137.
+LaTeX Font Info:    ... okay on input line 137.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 137.
+LaTeX Font Info:    ... okay on input line 137.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 137.
+LaTeX Font Info:    ... okay on input line 137.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 137.
+LaTeX Font Info:    ... okay on input line 137.
+LaTeX Font Info:    Try loading font information for OT1+ppl on input line 137.
 
  (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1ppl.fd
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
@@ -1299,10 +1299,10 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \AtBeginShipoutBox=\box51
-Package hyperref Info: Link coloring OFF on input line 138.
-LaTeX Info: Redefining \ref on input line 138.
-LaTeX Info: Redefining \pageref on input line 138.
-LaTeX Info: Redefining \nameref on input line 138.
+Package hyperref Info: Link coloring OFF on input line 137.
+LaTeX Info: Redefining \ref on input line 137.
+LaTeX Info: Redefining \pageref on input line 137.
+LaTeX Info: Redefining \nameref on input line 137.
 
 (./thesis.out) (./thesis.out)
 \@outlinefile=\write4
@@ -1352,7 +1352,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.140 
+l.139 
       
 I could not locate the file with any of these extensions:
 .png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPEG,.JBIG2,.JB2,.eps
@@ -1366,32 +1366,32 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.140 
+l.139 
       
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <20.74> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 140.
-LaTeX Font Info:    Try loading font information for U+msa on input line 140.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 139.
+LaTeX Font Info:    Try loading font information for U+msa on input line 139.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 140.
+LaTeX Font Info:    Try loading font information for U+msb on input line 139.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+lasy on input line 140.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 139.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/base/ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <8> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 140.
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 139.
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <6> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 140.
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 139.
 
 
 ! LaTeX Error: File `uvalogo' not found.
@@ -1400,7 +1400,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.140 
+l.139 
       
 I could not locate the file with any of these extensions:
 .png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPEG,.JBIG2,.JB2,.eps
@@ -1411,39 +1411,41 @@ If that doesn't work, type  X <return>  to quit.
 
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 141.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 140.
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 141.
-LaTeX Font Info:    Try loading font information for OMS+ppl on input line 146.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 140.
+LaTeX Font Info:    Try loading font information for OMS+ppl on input line 145.
 
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omsppl.fd
 File: omsppl.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 146.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 145.
 
-Overfull \hbox (5.19946pt too wide) in paragraph at lines 148--149
+Overfull \hbox (5.19946pt too wide) in paragraph at lines 147--148
 []\OT1/ppl/m/n/10.95 propose ef-fec-tive meth-ods for semisu-per-vised learn-in
 g, mak-ing the syn-tac-tic struc-
  []
 
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 151.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 150.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-Underfull \hbox (badness 10000) in paragraph at lines 151--151
+Underfull \hbox (badness 10000) in paragraph at lines 150--150
 
  []
 
-[2] (../tables/notation.tex) [3] (./thesis.toc [4
+[2] (./thesis.toc [3
 
-] [5])
+] [4])
 \tf@toc=\write5
 \openout5 = `thesis.toc'.
 
- [6]
+ [5] (../tables/notation.tex) [6
+
+]
 chapter 1.
 (../01-introduction/introduction.tex [7
 
@@ -1457,11 +1459,11 @@ ly us-ing Inside-Outside
 chapter 2.
 (../02-background/background.tex
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <9> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 8.
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 6.
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <5> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 8.
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 6.
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 18.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 16.
 
 
 ! Class scrreprt Error: undefined old font command `\rm'.
@@ -1470,7 +1472,7 @@ See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.21 
+l.19 
      
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
@@ -1494,7 +1496,7 @@ See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.21 
+l.19 
      
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
@@ -1518,7 +1520,7 @@ See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.21 
+l.19 
      
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
@@ -1542,7 +1544,7 @@ See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.21 
+l.19 
      
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
@@ -1566,7 +1568,7 @@ See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.21 
+l.19 
      
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
@@ -1590,7 +1592,7 @@ See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.21 
+l.19 
      
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
@@ -1614,7 +1616,7 @@ See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.21 
+l.19 
      
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
@@ -1638,7 +1640,7 @@ See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.21 
+l.19 
      
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
@@ -1661,32 +1663,28 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 [9
 
 ] [10]
-<../figures/trees/npi-licensed.pdf, id=612, 526.77112pt x 259.41167pt>
+<../figures/trees/npi-licensed.pdf, id=613, 526.77112pt x 259.41167pt>
 File: ../figures/trees/npi-licensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-licensed.pdf>
 Package pdftex.def Info: ../figures/trees/npi-licensed.pdf used on input line 5
-9.
+8.
 (pdftex.def)             Requested size: 209.12686pt x 102.98303pt.
 
-<../figures/trees/npi-unlicensed.pdf, id=613, 482.62106pt x 256.61702pt>
+<../figures/trees/npi-unlicensed.pdf, id=614, 482.62106pt x 256.61702pt>
 File: ../figures/trees/npi-unlicensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-unlicensed.pdf>
 Package pdftex.def Info: ../figures/trees/npi-unlicensed.pdf used on input line
- 62.
-(pdftex.def)             Requested size: 125.47739pt x 66.71492pt.
+ 61.
+(pdftex.def)             Requested size: 188.21289pt x 100.07631pt.
  [11 <../figures/trees/npi-licensed.pdf> <../figures/trees/npi-unlicensed.pdf>]
  (../figures/trees/original.tex)
 (../figures/trees/simplified.tex) (../figures/trees/binary.tex)
-(../figures/trees/spans.tex)
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[12]
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <7> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 140.
- [13] [14] [15] [16] [17] [18]) [19] [20]
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 111.
+
+(../figures/trees/spans.tex) [12] [13] [14] [15] [16] [17] [18]) [19] [20]
 chapter 3.
 (../03-rnng/rnng.tex [21
 
@@ -1712,53 +1710,45 @@ c-tor $\OT1/cmr/bx/n/10.95 u[]$ \OT1/ppl/m/n/10.95 that sum-ma-rizes the parser
  []
 
 [26] [27] [28]
-Overfull \hbox (21.0442pt too wide) in paragraph at lines 221--222
+Overfull \hbox (21.0442pt too wide) in paragraph at lines 225--226
  []\OT1/ppl/b/n/10.95 Approximate marginal-iza-tion[] \OT1/ppl/m/n/10.95 The pr
 o-posal dis-tri-bu-tion al-lows us to rewrite the marginal
  []
 
 [29] [30] (../tables/disc-fscores.tex) (../tables/gen-fscores.tex)
 (../tables/gen-perplexities.tex) [31] [32]
-<../figures/sample-experiment/fscore/disc_temp.pdf, id=1219, 722.7pt x 361.35pt
+<../figures/sample-experiment/fscore/disc_temp.pdf, id=1220, 722.7pt x 361.35pt
 >
 File: ../figures/sample-experiment/fscore/disc_temp.pdf Graphic file (type pdf)
 
  <use ../figures/sample-experiment/fscore/disc_temp.pdf>
 Package pdftex.def Info: ../figures/sample-experiment/fscore/disc_temp.pdf used
- on input line 273.
+ on input line 282.
 (pdftex.def)             Requested size: 376.4258pt x 188.21185pt.
 
-<../figures/sample-experiment/ppl/disc_temp.pdf, id=1220, 722.7pt x 361.35pt>
+<../figures/sample-experiment/ppl/disc_temp.pdf, id=1221, 722.7pt x 361.35pt>
 File: ../figures/sample-experiment/ppl/disc_temp.pdf Graphic file (type pdf)
 
 <use ../figures/sample-experiment/ppl/disc_temp.pdf>
 Package pdftex.def Info: ../figures/sample-experiment/ppl/disc_temp.pdf used on
- input line 280.
+ input line 289.
 (pdftex.def)             Requested size: 376.4258pt x 188.21185pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[33 <../figures/sample-experiment/fscore/disc_temp.pdf>]
-<../figures/sample-experiment/entropy/disc_temp.pdf, id=1259, 361.35pt x 722.7p
+ [33 <../figures/sample-experiment/fscore/disc_temp.pdf>]
+<../figures/sample-experiment/entropy/disc_temp.pdf, id=1260, 361.35pt x 722.7p
 t>
 File: ../figures/sample-experiment/entropy/disc_temp.pdf Graphic file (type pdf
 )
  <use ../figures/sample-experiment/entropy/disc_temp.pdf>
 Package pdftex.def Info: ../figures/sample-experiment/entropy/disc_temp.pdf use
-d on input line 310.
+d on input line 319.
 (pdftex.def)             Requested size: 167.29893pt x 334.59639pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[34 <../figures/sample-experiment/ppl/disc_temp.pdf>] [35 <../figures/sample-ex
-periment/entropy/disc_temp.pdf>]) [36]
+ [34 <../figures/sample-experiment/ppl/disc_temp.pdf>] [35 <../figures/sample-e
+xperiment/entropy/disc_temp.pdf>]) [36]
 chapter 4.
 (../04-crf-parser/crf-parser.tex [37
 
 ] [38]
-<../figures/span-encoding.pdf, id=1401, 464.0005pt x 150.49072pt>
+<../figures/span-encoding.pdf, id=1402, 464.0005pt x 150.49072pt>
 File: ../figures/span-encoding.pdf Graphic file (type pdf)
 
 <use ../figures/span-encoding.pdf>
@@ -1771,35 +1761,35 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 [40] [41] [42] [43] [44] [45] [46] [47] (../tables/crf-fscores.tex) [48]
 (../tables/gen-fscores-crf.tex) (../tables/gen-perplexities-crf.tex)
-<../figures/sample-experiment/fscore/crf_disc_08.pdf, id=1629, 722.7pt x 361.35
+<../figures/sample-experiment/fscore/crf_disc_08.pdf, id=1630, 722.7pt x 361.35
 pt>
 File: ../figures/sample-experiment/fscore/crf_disc_08.pdf Graphic file (type pd
 f)
  <use ../figures/sample-experiment/fscore/crf_disc_08.pdf>
 Package pdftex.def Info: ../figures/sample-experiment/fscore/crf_disc_08.pdf us
-ed on input line 327.
+ed on input line 328.
 (pdftex.def)             Requested size: 376.4258pt x 188.21185pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<../figures/sample-experiment/ppl/crf_disc08.pdf, id=1630, 722.7pt x 722.7pt>
+<../figures/sample-experiment/ppl/crf_disc08.pdf, id=1631, 722.7pt x 722.7pt>
 File: ../figures/sample-experiment/ppl/crf_disc08.pdf Graphic file (type pdf)
 
 <use ../figures/sample-experiment/ppl/crf_disc08.pdf>
 Package pdftex.def Info: ../figures/sample-experiment/ppl/crf_disc08.pdf used o
-n input line 334.
-(pdftex.def)             Requested size: 376.4258pt x 376.42369pt.
+n input line 335.
+(pdftex.def)             Requested size: 292.77632pt x 292.7801pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<../figures/sample-experiment/entropy/all.pdf, id=1631, 361.35pt x 722.7pt>
+<../figures/sample-experiment/entropy/all.pdf, id=1632, 361.35pt x 722.7pt>
 File: ../figures/sample-experiment/entropy/all.pdf Graphic file (type pdf)
 
 <use ../figures/sample-experiment/entropy/all.pdf>
 Package pdftex.def Info: ../figures/sample-experiment/entropy/all.pdf used on i
-nput line 341.
+nput line 342.
 (pdftex.def)             Requested size: 167.29893pt x 334.59639pt.
 
 
@@ -1808,7 +1798,7 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 [49] [50 <../figures/sample-experiment/fscore/crf_disc_08.pdf>]
 (../figures/normal-form/cnf-valid.tex) (../figures/normal-form/cnf-invalid.tex)
 
-Overfull \hbox (2.0805pt too wide) in paragraph at lines 359--371
+Overfull \hbox (2.0805pt too wide) in paragraph at lines 360--372
 [][] [] 
  []
 
@@ -1830,17 +1820,7 @@ Overfull \hbox (0.81944pt too wide) in paragraph at lines 83--85
 eed-for-ward net-work parametrized
  []
 
-[63] (../tables/lm-perplexities.tex)
-
-LaTeX Warning: Reference `tab' on page 64 undefined on input line 104.
-
-! Too many }'s.
-l.104 ...ng the word prediction over the tagging.}
-                                                  
-You've closed more groups than you opened.
-Such booboos are generally harmless, so keep going.
-
-[64]
+[63] (../tables/lm-perplexities.tex) [64] [65]
 *geometry* verbose mode - [ newgeometry ] result:
 * driver: pdftex
 * paper: <default>
@@ -1873,73 +1853,133 @@ Such booboos are generally harmless, so keep going.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
- <../figures/syneval/all.pdf, id=1966, 753.3395pt x 1964.88768pt>
-File: ../figures/syneval/all.pdf Graphic file (type pdf)
 
-<use ../figures/syneval/all.pdf>
-Package pdftex.def Info: ../figures/syneval/all.pdf used on input line 112.
-(pdftex.def)             Requested size: 292.77632pt x 763.63475pt.
+<../figures/syneval/all_large-font.pdf, id=1987, 1132.33035pt x 1985.99767pt>
+File: ../figures/syneval/all_large-font.pdf Graphic file (type pdf)
+
+<use ../figures/syneval/all_large-font.pdf>
+Package pdftex.def Info: ../figures/syneval/all_large-font.pdf used on input li
+ne 112.
+(pdftex.def)             Requested size: 418.25372pt x 733.56519pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[65 <../figures/syneval/all.pdf>]
-<../figures/syneval/all-averaged.pdf, id=2024, 620.51514pt x 422.1848pt>
+[66 <../figures/syneval/all_large-font.pdf>]
+<../figures/syneval/all-averaged.pdf, id=2008, 782.77693pt x 426.30957pt>
 File: ../figures/syneval/all-averaged.pdf Graphic file (type pdf)
 
 <use ../figures/syneval/all-averaged.pdf>
 Package pdftex.def Info: ../figures/syneval/all-averaged.pdf used on input line
- 122.
-(pdftex.def)             Requested size: 376.4258pt x 256.1151pt.
-) [66
+ 120.
+(pdftex.def)             Requested size: 376.4258pt x 205.01006pt.
+
+<../figures/syneval/rnng_lm_horizontal.pdf, id=2009, 1486.98665pt x 900.28534pt
+>
+File: ../figures/syneval/rnng_lm_horizontal.pdf Graphic file (type pdf)
+ <use ../figures/syneval/rnng_lm_horizontal.pdf>
+Package pdftex.def Info: ../figures/syneval/rnng_lm_horizontal.pdf used on inpu
+t line 127.
+(pdftex.def)             Requested size: 418.25372pt x 253.21837pt.
 
 
- <../figures/syneval/all-averaged.pdf>]
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+<../figures/syneval/rnng_lm_no-unk_horizontal.pdf, id=2010, 1486.98665pt x 900.
+28534pt>
+File: ../figures/syneval/rnng_lm_no-unk_horizontal.pdf Graphic file (type pdf)
+ <use ../figures/syneval/rnng_lm_no-unk_horizontal.pdf>
+Package pdftex.def Info: ../figures/syneval/rnng_lm_no-unk_horizontal.pdf used 
+on input line 134.
+(pdftex.def)             Requested size: 418.25372pt x 253.21837pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+) [67
+
+
+ <../figures/syneval/all-averaged.pdf>] [68 <../figures/syneval/rnng_lm_horizon
+tal.pdf> <../figures/syneval/rnng_lm_no-unk_horizontal.pdf
+
+pdfTeX warning: pdflatex (file ../figures/syneval/rnng_lm_no-unk_horizontal.pdf
+): PDF inclusion: multiple pdfs with page group included in a single page
+>]
 chapter 6.
-(../05-semisupervised/semisupervised.tex [67
+(../05-semisupervised/semisupervised.tex
+Overfull \hbox (1.03822pt too wide) in paragraph at lines 5--6
+[]\OT1/ppl/m/n/10.95 The lower bound al-lows us to for-mu-late a semisu-per-vis
+ed train-ing ob-jec-tive, in which
+ []
 
-] [68] [69]) [70]
+[69
+
+] [70] [71] [72]) [73]
 chapter 7.
-(../07-conclusion/conclusion.tex) [71
+(../07-conclusion/conclusion.tex [74
 
 ]
+Overfull \hbox (0.72197pt too wide) in paragraph at lines 15--16
+ []\OT1/ppl/b/n/10.95 Comparison with mul-ti-task learn-ing[] \OT1/ppl/m/n/10.9
+5 We pro-posed a novel mul-ti-task lan-guage model
+ []
+
+[75]
+Overfull \hbox (3.34723pt too wide) in paragraph at lines 27--28
+\OT1/ppl/m/n/10.95 ing of the gen-er-a-tive RNNG with CRF pos-te-rior us-ing th
+e re-cently pro-posed SparseMAP
+ []
+
+) [76]
 chapter A.
-(../09-app-implementation/implementation.tex [72
+(../09-app-implementation/implementation.tex [77
 
-] [73] [74]) [75]
+] [78]) [79] [80]
 chapter B.
-(../10-app-crf/crf.tex (../figures/hypergraph/hypergraph.tex) [76
+(../10-app-crf/crf.tex (../figures/hypergraph/hypergraph.tex
+! Double superscript.
+l.43 ... at ($(S)+(0,2)$){$\text{S}^{\dagger}_{0}^
+                                                  {6}$} ;
+I treat `x^1^2' essentially like `x^1{}^2'.
 
-] [77]
-[78] [79] [80]) [81]
+) [81
+
+] [82] [83] [84] [85]) [86]
 chapter C.
-(../11-app-vi/vi.tex [82
+(../11-app-vi/vi.tex
+Overfull \hbox (22.3975pt too wide) in paragraph at lines 37--37
+[] 
+ []
 
-]
+[87
 
-Package natbib Warning: Citation `baydin2017automatic' on page 83 undefined on 
-input line 59.
-
-[83] [84] [85]) [86]
+] [88] [89] [90] [91]) [92]
 chapter D.
 (../12-app-syneval/syneval.tex
 LaTeX Font Info:    Font shape `OT1/ppl/bx/it' in size <10.95> not available
 (Font)              Font shape `OT1/ppl/b/it' tried instead on input line 41.
- [87
+ [93
 
-]) (./thesis.bbl [88] [89
+]) (./thesis.bbl [94] [95
 
-] [90] [91]
+] [96] [97]
 Underfull \hbox (badness 2698) in paragraph at lines 317--321
 []\OT1/ppl/m/n/10.95 Yoav Gold-berg and Joakim Nivre.  Train-ing de-ter-min-is-
 tic parsers with non-
  []
 
-[92] [93] [94] [95]
+[98]
+Underfull \hbox (badness 2111) in paragraph at lines 415--419
+[]\OT1/ppl/m/n/10.95 Yoon Kim, Alexan-der M Rush, Lei Yu, Ad-hi-guna Kun-coro, 
+Chris Dyer, and
+ []
+
+[99] [100] [101]
 ! Misplaced alignment tab character &.
 <argument> Computer Speech &
                              Language
-l.630 \newblock \emph{Computer Speech & Language}
+l.644 \newblock \emph{Computer Speech & Language}
                                                  , 10\penalty0 (3):\penalty0...
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -1948,31 +1988,27 @@ up above has ended a previous alignment prematurely,
 you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
-[96] [97])
+[102] [103]) [104]
 
-Package natbib Warning: There were undefined citations.
-
-[98]
-
-! LaTeX Error: \begin{example} on input line 173 ended by \end{document}.
+! LaTeX Error: \begin{example} on input line 149 ended by \end{document}.
 
 See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.234 \end{document}
+l.229 \end{document}
                     
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 234.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 234.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 229.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 229.
 (./thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 234.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 234.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 229.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 229.
 Package rerunfilecheck Info: File `thesis.out' has not changed.
-(rerunfilecheck)             Checksum: D53C566DF8AD65DE8FD39D6E60C81032;5908.
+(rerunfilecheck)             Checksum: C937F9E202FF330E8D0106AB0C64C24D;5933.
 
 
 LaTeX Warning: There were undefined references.
@@ -1980,50 +2016,55 @@ LaTeX Warning: There were undefined references.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 234.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 229.
  )
 (\end occurred inside a group at level 1)
 
-### semi simple group (level 1) entered at line 173 (\begingroup)
+### semi simple group (level 1) entered at line 149 (\begingroup)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 27033 strings out of 493014
- 503379 string characters out of 6133351
- 727473 words of memory out of 5000000
- 29386 multiletter control sequences out of 15000+600000
- 45195 words of font info for 128 fonts, out of 8000000 for 9000
+ 27074 strings out of 493014
+ 504454 string characters out of 6133351
+ 728123 words of memory out of 5000000
+ 29402 multiletter control sequences out of 15000+600000
+ 45652 words of font info for 129 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  73i,19n,77p,8522b,1414s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc
-}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb>
-</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></
-usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></u
-sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb>
-</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
-/usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></u
-sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr
-/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/l
-ocal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loc
-al/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/
-texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/tex
-live/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texliv
-e/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
-/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/201
-6/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2016/
-texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texli
-ve/2016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/
-texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf-d
-ist/fonts/type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/fo
-nts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/typ
-e1/urw/palatino/uplri8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw
-/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utm
-r8a.pfb>
-Output written on thesis.pdf (98 pages, 1201813 bytes).
+pdfTeX warning (dest): name{figure.caption.60} has been referen
+ced but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{table.caption.58} has been referenced but does not 
+exist, replaced by a fixed one
+
+{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/tex
+live/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texl
+ive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texliv
+e/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive
+/2016/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb></usr/local/texl
+ive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texli
+ve/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive
+/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2
+016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/201
+6/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2016/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2016/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2016/texmf-
+dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2016/texmf-dis
+t/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2016/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2016/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2016/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2016/texmf-dist/fonts
+/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/texmf-dist/f
+onts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2016/texmf-di
+st/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts
+/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/
+urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/pa
+latino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/palatino/
+uplri8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmb8a.pf
+b></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
+Output written on thesis.pdf (104 pages, 1367904 bytes).
 PDF statistics:
- 2697 PDF objects out of 2984 (max. 8388607)
- 2258 compressed objects within 23 object streams
- 567 named destinations out of 1000 (max. 500000)
- 820 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 2836 PDF objects out of 2984 (max. 8388607)
+ 2344 compressed objects within 24 object streams
+ 589 named destinations out of 1000 (max. 500000)
+ 830 words of extra memory for PDF output out of 10000 (max. 10000000)
 

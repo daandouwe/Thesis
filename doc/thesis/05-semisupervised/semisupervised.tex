@@ -1,35 +1,37 @@
-The generative RNNG defines a joint disribution over trees and sentences. In chapter \ref{03-rnng} we showed how this distribution can be estimated from labeled data by. In this chapter we show how estimation can be extended to unlabeled data.
+The generative RNNG defines a joint distribution over trees and sentences. In chapter \ref{03-rnng} we showed how this distribution can be estimated from labeled data. In this chapter we show how estimation can be extended to unlabeled data. We optimize a tractable lower bound on the marginal log likelihood using amortized variational inference with an approximate posterior---a procedure reminiscent of the importance sampling inference, and both the discriminative RNNG as the CRF can be used. To compute gradients we use samples from the posterior, and the CRF particularly excels in this role: the entropy term in the lower bound can be computed exactly, and the global normalization of the distribution makes the model a well behaved sampler. The lower bound allows us to formulate a semisupervised training objective, in which we can add any amount of unlabeled data to the already existing labeled data, thus extending the training to both more data and different domains. A further question is whether we can estimate the RNNG in a fully unsupervised fashion. This is particularly challenging because the RNNG makes no independence assumptions and as such it is questionable whether such an expressive model model possesses enough inductive bias to learn any consistent structure without supervision. Very recently \citet{kim2019unsupervised} have shown the success of this approach for binary trees in an approach that is remarkably similar to ours. [Something about the CRF problems]
+
+In this chapter:
 \begin{itemize}
   \item We describe how the RNNG can be used to learn from unlabeled data using amortized variational inference with an approximate posterior.
-  \item We describe how the discriminative RNNG and the CRF parser introduced in chapter 4 both can be used as approximate posterior, but emphasize how the globally normalized CRF in excels this role.
   \item We show how to obtain gradients for of the lowerbound by using the score function estimator, and show how to reduce the variance of this estimator using baselines.
-  \item We perform experiments with the semisupervised and unsupervised training, with both the CRF and RNNG as posteriors, for both labeled an unlabeled training, and describe our findings.
-  % \item I formulate an unsupervised objective for the RNNG that we can combine with the supervised objective to perfom semisupervised training.
-  % \item I introduce an approximate posterior in the form of a discriminative parser and derive a variational lower bound on the unsupervised objective.
+  \item We describe how the discriminative RNNG and the CRF parser introduced in chapter 4 both can be used as approximate posterior, but emphasize how the globally normalized CRF in excels this role.
+  \item We describe experiments with semisupervised and unsupervised training---with both the CRF and RNNG as posteriors, for both labeled an unlabeled trees, with and without supervised pretraining---and obtain no definitive results, but analyze our preliminary findings.
+  \item We conclude that with the appropriate changes to the CRF posterior, the unsupervised and unlabeled learning of the RNNG could prove succesful, indicated by the very recent success of \citet{kim2019unsupervised} with this approach for binary trees.
 \end{itemize}
 
 
 \section{Unsupervised learning}
-  In this section we describe how the joint distribution of the RNNG can be estimated from unlabeled data by maximizing the marginal likelihood, making the trees a latent variable. Because the exact marginalization is intractable we resort to variational inference: we introduce an approximate posterior and optimize a lower  bound on the marginal likelihood. The approximate posterior is a discriminative parser, and is also called an inference network. In this section we describe how we derive
+  We first describe how the joint distribution of the RNNG can be estimated from unlabeled data by maximizing the marginal likelihood, making the trees a latent variable. We derive the lower bound and describe how the choice of approximate posterior affects the optimization of it.
 
   \subsection{Variational approximation}
     The joint log likelihood $\log p_{\theta}(\x, \y)$ of the generative RNNG defines a marginal likelihood
     \begin{align*}
       \log \ptheta(\x) = \log \sum_{\y \in \yieldx} \ptheta(\x, \y).
     \end{align*}
-    Optimizing this with respect to $\theta$ directly is intractable due to the sum over trees. We resort variational inference \citep{jordan1999vi,blei2016vi} and introduce a posterior $\qlambda(\y | \x)$ parametrised by $\lambda$ and use Jensen's inequality to derive a variational lower bound on the marginal likelihood:
+    Optimizing this with respect to $\theta$ directly is intractable due to the sum over trees and so we must resort to an approximate method. We use variational inference \citep{jordan1999vi,blei2016vi} and introduce a posterior $\qlambda(\y | \x)$ parametrised by $\lambda$ and use Jensen's inequality to derive a variational lower bound on the marginal likelihood:
     \begin{align}
       \label{eq:lowerbound}
       \log p (\x)
         &= \log \sum_{\y  \in \yieldx} \qlambda(\y |\x) \frac{\ptheta(\x,\y )}{\qlambda(\y | \x)} \nonumber  \\
-        &= \log \expect_q \Bigg[ \frac{\ptheta(\x,\y )}{ \qlambda(\y | \x)} \Bigg] \nonumber  \\
-        &\geq \expect_q \Bigg[ \log \frac{\ptheta(\x,\y )}{\qlambda(\y | \x)} \Bigg].  \nonumber \\
+        &= \log \expect_q \bigg[ \frac{\ptheta(\x,\y )}{ \qlambda(\y | \x)} \bigg] \nonumber  \\
+        &\geq \expect_q \bigg[ \log \frac{\ptheta(\x,\y )}{\qlambda(\y | \x)} \bigg].  \nonumber \\
         &= \expect_q [\log \ptheta(\x,\y )  - \log \qlambda(\y | \x) ].
     \end{align}
     This is called the evidence lower bound (ELBO) \citep{blei2016vi}, and we define it as a function of parameters $\theta$ and $\lambda$ given a single datapoint $\x$ as
     \begin{align}
-      \elbo(\theta, \lambda; \x) = \expect_q \Bigg[ \log \frac{\ptheta(\x,\y )}{\qlambda(\y | \x)} \Bigg].
+      \elbo(\theta, \lambda; \x) = \expect_q \bigg[ \log \frac{\ptheta(\x,\y )}{\qlambda(\y | \x)} \bigg].
     \end{align}
+    The expectation can then estimated using samples from $q$.
 
     The objective is optimized with respect to both the generative and inference parameters. We can rewrite it in two ways, each providing different perspective on this optimization procedure. On the one hand
     \begin{align*}
@@ -43,18 +45,13 @@ The generative RNNG defines a joint disribution over trees and sentences. In cha
     \end{align}
     This reveals that the posterior is encouraged to put its mass on those trees that have likelihood under the joint model, while the entrop term discourages it from overly concentrating the probability mass.
 
-  \section{Approximate posterior}
-    For the approximate posterior hold the same requirements as the proposal distribution familiar from the approximate marginalization of chapter \ref{03-rnng}.
-    Because both these models are parametrized by neural networks this, this can be considered a kind of by neural networks \citep{kingma2014vae}. The
+  \subsection{Approximate posterior}
+    For the approximate posterior hold the same requirements as the proposal distribution familiar from the approximate marginalization of chapter \ref{03-rnng}, and so our previous discussions apply here. The CRF has number of advantages over the RNNG that we will elaborate on the next section. It also has problem that is related to the and that we will describe in the
 
-    % An interesting advantage of the CRF parser is that we \textit{can} compute the entropy H$(q)$ exactly. This contrasts with the discriminative RNNG, where H$(q)$ can only be approximated. To make this explicit we introduct separate ELBO objectives:
-    % \begin{align}
-    %   \elbo_{\textsc{rnng}}(\theta, \lambda) &\defeq \sum_{\x \in \dataset_U}\expect_q \Bigg[\log \ptheta(\x,\y )  - \log  \qlambda(\y | \x) \Bigg] \\
-    %   \elbo_{\textsc{crf}}(\theta, \lambda) &\defeq \sum_{\x \in \dataset_U} \expect_q \Bigg[\log \ptheta(\x,\y ) \Bigg]  + H(q).
-    % \end{align}
+    % Because both these models are parametrized by neural networks this is a kind of amortized variational inference \citep{kingma2014vae}.
 
 \section{Training}
-  We use the ELBO to formulate a semisupervised and an unsupervised objective. Let $\dataset_L = \{ (\x_i, \y_i)\}_{i=1}^N$ be the labeled familiar dataset from the supervised training, and let $\dataset_U = \{ \x_i \}_{i=1}^M$ be an unlabeled dataset consisting merely of sentences $\x$. The unsupervised objective is then to maximize
+  We use the ELBO to formulate a semisupervised and an unsupervised objective. Let $\dataset_L = \{ (\x_i, \y_i)\}_{i=1}^N$ be the familiar dataset from the supervised training, and let $\dataset_U = \{ \x_i \}_{i=1}^M$ be an unlabeled dataset consisting merely of sentences $\x$. The unsupervised objective is then to maximize
   \begin{align}
     \elbo(\theta, \lambda) = \sum_{ x \in \dataset_U } \elbo(\theta, \lambda; \x),
   \end{align}
@@ -62,52 +59,75 @@ The generative RNNG defines a joint disribution over trees and sentences. In cha
   \begin{align*}
     \objective(\theta, \lambda) = \objective_{S}(\theta) + \elbo(\theta, \lambda),
   \end{align*}
-  where $\objective_{S}(\theta) = \sum_{ (\x, \y) \in \dataset } \log \ptheta(\x, \y)$ is the supervised objective. The objectives are optimized with gradient based optimization, which means that we requires us to compute the gradients $\nabla_{\theta} \elbo(\theta, \lambda)$ and $\nabla_{\lambda} \elbo(\theta, \lambda)$.
+  where $\objective_{S}(\theta) = \sum_{ (\x, \y) \in \dataset } \log \ptheta(\x, \y)$ is the supervised objective.
+
+  The objectives are optimized with gradient based optimization. This means that we need to compute the gradients $\nabla_{\theta} \elbo(\theta, \lambda)$ and $\nabla_{\lambda} \elbo(\theta, \lambda)$. These gradients need to be estimate with samples from the posterior, and the form of those estimates will depend on the posterior model used. With the CRF as posterior, we use the ELBO objective written as
+  \begin{align}
+    \elbo_{CRF}(\theta, \lambda; \x)
+      &= \expect_q [ \log \ptheta( \x, \y ) ] + \entropy_q(Y | X = x),
+  \end{align}
+  because we can compute the entropy exactly and only the first part of the sum needs to be estimated. With the RNNG as posterior we use the ELBO writen as
+  \begin{align}
+    \elbo_{RNNG}(\theta, \lambda; \x)
+      &= \expect_q [ \log \ptheta( \x, \y ) ] - \expect_q [ \log \qlambda(\y | \x) ],
+  \end{align}
+  and need to estimate the entire quantity.
 
   \subsection{Gradients of joint parameters}
     The first gradient is easy and permits a straightforward Monte-Carlo estimate:
-    \begin{align*}
-      \nabla_{\theta} \elbo(\theta, \lambda; \x)
-        &= \nabla_{\theta} \expect_q [ \log \ptheta(\x, \y) ]  + \entropy_q( Y | X = x) ] \\
-        % &= \nabla_{\theta} \expect_q [ \log \ptheta(\x, \y) ]  - \log \qlambda(\y | \x) ] \\
-        &= \expect_q [ \nabla_{\theta} \log \ptheta(\x, \y) ] \\
+    \begin{align}
+      \nabla_{\theta} \elbo_{CRF}(\theta, \lambda; \x)
+        &= \nabla_{\theta} \expect_q [ \log \ptheta(\x, \y) ]  + \nabla_{\theta} \entropy_q( Y | X = x)  \nonumber \\
+        &= \expect_q [ \nabla_{\theta} \log \ptheta(\x, \y) ]  \nonumber \\
         &\approx \frac{1}{K}\sum_{i=1}^K  \nabla_{\theta} \log \ptheta(\x, \y^{(i)})
-    \end{align*}
-    where $\y^{(i)}$ are independet samples from the approximate posterior $\qlambda( \cdot | \x)$. We can move the gradient inside the expectation because $q$ does not depend on $\theta$, and note that the entropy does not depend on $\theta$.
+    \end{align}
+    where $\y^{(i)}$ are independent samples from the approximate posterior $\qlambda( \cdot | \x)$. We can move the gradient inside the expectation because $q$ does not depend on $\theta$. For the same reason the gradient of the entropy is zero. In the case of the RNNG posterior we end up with the same estimator:
+    \begin{align}
+      \nabla_{\theta} \elbo_{RNNG}(\theta, \lambda; \x)
+        &= \nabla_{\theta} \expect_q [ \log \ptheta(\x, \y) ]  - \log \qlambda(\y | \x) ]  \nonumber \\
+        &= \expect_q [ \nabla_{\theta} \log \ptheta(\x, \y) ]  \nonumber \\
+        &\approx \frac{1}{K}\sum_{i=1}^K  \nabla_{\theta} \log \ptheta(\x, \y^{(i)})
+    \end{align}
 
   \subsection{Gradients of posterior parameters}
-    The second gradient is less straightforward and requires us to rewrite the objective as a \textit{score function estimator} \citep{fu2006gradient}.  We define a \textit{learning signal}
+    The second gradient is less straightforward and requires us to rewrite the gradient as the \textit{score function estimator} \citep{fu2006gradient}. The difference will be in the expectation: where in the previous derivations we could freely exchange gradients and expectations now we cannot. We will first derive the estimator for the RNNG ELBO. We define the \textit{learning signal} as everything that is inside the expectation
     \begin{equation}
-      % L(\x, \y) \defeq \log \ptheta(\x, \y) - \log \qlambda(\y | \x),
-      L(\x, \y) \defeq \log \ptheta(\x, \y),
+      L(\x, \y) = \log \ptheta(\x, \y) - \log \qlambda(\y | \x).
     \end{equation}
-    and use the identity in equation \ref{eq:score-function-estimator} that we derive in the appendix
-    \begin{align*}
-      \nabla_{\lambda} \elbo(\theta, \lambda)
-        &= \nabla_{\lambda} \expect_q [ L(\x, \y) ] + \entropy_q( Y | X = x) ] \\
-        &= \expect_q [ L(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ].
-    \end{align*}
+    We then use equality \ref{eq:score-function-estimator} to derive
+    \begin{align}
+      \nabla_{\lambda} \elbo_{RNNG}(\theta, \lambda)
+        &= \nabla_{\lambda} \expect_q [ L(\x, \y) ]  \nonumber \\
+        &= \expect_q [ L(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ]
+    \end{align}
     In this rewritten form the gradient is in the form of an expectation, and that does permit a straightforward MC estimate:
     \begin{align}
-      \expect_q \Bigg[ L(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) \Bigg]
+      \expect_q [ L(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ]
         &\approx \frac{1}{K}\sum_{i=1}^K  L(\x, \y_i)\nabla_{\lambda} \log \qlambda(\x | \y_i)
     \end{align}
-    where again $y_i \sim \qlambda(\cdot | \x)$ for $i=1,\dots,K$ are independently sampled from the approximate posterior. This estimator has been derived in slightly different forms in \citet{williams1992reinforce,paisley2012viss,mnih2014nvil,ranganath2014black,miao2016discrete} and is also known as the reinforce estimator \citep{williams1992reinforce}.
+    where again $y^{(i)}$ are independent samples from $\qlambda(\cdot | \x)$. This estimator has been derived in different forms by \citet{williams1992reinforce,paisley2012viss,mnih2014nvil,ranganath2014black,miao2016discrete} and is also known as the reinforce estimator \citep{williams1992reinforce}.
 
-\section{Variance reduction}
-  We introduce the two baselines:
-  \begin{itemize}
-    \item Feedforward baseline \citep{miao2016discrete}.
-    \item Argmax baseline from \citet{rennie2017argmax} which is exact in the CRF, and approximate in the RNNG.
-    \item The CRF has no variance in estimating the entropy.
-  \end{itemize}
+    For the CRF posterior we need the score function estimator only for the part inside the expectation---the gradient of the entropy can be computed exactly. We thus define
+    \begin{equation}
+      L(\x, \y) = \log \ptheta(\x, \y),
+    \end{equation}
+    and derive
+    \begin{align*}
+      \nabla_{\lambda} \elbo_{CRF}(\theta, \lambda)
+        &= \nabla_{\lambda} \expect_q [ L(\x, \y) ] +  \nabla_{\lambda} \entropy_q( Y | X = x) ] \\
+        &= \expect_q [ L(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ] + \nabla_{\lambda} \entropy_q( Y | X = x).
+    \end{align*}
+    The computation of $\entropy_q( Y | X = x)$ is fully differentiable ($\cf$ \ref{eq:crf-entropy}), and so we can rely on automatic differentiation to compute $\nabla_{\lambda} \entropy_q( Y | X = x)$.
+
+  \subsection{Variance reduction}
+    The score function
+
+    \begin{itemize}
+      \item Argmax baseline from \citet{rennie2017argmax} which is exact in the CRF, and approximate in the RNNG.
+    \end{itemize}
 
 \section{Experiments}
-  \begin{itemize}
-    \item Experiments with the two baselines and the two posteriors.
-    \item Compare to a simple baseline: supervised learing on mixed gold-silver trees (partially predicted).
-    \item Analyze the variance reduction provided by the different baselines.
-  \end{itemize}
+
 
 \section{Related work}
   \begin{itemize}

@@ -1,4 +1,4 @@
-\begin{thebibliography}{114}
+\begin{thebibliography}{115}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -410,15 +410,17 @@ Yoon Kim, Carl Denton, Luong Hoang, and Alexander~M Rush.
 \newblock Structured attention networks.
 \newblock \emph{arXiv preprint arXiv:1702.00887}, 2017.
 
+\bibitem[Kim et~al.(2019)Kim, Rush, Yu, Kuncoro, Dyer, and
+  Melis]{kim2019unsupervised}
+Yoon Kim, Alexander~M Rush, Lei Yu, Adhiguna Kuncoro, Chris Dyer, and G{\'a}bor
+  Melis.
+\newblock Unsupervised recurrent neural network grammars.
+\newblock \emph{arXiv preprint arXiv:1904.03746}, 2019.
+
 \bibitem[Kingma and Ba(2014)]{kingma2014adam}
 Diederik~P. Kingma and Jimmy Ba.
 \newblock Adam: {A} method for stochastic optimization.
 \newblock \emph{CoRR}, abs/1412.6980, 2014.
-
-\bibitem[Kingma and Welling(2014)]{kingma2014vae}
-Diederik~P. Kingma and Max Welling.
-\newblock Auto-encoding variational bayes.
-\newblock In \emph{International Conference on Learning Representations}, 2014.
 
 \bibitem[Kitaev and Klein(2018)]{kitaev2018attentive}
 Nikita Kitaev and Dan Klein.
@@ -566,6 +568,12 @@ Graham Neubig, Yoav Goldberg, and Chris Dyer.
 \newblock On-the-fly operation batching in dynamic computation graphs.
 \newblock In \emph{Advances in Neural Information Processing Systems}, pages
   3971--3981, 2017{\natexlab{b}}.
+
+\bibitem[Niculae et~al.(2018)Niculae, Martins, Blondel, and
+  Cardie]{niculae2018sparsemap}
+Vlad Niculae, Andr{\'e}~FT Martins, Mathieu Blondel, and Claire Cardie.
+\newblock Sparsemap: Differentiable sparse structured inference.
+\newblock \emph{arXiv preprint arXiv:1802.04223}, 2018.
 
 \bibitem[Nivre(2005)]{nivre2005dependency}
 Joakim Nivre.

@@ -246,6 +246,7 @@ In this chapter:
 
       The entropy, then can then be written in terms of these marginals:
       \begin{align}
+        \label{eq:crf-entropy}
         \entropy(Y \mid X = x)
           &= - \sum_{ \y \in \yieldx } p(\y \mid \x) \log p(\y \mid \x)  \nonumber \\
           &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{v \in \y} \log \psi(\x, v)  \nonumber \\
@@ -331,7 +332,7 @@ In this chapter:
 
     \begin{figure}[h]
       \center
-    	\includegraphics[width=0.9\textwidth]{sample-experiment/ppl/crf_disc08.pdf}
+    	\includegraphics[width=0.7\textwidth]{sample-experiment/ppl/crf_disc08.pdf}
     \caption{Perplexity estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha=0.8$, for 10 independent repetitions.}
     \label{fig:samples-perplexities}
     \end{figure}
@@ -346,7 +347,7 @@ In this chapter:
     Figure \ref{fig:samples-entropy} shows the estimation of the conditional entropy, now including the results for the CRF. The estimates of the CRF converge to the true conditional entropy, which can be computed exactly and equals 2.84.\footnote{To be precise, the values $\entropy(Y \mid X = x)$ can be computed exactly, the value $\entropy(Y \mid X)$ is still estimated by a mean over the test set.} Furthermore we can note that the conditional entropy of the CRF is higher than that of the discriminative RNNG when not annealed. This could indicate that the CRF maintains a higher number of alternative parses per sentence on average than the RNNG. Another plausible explanation is that the higher entropy is caused by the derivational ambiguity: the higher entropy reflects that each tree has multiple derivations.
 
 \section{Problems as proposal}
-  The use of the CRF as a proposal distribution has brought to light a subtle issue: our choice of binarizing has introduced derivational ambiguity, and this affects the approximate marginalization. In this section we will describe this issue,
+  The use of the CRF as a proposal distribution has brought to light a subtle issue. our choice of binarizing has introduced derivational ambiguity, and this affects the approximate marginalization. In this section we will describe this issue,
 
   \subsection{Derivational ambiguity}
     The way our CRF deals with binarization and its inverse introduces the problem derivational ambiguity: many binary derivation $d$ modelled by the CRF as distinct map to the same tree $y$ when the dummy node is collapsed. In other words: we map a treebank tree to \textit{a single} normal form derivation, but many normal form derivations map to a single treebank tree. Let us illustrate this with an example. The two normal form trees in \ref{fig:normal-form-trees} both collapse to the same tree when dummy labels $\varnothing$ are collapsed:

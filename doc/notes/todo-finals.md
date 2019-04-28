@@ -268,7 +268,9 @@ Writing
   - [X] Result tables
   - [X] Entropy figures
   - [X] Perplexity figures.
-  - [ ] Helemaal rechtrekken.
+  - [X] Helemaal rechtrekken.
+  - [ ] Complexity in Training
+  - [ ] Speed in experiments, including convergence time.
 
 2. CRF
   - [X] Introduction
@@ -279,6 +281,10 @@ Writing
     * CRF is distribution over binary trees, not over collapsed trees! So actually not porperly suitable as proposal distribution. This is not so strongly noticable when dealing with large (100+) label-set, but becomes totally untenable in case of unlabeled (1 label).
     * Also: the support of the GenRNNG is strictly greater than the support of the CRF: unbounded unary chains are not supported by CRF, only small unary chains that are in the PTB. This is not a problem really for the pretrained models; it is a problem for training from scratch.
   - [X] Check: is the MC estimate still valid, given that the CRF models derivations?
+  - [ ] Write logscore as cliques prod_{c in mathcal{C}} psi(a_c), or as index sets prod_{I} psi(a_I)
+  - [ ] Recall complexity in the training objective, and note dependence also on labelset.
+  - [ ] Write speed in experiments, including convergen time (15 days). Note that we can speed up by training on less labels.
+  - [ ] Fix ugly ordering of figures: put everything on one page?
 
 3. Semisup
   - [ ] DiscRNNG: (labeled and unlabeled) from scratch impossible; from pretraining unrails completely.
@@ -288,8 +294,9 @@ Writing
   - [X] Describe how to prune CRF forest.
 
 4. Syneval
-  - [ ] Introduction
-  - [ ] Incorporate results
+  - [X] Introduction
+  - [X] Result plots.
+  - [X] Describe
 
 5. Conclusion
 

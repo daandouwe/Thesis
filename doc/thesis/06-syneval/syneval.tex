@@ -3,8 +3,8 @@ Language models are typically evaluated by the perplexity they assign to held ou
 In this chapter:
 \begin{itemize}
   \item We introduce the Syneval dataset: we describe syntactic phenomena that it tests and review how this dataset relates to other work on syntactic evaluation.
-  \item We introduce multitask learning with a syntactic side objective as an previously proposed approach to improve language models for this task: we describe the approach combining language modelling with CCG supertagging \citep{enguehard2017multitask}, but also introduce a novel multitask language model based on span labeling that is inspired by the scoring function of our CRF parser.
-  \item We evaluate all the models introduced thus far on this dataset and show that this gives finegrained differentation between the various models, generally favoring the RNNG, but often closely followed by the multitask models.
+  \item We introduce multitask learning with a syntactic side objective as an previously proposed approach to improve language models for this task: we describe a previous approach that combines language modelling with CCG supertagging \citep{enguehard2017multitask}, and introduce a novel multitask language model based on span labeling that is inspired by the scoring function of our CRF parser.
+  \item We evaluate all the models introduced thus far on this dataset and show that this gives finegrained differentation between the various models, generally favoring the RNNG, but often closely followed by and sotemies surpassed by the multitask models.
 \end{itemize}
 
 \section{Syntactic evaluation}
@@ -25,7 +25,7 @@ Recently, a series of papers has introduced tasks that specifically evaluate the
     \end{enumerate}
   The dataset contains constructions of increasing difficulty for each of these categories. For example, the distance between two words in a syntactic dependency can be increased by separating them with a prepositional phrase: \textit{The farmer next to the guards smiles}. In this example \textit{the guards} additionally forms a distractor for the proper conjugation of \textit{smiles}, making the example extra challenging.
 
-  The dataset is constructed automatically using handcrafted context-free grammars. The lexical rules are finegrained so that the resulting sentences are semantically plausible. In particular there are rules for animate and innanimate objects so a sentence like \textit{The apple laughs} cannot be constructed. The total dataset consists of around 350,000 sentence pairs. For the full list of categories that are evaulated in the Syneval dataset, including examples, we refer the reader to appendix \ref{A5-syneval}.
+  The dataset is constructed automatically using handcrafted context-free grammars. The lexical rules are finegrained so that the resulting sentences are semantically plausible. In particular there are rules for animate and innanimate objects so a sentence like \textit{The apple laughs} cannot be constructed. The total dataset consists of around 350,000 sentence pairs. The full set of sentence types per category, including examples, is listed appendix \ref{A5-syneval}.
 
 \subsection{Related work}
   There has been a surge recently of work on syntactic evaluation. \citet{linzen2016syntax} introduce the task of long distance subject-verb agreement and \citet{gulordava2018colorless} make this test more challenging by turning the sentences nonsensical while keeping them grammatical. Both datasets are extracted from a wikipedia corpus based on properties of their predicted dependency parse. To make the sentences nonsensical, \citet{gulordava2018colorless} randomly substitute words from the same grammatical category.\footnote{An approach inspired by Chomsky's (in)famous sentence \textit{Colorless green ideas sleep furiously} that is both grammatical and nonsensical.} \citet{warstadt2018acceptability} fine-tune neural models to learn to immitate grammatical acceptability judgments gathered from linguistics textbooks.
@@ -55,7 +55,7 @@ Recently, a series of papers has introduced tasks that specifically evaluate the
   \end{align*}
   where the conditional probabilities of $x_i$ are computed by linear regression on forward RNN vectors $\fw_{i-1}$ as
   \begin{align*}
-    p_{\theta, \lambda}( x \mid \x_{<i}) &\propto \exp \Big \{ [ \vecW^{\top} \fw_{i-1} + \vecb ]_{x} \Big\},
+    p_{\theta, \lambda}( x \mid \x_{<i}) &\propto \exp \Big \{ [ \vecW \fw_{i-1} + \vecb ]_{x} \Big\},
   \end{align*}
   where $x$ doubles as an index. The parameters $\lambda = \{ \vecW, \vecb \}$ are specific to the language model, and the vectors $\fw_i$ are computed using a forward RNN parametrized by $\theta$. The vectors $\fw_i$ are used in the side objective as well, and it is in this precise sense that the parameters $\theta$ are shared between $p$ and $q$.
 
@@ -87,39 +87,51 @@ Recently, a series of papers has introduced tasks that specifically evaluate the
     \end{align*}
     where $A$ doubles as index. This model differs from the supertagging model in the interaction of the vectors $\fw$ in the definition of $\vecs_{ij}$. This linear defintion puts significant restriction on the encodings, which is precisely what we want. This side objective is inspired by the label scoring function of the CRF parser, and is novel as a multitask objective, as far as we know.
 
-  % \begin{itemize}
-  %   \item I hypothesize a bit about their comparative (dis)advantages. In particular the subject argument structure that is encoded in CCG tags that is not in the CFG spans.
-  %   \item I compare the effect of these two multitask objectives in the syneval setting.
-  %   \item I compare the two methods with respect to perplexity. \citet{enguehard2017multitask} show that the CCG side objective helps the model perform much better on the syntactic task, as well as reach much lower perplexity. Preliminary experiments with the labeld span side-objective showed that it also makes the model perform much better on the syntactic task, but that the perplexity is worse. This more in line with the findings in \citet{tran2018recurrent}.
-  % \end{itemize}
-
 \section{Experiments}
   In this section we report the results of the evaluation on the Syneval dataset. We evaluate all the models proposed thus far: the generative RNNG with the two proposal models as described in chapters \ref{03-rnng} and \ref{04-crf}; the multitask models described in the previous section; and a baseline RNN language model. We first describe the training setup and results of the (multitask) RNN language models. We then describe the evaluation setup and discuss the results.
 
   \subsection{Setup}
-    We first train the three language models. We train one baseline RNN language model (RNNLM), and two RNN language models trained with multitask learning using the span side objective (RNNLM-span) and the CCG side objective (RNNLM-CCG). Because the RNNLM will function as a baseline comparison to the RNNG we choose the dimensions of the states to result in a similar number of parameters. The models use the same vocabulary as the generative RNNG, and the embeddings are of size 100 as well. The LSTM has dimension 330 and has 2 layers. The feedforward networks used by the side models $q$ in the multitask models have 1 hidden layer with dimension 250. The number of parameters the models totals around 9,300,00 parameters, not counting the parameters of $q$ which we discard after training. We train the three language models exactly as the generative RNNG, using SGD with a learning rate of 0.1, and dropout of 0.3.
+    We first train the three language models. We train one baseline RNN language model (RNNLM), and two RNN language models trained with multitask learning using the span side objective (RNNLM-span) and the CCG side objective (RNNLM-CCG). Because the RNNLM will function as a baseline comparison to the RNNG we choose the dimensions of the states to result in a similar number of parameters. The models use the same vocabulary as the generative RNNG, and the embeddings are of size 100 as well. The LSTM has dimension 330 and has 2 layers. The feedforward networks used by the side models $q$ in the multitask models have 1 hidden layer with dimension 250. The number of parameters the models totals around 9,300,000 parameters, not counting the parameters of $q$ which we discard after training. We train the three language models exactly as the generative RNNG, using SGD with a learning rate of 0.1, and dropout of 0.3.
 
     \input{../tables/lm-perplexities.tex}
 
-    We train 10 separate seperate runs of each model. The perplexity results are shown in table \ref{tab}. The multitask models take considerably more epochs to converge\footnote{Around 150 versus 100.} and both obtain higher perplexity than the single task language model. The gap with the RNNLM-CCG model is particularly large. This finding contrasts with \citet{linzen2018targeted} who obtain a lower perplexity with CCG tagging than without. This opposite result is probably caused by a difference in training data. \citet{linzen2018targeted} use an unlabeled dataset of 90 million words, which is almost 100 times the size of the PTB. This data composition puts much more weight on the language modelling part of the multitask objective, favoring the word prediction over the tagging.}
+    We train 10 separate seperate runs of each model. The perplexity results are shown in table \ref{tab:gen-perplexities-crf}. The multitask models take considerably more epochs to converge\footnote{Around 150 versus 100.} and perform worse in terms of perplexity than the single task language model. The gap with the RNNLM-CCG model is particularly large. This contrasts with \citet{linzen2018targeted} who obtain a lower perplexity with CCG tagging than without. This opposite result is probably caused by a difference in training data. \citet{linzen2018targeted} use an unlabeled dataset of 90 million words---almost 100 times the size of the PTB---which puts much more weight on the language modelling part of the multitask objective, favoring the word prediction over the tagging.
 
   \subsection{Results}
+    We evaluate four models on the syneval dataset: the generative RNNG with RNNG proposals (RNNG) and CRF proposals (RNNG-CRF); the mulitask RNNLM models (RNNLM-span and RNNLM-CCG); and the RNNLM baseline. For the RNNG we use 100 samples and for the RNNG proposals we use a temperature of 0.8. We evaluate each of the 10 trained runs per model and report the mean and standard deviation on the dataset. We do not preprocess the Syneval dataset in any way, leaving the sentences with their original lowercase initial letter and without period at the end, and keep all sentences that contain unknown words. The results are shown in figure \ref{fig:syneval-all} broken down per detailed category, corresponding to the list in appendix \ref{A5-syneval}. The results with a less finegrained view can bee seen in figure \ref{fig:syneval-all-averaged}, showing the average accuracy per broad category.\footnote{This average is computed over the \textit{accuracies} per subcategory in figure \ref{fig:syneval-all} not over the per-sentence \textit{predictions}, thus disregarding the difference in number of sentences per detailed category. The standard deviation is still over the runs.}
 
-    \newgeometry{top=5mm, bottom=5mm}
+    In \ref{fig:syneval-all} we can see that overall the results are close, especially taking into considering the deviation within each model. The most striking immediate fact is that the accuracy in the NPI category shows enormous variation, while on average performing rather poorly. This variation is \textit{between} models, but most importantly it is \textit{within} the runs of single models. The variation within model is so great for this class that we think it precludes us from drawing many conclusions about it other than these: that none of the models converge to a consistent attitude with respect to negative polarity items; and that what some of these models learn seems te be quite the \textit{opposite} of what is expected. In categories 1 and 2, things are looking more definitive within models, but less definitive between models. One category stands out: for the object relative clauses the RNNG outperforms the other models by a large margin. The results in the other categories look less convincing.
 
+    When we move to figure \ref{fig:syneval-all} and consider the accuracies on average we see a clearer pattern: the RNNG performs best in the first category, and the multitask models perfom best in the second. But the results remain rather close. The RNNG also outperforms the others in the third category---on average, because again we can see the large deviation within the different runs.
+
+    We also investigate the impact of some basic preprocessing of the Syneval dataset. Uppercasing the initial letter of each sentence resulted in much lower perplexities for each sentence---to be expected because we use case sensitive vocabularies---but did not affect the classification accuracy in any category, indicating that capitalization does not affect the comparative differences in perplexity. Removing all pairs with unknown words---about half of the dataset---did affect the classification, but not always in a clear way. For the RNNG and RNNLM we did find an interesting pattern, shown in figures \ref{fig:syneval-lm-rnng} and \ref{fig:syneval-lm-rnng-nounk}. For both models the results are better without unknown words, but the impact on the RNNLM is much greater. In particular, in the first three subcategories of the agreement category, the RNNLM is worse than the RNNG when including unknown words, but outperforms the RNNG when the unknown words are excluded. This shows that in the ideal situation the RNNLM can learn agreement as well as the RNNG, but that it has a hard time dealing with the grammatical function of the unknown words compared to the RNNG. Quite possibly this shows the added benefit of structural information in the interpretation of the unknown words.
+
+    \newgeometry{top=5mm, bottom=5mm}  % enables full page view
       \begin{figure}[h]
         \center
-        \includegraphics[width=0.7\textwidth]{syneval/all.pdf}
-      \caption{Syneval results for all categories.}
+        \includegraphics[width=\textwidth]{syneval/all_large-font.pdf}
+      \caption{Syneval results for all models per category, bars showing standard deviation. The categories are described in appendix \ref{A5-syneval}.}
       \label{fig:syneval-all}
       \end{figure}
-
     \restoregeometry
-
 
     \begin{figure}[h]
       \center
       \includegraphics[width=0.9\textwidth]{syneval/all-averaged.pdf}
-    \caption{Syneval results for all categories.}
+    \caption{Syneval results averaged over the three main categories.}
     \label{fig:syneval-all-averaged}
+    \end{figure}
+
+    \begin{figure}[h]
+      \center
+      \includegraphics[width=\textwidth]{syneval/rnng_lm_horizontal.pdf}
+    \caption{Syneval results for RNNLM and RNNG.}
+    \label{fig:syneval-lm-rnng}
+    \end{figure}
+
+    \begin{figure}[h]
+      \center
+      \includegraphics[width=\textwidth]{syneval/rnng_lm_no-unk_horizontal.pdf}
+    \caption{Syneval results for RNNLM and RNNG, pairs with unknown words removed.}
+    \label{fig:syneval-lm-rnng-nounk}
     \end{figure}

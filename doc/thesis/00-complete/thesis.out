@@ -64,13 +64,13 @@
 \BOOKMARK [0][-]{chapter.6}{Semisupervised learning}{}% 64
 \BOOKMARK [1][-]{section.6.1}{Unsupervised learning}{chapter.6}% 65
 \BOOKMARK [2][-]{subsection.6.1.1}{Variational approximation}{section.6.1}% 66
-\BOOKMARK [1][-]{section.6.2}{Approximate posterior}{chapter.6}% 67
-\BOOKMARK [1][-]{section.6.3}{Training}{chapter.6}% 68
-\BOOKMARK [2][-]{subsection.6.3.1}{Gradients of joint parameters}{section.6.3}% 69
-\BOOKMARK [2][-]{subsection.6.3.2}{Gradients of posterior parameters}{section.6.3}% 70
-\BOOKMARK [1][-]{section.6.4}{Variance reduction}{chapter.6}% 71
-\BOOKMARK [1][-]{section.6.5}{Experiments}{chapter.6}% 72
-\BOOKMARK [1][-]{section.6.6}{Related work}{chapter.6}% 73
+\BOOKMARK [2][-]{subsection.6.1.2}{Approximate posterior}{section.6.1}% 67
+\BOOKMARK [1][-]{section.6.2}{Training}{chapter.6}% 68
+\BOOKMARK [2][-]{subsection.6.2.1}{Gradients of joint parameters}{section.6.2}% 69
+\BOOKMARK [2][-]{subsection.6.2.2}{Gradients of posterior parameters}{section.6.2}% 70
+\BOOKMARK [2][-]{subsection.6.2.3}{Variance reduction}{section.6.2}% 71
+\BOOKMARK [1][-]{section.6.3}{Experiments}{chapter.6}% 72
+\BOOKMARK [1][-]{section.6.4}{Related work}{chapter.6}% 73
 \BOOKMARK [0][-]{chapter.7}{Conclusion}{}% 74
 \BOOKMARK [1][-]{section.7.1}{Main contributions}{chapter.7}% 75
 \BOOKMARK [1][-]{section.7.2}{Future work}{chapter.7}% 76
@@ -85,10 +85,10 @@
 \BOOKMARK [1][-]{section.B.3}{Semiring parsing}{appendix.B}% 85
 \BOOKMARK [2][-]{subsection.B.3.1}{Inside and outside recursions}{section.B.3}% 86
 \BOOKMARK [2][-]{subsection.B.3.2}{Instantiated recursions}{section.B.3}% 87
-\BOOKMARK [0][-]{appendix.C}{Score function estimator}{}% 88
-\BOOKMARK [1][-]{section.C.1}{Derivation}{appendix.C}% 89
-\BOOKMARK [1][-]{section.C.2}{Optimization}{appendix.C}% 90
-\BOOKMARK [1][-]{section.C.3}{Variance reduction}{appendix.C}% 91
-\BOOKMARK [2][-]{subsection.C.3.1}{Variance}{section.C.3}% 92
-\BOOKMARK [2][-]{subsection.C.3.2}{Control variates}{section.C.3}% 93
+\BOOKMARK [0][-]{appendix.C}{Variational inference}{}% 88
+\BOOKMARK [1][-]{section.C.1}{Score function estimator}{appendix.C}% 89
+\BOOKMARK [1][-]{section.C.2}{Variance reduction}{appendix.C}% 90
+\BOOKMARK [2][-]{subsection.C.2.1}{Variance}{section.C.2}% 91
+\BOOKMARK [2][-]{subsection.C.2.2}{Control variates}{section.C.2}% 92
+\BOOKMARK [1][-]{section.C.3}{Optimization}{appendix.C}% 93
 \BOOKMARK [0][-]{appendix.D}{Syneval dataset}{}% 94
