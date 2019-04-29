@@ -1,6 +1,12 @@
 # Fdb version 3
-["pdflatex"] 1554468402 "crf-parser.tex" "crf-parser.pdf" "crf-parser" 1554468402
-  "../figures/edges/edges.tex" 1552488465 815 c6fe6c583186f680fed3cdbe1ee222fc ""
+["pdflatex"] 1556574291 "crf-parser.tex" "crf-parser.pdf" "crf-parser" 1556574291
+  "../figures/edges/edges.tex" 1556031039 827 723536bfeaf9d952e0ffe91f0ab45d7c ""
+  "../figures/edges/illegal-edges.tex" 1555666682 696 24ae0b4b8f72ebecc27216101c43bf2a ""
+  "../figures/normal-form/cnf-invalid.tex" 1555512703 235 3573908c87b6560d7c9ef609c9202cea ""
+  "../figures/normal-form/cnf-valid.tex" 1555512115 235 ce6acca525ccf81fd3fa0203201512b6 ""
+  "../tables/crf-fscores.tex" 1556203649 703 af318d30a2659ab6940c2cc7b97acda8 ""
+  "../tables/gen-fscores-crf.tex" 1556204584 430 b0b2baf675f865b70ee8e26a30dea887 ""
+  "../tables/gen-perplexities-crf.tex" 1556204601 521 5eeec88b2d6adf8ab1e7fc9356fda80a ""
   "/usr/local/texlive/2016/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmti10.tfm" 1136768653 1480 aa8e34af0eb6a2941b776984cf1dfdc4 ""
@@ -9,7 +15,7 @@
   "/usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt" 1485894833 3873397 68ff021935db8719c30e28db2297c232 ""
   "/usr/local/texlive/2016/texmf.cnf" 1463979140 577 2938757e76f31531e65cc647e3507693 ""
   "crf-parser.aux" 1547827776 8 a94a2480d3289e625eea47cd1b285758 ""
-  "crf-parser.tex" 1554468402 28632 6b0d6439ae0e0bd31c9341ff4d2266bd ""
+  "crf-parser.tex" 1556574290 58068 0b829fb922de828d1e8a9ffca85430e4 ""
   (generated)
   "crf-parser.log"
   "crf-parser.pdf"

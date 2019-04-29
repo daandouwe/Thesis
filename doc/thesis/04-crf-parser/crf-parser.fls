@@ -11,3 +11,15 @@ OUTPUT crf-parser.pdf
 INPUT /usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map
 INPUT ../figures/edges/edges.tex
 INPUT ../figures/edges/edges.tex
+INPUT ../tables/crf-fscores.tex
+INPUT ../tables/crf-fscores.tex
+INPUT ../tables/gen-fscores-crf.tex
+INPUT ../tables/gen-fscores-crf.tex
+INPUT ../tables/gen-perplexities-crf.tex
+INPUT ../tables/gen-perplexities-crf.tex
+INPUT ../figures/normal-form/cnf-valid.tex
+INPUT ../figures/normal-form/cnf-valid.tex
+INPUT ../figures/normal-form/cnf-invalid.tex
+INPUT ../figures/normal-form/cnf-invalid.tex
+INPUT ../figures/edges/illegal-edges.tex
+INPUT ../figures/edges/illegal-edges.tex

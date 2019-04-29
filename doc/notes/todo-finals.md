@@ -297,6 +297,7 @@ Writing
   - [X] Introduction
   - [X] Result plots.
   - [X] Describe
+  - [ ] All results are rather bad, barely above random. The results reported in the Linzen paper are much better. Probably because of the small dataset.
 
 5. Conclusion
   - [X] Everything

@@ -1,4 +1,4 @@
-\begin{thebibliography}{116}
+\begin{thebibliography}{118}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -553,6 +553,13 @@ Andriy Mnih and Karol Gregor.
 \newblock Neural variational inference and learning in belief networks.
 \newblock In \emph{ICML}, 2014.
 
+\bibitem[Mnih and Rezende(2016)]{mnih2016variational}
+Andriy Mnih and Danilo~J. Rezende.
+\newblock Variational inference for monte carlo objectives.
+\newblock In \emph{Proceedings of the 33rd International Conference on
+  International Conference on Machine Learning - Volume 48}, ICML'16, pages
+  2188--2196. JMLR.org, 2016.
+
 \bibitem[Neubig et~al.(2017{\natexlab{a}})Neubig, Dyer, Goldberg, Matthews,
   Ammar, Anastasopoulos, Ballesteros, Chiang, Clothiaux, Cohn,
   et~al.]{neubig2017dynet}
@@ -675,6 +682,11 @@ Rico Sennrich.
 \newblock In \emph{Proceedings of the 15th Conference of the European Chapter
   of the Association for Computational Linguistics: Volume 2, Short Papers},
   pages 376--382. Association for Computational Linguistics, 2017.
+
+\bibitem[Sima'an(2002)]{sima2002computational}
+Khalil Sima'an.
+\newblock Computational complexity of probabilistic disambiguation.
+\newblock \emph{Grammars}, 5\penalty0 (2):\penalty0 125--151, 2002.
 
 \bibitem[Smith(2012)]{smith2012adversarial}
 Noah~A Smith.

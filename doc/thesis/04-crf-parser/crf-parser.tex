@@ -309,13 +309,7 @@ In this chapter:
 
     \input{../tables/gen-perplexities-crf.tex}
 
-    The results for the F1 are virtually the same. Although the CRF is the better parser by F1, both are equivalent with respect to generative RNNG. On average, however, because the discriminative RNNG proposals performs better on the selected model. A real difference can be observed in the perplexity, with a difference of over 9 nats in favour of the RNNG. This comes as a surprise
-
-  %   First discuss that the CRF is not a proper proposal model, for two reasons:
-  %   \begin{enumerate}
-  %     \item The CRF defines a probability distribution over normal form trees. After collapsing the dummy nodes, and expanding the unary chains we get a very different set of the trees.
-  %     \item The CRF breaks the required assumption for a proposal model: for some trees $y$, $p(x, y) > 0$, but $q(y | x) = 0$. The CRF supports unary chains (by collapsing them), but only to a limited extend. The RNNG, on the other hand, supports arbitrarily long unary chains (whose number is arbitrarily capped to 100). For those trees $y$ that have these unbouded chains, $p(x, y) > 0$, but $q(y | x) = 0$. This breaks the assumption of the proposal model. Now, a trained RNNG will most likely assign very little probability to such trees, so in the practical marginalization, this will have little effect (hopefully). But theoretically, this is a major problem.
-  %   \end{enumerate}
+    The results for the F1 are virtually the same. Although the CRF is the better parser by F1, both are equivalent with respect to generative RNNG. On average, however, because the discriminative RNNG proposals performs better on the selected model. A real difference can be observed in the perplexity, with a difference of over 9 nats in favour of the RNNG.
 
   \subsection{Analysis}
 
@@ -364,8 +358,8 @@ In this chapter:
     \end{figure}
     \restoregeometry
 
-\section{Problems as proposal}
-  The use of the CRF as a proposal distribution brings to light a subtle issue: by our choice of binarization we have introduced derivational ambiguity, and this affects the approximate marginalization. In this section we will describe the issue, which we characterize as the difference between the binary \textit{derivations} and the \textit{trees} they collapse to. We return to this difference in chapter \ref{05-semisupervised}, where it appears again in the computation of the entropy.
+\section{Trees and derivations}
+  The use of the CRF as a proposal distribution brings to light a subtle issue: by our choice of binarization we have introduced derivational ambiguity, and this affects the approximate marginalization. In this section we will describe the issue, which we characterize as the difference between the binary \textit{derivations} and the \textit{trees} they collapse to. We analyze the impact of this on the approximate marginalization, and then propose solutions. We will return to this difference in chapter \ref{05-semisupervised}, where the computation of the entropy plays a central role.
 
   \subsection{Derivational ambiguity}
     The way our CRF deals with binarization and its inverse introduces the problem derivational ambiguity: many binary derivation $d$ modelled by the CRF as distinct map to the same tree $y$ when the dummy node is collapsed. In other words: we map a treebank tree to a single normal form derivation, but many normal form derivations map to a that treebank tree. For example, the two normal form trees in \ref{fig:normal-form-trees} both collapse to the same tree when dummy labels $\varnothing$ are collapsed:
@@ -392,19 +386,32 @@ In this chapter:
     \end{figure}
 
   \subsection{Consequences}
-    The direct consequence of the derrivational ambiguity is that our CRF actually defines a distribution over $\mathcal{D}(x)$, and over $\yieldx$ only through by summing over the derrivations that collapse to it. Let $\y$ be a general tree. Then our CRF assigns probabilities to all $d \in f^{-1}(y)$ and defines a distribution over $\yieldx$ as
+    The direct consequence of the derivational ambiguity is that our CRF actually defines a distribution over $\mathcal{D}(x)$, and over $\yieldx$ only through by summing over the derivations that collapse to it. Let $\y$ be a general tree such as is modelled by the RNNG. Our CRF assigns probabilities to all $d \in f^{-1}(y)$ and defines a distribution over $\yieldx$ through
     \begin{align*}
       p(y \mid x) = \sum_{d \in f^{-1}(y)} p(d \mid x).
     \end{align*}
+    As a consequence $p(d \mid x) \leq p(y \mid x)$ for all of the derivations $d$ that collapse to $y$. This has three direct consequences:
+    \begin{itemize}
+      \item We overestimate the marginal probability:
+        \begin{align*}
+          \frac{1}{K}\sum_{i=1}^K  \frac{\ptheta( \x, \y^{(i)} )}{\qlambda(d^{(i)} \mid \x)}
+            &\geq \frac{1}{K}\sum_{i=1}^K  \frac{\ptheta( \x, \y^{(i)} )}{\sum_{d \in f^{-1}(y^{(i)})} \qlambda(d \mid \x)}  \\
+            &= \frac{1}{K}\sum_{i=1}^K  \frac{\ptheta( \x, \y^{(i)} )}{\qlambda(\y^{(i)} \mid \x)}  \\
+            &\approx \expect_{q} \bigg[\frac{\ptheta(\x,\y )}{\qlambda(\y \mid \x)} \bigg] = \ptheta(\x).
+        \end{align*}
+      \item Viterbi returns the best derivation, not necessarily the best tree. In other words, if $\hat{d} = \argmax_d p(d \mid \x)$ then $g(\hat{d}) \neq \argmax_y p(\y \mid \x)$ in general. This is a situation similar to decoding in latent variable PCFGs \citep{petrov2006learning}, which is known to be intractable \citep{sima2002computational}.
+      \item The entropy is over derivations instead over trees, and it is not clear how one relates to the other.
+    \end{itemize}
+    The derivational ambiguity does not affect the samples: the probability that we draw $y$ is precisely the probability that we draw any $d$ in $f^{-1}(y)$.
 
-    \subsection{Solutions}
-      We propose two solutions to this problem:
-      \begin{enumerate}
-        \item We can dispense with the dummy label altogether, and instead alter our CRF so that it can deal directly with $m$-ary trees, for any order $m$. This means that we add all hyperedges with more than 2 children. The general formulation of the inside and outside recursions remain unaltered, but the specific form becomes less efficient because we now need to deal with a sum over all possible partitions of the span under a node.
-        \item We keep the dummy label, but prune the hyperforest to only contain derivations that are reachable by the normal form transformation. This means that we assign probability zero to all trees that do not correspond to the cannonical normal form that we commited to by choosing the transformation. Because this transformation is very regular, we can easily incorporate this pruning in the inside and outside algorithms.
-      \end{enumerate}
+  \subsection{Solutions}
+    We propose two solutions to this problem:
+    \begin{enumerate}
+      \item We can dispense with the dummy label altogether, and instead alter our CRF so that it can deal directly with $m$-ary trees, for any order $m$. This means that we add all hyperedges with more than 2 children. The general formulation of the inside and outside recursions remain unaltered, but the specific form becomes less efficient because we now need to deal with a sum over all possible partitions of the span under a node.
+      \item We keep the dummy label, but prune the hyperforest to only contain derivations that are reachable by the normal form transformation. This means that we assign probability zero to all trees that do not correspond to the cannonical normal form that we commited to by choosing the transformation. Because this transformation is very regular, we can easily incorporate this pruning in the inside and outside algorithms.
+    \end{enumerate}
 
-      We now describe either solution, starting with the solution of making the CRF deal directly with $m$-ary trees.
+    We now describe either solution, starting with the solution of making the CRF deal directly with $m$-ary trees.
 
   \subsection{Unrestricted parse forest}
     One solution, as noted, is to make the parse-forest deal with $m$-ary trees directly. This requires that for each noterminal node, we add incoming edges that contain more than two children in the tail. This needs to be done for each permissible number of children---determined by the width of the span---and for all possible partitions of that size of the span.

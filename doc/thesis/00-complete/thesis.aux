@@ -286,13 +286,15 @@
 \newlabel{fig:samples-perplexities}{{4.4}{51}{Perplexity estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha =0.8$, for 10 independent repetitions.\relax }{figure.caption.34}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces Conditional entropy estimated with increasing number of samples.\relax }}{51}{figure.caption.34}}
 \newlabel{fig:samples-entropy}{{4.5}{51}{Conditional entropy estimated with increasing number of samples.\relax }{figure.caption.34}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.6}Problems as proposal}{52}{section.4.6}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.6}Trees and derivations}{52}{section.4.6}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.6.1}Derivational ambiguity}{52}{subsection.4.6.1}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4.6}{\ignorespaces Two normal form derivations that collapse to the same tree.\relax }}{52}{figure.caption.35}}
 \newlabel{fig:normal-form-trees}{{4.6}{52}{Two normal form derivations that collapse to the same tree.\relax }{figure.caption.35}{}}
+\citation{petrov2006learning}
+\citation{sima2002computational}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.6.2}Consequences}{53}{subsection.4.6.2}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.6.3}Solutions}{53}{subsection.4.6.3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.4}Unrestricted parse forest}{53}{subsection.4.6.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.4}Unrestricted parse forest}{54}{subsection.4.6.4}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.6.5}Pruned parse forest}{55}{subsection.4.6.5}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4.7}{\ignorespaces Edges in the parse forest that produce the derivational ambiguity, whenever $k > i+1$.\relax }}{56}{figure.caption.36}}
 \newlabel{fig:illegal-edges}{{4.7}{56}{Edges in the parse forest that produce the derivational ambiguity, whenever $k > i+1$.\relax }{figure.caption.36}{}}
@@ -303,10 +305,10 @@
 \citation{klein2015crf}
 \citation{hall2014less}
 \citation{stern2017minimal}
+\@writefile{toc}{\contentsline {section}{\numberline {4.7}Related work}{57}{section.4.7}}
 \citation{collins2003head}
 \citation{klein2003accurate}
 \citation{petrov2006learning}
-\@writefile{toc}{\contentsline {section}{\numberline {4.7}Related work}{57}{section.4.7}}
 \citation{klein2015crf}
 \citation{linzen2018targeted}
 \citation{enguehard2017multitask}
@@ -382,7 +384,7 @@
 \citation{fu2006gradient}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.2.1}Gradients of generative model}{73}{subsection.6.2.1}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.2.2}Gradients of inference model}{73}{subsection.6.2.2}}
-\citation{williams1992reinforce,paisley2012viss,mnih2014nvil,ranganath2014black}
+\citation{williams1992reinforce,paisley2012viss,mnih2014nvil,ranganath2014black,mnih2016variational}
 \citation{miao2016discrete}
 \citation{williams1992reinforce}
 \citation{paisley2012viss}
@@ -395,9 +397,12 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.3.1}RNNG posterior}{75}{subsection.6.3.1}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.3.2}CRF posterior}{75}{subsection.6.3.2}}
 \citation{kim2019unsupervised}
+\citation{kim2019unsupervised}
+\citation{paisley2012viss,mnih2014nvil,ranganath2014black,mnih2016variational}
 \citation{miao2016discrete,yin2018structvae}
-\citation{rennie2017argmax}
-\citation{klein2018reinforce}
+\citation{kim2019unsupervised}
+\citation{stern2017minimal}
+\citation{linzen2018targeted}
 \@writefile{toc}{\contentsline {section}{\numberline {6.4}Related work}{76}{section.6.4}}
 \citation{stern2017minimal}
 \@writefile{toc}{\contentsline {chapter}{\numberline {7}Conclusion}{77}{chapter.7}}
@@ -591,41 +596,43 @@
 \bibcite{miao2016discrete}{{79}{2016}{{Miao and Blunsom}}{{}}}
 \bibcite{mikolov2010recurrent}{{80}{2010}{{Mikolov et~al.}}{{Mikolov, Karafi{\'a}t, Burget, {\v {C}}ernock{\`y}, and Khudanpur}}}
 \bibcite{mnih2014nvil}{{81}{2014}{{Mnih and Gregor}}{{}}}
-\bibcite{neubig2017dynet}{{82}{2017{a}}{{Neubig et~al.}}{{Neubig, Dyer, Goldberg, Matthews, Ammar, Anastasopoulos, Ballesteros, Chiang, Clothiaux, Cohn, et~al.}}}
-\bibcite{neubig2017fly}{{83}{2017{b}}{{Neubig et~al.}}{{Neubig, Goldberg, and Dyer}}}
-\bibcite{niculae2018sparsemap}{{84}{2018{a}}{{Niculae et~al.}}{{Niculae, Martins, Blondel, and Cardie}}}
-\bibcite{niculae2018towards}{{85}{2018{b}}{{Niculae et~al.}}{{Niculae, Martins, and Cardie}}}
-\bibcite{nivre2005dependency}{{86}{2005}{{Nivre}}{{}}}
-\bibcite{paisley2012viss}{{87}{2012}{{Paisley et~al.}}{{Paisley, Blei, and Jordan}}}
-\bibcite{pauls2012treelets}{{88}{2012}{{Pauls and Klein}}{{}}}
-\bibcite{peters2018elmo}{{89}{2018}{{Peters et~al.}}{{Peters, Neumann, Iyyer, Gardner, Clark, Lee, and Zettlemoyer}}}
-\bibcite{petrov2006learning}{{90}{2006}{{Petrov et~al.}}{{Petrov, Barrett, Thibaux, and Klein}}}
-\bibcite{ranganath2014black}{{91}{2014}{{Ranganath et~al.}}{{Ranganath, Gerrish, and Blei}}}
-\bibcite{rennie2017argmax}{{92}{2017}{{Rennie et~al.}}{{Rennie, Marcheret, Mroueh, Ross, and Goel}}}
-\bibcite{roark2001probabilistic}{{93}{2001}{{Roark}}{{}}}
-\bibcite{rosenfeld1996loglinear}{{94}{1996}{{Rosenfeld}}{{}}}
-\bibcite{ross2006simulation}{{95}{2006}{{Ross}}{{}}}
-\bibcite{schulman2015gradient}{{96}{2015}{{Schulman et~al.}}{{Schulman, Heess, Weber, and Abbeel}}}
-\bibcite{sekine1997evalb}{{97}{1997}{{Sekine and Collins}}{{}}}
-\bibcite{sennrich2017grammatical}{{98}{2017}{{Sennrich}}{{}}}
-\bibcite{smith2012adversarial}{{99}{2012}{{Smith}}{{}}}
-\bibcite{goldberg2016multitask}{{100}{2016}{{S{\o }gaard and Goldberg}}{{}}}
-\bibcite{stern2017minimal}{{101}{2017{a}}{{Stern et~al.}}{{Stern, Andreas, and Klein}}}
-\bibcite{stern2017beam}{{102}{2017{b}}{{Stern et~al.}}{{Stern, Fried, and Klein}}}
-\bibcite{swayamdipta2018scaffold}{{103}{2018}{{Swayamdipta et~al.}}{{Swayamdipta, Thomson, Lee, Zettlemoyer, Dyer, and Smith}}}
-\bibcite{tesniere1959elements}{{104}{1959}{{Tesni{\`e}re}}{{}}}
-\bibcite{titov2007generative}{{105}{2007}{{Titov and Henderson}}{{}}}
-\bibcite{tran2018recurrent}{{106}{2018}{{Tran et~al.}}{{Tran, Bisazza, and Monz}}}
-\bibcite{vaswani2017attention}{{107}{2017}{{Vaswani et~al.}}{{Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez, Kaiser, and Polosukhin}}}
-\bibcite{vlachos2012imitation}{{108}{2013}{{Vlachos}}{{}}}
-\bibcite{warstadt2018acceptability}{{109}{2018}{{Warstadt et~al.}}{{Warstadt, Singh, and Bowman}}}
-\bibcite{williams1992reinforce}{{110}{1992}{{Williams}}{{}}}
-\bibcite{wilson2017marginal}{{111}{2017}{{Wilson et~al.}}{{Wilson, Roelofs, Stern, Srebro, and Recht}}}
-\bibcite{xiang2009illusory}{{112}{2009}{{Xiang et~al.}}{{Xiang, Dillon, and Phillips}}}
-\bibcite{yin2018structvae}{{113}{2018}{{Yin et~al.}}{{Yin, Zhou, He, and Neubig}}}
-\bibcite{zaremba2014recurrent}{{114}{2014}{{Zaremba et~al.}}{{Zaremba, Sutskever, and Vinyals}}}
-\bibcite{zhang2016multitask}{{115}{2016}{{Zhang and Weiss}}{{}}}
-\bibcite{zweig2011microsoft}{{116}{2011}{{Zweig and Burges}}{{}}}
+\bibcite{mnih2016variational}{{82}{2016}{{Mnih and Rezende}}{{}}}
+\bibcite{neubig2017dynet}{{83}{2017{a}}{{Neubig et~al.}}{{Neubig, Dyer, Goldberg, Matthews, Ammar, Anastasopoulos, Ballesteros, Chiang, Clothiaux, Cohn, et~al.}}}
+\bibcite{neubig2017fly}{{84}{2017{b}}{{Neubig et~al.}}{{Neubig, Goldberg, and Dyer}}}
+\bibcite{niculae2018sparsemap}{{85}{2018{a}}{{Niculae et~al.}}{{Niculae, Martins, Blondel, and Cardie}}}
+\bibcite{niculae2018towards}{{86}{2018{b}}{{Niculae et~al.}}{{Niculae, Martins, and Cardie}}}
+\bibcite{nivre2005dependency}{{87}{2005}{{Nivre}}{{}}}
+\bibcite{paisley2012viss}{{88}{2012}{{Paisley et~al.}}{{Paisley, Blei, and Jordan}}}
+\bibcite{pauls2012treelets}{{89}{2012}{{Pauls and Klein}}{{}}}
+\bibcite{peters2018elmo}{{90}{2018}{{Peters et~al.}}{{Peters, Neumann, Iyyer, Gardner, Clark, Lee, and Zettlemoyer}}}
+\bibcite{petrov2006learning}{{91}{2006}{{Petrov et~al.}}{{Petrov, Barrett, Thibaux, and Klein}}}
+\bibcite{ranganath2014black}{{92}{2014}{{Ranganath et~al.}}{{Ranganath, Gerrish, and Blei}}}
+\bibcite{rennie2017argmax}{{93}{2017}{{Rennie et~al.}}{{Rennie, Marcheret, Mroueh, Ross, and Goel}}}
+\bibcite{roark2001probabilistic}{{94}{2001}{{Roark}}{{}}}
+\bibcite{rosenfeld1996loglinear}{{95}{1996}{{Rosenfeld}}{{}}}
+\bibcite{ross2006simulation}{{96}{2006}{{Ross}}{{}}}
+\bibcite{schulman2015gradient}{{97}{2015}{{Schulman et~al.}}{{Schulman, Heess, Weber, and Abbeel}}}
+\bibcite{sekine1997evalb}{{98}{1997}{{Sekine and Collins}}{{}}}
+\bibcite{sennrich2017grammatical}{{99}{2017}{{Sennrich}}{{}}}
+\bibcite{sima2002computational}{{100}{2002}{{Sima'an}}{{}}}
+\bibcite{smith2012adversarial}{{101}{2012}{{Smith}}{{}}}
+\bibcite{goldberg2016multitask}{{102}{2016}{{S{\o }gaard and Goldberg}}{{}}}
+\bibcite{stern2017minimal}{{103}{2017{a}}{{Stern et~al.}}{{Stern, Andreas, and Klein}}}
+\bibcite{stern2017beam}{{104}{2017{b}}{{Stern et~al.}}{{Stern, Fried, and Klein}}}
+\bibcite{swayamdipta2018scaffold}{{105}{2018}{{Swayamdipta et~al.}}{{Swayamdipta, Thomson, Lee, Zettlemoyer, Dyer, and Smith}}}
+\bibcite{tesniere1959elements}{{106}{1959}{{Tesni{\`e}re}}{{}}}
+\bibcite{titov2007generative}{{107}{2007}{{Titov and Henderson}}{{}}}
+\bibcite{tran2018recurrent}{{108}{2018}{{Tran et~al.}}{{Tran, Bisazza, and Monz}}}
+\bibcite{vaswani2017attention}{{109}{2017}{{Vaswani et~al.}}{{Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez, Kaiser, and Polosukhin}}}
+\bibcite{vlachos2012imitation}{{110}{2013}{{Vlachos}}{{}}}
+\bibcite{warstadt2018acceptability}{{111}{2018}{{Warstadt et~al.}}{{Warstadt, Singh, and Bowman}}}
+\bibcite{williams1992reinforce}{{112}{1992}{{Williams}}{{}}}
+\bibcite{wilson2017marginal}{{113}{2017}{{Wilson et~al.}}{{Wilson, Roelofs, Stern, Srebro, and Recht}}}
+\bibcite{xiang2009illusory}{{114}{2009}{{Xiang et~al.}}{{Xiang, Dillon, and Phillips}}}
+\bibcite{yin2018structvae}{{115}{2018}{{Yin et~al.}}{{Yin, Zhou, He, and Neubig}}}
+\bibcite{zaremba2014recurrent}{{116}{2014}{{Zaremba et~al.}}{{Zaremba, Sutskever, and Vinyals}}}
+\bibcite{zhang2016multitask}{{117}{2016}{{Zhang and Weiss}}{{}}}
+\bibcite{zweig2011microsoft}{{118}{2011}{{Zweig and Burges}}{{}}}
 \global\csname @altsecnumformattrue\endcsname
 \global\@namedef{scr@dte@chapter@lastmaxnumwidth}{16.23872pt}
 \global\@namedef{scr@dte@section@lastmaxnumwidth}{23.0934pt}
