@@ -142,22 +142,22 @@ Science Park 105-107, 1098 XG Amsterdam\\
 
 \renewenvironment{abstract}{\section*{\abstractname}}{
 \vfill
-\noindent
-\titletext: \@title\\
-\ifnum\value{authors} < 2%
-\authortextsingular: \@authordetails\\
-\else
-\authortextplural:\\ \indent\@authordetails\\
-\fi
-\supervisorstext: \@supervisors \\
-\if\@dailysupervisor\relax\else \dailysupervisorText: \@dailysupervisor \\ \fi
-\if\@secondexaminer\relax\else \secondexaminertext: \@secondexaminer\\ \fi
-\datetext: \@date
-
-\bigskip\noindent
-\@instituteaddress
-
-\if\@secondadress\relax\else \noindent\@secondadress \fi
+% \noindent
+% \titletext: \@title\\
+% \ifnum\value{authors} < 2%
+% \authortextsingular: \@authordetails\\
+% \else
+% \authortextplural:\\ \indent\@authordetails\\
+% \fi
+% \supervisorstext: \@supervisors \\
+% \if\@dailysupervisor\relax\else \dailysupervisorText: \@dailysupervisor \\ \fi
+% \if\@secondexaminer\relax\else \secondexaminertext: \@secondexaminer\\ \fi
+% \datetext: \@date
+%
+% \bigskip\noindent
+% \@instituteaddress
+%
+% \if\@secondadress\relax\else \noindent\@secondadress \fi
 \newpage
 }
 

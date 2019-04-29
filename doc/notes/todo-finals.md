@@ -299,6 +299,11 @@ Writing
   - [X] Describe
 
 5. Conclusion
+  - [X] Everything
+
+6. VI appendix
+  - [ ] Baseline section.
+  - Confusion about baselines and control variates.... Not very relevant though. URNNG people write they use a "control variate". Also, confusion between E[f(X)] and E[f(X) grad_{theta} log p(X)]. Which is one are we dealing with?
 
 
 ## April 23

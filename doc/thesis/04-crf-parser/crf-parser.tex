@@ -293,7 +293,7 @@ In this chapter:
   \subsection{Setup}
     We train two versions of the model on the Penn Treebank: a small version and a large version. The smaller model allows us to compare the CRF parser to the discriminative RNNG, while the larger model allows us to compare it to the parser of \citet{stern2017minimal}. The smaller model has dimensions to match the number of parameters in the discriminative RNNG from chapter \ref{03-rnng} and is trained in the same way. For the larger model we follow the dimensions and optimization details of \citet{stern2017minimal}.
 
-    For both models the embeddings are of dimension 100, and the LSTMs have 2 layers. For the smaller model the dimension of forward and backward the LSTM is 128, and the feedforward network has one hidden layer with dimension 256. For the larger model we follow the hyperparameters of \citet{stern2017minimal}: the LSTMs have dimesion 250, just as the feedforward network. Given these dimensions, the total number of parameters in the small model is around 750,000 and around 2,500,000 for the large model (the exact numbers are in table \ref{tab:num-params}). The small CRF is comparable in size with the discriminative RNNG (around 800,000 parameters) and less than a third in size of the larger model. The smaller model is optimized exactly as the discriminative RNNG: SGD with learning rate 0.1, and dropout of 0.2. For the larger model we use Adam \citep{kingma2014adam} with 0.001 and dropout of 0.4, exactly following \citet{stern2017minimal}.
+    For both models the embeddings are of dimension 100, and the LSTMs have 2 layers. For the smaller model the dimension of forward and backward the LSTM is 128, and the feedforward network has one hidden layer with dimension 256. For the larger model we follow the hyperparameters of \citet{stern2017minimal}: the LSTMs have dimesion 250, just as the feedforward network. Given these dimensions, the total number of parameters in the small model is around 0.75M and around 2.5M for the large model (the exact numbers are in table \ref{tab:num-params}). The small CRF is comparable in size with the discriminative RNNG (around 0.8M parameters) and less than a third in size of the larger model. The smaller model is optimized exactly as the discriminative RNNG: SGD with learning rate 0.1, and dropout of 0.2. For the larger model we use Adam \citep{kingma2014adam} with 0.001 and dropout of 0.4, exactly following \citet{stern2017minimal}.
 
   \subsection{Results}
     The evaluation setup is the same as in the previous chapter. We train 10 models from different random seeds, and we report mean and standard deviations, as well as scores of the best model selected by development F1.
@@ -319,42 +319,60 @@ In this chapter:
 
   \subsection{Analysis}
 
-    We perform the same analyses of the approximate inference as in chapter \ref{03-rnng}, this time with the CRF as proposal model.
+    We perform the same analyses of the approximate inference as in chapter \ref{03-rnng}, this time with the CRF as proposal model. The results of the experiment on aproximate inference are shown in figure \ref{fig:samples-fscores} (F1) and \ref{fig:samples-perplexities} (perplexity), where they are compared to the results of the annealed RNNG. With respect to parsing F1, the CRF is the better choice when using few samples, but for this difference disappears for larger number of samples.
 
-    The results of the experiment on aproximate inference are shown in figure \ref{fig:samples-fscores} (F1) and \ref{fig:samples-perplexities} (perplexity), where they are compared to the results of the annealed RNNG. With respect to parsing F1, the CRF is the better choice when using few samples, but for this difference disappears for larger number of samples.
+    Figure \ref{fig:samples-entropy} shows the estimation of the conditional entropy, now including the results for the CRF. The estimates of the CRF converge to the true conditional entropy, which can be computed exactly and equals 2.84.\footnote{To be precise, the values $\entropy(Y \mid X = x)$ can be computed exactly, the value $\entropy(Y \mid X)$ is still estimated by a mean over the test set.} Furthermore we can note that the conditional entropy of the CRF is higher than that of the discriminative RNNG when not annealed. This could indicate that the CRF maintains a higher number of alternative parses per sentence on average than the RNNG. Another plausible explanation is that the higher entropy is caused by the derivational ambiguity: the higher entropy reflects that each tree has multiple derivations.
+
+    % \begin{figure}[h]
+    %   \center
+    % 	\includegraphics[width=0.9\textwidth]{sample-experiment/fscore/crf_disc_08.pdf}
+    % \caption{F1 estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha=0.8$, for 10 independent repetitions.}
+    % \label{fig:samples-fscores}
+    % \end{figure}
+    %
+    % \begin{figure}[h]
+    %   \center
+    % 	\includegraphics[width=0.7\textwidth]{sample-experiment/ppl/crf_disc08.pdf}
+    % \caption{Perplexity estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha=0.8$, for 10 independent repetitions.}
+    % \label{fig:samples-perplexities}
+    % \end{figure}
+    %
+    % \begin{figure}[h]
+    %   \center
+    %   \includegraphics[width=0.4\textwidth]{sample-experiment/entropy/all.pdf}
+    % \caption{Conditional entropy estimated with increasing number of samples.}
+    % \label{fig:samples-entropy}
+    % \end{figure}
 
     \begin{figure}[h]
       \center
     	\includegraphics[width=0.9\textwidth]{sample-experiment/fscore/crf_disc_08.pdf}
-    \caption{F1 estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha=0.8$, for 10 independent repetitions.}
-    \label{fig:samples-fscores}
+      \caption{F1 estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha=0.8$, for 10 independent repetitions.}
+      \label{fig:samples-fscores}
     \end{figure}
 
+    \newgeometry{top=5mm, bottom=5mm}  % enables full page view
     \begin{figure}[h]
       \center
-    	\includegraphics[width=0.7\textwidth]{sample-experiment/ppl/crf_disc08.pdf}
-    \caption{Perplexity estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha=0.8$, for 10 independent repetitions.}
-    \label{fig:samples-perplexities}
-    \end{figure}
+    	\includegraphics[width=0.8\textwidth]{sample-experiment/ppl/crf_disc08.pdf}
+      \caption{Perplexity estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha=0.8$, for 10 independent repetitions.}
+      \label{fig:samples-perplexities}
 
-    \begin{figure}[h]
-      \center
-      \includegraphics[width=0.4\textwidth]{sample-experiment/entropy/all.pdf}
-    \caption{Conditional entropy estimated with increasing number of samples.}
-    \label{fig:samples-entropy}
+      \includegraphics[width=0.5\textwidth]{sample-experiment/entropy/all.pdf}
+      \caption{Conditional entropy estimated with increasing number of samples.}
+      \label{fig:samples-entropy}
     \end{figure}
-
-    Figure \ref{fig:samples-entropy} shows the estimation of the conditional entropy, now including the results for the CRF. The estimates of the CRF converge to the true conditional entropy, which can be computed exactly and equals 2.84.\footnote{To be precise, the values $\entropy(Y \mid X = x)$ can be computed exactly, the value $\entropy(Y \mid X)$ is still estimated by a mean over the test set.} Furthermore we can note that the conditional entropy of the CRF is higher than that of the discriminative RNNG when not annealed. This could indicate that the CRF maintains a higher number of alternative parses per sentence on average than the RNNG. Another plausible explanation is that the higher entropy is caused by the derivational ambiguity: the higher entropy reflects that each tree has multiple derivations.
+    \restoregeometry
 
 \section{Problems as proposal}
-  The use of the CRF as a proposal distribution has brought to light a subtle issue. our choice of binarizing has introduced derivational ambiguity, and this affects the approximate marginalization. In this section we will describe this issue,
+  The use of the CRF as a proposal distribution brings to light a subtle issue: by our choice of binarization we have introduced derivational ambiguity, and this affects the approximate marginalization. In this section we will describe the issue, which we characterize as the difference between the binary \textit{derivations} and the \textit{trees} they collapse to. We return to this difference in chapter \ref{05-semisupervised}, where it appears again in the computation of the entropy.
 
   \subsection{Derivational ambiguity}
-    The way our CRF deals with binarization and its inverse introduces the problem derivational ambiguity: many binary derivation $d$ modelled by the CRF as distinct map to the same tree $y$ when the dummy node is collapsed. In other words: we map a treebank tree to \textit{a single} normal form derivation, but many normal form derivations map to a single treebank tree. Let us illustrate this with an example. The two normal form trees in \ref{fig:normal-form-trees} both collapse to the same tree when dummy labels $\varnothing$ are collapsed:
+    The way our CRF deals with binarization and its inverse introduces the problem derivational ambiguity: many binary derivation $d$ modelled by the CRF as distinct map to the same tree $y$ when the dummy node is collapsed. In other words: we map a treebank tree to a single normal form derivation, but many normal form derivations map to a that treebank tree. For example, the two normal form trees in \ref{fig:normal-form-trees} both collapse to the same tree when dummy labels $\varnothing$ are collapsed:
     \begin{center}
       (S (NP The other hungry cat) (VP meows) .).
     \end{center}
-    But when going the other way---applying the normal form transformation to the above tree---we always obtain the left tree, and never the right tree. Let $f: \yieldx \to \mathcal{D}(x)$ be the transformation that we defined that produces normal form trees from treebank trees, and let $g: \mathcal{D}(x) \to \yieldx$ be the transformation that takes a normal form tree and collapses the dummy nodes. Then $f$ is a bijection, but $g$ is not. In fact, for any tree $y$ the preimage of $g$ is the set of derivations $g^{-1}( y ) = D \subseteq \mathcal{D}(x)$ that collapse to the same tree. And generally $\lvert D \rvert > 1$.
+    However, when going the other way---applying the normal form transformation to the above tree---we always obtain the left tree, and never the right tree. Let $f: \yieldx \to \mathcal{D}(x)$ be the transformation that we defined that produces normal form trees from treebank trees, and let $g: \mathcal{D}(x) \to \yieldx$ be the transformation that takes a normal form tree and collapses the dummy nodes. Then $f$ is a bijection, but $g$ is not: for any tree $y$ the preimage of $g$ is the set of derivations $g^{-1}( y ) = D \subseteq \mathcal{D}(x)$ that collapse to the same tree. And generally, $\lvert D \rvert > 1$. This is the issue at hand: going from derivations to trees causes derivational ambiguity.
 
     \begin{figure}[h]
       \begin{subfigure}[b]{0.5\textwidth}
@@ -373,15 +391,20 @@ In this chapter:
       \label{fig:normal-form-trees}
     \end{figure}
 
-    This causes the problems noted above: there is derivational ambiguity. If $y$ is some general tree, then our CRF assigns probabilities to all $d \in f^{-1}(y)$. Thus \textit{in fact}, our CRF defines a distribution over $\mathcal{D}(x)$. The distribution that our CRF over $\yieldx$  as $p(y \mid x) = \sum_{d \in f^{-1}(y)} p(d \mid x)$. And in particular, $p(y \mid x) \neq p(d \mid x)$, for any $d \in f^{-1}(y)$.
+  \subsection{Consequences}
+    The direct consequence of the derrivational ambiguity is that our CRF actually defines a distribution over $\mathcal{D}(x)$, and over $\yieldx$ only through by summing over the derrivations that collapse to it. Let $\y$ be a general tree. Then our CRF assigns probabilities to all $d \in f^{-1}(y)$ and defines a distribution over $\yieldx$ as
+    \begin{align*}
+      p(y \mid x) = \sum_{d \in f^{-1}(y)} p(d \mid x).
+    \end{align*}
 
-    We propose two solutions to this problem:
-    \begin{enumerate}
-      \item We can dispense with the dummy label altogether, and instead alter our CRF so that it can deal directly with $m$-ary trees, for any order $m$.\footnote{The way we deal with unary chains remains unchanched} This means that we add all hyperedges with more than 2 children. The general formulation of the inside and outside recursions remain unaltered, but the specific form becomes less efficient because we now need to deal with a sum over all possible partitions of the span under a node.
-      \item We keep the dummy label, but prune the hyperforest to only contain derivations that are reachable by the normal form transformation. This means that we assign probability zero to all trees that do not correspond to the cannonical normal form that we commited to by choosing the transformation. Because this transformation is very regular, we can easily incorporate this pruning in the inside and outside algorithms.
-    \end{enumerate}
+    \subsection{Solutions}
+      We propose two solutions to this problem:
+      \begin{enumerate}
+        \item We can dispense with the dummy label altogether, and instead alter our CRF so that it can deal directly with $m$-ary trees, for any order $m$. This means that we add all hyperedges with more than 2 children. The general formulation of the inside and outside recursions remain unaltered, but the specific form becomes less efficient because we now need to deal with a sum over all possible partitions of the span under a node.
+        \item We keep the dummy label, but prune the hyperforest to only contain derivations that are reachable by the normal form transformation. This means that we assign probability zero to all trees that do not correspond to the cannonical normal form that we commited to by choosing the transformation. Because this transformation is very regular, we can easily incorporate this pruning in the inside and outside algorithms.
+      \end{enumerate}
 
-    We now describe either solution, starting with the solution of making the CRF deal directly with $m$-ary trees.
+      We now describe either solution, starting with the solution of making the CRF deal directly with $m$-ary trees.
 
   \subsection{Unrestricted parse forest}
     One solution, as noted, is to make the parse-forest deal with $m$-ary trees directly. This requires that for each noterminal node, we add incoming edges that contain more than two children in the tail. This needs to be done for each permissible number of children---determined by the width of the span---and for all possible partitions of that size of the span.
@@ -445,7 +468,7 @@ In this chapter:
     \end{align*}
     where
     \begin{align*}
-      \tilde{\sigma}(i,k) =  \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \alpha(A, i, k).
+      \tilde{\sigma}(i,k) = \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \alpha(A, i, k).
     \end{align*}
 
     For the outside algorithm we need to split cases: the outside algorithm sums over ways to complete a labeled span into a larger labeled span, and as we have noted, the node $(A, i, j)$, for all $A \neq \varnothing$, is allowed to combine in ways that $(\varnothing, i, j)$ is not, whenever $j > i + 1$. Specifically, when $j > i + 1$, the node $(\varnothing, i, j)$ is not allowed to combine \textit{with any node} of the form $(C, j, k)$ for any $C \in \Lambda$. That would constitute an edge that we deemed illegal. We thus split the computation of $\beta(A, i, j)$ into the following two cases: the case where $j > i + 1$ and $ A = \varnothing$, and otherwise.
@@ -458,7 +481,8 @@ In this chapter:
           &\qquad \oplus \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=j+1}^{n} \omega(B, i, k) \otimes \beta(B, i, k) \otimes \alpha(C, j, k)  \\
         &= \sigma'(i-1, j) \otimes \sigma(i-1, i) \oplus \bigoplus_{k=1}^{i-2} \sigma'(k, j) \otimes \tilde{\sigma}(k, i) \oplus \bigoplus_{k=j+1}^{n} \sigma'(i, k) \otimes \sigma(j, k).
     \end{align*}
-    Now, consider the special case where $ A = \varnothing$ and $j > i + 1$. In this case we must disallow the node to combine in the left position. This corresponds simply to removing that part of the sum; in the above derivation this is the third term. This gives:
+
+    Now consider the special case where $ A = \varnothing$ and $j > i + 1$. In this case we must disallow the node to combine in the left position. This corresponds simply to removing that part of the sum; in the above derivation this is the third term. This gives:
     \begin{align*}
       \beta(A, i, j) &=
         \sigma'(i-1, j) \otimes \sigma(i-1, i) \oplus \displaystyle\bigoplus_{k=1}^{i-2} \sigma'(k, j) \otimes \tilde{\sigma}(k, i)

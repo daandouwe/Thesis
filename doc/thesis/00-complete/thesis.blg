@@ -11,46 +11,45 @@ Repeated entry---line 1332 of file ../src/bibliography.bib.bib
  : @article{melis2017state
  :                        ,
 I'm skipping whatever remains of this entry
-Warning--I didn't find a database entry for "mensch2018differentiable"
-You've used 115 entries,
+You've used 116 entries,
             2773 wiz_defined-function locations,
-            1203 strings with 26258 characters,
-and the built_in function-call counts, 62062 in all, are:
-= -- 5753
-> -- 3425
-< -- 115
-+ -- 1159
-- -- 1041
-* -- 4735
-:= -- 9020
-add.period$ -- 382
-call.type$ -- 115
-change.case$ -- 686
+            1216 strings with 26554 characters,
+and the built_in function-call counts, 62995 in all, are:
+= -- 5843
+> -- 3481
+< -- 117
++ -- 1178
+- -- 1058
+* -- 4832
+:= -- 9150
+add.period$ -- 386
+call.type$ -- 116
+change.case$ -- 694
 chr.to.int$ -- 112
-cite$ -- 230
-duplicate$ -- 2989
-empty$ -- 5065
-format.name$ -- 1228
-if$ -- 13545
-int.to.chr$ -- 4
+cite$ -- 232
+duplicate$ -- 3026
+empty$ -- 5130
+format.name$ -- 1246
+if$ -- 13747
+int.to.chr$ -- 5
 int.to.str$ -- 1
-missing$ -- 114
-newline$ -- 583
-num.names$ -- 464
-pop$ -- 1471
+missing$ -- 115
+newline$ -- 588
+num.names$ -- 470
+pop$ -- 1486
 preamble$ -- 1
-purify$ -- 574
+purify$ -- 581
 quote$ -- 0
-skip$ -- 2468
+skip$ -- 2494
 stack$ -- 0
-substring$ -- 2713
-swap$ -- 681
-text.length$ -- 57
+substring$ -- 2780
+swap$ -- 698
+text.length$ -- 59
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 1250
+type$ -- 1261
 warning$ -- 0
-while$ -- 557
+while$ -- 566
 width$ -- 0
-write$ -- 1524
+write$ -- 1542
 (There were 2 error messages)

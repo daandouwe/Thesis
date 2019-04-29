@@ -1351,16 +1351,43 @@ author = "Ronald Rosenfeld",
   year={2019}
 }
 
-@article{niculae2018sparsemap,
-  title={SparseMAP: Differentiable sparse structured inference},
-  author={Niculae, Vlad and Martins, Andr{\'e} FT and Blondel, Mathieu and Cardie, Claire},
-  journal={arXiv preprint arXiv:1802.04223},
-  year={2018}
+@inproceedings{niculae2018towards,
+    title = "Towards Dynamic Computation Graphs via Sparse Latent Structure",
+    author = "Niculae, Vlad  and
+      Martins, Andr{\'e} F. T.  and
+      Cardie, Claire",
+    booktitle = "Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing",
+    month = oct # "-" # nov,
+    year = "2018",
+    address = "Brussels, Belgium",
+    publisher = "Association for Computational Linguistics",
+    pages = "905--911",
 }
 
-@article{niculae2018towards,
-  title={Towards dynamic computation graphs via sparse latent structure},
-  author={Niculae, Vlad and Martins, Andr{\'e} FT and Cardie, Claire},
-  journal={arXiv preprint arXiv:1809.00653},
-  year={2018}
+@InProceedings{niculae2018sparsemap,
+  title = 	 {{S}parse{MAP}: Differentiable Sparse Structured Inference},
+  author = 	 {Niculae, Vlad and Martins, Andre and Blondel, Mathieu and Cardie, Claire},
+  booktitle = 	 {Proceedings of the 35th International Conference on Machine Learning},
+  pages = 	 {3799--3808},
+  year = 	 {2018},
+  editor = 	 {Dy, Jennifer and Krause, Andreas},
+  volume = 	 {80},
+  series = 	 {Proceedings of Machine Learning Research},
+  address = 	 {Stockholmsmässan, Stockholm Sweden},
+  month = 	 {10--15 Jul},
+  publisher = 	 {PMLR},
+  abstract = 	 {Structured prediction requires searching over a combinatorial number of structures. To tackle it, we introduce SparseMAP, a new method for sparse structured inference, together with corresponding loss functions. SparseMAP inference is able to automatically select only a few global structures: it is situated between MAP inference, which picks a single structure, and marginal inference, which assigns probability mass to all structures, including implausible ones. Importantly, SparseMAP can be computed using only calls to a MAP oracle, hence it is applicable even to problems where marginal inference is intractable, such as linear assignment. Moreover, thanks to the solution sparsity, gradient backpropagation is efficient regardless of the structure. SparseMAP thus enables us to augment deep neural networks with generic and sparse structured hidden layers. Experiments in dependency parsing and natural language inference reveal competitive accuracy, improved interpretability, and the ability to capture natural language ambiguities, which is attractive for pipeline systems.}
+}
+
+@inproceedings{mnih2016variational,
+ author = {Mnih, Andriy and Rezende, Danilo J.},
+ title = {Variational Inference for Monte Carlo Objectives},
+ booktitle = {Proceedings of the 33rd International Conference on International Conference on Machine Learning - Volume 48},
+ series = {ICML'16},
+ year = {2016},
+ location = {New York, NY, USA},
+ pages = {2188--2196},
+ numpages = {9},
+ acmid = {3045621},
+ publisher = {JMLR.org},
 }
