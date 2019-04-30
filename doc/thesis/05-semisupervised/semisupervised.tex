@@ -1,4 +1,4 @@
-The generative RNNG defines a joint distribution over trees and sentences. In chapter \ref{03-rnng} we showed how this distribution can be estimated from labeled data. In this chapter we show how estimation can be extended to unlabeled data. We optimize a tractable lower bound on the marginal log likelihood using amortized variational inference with an approximate posterior---a procedure reminiscent of the importance sampling inference, and both the discriminative RNNG as the CRF can be used. To compute gradients we use samples from the posterior, and the CRF particularly excels in this role: the entropy term in the lower bound can be computed exactly, and the global normalization of the distribution makes the model a well behaved sampler. The lower bound allows us to formulate a semisupervised training objective. This in principle allows us to add any amount of unlabeled data to the already existing labeled data, thus extending the training to both more data and different domains. A further question is whether the RNNG can be estimated from unlabeled data alone. This is particularly challenging because the RNNG makes no independence assumptions and as such it is questionable whether a model so expressive possesses enough inductive bias to induce any consistent structure without supervision.
+The generative RNNG defines a joint distribution over trees and sentences. In chapter \ref{03-rnng} we showed how this distribution can be estimated from labeled data. In this chapter we show how estimation can be extended to unlabeled data. We optimize a tractable lower bound on the marginal log likelihood using amortized variational inference with an approximate posterior---a procedure reminiscent of the importance sampling inference, and both the discriminative RNNG as the CRF can be used. To compute gradients we use samples from the posterior, and the CRF particularly excels in this role: the entropy term in the lower bound can be computed exactly, and the global normalization of the distribution makes the model a well behaved sampler. The lower bound allows us to formulate a semisupervised training objective. This in principle allows us to add any amount of unlabeled data to the already existing labeled data, thus extending the training to both more data and different domains. A further question is whether the RNNG can be estimated from unlabeled data alone. This is particularly challenging because the RNNG makes no independence assumptions and as such it is questionable whether a model so expressive possesses enough inductive bias to induce any consistent structure without supervision. Very recently \citep{kim2019unsupervised} have shown the success of this approach for unlabeled binary trees in an approach that is remarkably similar to ours, also making use of a CRF inference model.
 
 [...]
 
@@ -6,9 +6,9 @@ In this chapter:
 \begin{itemize}
   \item We describe how the RNNG can be used to learn from unlabeled data using amortized variational inference with an approximate posterior.
   \item We show how to obtain gradients for of the lowerbound by using the score function estimator, and show how to reduce the variance of this estimator using baselines.
-  \item We describe how the discriminative RNNG and the CRF parser introduced in chapter 4 both can be used as approximate posterior, but emphasize how the globally normalized CRF in excels this role.
+  \item We describe how the discriminative RNNG and the CRF parser introduced in chapter 4 both can be used as approximate posterior, but emphasize how a globally normalized CRF excels in this role.
   \item We describe experiments with semisupervised and unsupervised training---with both the CRF and RNNG as posteriors, for both labeled an unlabeled trees, with and without supervised pretraining---and obtain no definitive results, but analyze our preliminary findings.
-  \item We conclude that with the appropriate changes to the CRF posterior, the unsupervised and unlabeled learning of the RNNG could prove succesful, indicated by the very recent success of \citet{kim2019unsupervised} with this approach for binary trees.
+  \item We conclude that with the appropriate changes to the CRF posterior, the unsupervised and unlabeled learning of the RNNG could prove succesful, indicated by the very recent success of \citet{kim2019unsupervised} with this approach for unlabeled binary trees.
 \end{itemize}
 
 \section{Unsupervised learning}
@@ -69,7 +69,7 @@ In this chapter:
     \elbo_{\text{RNNG}}(\theta, \lambda; \x)
       &= \expect_{\qlambda} [ \log \ptheta( \x, \y ) - \log \qlambda(\y | \x) ],
   \end{align}
-  emphasizing that the entire quantity needs to be estimated. We stress however, that this is a purely practical matter for the objectives are identical from a theoretical standpoint.
+  emphasizing that the entire quantity needs to be estimated. We stress however, that this is a purely practical distinction for the objectives are analytically identical.
 
   \subsection{Gradients of generative model}
     Computing the gradient with respect to $\theta$ is easy and permits a straightforward Monte-Carlo estimate:

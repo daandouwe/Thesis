@@ -1,4 +1,4 @@
-This chapter introduces a novel neural Conditional Random Field (CRF) parser. By itself the model is a strong parser, but it can additionaly be used as an alternative proposal distribution for the approximate marginalization of the RNNG. The model is a CRF factored over labeled spans, and is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} from margin-based training to global CRF training. Given our interest in this model as a proposal distribution we require probabilistic training. The model is defined over normal form trees, but can deal with $n$-ary trees by introducing a dummy label in the binarization, and with unary chains by collapsing them to a single atomic label.\footnote{\textit{Cf.} figure \ref{fig:trees-ptb} for this normalization process.}. This solution is adequate for the supervised training of the CRF, but does pose a challenge for the use of this model as proposal for the RNNG: the implicit binarization causes derivational ambiguity and in turn a subtle mismatch between the set of trees modelled by the CRF and the set of trees modelled by the RNNG. We discuss this briefly, but move the discussion of solutions to this to chapter
+In the previous chapter we described how inference with the RNNG can be performed using a discriminative proposal model. In this chapter we introduce an alternative proposal model. We introduce a novel neural Conditional Random Field (CRF) parser. The model is a CRF factored over labeled spans, and is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} from margin-based training to global CRF training. The model is defined over normal form trees, but can deal with $n$-ary trees by binarization using a dummy label, and with unary chains by collapsing them to an atomic label.\footnote{\textit{Cf.} figure \ref{fig:trees-ptb} for this normalization process.}. This solution is adequate for the supervised training of the CRF, but does pose a challenge for the use of this model as proposal for the RNNG: the implicit binarization causes derivational ambiguity and in turn a subtle mismatch between the set of trees modelled by the CRF and the set of trees modelled by the RNNG. We discuss the effects of the derivational ambiguity and propose solutions at the end of the chapter.
 
 In this chapter:
 \begin{itemize}
@@ -6,7 +6,7 @@ In this chapter:
   \item We show how several inference problems of interest---parsing, sampling, and computing the entropy---can be solved exactly and efficiently by deriving specific instances of the inside and outside algorithms.
   \item We train the model in and show its effectiveness as discriminative parser: with the same number of parameters as the discriminative RNNG it achieves 90.04 F1, surpassing RNNG by more than 1 point.
   \item We use the trained model as a proposal distribution for the generative RNNG, and show that this does not affect the parsing accuracy, but does affect the perplexity, albeit negatively.
-  \item We desribe the drawbacks of this model as a proposal model for the RNNG, and discuss solutions. These ...
+  \item We desribe the drawbacks of this model as a proposal model for the RNNG, and discuss solutions.
 \end{itemize}
 
 \section{Model}
@@ -133,7 +133,7 @@ In this chapter:
     \end{align}
     where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting.
 
-    These values can be computed by visiting the nodes of the parse forest in topological order. This order ensures that the in quantities in the tail of an edge will have been computed when the value at the node at the head is at turn. Given the highly regular for of the parse forest, this order boils down to something quite simple: the nodes are visited by increasing width of the span; the order in which the starting-points are visited does not matter because these nodes are not connected among each other.\footnote{\textit{Cf.} figure \ref{fig:hypergraph}: the width of the span determines the vertical level of the node in the parse forest; for a fixed width, the label and startpoint are all unconnected along this vertical level, and thus independent.}. We choose to visit the starting points from left to right, that is, from 0 to $n$.
+    These values can be computed by visiting the nodes of the parse forest in topological order. This order ensures that the quantities in the tail of an edge will have been computed when the value at the node at the head is at turn. Given the highly regular form of the parse forest, this order boils down to something quite simple: the nodes are visited by increasing width of the span; the order in which the starting-points are visited does not matter because these nodes are not connected among each other.\footnote{\textit{Cf.} figure \ref{fig:hypergraph}: the width of the span determines the vertical level of the node in the parse forest; for a fixed width, the label and startpoint are all unconnected along this vertical level, and thus independent.}. We choose to visit the starting points from left to right, that is, from 0 to $n$.
 
   \subsection{Outside recursion}
     The outside algorithm computes the quantities $\beta(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. The general recursion is given by:
@@ -165,7 +165,7 @@ In this chapter:
         \sigma'(i, j) &= \bigoplus_{A \in \Lambda} \omega(A, i, j) \beta(A, i, j).
     \end{align*}
 
-    These values can be computed by visiting the nodes of the parse forest in \textit{reverse} topological order, exactly the opposite of the inside recursion. This order ensures that the in quantities in the head of an edge will have been computed when the values in the tail are at turn. Again, this this order boils down to something quite simple: the nodes are visited based by decreasing width of their span, and again the order of the start-points are free.
+    These values can be computed by visiting the nodes of the parse forest in \textit{reverse} topological order, exactly the opposite of the inside recursion. This order ensures that the quantities in the head of an edge will have been computed when the values in the tail are at turn. Again, this this order boils down to something quite simple: the nodes are visited based by decreasing width of their span, and again the order of the start-points are free.
 
   \subsection{Solutions}
     Equiped with the two recursions and a handful of semirings we can provide the solutions promised at the outset of this section.
@@ -189,7 +189,7 @@ In this chapter:
       \end{align}
       The value $\log \Psi(\x, \hat{\y})$ is then given by $\sigma(0, n)$, and  can be normalized with to give the probability
       \begin{align}
-        p(\hat{y} \mid x) = \sigma(0, n) - \log Z(x).
+        \log p(\hat{y} \mid x) = \sigma(0, n) - \log Z(x).
       \end{align}
       The best label and splitpoint $\hat{A}$ and $\hat{k}$ for the span $(i, j)$ are obtained by using the argmax:
       \begin{align}
@@ -276,7 +276,7 @@ In this chapter:
     \begin{align*}
       \log \Psi(\x, \y) - \log \Psi(\x, \hat{\y}),
     \end{align*}
-    maximizing the score of the correct tree, and minimizing the score of the predicted tree.\footnote{The objective reported in the paper is minimizing the hinge loss $\max \Big(0, 1 - \log \Psi(\x, \y) + \log \Psi(\x, \hat{\y}) \Big)$, but the above is what the actual implementation comes down to.} This objective shows a striking similarity with our CRF objective, with one very particular difference. The goal is still to maximize the score of the gold tree. But the minimization that in the CRF objective concerns all possible trees through $Z(x)$, in this objective concerns just the single tree $\hat{\y}$ that was incorrectly predicted. The scores of all other nodes not observed in either tree are not directly.
+    maximizing the score of the correct tree, and minimizing the score of the predicted tree.\footnote{The objective reported in the paper is minimizing the hinge loss $\max \Big(0, 1 - \log \Psi(\x, \y) + \log \Psi(\x, \hat{\y}) \Big)$, but the above is what the actual implementation comes down to.} This objective shows a striking similarity with our CRF objective, with one very particular difference. The goal is still to maximize the score of the gold tree. But the minimization that in the CRF objective concerns all possible trees through $Z(x)$, in this objective concerns just the single tree $\hat{\y}$ that was incorrectly predicted. The scores of all other nodes not observed in either tree are not affected directly.
 
   \subsection{Speed and complexity}
     The model is slow. Here we will describe how slow it is, and what can be done about it.
@@ -454,7 +454,8 @@ In this chapter:
     The above two recursions show that this approach is challenging, despite its elegance. Enumerating the sets of partitions is in itself already a nontrivial task.
 
   \subsection{Pruned parse forest}
-    Another solution is to prune the parse forest: to keep only those trees that can be obtained by the normal form transformation. Going back to the example at the beginning of the example, this solution asks us to assign probability zero to the right tree, the tree that we cannot obtain by the normal form transformation. Since the transformation that we apply is very regular, we can easily characterize the set of trees that are impossible to derive. In fact, it boils done to one characteristic: a node can have the label $\varnothing$ only when \textit{either} that node spans a single word \textit{or} that node is the right child of its parent node.\footnote{We binarize \textit{rightwards}, thus introducting the dummy labels in that position, and can only ever introduce the dummy label in the left child position when it spans a single word.} That means we should remove from the parse forest all edges of the form illustrated in figure \ref{fig:illegal-edges}.
+    Another solution is to prune the parse forest: to keep only those trees that can be obtained by the normal form transformation. Going back to the example at the beginning of the example, this solution asks us to assign probability zero to the right tree, the tree that we cannot obtain by the normal form transformation. Since the transformation that we apply is very regular, we can easily characterize the set of trees that are impossible to derive. In fact, it boils down to one characteristic: a node can have the label $\varnothing$ only when \textit{either} that node spans a single word \textit{or} that node is the right child of its parent node.\footnote{We binarize \textit{rightwards}, thus introducting the dummy labels in that position, and can only ever introduce the dummy label in the left child position when it spans a single word.} That means we should remove from the parse forest all edges of the form illustrated in figure \ref{fig:illegal-edges}. By this same reasoning we conclude that the parse forest should also be rid of all nodes of the form $(\varnothing, 0, j)$ for $j > 1$, which cannot occur in any tree obtained with our transformation.
+
     \begin{figure}[h]
       \center
       \begin{tikzpicture}[scale=.6]

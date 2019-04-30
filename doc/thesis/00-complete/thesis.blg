@@ -11,45 +11,45 @@ Repeated entry---line 1332 of file ../src/bibliography.bib.bib
  : @article{melis2017state
  :                        ,
 I'm skipping whatever remains of this entry
-You've used 118 entries,
+You've used 119 entries,
             2773 wiz_defined-function locations,
-            1229 strings with 26898 characters,
-and the built_in function-call counts, 64014 in all, are:
-= -- 5948
-> -- 3512
-< -- 120
-+ -- 1189
-- -- 1067
-* -- 4900
-:= -- 9290
-add.period$ -- 393
-call.type$ -- 118
-change.case$ -- 703
-chr.to.int$ -- 114
-cite$ -- 236
-duplicate$ -- 3080
-empty$ -- 5226
-format.name$ -- 1259
-if$ -- 13978
+            1236 strings with 27035 characters,
+and the built_in function-call counts, 64472 in all, are:
+= -- 5992
+> -- 3533
+< -- 121
++ -- 1196
+- -- 1073
+* -- 4939
+:= -- 9358
+add.period$ -- 396
+call.type$ -- 119
+change.case$ -- 708
+chr.to.int$ -- 115
+cite$ -- 238
+duplicate$ -- 3100
+empty$ -- 5266
+format.name$ -- 1268
+if$ -- 14074
 int.to.chr$ -- 5
 int.to.str$ -- 1
-missing$ -- 117
-newline$ -- 598
-num.names$ -- 478
-pop$ -- 1503
+missing$ -- 118
+newline$ -- 603
+num.names$ -- 482
+pop$ -- 1511
 preamble$ -- 1
-purify$ -- 588
+purify$ -- 592
 quote$ -- 0
-skip$ -- 2539
+skip$ -- 2554
 stack$ -- 0
-substring$ -- 2849
-swap$ -- 712
+substring$ -- 2876
+swap$ -- 714
 text.length$ -- 60
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 1283
+type$ -- 1294
 warning$ -- 0
-while$ -- 577
+while$ -- 582
 width$ -- 0
-write$ -- 1570
+write$ -- 1583
 (There were 2 error messages)
