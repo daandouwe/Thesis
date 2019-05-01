@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  1 MAY 2019 21:15
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  1 MAY 2019 23:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1408,24 +1408,11 @@ Package pdftex.def Info: illclogo-eps-converted-to.pdf used on input line 139.
 ogo-eps-converted-to.pdf>]
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <14.4> not available
 (Font)              Font shape `OT1/ppl/b/n' tried instead on input line 141.
-LaTeX Font Info:    Try loading font information for OMS+ppl on input line 146.
-
-
-(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omsppl.fd
-File: omsppl.fd 
-)
-LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 146.
-
-Overfull \hbox (5.19946pt too wide) in paragraph at lines 148--149
-[]\OT1/ppl/m/n/10.95 propose ef-fec-tive meth-ods for semisu-per-vised learn-in
-g, mak-ing the syn-tac-tic struc-
- []
-
-[2]
+ [2]
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <20.74> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 157.
- (./thesis.toc [3
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 159.
+
+(./thesis.toc [3
 
 ] [4])
 \tf@toc=\write5
@@ -1615,7 +1602,7 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 [10
 
 ] [11]
-<../figures/trees/npi-licensed.pdf, id=649, 526.77112pt x 259.41167pt>
+<../figures/trees/npi-licensed.pdf, id=651, 526.77112pt x 259.41167pt>
 File: ../figures/trees/npi-licensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-licensed.pdf>
@@ -1623,7 +1610,7 @@ Package pdftex.def Info: ../figures/trees/npi-licensed.pdf used on input line 5
 9.
 (pdftex.def)             Requested size: 209.12686pt x 102.98303pt.
 
-<../figures/trees/npi-unlicensed.pdf, id=650, 482.62106pt x 256.61702pt>
+<../figures/trees/npi-unlicensed.pdf, id=652, 482.62106pt x 256.61702pt>
 File: ../figures/trees/npi-unlicensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-unlicensed.pdf>
@@ -1631,19 +1618,26 @@ Package pdftex.def Info: ../figures/trees/npi-unlicensed.pdf used on input line
  62.
 (pdftex.def)             Requested size: 188.21289pt x 100.07631pt.
  [12 <../figures/trees/npi-licensed.pdf> <../figures/trees/npi-unlicensed.pdf>]
- (../figures/trees/original.tex)
-(../figures/trees/simplified.tex) (../figures/trees/binary.tex)
+LaTeX Font Info:    Try loading font information for OMS+ppl on input line 73.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omsppl.fd
+File: omsppl.fd 
+)
+LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10.95> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 73.
+
+(../figures/trees/original.tex) (../figures/trees/simplified.tex)
+(../figures/trees/binary.tex)
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <7> not available
 (Font)              Font shape `U/lasy/m/n' tried instead on input line 111.
-
-(../figures/trees/spans.tex) [13] [14] [15] [16]
+ (../figures/trees/spans.tex) [13] [14] [15]
+[16]
 LaTeX Font Info:    Try loading font information for OT1+pcr on input line 200.
 
-
-(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1pcr.fd
+ (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-) [17] [18]
-[19] [20]) [21] [22]
+) [17]
+[18] [19] [20]) [21] [22]
 chapter 3.
 (../03-rnng/rnng.tex [23
 
@@ -1663,7 +1657,7 @@ o-posal dis-tri-bu-tion al-lows us to rewrite the marginal
 
 [31] [32] (../tables/disc-fscores.tex) (../tables/gen-fscores.tex)
 (../tables/gen-perplexities.tex) [33] [34]
-<../figures/sample-experiment/fscore/disc_temp.pdf, id=1265, 722.7pt x 361.35pt
+<../figures/sample-experiment/fscore/disc_temp.pdf, id=1267, 722.7pt x 361.35pt
 >
 File: ../figures/sample-experiment/fscore/disc_temp.pdf Graphic file (type pdf)
 
@@ -1672,7 +1666,7 @@ Package pdftex.def Info: ../figures/sample-experiment/fscore/disc_temp.pdf used
  on input line 293.
 (pdftex.def)             Requested size: 376.4258pt x 188.21185pt.
 
-<../figures/sample-experiment/ppl/disc_temp.pdf, id=1266, 722.7pt x 361.35pt>
+<../figures/sample-experiment/ppl/disc_temp.pdf, id=1268, 722.7pt x 361.35pt>
 File: ../figures/sample-experiment/ppl/disc_temp.pdf Graphic file (type pdf)
 
 <use ../figures/sample-experiment/ppl/disc_temp.pdf>
@@ -1684,7 +1678,7 @@ Package pdftex.def Info: ../figures/sample-experiment/ppl/disc_temp.pdf used on
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-<../figures/sample-experiment/entropy/disc_temp.pdf, id=1268, 361.35pt x 722.7p
+<../figures/sample-experiment/entropy/disc_temp.pdf, id=1270, 361.35pt x 722.7p
 t>
 File: ../figures/sample-experiment/entropy/disc_temp.pdf Graphic file (type pdf
 )
@@ -1702,7 +1696,7 @@ chapter 4.
 (../04-crf-parser/crf-parser.tex [39
 
 ] [40]
-<../figures/span-encoding.pdf, id=1446, 464.0005pt x 150.49072pt>
+<../figures/span-encoding.pdf, id=1448, 464.0005pt x 150.49072pt>
 File: ../figures/span-encoding.pdf Graphic file (type pdf)
 
 <use ../figures/span-encoding.pdf>
@@ -1715,7 +1709,7 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 [42] [43] [44] [45] [46] [47] [48] [49] (../tables/crf-fscores.tex) [50]
 (../tables/gen-fscores-crf.tex) (../tables/gen-perplexities-crf.tex) [51]
-<../figures/sample-experiment/fscore/crf_disc_08.pdf, id=1684, 722.7pt x 361.35
+<../figures/sample-experiment/fscore/crf_disc_08.pdf, id=1686, 722.7pt x 361.35
 pt>
 File: ../figures/sample-experiment/fscore/crf_disc_08.pdf Graphic file (type pd
 f)
@@ -1757,14 +1751,14 @@ ed on input line 343.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 
-<../figures/sample-experiment/ppl/crf_disc08.pdf, id=1722, 578.16pt x 433.62pt>
+<../figures/sample-experiment/ppl/crf_disc08.pdf, id=1724, 578.16pt x 433.62pt>
 File: ../figures/sample-experiment/ppl/crf_disc08.pdf Graphic file (type pdf)
 <use ../figures/sample-experiment/ppl/crf_disc08.pdf>
 Package pdftex.def Info: ../figures/sample-experiment/ppl/crf_disc08.pdf used o
 n input line 351.
 (pdftex.def)             Requested size: 334.60425pt x 250.9506pt.
 
-<../figures/sample-experiment/entropy/all.pdf, id=1723, 361.35pt x 722.7pt>
+<../figures/sample-experiment/entropy/all.pdf, id=1725, 361.35pt x 722.7pt>
 File: ../figures/sample-experiment/entropy/all.pdf Graphic file (type pdf)
 
 <use ../figures/sample-experiment/entropy/all.pdf>
@@ -2524,7 +2518,7 @@ To make it work for now, you can use the already also deprecated class option
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 
-<../figures/syneval/all_large-font.pdf, id=2015, 1132.33035pt x 1985.99767pt>
+<../figures/syneval/all_large-font.pdf, id=2017, 1132.33035pt x 1985.99767pt>
 File: ../figures/syneval/all_large-font.pdf Graphic file (type pdf)
 
 <use ../figures/syneval/all_large-font.pdf>
@@ -2536,7 +2530,7 @@ ne 117.
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 [69 <../figures/syneval/all_large-font.pdf>]
-<../figures/syneval/all-averaged.pdf, id=2036, 782.77693pt x 426.30957pt>
+<../figures/syneval/all-averaged.pdf, id=2038, 782.77693pt x 426.30957pt>
 File: ../figures/syneval/all-averaged.pdf Graphic file (type pdf)
 
 <use ../figures/syneval/all-averaged.pdf>
@@ -2544,7 +2538,7 @@ Package pdftex.def Info: ../figures/syneval/all-averaged.pdf used on input line
  125.
 (pdftex.def)             Requested size: 376.4258pt x 205.01006pt.
 
-<../figures/syneval/rnng_lm_horizontal.pdf, id=2037, 1486.98665pt x 900.28534pt
+<../figures/syneval/rnng_lm_horizontal.pdf, id=2039, 1486.98665pt x 900.28534pt
 >
 File: ../figures/syneval/rnng_lm_horizontal.pdf Graphic file (type pdf)
  <use ../figures/syneval/rnng_lm_horizontal.pdf>
@@ -2556,7 +2550,7 @@ t line 132.
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-<../figures/syneval/rnng_lm_no-unk_horizontal.pdf, id=2038, 1486.98665pt x 900.
+<../figures/syneval/rnng_lm_no-unk_horizontal.pdf, id=2040, 1486.98665pt x 900.
 28534pt>
 File: ../figures/syneval/rnng_lm_no-unk_horizontal.pdf Graphic file (type pdf)
  <use ../figures/syneval/rnng_lm_no-unk_horizontal.pdf>
@@ -2669,74 +2663,68 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.226 \end{document}
+l.228 \end{document}
                     
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 226.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 226.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 228.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 228.
 (./thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 226.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 226.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 228.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 228.
 Package rerunfilecheck Info: File `thesis.out' has not changed.
 (rerunfilecheck)             Checksum: 01F8DBB3790F7BBA905D59C40A8321BD;6374.
 
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 226.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 228.
  )
 (\end occurred inside a group at level 1)
 
 ### semi simple group (level 1) entered at line 121 (\begingroup)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 27291 strings out of 493014
- 507928 string characters out of 6133351
+ 27289 strings out of 493014
+ 507895 string characters out of 6133351
  729694 words of memory out of 5000000
  29587 multiletter control sequences out of 15000+600000
  45784 words of font info for 128 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  73i,19n,77p,8548b,1414s stack positions out of 5000i,500n,10000p,200000b,80000s
-pdfTeX warning (dest): name{figure.caption.49} has been referen
-ced but does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{table.caption.47} has been referenced but does not 
-exist, replaced by a fixed one
-
-{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/tex
-live/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texl
-ive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texliv
-e/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive
-/2016/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb></usr/local/texl
-ive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texli
-ve/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive
-/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/201
-6/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2016/
-texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2016/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2016/texmf-
-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2016/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2016/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2016/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2016/texmf-dist/fon
-ts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2016/texmf-dist/fonts
-/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/texmf-dist/f
-onts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2016/texmf-di
-st/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts
-/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/
-urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/pal
-atino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/palatino/
-uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/palatino/uplr8a.
-pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb></
-usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/
-texlive/2016/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
-Output written on thesis.pdf (109 pages, 1427294 bytes).
+{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc
+}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb>
+</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></
+usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></u
+sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb>
+</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
+/usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></u
+sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr
+/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/l
+ocal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loc
+al/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/
+texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/tex
+live/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texliv
+e/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
+/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2
+016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/201
+6/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2016/
+texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2
+016/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texli
+ve/2016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/
+texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2016/texmf-d
+ist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf-dist/fon
+ts/type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/typ
+e1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/
+palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/palatin
+o/uplri8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmb8a.
+pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
+Output written on thesis.pdf (109 pages, 1427195 bytes).
 PDF statistics:
- 2961 PDF objects out of 2984 (max. 8388607)
- 2456 compressed objects within 25 object streams
- 607 named destinations out of 1000 (max. 500000)
+ 2960 PDF objects out of 2984 (max. 8388607)
+ 2455 compressed objects within 25 object streams
+ 605 named destinations out of 1000 (max. 500000)
  891 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -139,15 +139,17 @@
 
 
 \begin{abstract}
-  In this thesis I investigate the question: \textit{What are effective ways of incorporating syntactic structure into neural language models?}
+  We study neural language models that are obtained by approximate marginalization of a joint model of both sentences and explicit phrase structure called the recurrent neural network grammar (RNNG) \citep{dyer2016rnng}. We introduce a neural conditional random field (CRF) constituency parser that can be used as an alternative proposal model for the approximate inference, and experiment with the CRF as approximtate posterior in variational learning of the RNNG, in which we learn both models jointly by optimizing a lower bound on the marginal likelihood. This opens the door to semisupervised and unsupervised learning. To evaluate how the joint formulation differentiates the RNNG from other neural language models we perform targeted syntactic evaluation and compare the model's performance with that of alternative models that are based on multitask learning.
 
-  In this thesis I:
-  \begin{itemize}
-    \item study a class of neural language models that merges generative transition-based parsing with recurrent neural networks in order to model sentences together with their latent syntactic structure;
-    \item propose a new globally trained chart-based parser as an alternative proposal distribution used in the approximate marginalization;
-    \item propose effective methods for semisupervised learning, making the syntactic structure a latent variable;
-    \item perform targeted syntactic evaluation and compare the model's performance with that of alternative models that are based on multitask learning.
-  \end{itemize}
+  % In this thesis I investigate the question: \textit{What are effective ways of incorporating syntactic structure into neural language models?}
+
+  % In this thesis I:
+  % \begin{itemize}
+  %   \item study a class of neural language models that merges generative transition-based parsing with recurrent neural networks in order to model sentences together with their latent syntactic structure;
+  %   \item propose a new globally trained chart-based parser as an alternative proposal distribution used in the approximate marginalization;
+  %   \item propose effective methods for semisupervised learning, making the syntactic structure a latent variable;
+  %   \item perform targeted syntactic evaluation and compare the model's performance with that of alternative models that are based on multitask learning.
+  % \end{itemize}
 \end{abstract}
 
 
