@@ -399,15 +399,12 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/vf/adobe/palatino/pplr7t.vf
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/adobe/palatino/pplr8r.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/vf/adobe/palatino/pplri7t.vf
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/adobe/palatino/pplri8r.tfm
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/adobe/palatino/pplb7t.tfm
 INPUT ../figures/trees/npi-licensed.pdf
 INPUT ../figures/trees/npi-licensed.pdf
 INPUT ../figures/trees/npi-licensed.pdf
 INPUT ../figures/trees/npi-unlicensed.pdf
 INPUT ../figures/trees/npi-unlicensed.pdf
 INPUT ../figures/trees/npi-unlicensed.pdf
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/vf/adobe/palatino/pplb7t.vf
-INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/adobe/palatino/pplb8r.tfm
 INPUT ../figures/trees/original.tex
 INPUT ../figures/trees/original.tex
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/adobe/palatino/pplr7t.tfm
