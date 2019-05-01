@@ -378,4 +378,6 @@ Notes from discussion with Wilker, and other ideas.
 
 - [ ] Syneval: look into object relatives (RNNG do well on them). Maybe change example?
 
-- [ ] E_{p(y|x)}[log Psi(x, y)] = E_{p(y|x)}[ sum_{v in Y} log psi(x, Y)]
+- [ ] CRF: E_{p(y|x)}[log Psi(x, y)] = E_{p(y|x)}[ sum_{v in Y} log psi(x, Y)]
+
+- [ ] CRF: indicator notation

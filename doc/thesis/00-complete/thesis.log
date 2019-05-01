@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  1 MAY 2019 15:14
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  1 MAY 2019 20:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1436,112 +1436,59 @@ LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <20.74> not available
 ]
 chapter 1.
 (../01-introduction/introduction.tex
-LaTeX Font Info:    Font shape `U/lasy/b/n' in size <7> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 3.
-LaTeX Font Info:    Font shape `U/lasy/b/n' in size <5> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 3.
-LaTeX Font Info:    Font shape `U/lasy/b/n' in size <9> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 11.
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 11.
 
-(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1pcr.fd
-File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-) [7
+Package natbib Warning: Citation `dyer2016rnng' on page 7 undefined on input li
+ne 44.
+
+
+Package natbib Warning: Citation `dyer2016rnng' on page 7 undefined on input li
+ne 46.
+
+
+Package natbib Warning: Citation `marcus1993penn' on page 7 undefined on input 
+line 46.
+
+[7
 
 ]
-Overfull \hbox (1.89041pt too wide) in paragraph at lines 35--36
-\OT1/ppl/m/n/10.95 true model of the world (sen-tence $\OML/cmm/m/it/10.95 x$\O
-T1/ppl/m/n/10.95 , with struc-ture $\OML/cmm/m/it/10.95 y$\OT1/ppl/m/n/10.95 , 
-and mean-ing $\OML/cmm/m/it/10.95 z$\OT1/ppl/m/n/10.95 , from speaker
+
+Package natbib Warning: Citation `linzen2018targeted' on page 8 undefined on in
+put line 50.
+
+LaTeX Font Info:    Try loading font information for OT1+phv on input line 91.
+(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1phv.fd
+File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
+)
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 91.
+
+Overfull \hbox (17.15652pt too wide) in paragraph at lines 95--96
+[]\OT1/ppl/m/n/10.95 We de-scribe the ex-act prob-a-bilis-tic model of the RNNG
+, the neu-ral parametriza-
  []
 
-
-Overfull \hbox (24.59552pt too wide) in paragraph at lines 35--36
-\OML/cmm/m/it/10.95 p\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 x; speaker \OT1/cm
-r/m/n/10.95 = \OML/cmm/m/it/10.95 Daan\OT1/cmr/m/n/10.95 )$ \OT1/ppl/m/n/10.95 
-(maybe some-thing like that?), and $\OML/cmm/m/it/10.95 p\OT1/cmr/m/n/10.95 (\O
-ML/cmm/m/it/10.95 x\OT1/cmr/m/n/10.95 ) = [][] \OML/cmm/m/it/10.95 p\OT1/cmr/m/
-n/10.95 (\OML/cmm/m/it/10.95 x; speaker\OT1/cmr/m/n/10.95 )$\OT1/ppl/m/n/10.95 
-.
- []
-
-
-Package natbib Warning: Citation `dyer2016rnng' on page 8 undefined on input li
-ne 40.
-
-
-Package natbib Warning: Citation `dyer2016rnng' on page 8 undefined on input li
-ne 42.
-
-
-Package natbib Warning: Citation `buys2015generative' on page 8 undefined on in
-put line 42.
-
-
-Package natbib Warning: Citation `buys2018exact' on page 8 undefined on input l
-ine 42.
-
-
-Package natbib Warning: Citation `dyer2016rnng' on page 8 undefined on input li
-ne 42.
-
-
-Package natbib Warning: Citation `buys2018exact' on page 8 undefined on input l
-ine 42.
-
-[8]
-
-Package natbib Warning: Citation `klein grammar etc' on page 9 undefined on inp
-ut line 46.
-
-
-Package natbib Warning: Citation `tree gumbel stuff' on page 9 undefined on inp
-ut line 46.
-
-
-Package natbib Warning: Citation `stern2017minimal' on page 9 undefined on inpu
-t line 58.
-
-
-Package natbib Warning: Citation `dyer2016rnng' on page 9 undefined on input li
-ne 60.
-
-
-Package natbib Warning: Citation `fu2006gradient' on page 9 undefined on input 
-line 74.
-
-
-Package natbib Warning: Citation `williams1992reinforce' on page 9 undefined on
- input line 74.
-
-
-Package natbib Warning: Citation `rennie2017argmax' on page 9 undefined on inpu
-t line 74.
-
-[9]
-Overfull \hbox (4.55347pt too wide) in paragraph at lines 76--77
-\OT1/ppl/m/n/10.95 the en-tropy term in the lower bound can be com-puted ex-act
-ly us-ing Inside-Outside
- []
-
-) [10]
+) [8]
 chapter 2.
 (../02-background/background.tex
 
-Package natbib Warning: Citation `huddleston2002grammar' on page 11 undefined o
+Package natbib Warning: Citation `huddleston2002grammar' on page 9 undefined on
+ input line 6.
+
+
+Package natbib Warning: Citation `carnie2010constituent' on page 9 undefined on
+ input line 6.
+
+
+Package natbib Warning: Citation `everaert2015structures' on page 9 undefined o
 n input line 6.
 
+LaTeX Font Info:    Font shape `U/lasy/b/n' in size <9> not available
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 6.
+LaTeX Font Info:    Font shape `U/lasy/b/n' in size <5> not available
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 6.
 
-Package natbib Warning: Citation `carnie2010constituent' on page 11 undefined o
-n input line 6.
-
-
-Package natbib Warning: Citation `everaert2015structures' on page 11 undefined 
-on input line 6.
-
-
-Package natbib Warning: Citation `huddleston2002grammar' on page 11 undefined o
-n input line 8.
+Package natbib Warning: Citation `huddleston2002grammar' on page 9 undefined on
+ input line 8.
 
 
 ! Class scrreprt Error: undefined old font command `\rm'.
@@ -1688,47 +1635,47 @@ To make it work for now, you can use the already also deprecated class option
 `enabledeprecatedfontcommands'.
 
 
-Package natbib Warning: Citation `carnie2010constituent' on page 11 undefined o
-n input line 28.
+Package natbib Warning: Citation `carnie2010constituent' on page 9 undefined on
+ input line 28.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[11
+[9
 
 ]
 
-Package natbib Warning: Citation `carnie2010constituent' on page 12 undefined o
+Package natbib Warning: Citation `carnie2010constituent' on page 10 undefined o
 n input line 36.
 
-[12]
+[10]
 
-Package natbib Warning: Citation `everaert2015structures' on page 13 undefined 
+Package natbib Warning: Citation `everaert2015structures' on page 11 undefined 
 on input line 49.
 
 
-Package natbib Warning: Citation `everaert2015structures' on page 13 undefined 
+Package natbib Warning: Citation `everaert2015structures' on page 11 undefined 
 on input line 49.
 
 
-Package natbib Warning: Citation `everaert2015structures' on page 13 undefined 
+Package natbib Warning: Citation `everaert2015structures' on page 11 undefined 
 on input line 49.
 
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <9> not available
 (Font)              Font shape `OT1/ppl/b/n' tried instead on input line 49.
 
-Package natbib Warning: Citation `giannakidou2011npi' on page 13 undefined on i
+Package natbib Warning: Citation `giannakidou2011npi' on page 11 undefined on i
 nput line 49.
 
 
-Package natbib Warning: Citation `everaert2015structures' on page 13 undefined 
+Package natbib Warning: Citation `everaert2015structures' on page 11 undefined 
 on input line 54.
 
 
-Package natbib Warning: Citation `everaert2015structures' on page 13 undefined 
+Package natbib Warning: Citation `everaert2015structures' on page 11 undefined 
 on input line 54.
 
-<../figures/trees/npi-licensed.pdf, id=618, 526.77112pt x 259.41167pt>
+<../figures/trees/npi-licensed.pdf, id=601, 526.77112pt x 259.41167pt>
 File: ../figures/trees/npi-licensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-licensed.pdf>
@@ -1736,7 +1683,7 @@ Package pdftex.def Info: ../figures/trees/npi-licensed.pdf used on input line 5
 9.
 (pdftex.def)             Requested size: 209.12686pt x 102.98303pt.
 
-<../figures/trees/npi-unlicensed.pdf, id=619, 482.62106pt x 256.61702pt>
+<../figures/trees/npi-unlicensed.pdf, id=602, 482.62106pt x 256.61702pt>
 File: ../figures/trees/npi-unlicensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-unlicensed.pdf>
@@ -1745,24 +1692,24 @@ Package pdftex.def Info: ../figures/trees/npi-unlicensed.pdf used on input line
 (pdftex.def)             Requested size: 188.21289pt x 100.07631pt.
 
 
-Package natbib Warning: Citation `everaert2015structures' on page 13 undefined 
+Package natbib Warning: Citation `everaert2015structures' on page 11 undefined 
 on input line 64.
 
 
-Package natbib Warning: Citation `everaert2015structures' on page 13 undefined 
+Package natbib Warning: Citation `everaert2015structures' on page 11 undefined 
 on input line 64.
 
-[13 <../figures/trees/npi-licensed.pdf> <../figures/trees/npi-unlicensed.pdf>]
+[11 <../figures/trees/npi-licensed.pdf> <../figures/trees/npi-unlicensed.pdf>]
 
-Package natbib Warning: Citation `tesniere1959elements' on page 14 undefined on
+Package natbib Warning: Citation `tesniere1959elements' on page 12 undefined on
  input line 73.
 
 
-Package natbib Warning: Citation `nivre2005dependency' on page 14 undefined on 
+Package natbib Warning: Citation `nivre2005dependency' on page 12 undefined on 
 input line 73.
 
 
-Package natbib Warning: Citation `hudson2010introduction' on page 14 undefined 
+Package natbib Warning: Citation `hudson2010introduction' on page 12 undefined 
 on input line 73.
 
 
@@ -1772,285 +1719,293 @@ ga-ni-za-tion [\OT1/ppl/b/n/10.95 ???\OT1/ppl/m/n/10.95 ], and dis-penses
  []
 
 
-Package natbib Warning: Citation `frank2012hierarchical' on page 14 undefined o
+Package natbib Warning: Citation `frank2012hierarchical' on page 12 undefined o
 n input line 75.
 
 
-Package natbib Warning: Citation `everaert2015structures' on page 14 undefined 
+Package natbib Warning: Citation `everaert2015structures' on page 12 undefined 
 on input line 75.
 
 
-Package natbib Warning: Citation `hale2001earley' on page 14 undefined on input
+Package natbib Warning: Citation `hale2001earley' on page 12 undefined on input
  line 77.
 
 
-Package natbib Warning: Citation `levy2008expectation' on page 14 undefined on 
+Package natbib Warning: Citation `levy2008expectation' on page 12 undefined on 
 input line 77.
 
 
-Package natbib Warning: Citation `brennan2016abstract' on page 14 undefined on 
+Package natbib Warning: Citation `brennan2016abstract' on page 12 undefined on 
 input line 77.
 
 
-Package natbib Warning: Citation `conway2008neurocognitive' on page 14 undefine
+Package natbib Warning: Citation `conway2008neurocognitive' on page 12 undefine
 d on input line 77.
 
 
-Package natbib Warning: Citation `gillespie2011hierarchy' on page 14 undefined 
+Package natbib Warning: Citation `gillespie2011hierarchy' on page 12 undefined 
 on input line 77.
 
 
-Package natbib Warning: Citation `christiansen2012similar' on page 14 undefined
+Package natbib Warning: Citation `christiansen2012similar' on page 12 undefined
  on input line 77.
 
 
-Package natbib Warning: Citation `gillespie2013against' on page 14 undefined on
+Package natbib Warning: Citation `gillespie2013against' on page 12 undefined on
  input line 77.
 
 
-Package natbib Warning: Citation `frank2012hierarchical' on page 14 undefined o
+Package natbib Warning: Citation `frank2012hierarchical' on page 12 undefined o
 n input line 77.
 
 (../figures/trees/original.tex) (../figures/trees/simplified.tex)
-(../figures/trees/binary.tex) (../figures/trees/spans.tex)
+(../figures/trees/binary.tex)
+LaTeX Font Info:    Font shape `U/lasy/b/n' in size <7> not available
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 111.
+ (../figures/trees/spans.tex)
 
-Package natbib Warning: Citation `marcus1993penn' on page 14 undefined on input
+Package natbib Warning: Citation `marcus1993penn' on page 12 undefined on input
  line 130.
 
 
-Package natbib Warning: Citation `marcus1994annotating' on page 14 undefined on
+Package natbib Warning: Citation `marcus1994annotating' on page 12 undefined on
  input line 130.
 
-[14]
+[12]
 
-Package natbib Warning: Citation `andor2016globally' on page 15 undefined on in
+Package natbib Warning: Citation `andor2016globally' on page 13 undefined on in
 put line 157.
 
-[15]
+[13]
 
-Package natbib Warning: Citation `lafferty2001crf' on page 16 undefined on inpu
+Package natbib Warning: Citation `lafferty2001crf' on page 14 undefined on inpu
 t line 169.
 
 
-Package natbib Warning: Citation `lafferty2001crf' on page 16 undefined on inpu
+Package natbib Warning: Citation `lafferty2001crf' on page 14 undefined on inpu
 t line 179.
 
-[16]
+[14]
 
-Package natbib Warning: Citation `goldberg2013dynamic' on page 17 undefined on 
+Package natbib Warning: Citation `goldberg2013dynamic' on page 15 undefined on 
 input line 181.
 
 
-Package natbib Warning: Citation `ballesteros2016exploration' on page 17 undefi
+Package natbib Warning: Citation `ballesteros2016exploration' on page 15 undefi
 ned on input line 181.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 17 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 15 undefined on inp
 ut line 181.
 
 
-Package natbib Warning: Citation `vlachos2012imitation' on page 17 undefined on
+Package natbib Warning: Citation `vlachos2012imitation' on page 15 undefined on
  input line 181.
 
 
-Package natbib Warning: Citation `he2012imitation' on page 17 undefined on inpu
+Package natbib Warning: Citation `he2012imitation' on page 15 undefined on inpu
 t line 181.
 
 
-Package natbib Warning: Citation `ballesteros2016exploration' on page 17 undefi
+Package natbib Warning: Citation `ballesteros2016exploration' on page 15 undefi
 ned on input line 181.
 
 
-Package natbib Warning: Citation `klein2018reinforce' on page 17 undefined on i
+Package natbib Warning: Citation `klein2018reinforce' on page 15 undefined on i
 nput line 181.
 
 
-Package natbib Warning: Citation `black1991parseval' on page 17 undefined on in
+Package natbib Warning: Citation `black1991parseval' on page 15 undefined on in
 put line 187.
 
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 200.
 
-Package natbib Warning: Citation `sekine1997evalb' on page 17 undefined on inpu
+(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1pcr.fd
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+
+Package natbib Warning: Citation `sekine1997evalb' on page 15 undefined on inpu
 t line 200.
 
-[17]
+[15]
 
-Package natbib Warning: Citation `chen1999empirical' on page 18 undefined on in
+Package natbib Warning: Citation `chen1999empirical' on page 16 undefined on in
 put line 217.
 
 
-Package natbib Warning: Citation `kneser1995improved' on page 18 undefined on i
+Package natbib Warning: Citation `kneser1995improved' on page 16 undefined on i
 nput line 217.
 
 
-Package natbib Warning: Citation `rosenfeld1996loglinear' on page 18 undefined 
+Package natbib Warning: Citation `rosenfeld1996loglinear' on page 16 undefined 
 on input line 217.
 
 
-Package natbib Warning: Citation `bengio2003neural' on page 18 undefined on inp
+Package natbib Warning: Citation `bengio2003neural' on page 16 undefined on inp
 ut line 217.
 
 
-Package natbib Warning: Citation `mikolov2010recurrent' on page 18 undefined on
+Package natbib Warning: Citation `mikolov2010recurrent' on page 16 undefined on
  input line 217.
 
 
-Package natbib Warning: Citation `hochreiter1997long' on page 18 undefined on i
+Package natbib Warning: Citation `hochreiter1997long' on page 16 undefined on i
 nput line 217.
 
 
-Package natbib Warning: Citation `zaremba2014recurrent' on page 18 undefined on
+Package natbib Warning: Citation `zaremba2014recurrent' on page 16 undefined on
  input line 217.
 
 
-Package natbib Warning: Citation `jozefowicz2016exploring' on page 18 undefined
+Package natbib Warning: Citation `jozefowicz2016exploring' on page 16 undefined
  on input line 217.
 
 
-Package natbib Warning: Citation `melis2017state' on page 18 undefined on input
+Package natbib Warning: Citation `melis2017state' on page 16 undefined on input
  line 217.
 
 
-Package natbib Warning: Citation `chelba2017n' on page 18 undefined on input li
+Package natbib Warning: Citation `chelba2017n' on page 16 undefined on input li
 ne 217.
 
 
-Package natbib Warning: Citation `kalchbrenner2014convolutional' on page 18 und
+Package natbib Warning: Citation `kalchbrenner2014convolutional' on page 16 und
 efined on input line 217.
 
 
-Package natbib Warning: Citation `vaswani2017attention' on page 18 undefined on
+Package natbib Warning: Citation `vaswani2017attention' on page 16 undefined on
  input line 217.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 18 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 16 undefined on input l
 ine 224.
 
-[18]
+[16]
 
-Package natbib Warning: Citation `roark2001probabilistic' on page 19 undefined 
+Package natbib Warning: Citation `roark2001probabilistic' on page 17 undefined 
 on input line 226.
 
 
-Package natbib Warning: Citation `chelba2000structured' on page 19 undefined on
+Package natbib Warning: Citation `chelba2000structured' on page 17 undefined on
  input line 226.
 
 
-Package natbib Warning: Citation `emami2005neural' on page 19 undefined on inpu
+Package natbib Warning: Citation `emami2005neural' on page 17 undefined on inpu
 t line 226.
 
 
-Package natbib Warning: Citation `pauls2012treelets' on page 19 undefined on in
+Package natbib Warning: Citation `pauls2012treelets' on page 17 undefined on in
 put line 226.
 
 
-Package natbib Warning: Citation `chelba2013one' on page 19 undefined on input 
+Package natbib Warning: Citation `chelba2013one' on page 17 undefined on input 
 line 229.
 
 
-Package natbib Warning: Citation `merity2016pointer' on page 19 undefined on in
+Package natbib Warning: Citation `merity2016pointer' on page 17 undefined on in
 put line 229.
 
 
-Package natbib Warning: Citation `jelinek1997information' on page 19 undefined 
+Package natbib Warning: Citation `jelinek1997information' on page 17 undefined 
 on input line 232.
 
 
-Package natbib Warning: Citation `chelba2017n' on page 19 undefined on input li
+Package natbib Warning: Citation `chelba2017n' on page 17 undefined on input li
 ne 232.
 
-[19]
+[17]
 
-Package natbib Warning: Citation `smith2012adversarial' on page 20 undefined on
+Package natbib Warning: Citation `smith2012adversarial' on page 18 undefined on
  input line 245.
 
 
-Package natbib Warning: Citation `linzen2016syntax' on page 20 undefined on inp
+Package natbib Warning: Citation `linzen2016syntax' on page 18 undefined on inp
 ut line 245.
 
 
-Package natbib Warning: Citation `linzen2018targeted' on page 20 undefined on i
+Package natbib Warning: Citation `linzen2018targeted' on page 18 undefined on i
 nput line 245.
 
 
-Package natbib Warning: Citation `linzen2018targeted' on page 20 undefined on i
+Package natbib Warning: Citation `linzen2018targeted' on page 18 undefined on i
 nput line 245.
 
-[20]
+[18]
 
-Package natbib Warning: Citation `hochreiter1997long' on page 21 undefined on i
+Package natbib Warning: Citation `hochreiter1997long' on page 19 undefined on i
 nput line 279.
 
 
-Package natbib Warning: Citation `robbins1951stochastic' on page 21 undefined o
+Package natbib Warning: Citation `robbins1951stochastic' on page 19 undefined o
 n input line 300.
 
-) [21] [22]
+) [19] [20]
 chapter 3.
 (../03-rnng/rnng.tex
 
-Package natbib Warning: Citation `dyer2016rnng' on page 23 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 21 undefined on input l
 ine 1.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 23 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 21 undefined on input l
 ine 7.
 
-[23
+[21
 
 ] (../tables/disc-transitions.tex
 
-Package natbib Warning: Citation `dyer2016rnng' on page 24 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 22 undefined on input l
 ine 19.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 24 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 22 undefined on input l
 ine 19.
 
-) [24] (../tables/gen-transitions.tex
+) [22] (../tables/gen-transitions.tex
+
+Package natbib Warning: Citation `dyer2016rnng' on page 23 undefined on input l
+ine 19.
+
+
+Package natbib Warning: Citation `dyer2016rnng' on page 23 undefined on input l
+ine 19.
+
+) [23] [24]
 
 Package natbib Warning: Citation `dyer2016rnng' on page 25 undefined on input l
-ine 19.
-
-
-Package natbib Warning: Citation `dyer2016rnng' on page 25 undefined on input l
-ine 19.
-
-) [25] [26]
-
-Package natbib Warning: Citation `dyer2016rnng' on page 27 undefined on input l
 ine 131.
 
 
-Package natbib Warning: Citation `hale2018beam' on page 27 undefined on input l
+Package natbib Warning: Citation `hale2018beam' on page 25 undefined on input l
 ine 131.
 
-[27]
+[25]
 Overfull \hbox (7.78178pt too wide) in paragraph at lines 135--136
 \OT1/ppl/m/n/10.95 The tran-si-tion prob-a-bil-i-ties are com-puted from the ve
 c-tor $\OT1/cmr/bx/n/10.95 u[]$ \OT1/ppl/m/n/10.95 that sum-ma-rizes the parser
 's
  []
 
-[28]
+[26]
 
-Package natbib Warning: Citation `dyer2016rnng' on page 29 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 27 undefined on input l
 ine 167.
 
 
-Package natbib Warning: Citation `kuncoro2017syntax' on page 29 undefined on in
+Package natbib Warning: Citation `kuncoro2017syntax' on page 27 undefined on in
 put line 167.
 
 
-Package natbib Warning: Citation `kuncoro2017syntax' on page 29 undefined on in
+Package natbib Warning: Citation `kuncoro2017syntax' on page 27 undefined on in
 put line 167.
 
 
-Package natbib Warning: Citation `kuncoro2017syntax' on page 29 undefined on in
+Package natbib Warning: Citation `kuncoro2017syntax' on page 27 undefined on in
 put line 181.
 
-[29] [30]
+[27] [28]
 
-Package natbib Warning: Citation `dyer2016rnng' on page 31 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 29 undefined on input l
 ine 233.
 
 
@@ -2059,97 +2014,97 @@ Overfull \hbox (21.0442pt too wide) in paragraph at lines 236--237
 o-posal dis-tri-bu-tion al-lows us to rewrite the marginal
  []
 
-[31]
+[29]
 
-Package natbib Warning: Citation `dyer2016rnng' on page 32 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 30 undefined on input l
 ine 258.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 32 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 30 undefined on input l
 ine 261.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 32 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 30 undefined on input l
 ine 264.
 
 
-Package natbib Warning: Citation `gal2016theoretically' on page 32 undefined on
+Package natbib Warning: Citation `gal2016theoretically' on page 30 undefined on
  input line 264.
 
 
-Package natbib Warning: Citation `neubig2017dynet' on page 32 undefined on inpu
+Package natbib Warning: Citation `neubig2017dynet' on page 30 undefined on inpu
 t line 264.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 32 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 30 undefined on input l
 ine 266.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 32 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 30 undefined on input l
 ine 274.
 
-[32] (../tables/disc-fscores.tex
+[30] (../tables/disc-fscores.tex
 
-Package natbib Warning: Citation `dyer2016rnng' on page 33 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 31 undefined on input l
 ine 4.
 
 ) (../tables/gen-fscores.tex
 
-Package natbib Warning: Citation `dyer2016rnng' on page 33 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 31 undefined on input l
 ine 17.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 33 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 31 undefined on input l
 ine 19.
 
 
-Package natbib Warning: Citation `kuncoro2017syntax' on page 33 undefined on in
+Package natbib Warning: Citation `kuncoro2017syntax' on page 31 undefined on in
 put line 20.
 
 ) (../tables/gen-perplexities.tex
 
-Package natbib Warning: Citation `dyer2016rnng' on page 33 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 31 undefined on input l
 ine 16.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 33 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 31 undefined on input l
 ine 18.
 
 
-Package natbib Warning: Citation `kuncoro2017syntax' on page 33 undefined on in
+Package natbib Warning: Citation `kuncoro2017syntax' on page 31 undefined on in
 put line 19.
 
 )
 
-Package natbib Warning: Citation `dyer2016rnng' on page 33 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 31 undefined on input l
 ine 284.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 33 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 31 undefined on input l
 ine 284.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 33 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 31 undefined on input l
 ine 284.
 
 
-Package natbib Warning: Citation `kuncoro2017syntax' on page 33 undefined on in
+Package natbib Warning: Citation `kuncoro2017syntax' on page 31 undefined on in
 put line 284.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 33 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 31 undefined on input l
 ine 284.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 33 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 31 undefined on input l
 ine 284.
 
 
-Package natbib Warning: Citation `kuncoro2017syntax' on page 33 undefined on in
+Package natbib Warning: Citation `kuncoro2017syntax' on page 31 undefined on in
 put line 284.
 
-[33] [34]
-<../figures/sample-experiment/fscore/disc_temp.pdf, id=980, 722.7pt x 361.35pt>
+[31] [32]
+<../figures/sample-experiment/fscore/disc_temp.pdf, id=972, 722.7pt x 361.35pt>
 File: ../figures/sample-experiment/fscore/disc_temp.pdf Graphic file (type pdf)
 
 <use ../figures/sample-experiment/fscore/disc_temp.pdf>
@@ -2157,7 +2112,7 @@ Package pdftex.def Info: ../figures/sample-experiment/fscore/disc_temp.pdf used
  on input line 293.
 (pdftex.def)             Requested size: 376.4258pt x 188.21185pt.
 
-<../figures/sample-experiment/ppl/disc_temp.pdf, id=981, 722.7pt x 361.35pt>
+<../figures/sample-experiment/ppl/disc_temp.pdf, id=973, 722.7pt x 361.35pt>
 File: ../figures/sample-experiment/ppl/disc_temp.pdf Graphic file (type pdf)
 
 <use ../figures/sample-experiment/ppl/disc_temp.pdf>
@@ -2169,7 +2124,7 @@ Package pdftex.def Info: ../figures/sample-experiment/ppl/disc_temp.pdf used on
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-<../figures/sample-experiment/entropy/disc_temp.pdf, id=983, 361.35pt x 722.7pt
+<../figures/sample-experiment/entropy/disc_temp.pdf, id=975, 361.35pt x 722.7pt
 >
 File: ../figures/sample-experiment/entropy/disc_temp.pdf Graphic file (type pdf
 )
@@ -2179,95 +2134,95 @@ d on input line 326.
 (pdftex.def)             Requested size: 167.29893pt x 334.59639pt.
 
 
-Package natbib Warning: Citation `titov2007generative' on page 35 undefined on 
+Package natbib Warning: Citation `titov2007generative' on page 33 undefined on 
 input line 334.
 
 
-Package natbib Warning: Citation `buys2015bayesian' on page 35 undefined on inp
+Package natbib Warning: Citation `buys2015bayesian' on page 33 undefined on inp
 ut line 334.
 
 
-Package natbib Warning: Citation `buys2015generative' on page 35 undefined on i
+Package natbib Warning: Citation `buys2015generative' on page 33 undefined on i
 nput line 334.
 
 
-Package natbib Warning: Citation `buys2018exact' on page 35 undefined on input 
+Package natbib Warning: Citation `buys2018exact' on page 33 undefined on input 
 line 334.
 
 
-Package natbib Warning: Citation `roark2001probabilistic' on page 35 undefined 
+Package natbib Warning: Citation `roark2001probabilistic' on page 33 undefined 
 on input line 334.
 
 
-Package natbib Warning: Citation `kuncoro2017syntax' on page 35 undefined on in
+Package natbib Warning: Citation `kuncoro2017syntax' on page 33 undefined on in
 put line 337.
 
 
-Package natbib Warning: Citation `linzen2016syntax' on page 35 undefined on inp
+Package natbib Warning: Citation `linzen2016syntax' on page 33 undefined on inp
 ut line 337.
 
 
-Package natbib Warning: Citation `kuncoro2018learn' on page 35 undefined on inp
+Package natbib Warning: Citation `kuncoro2018learn' on page 33 undefined on inp
 ut line 337.
 
-[35]
+[33]
 
-Package natbib Warning: Citation `brennan2016abstract' on page 36 undefined on 
+Package natbib Warning: Citation `brennan2016abstract' on page 34 undefined on 
 input line 340.
 
 
-Package natbib Warning: Citation `hale2018beam' on page 36 undefined on input l
+Package natbib Warning: Citation `hale2018beam' on page 34 undefined on input l
 ine 340.
 
 
-Package natbib Warning: Citation `stern2017beam' on page 36 undefined on input 
+Package natbib Warning: Citation `stern2017beam' on page 34 undefined on input 
 line 340.
 
-) [36] [37 <../figures/sample-experiment/fscore/disc_temp.pdf> <../figures/samp
+) [34] [35 <../figures/sample-experiment/fscore/disc_temp.pdf> <../figures/samp
 le-experiment/ppl/disc_temp.pdf
 
 pdfTeX warning: pdflatex (file ../figures/sample-experiment/ppl/disc_temp.pdf):
  PDF inclusion: multiple pdfs with page group included in a single page
->] [38 <../figures/sample-experiment/entropy/disc_temp.pdf>]
+>] [36 <../figures/sample-experiment/entropy/disc_temp.pdf>]
 chapter 4.
 (../04-crf-parser/crf-parser.tex
 
-Package natbib Warning: Citation `stern2017minimal' on page 39 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 37 undefined on inp
 ut line 1.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 39 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 37 undefined on inp
 ut line 5.
 
-[39
+[37
 
 ]
 
-Package natbib Warning: Citation `finkel2008crf' on page 40 undefined on input 
+Package natbib Warning: Citation `finkel2008crf' on page 38 undefined on input 
 line 32.
 
 
-Package natbib Warning: Citation `klein2015crf' on page 40 undefined on input l
+Package natbib Warning: Citation `klein2015crf' on page 38 undefined on input l
 ine 32.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 40 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 38 undefined on inp
 ut line 32.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 40 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 38 undefined on inp
 ut line 35.
 
-[40]
+[38]
 
-Package natbib Warning: Citation `stern2017minimal' on page 41 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 39 undefined on inp
 ut line 45.
 
 
-Package natbib Warning: Citation `dozat2016deep' on page 41 undefined on input 
+Package natbib Warning: Citation `dozat2016deep' on page 39 undefined on input 
 line 45.
 
-<../figures/span-encoding.pdf, id=1114, 464.0005pt x 150.49072pt>
+<../figures/span-encoding.pdf, id=1106, 464.0005pt x 150.49072pt>
 File: ../figures/span-encoding.pdf Graphic file (type pdf)
 
 <use ../figures/span-encoding.pdf>
@@ -2275,141 +2230,141 @@ Package pdftex.def Info: ../figures/span-encoding.pdf used on input line 48.
 (pdftex.def)             Requested size: 418.25372pt x 135.66083pt.
 
 
-Package natbib Warning: Citation `stern2018analyis' on page 41 undefined on inp
+Package natbib Warning: Citation `stern2018analyis' on page 39 undefined on inp
 ut line 49.
 
 
-Package natbib Warning: Citation `stern2018analyis' on page 41 undefined on inp
+Package natbib Warning: Citation `stern2018analyis' on page 39 undefined on inp
 ut line 49.
 
-[41 <../figures/span-encoding.pdf>]
+[39 <../figures/span-encoding.pdf>]
 
-Package natbib Warning: Citation `baker1979trainable' on page 42 undefined on i
+Package natbib Warning: Citation `baker1979trainable' on page 40 undefined on i
 nput line 62.
 
 
-Package natbib Warning: Citation `goodman1999semiring' on page 42 undefined on 
+Package natbib Warning: Citation `goodman1999semiring' on page 40 undefined on 
 input line 62.
 
 
-Package natbib Warning: Citation `gallo1993directed' on page 42 undefined on in
+Package natbib Warning: Citation `gallo1993directed' on page 40 undefined on in
 put line 62.
 
 
-Package natbib Warning: Citation `klein2004parsing' on page 42 undefined on inp
+Package natbib Warning: Citation `klein2004parsing' on page 40 undefined on inp
 ut line 62.
 
 
-Package natbib Warning: Citation `goodman1999semiring' on page 42 undefined on 
+Package natbib Warning: Citation `goodman1999semiring' on page 40 undefined on 
 input line 62.
 
 
-Package natbib Warning: Citation `eisner2009semirings' on page 42 undefined on 
+Package natbib Warning: Citation `eisner2009semirings' on page 40 undefined on 
 input line 62.
 
 (../figures/edges/edges.tex)
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[42]
+[40]
 
-Package natbib Warning: Citation `goodman1999semiring' on page 43 undefined on 
+Package natbib Warning: Citation `goodman1999semiring' on page 41 undefined on 
 input line 98.
 
-[43] [44] [45] [46]
+[41] [42] [43] [44]
 
-Package natbib Warning: Citation `goodman1999semiring' on page 47 undefined on 
+Package natbib Warning: Citation `goodman1999semiring' on page 45 undefined on 
 input line 245.
 
-[47]
+[45]
 
-Package natbib Warning: Citation `eisner2009semirings' on page 48 undefined on 
+Package natbib Warning: Citation `eisner2009semirings' on page 46 undefined on 
 input line 273.
 
 
-Package natbib Warning: Citation `eisner2016backprop' on page 48 undefined on i
+Package natbib Warning: Citation `eisner2016backprop' on page 46 undefined on i
 nput line 273.
 
 
-Package natbib Warning: Citation `kim2017structured' on page 48 undefined on in
+Package natbib Warning: Citation `kim2017structured' on page 46 undefined on in
 put line 273.
 
 
-Package natbib Warning: Citation `neubig2017dynet' on page 48 undefined on inpu
+Package natbib Warning: Citation `neubig2017dynet' on page 46 undefined on inpu
 t line 273.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 48 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 46 undefined on inp
 ut line 275.
 
-[48]
+[46]
 
-Package natbib Warning: Citation `stern2017minimal' on page 49 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 47 undefined on inp
 ut line 287.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 49 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 47 undefined on inp
 ut line 287.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 49 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 47 undefined on inp
 ut line 291.
 
-[49]
+[47]
 
-Package natbib Warning: Citation `stern2017minimal' on page 50 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 48 undefined on inp
 ut line 294.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 50 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 48 undefined on inp
 ut line 294.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 50 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 48 undefined on inp
 ut line 296.
 
 
-Package natbib Warning: Citation `kingma2014adam' on page 50 undefined on input
+Package natbib Warning: Citation `kingma2014adam' on page 48 undefined on input
  line 296.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 50 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 48 undefined on inp
 ut line 296.
 
 (../tables/crf-fscores.tex
 
-Package natbib Warning: Citation `stern2017minimal' on page 50 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 48 undefined on inp
 ut line 16.
 
 )
 
-Package natbib Warning: Citation `stern2017minimal' on page 50 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 48 undefined on inp
 ut line 303.
 
-[50] (../tables/gen-fscores-crf.tex
+[48] (../tables/gen-fscores-crf.tex
 
-Package natbib Warning: Citation `dyer2016rnng' on page 51 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 49 undefined on input l
 ine 5.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 51 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 49 undefined on input l
 ine 7.
 
 ) (../tables/gen-perplexities-crf.tex
 
-Package natbib Warning: Citation `dyer2016rnng' on page 51 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 49 undefined on input l
 ine 5.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 51 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 49 undefined on input l
 ine 7.
 
 
-Package natbib Warning: Citation `kuncoro2017syntax' on page 51 undefined on in
+Package natbib Warning: Citation `kuncoro2017syntax' on page 49 undefined on in
 put line 8.
 
-) [51]
-<../figures/sample-experiment/fscore/crf_disc_08.pdf, id=1281, 722.7pt x 361.35
+) [49]
+<../figures/sample-experiment/fscore/crf_disc_08.pdf, id=1278, 722.7pt x 361.35
 pt>
 File: ../figures/sample-experiment/fscore/crf_disc_08.pdf Graphic file (type pd
 f)
@@ -2417,7 +2372,7 @@ f)
 Package pdftex.def Info: ../figures/sample-experiment/fscore/crf_disc_08.pdf us
 ed on input line 343.
 (pdftex.def)             Requested size: 376.4258pt x 188.21185pt.
- [52 <../figures/sample-experiment/fscore/crf_disc_08.pdf>]
+ [50 <../figures/sample-experiment/fscore/crf_disc_08.pdf>]
 *geometry* verbose mode - [ newgeometry ] result:
 * driver: pdftex
 * paper: <default>
@@ -2451,14 +2406,14 @@ ed on input line 343.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 
-<../figures/sample-experiment/ppl/crf_disc08.pdf, id=1318, 578.16pt x 433.62pt>
+<../figures/sample-experiment/ppl/crf_disc08.pdf, id=1316, 578.16pt x 433.62pt>
 File: ../figures/sample-experiment/ppl/crf_disc08.pdf Graphic file (type pdf)
 <use ../figures/sample-experiment/ppl/crf_disc08.pdf>
 Package pdftex.def Info: ../figures/sample-experiment/ppl/crf_disc08.pdf used o
 n input line 351.
 (pdftex.def)             Requested size: 334.60425pt x 250.9506pt.
 
-<../figures/sample-experiment/entropy/all.pdf, id=1319, 361.35pt x 722.7pt>
+<../figures/sample-experiment/entropy/all.pdf, id=1317, 361.35pt x 722.7pt>
 File: ../figures/sample-experiment/entropy/all.pdf Graphic file (type pdf)
 
 <use ../figures/sample-experiment/entropy/all.pdf>
@@ -2469,7 +2424,7 @@ nput line 355.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[53 <../figures/sample-experiment/ppl/crf_disc08.pdf> <../figures/sample-experi
+[51 <../figures/sample-experiment/ppl/crf_disc08.pdf> <../figures/sample-experi
 ment/entropy/all.pdf
 
 pdfTeX warning: pdflatex (file ../figures/sample-experiment/entropy/all.pdf): P
@@ -2480,131 +2435,131 @@ Overfull \hbox (2.0805pt too wide) in paragraph at lines 372--384
 [][] [] 
  []
 
-[54
+[52
 
 
 ]
 
-Package natbib Warning: Citation `petrov2006learning' on page 55 undefined on i
+Package natbib Warning: Citation `petrov2006learning' on page 53 undefined on i
 nput line 402.
 
 
-Package natbib Warning: Citation `sima2002computational' on page 55 undefined o
+Package natbib Warning: Citation `sima2002computational' on page 53 undefined o
 n input line 402.
 
-[55] [56] [57] (../figures/edges/illegal-edges.tex) [58]
+[53] [54] [55] (../figures/edges/illegal-edges.tex) [56]
 
-Package natbib Warning: Citation `finkel2008crf' on page 59 undefined on input 
+Package natbib Warning: Citation `finkel2008crf' on page 57 undefined on input 
 line 509.
 
 
-Package natbib Warning: Citation `klein2015crf' on page 59 undefined on input l
+Package natbib Warning: Citation `klein2015crf' on page 57 undefined on input l
 ine 509.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 59 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 57 undefined on inp
 ut line 509.
 
 
-Package natbib Warning: Citation `hall2014less' on page 59 undefined on input l
+Package natbib Warning: Citation `hall2014less' on page 57 undefined on input l
 ine 511.
 
 
-Package natbib Warning: Citation `finkel2008crf' on page 59 undefined on input 
+Package natbib Warning: Citation `finkel2008crf' on page 57 undefined on input 
 line 511.
 
 
-Package natbib Warning: Citation `klein2015crf' on page 59 undefined on input l
+Package natbib Warning: Citation `klein2015crf' on page 57 undefined on input l
 ine 511.
 
 
-Package natbib Warning: Citation `hall2014less' on page 59 undefined on input l
+Package natbib Warning: Citation `hall2014less' on page 57 undefined on input l
 ine 511.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 59 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 57 undefined on inp
 ut line 511.
 
-[59]
+[57]
 
-Package natbib Warning: Citation `collins2003head' on page 60 undefined on inpu
+Package natbib Warning: Citation `collins2003head' on page 58 undefined on inpu
 t line 513.
 
 
-Package natbib Warning: Citation `klein2003accurate' on page 60 undefined on in
+Package natbib Warning: Citation `klein2003accurate' on page 58 undefined on in
 put line 513.
 
 
-Package natbib Warning: Citation `petrov2006learning' on page 60 undefined on i
+Package natbib Warning: Citation `petrov2006learning' on page 58 undefined on i
 nput line 513.
 
 
-Package natbib Warning: Citation `klein2015crf' on page 60 undefined on input l
+Package natbib Warning: Citation `klein2015crf' on page 58 undefined on input l
 ine 515.
 
-) [60]
+) [58]
 chapter 5.
 (../06-syneval/syneval.tex
 
-Package natbib Warning: Citation `linzen2018targeted' on page 61 undefined on i
+Package natbib Warning: Citation `linzen2018targeted' on page 59 undefined on i
 nput line 1.
 
 
-Package natbib Warning: Citation `enguehard2017multitask' on page 61 undefined 
+Package natbib Warning: Citation `enguehard2017multitask' on page 59 undefined 
 on input line 6.
 
 
-Package natbib Warning: Citation `linzen2018targeted' on page 61 undefined on i
+Package natbib Warning: Citation `linzen2018targeted' on page 59 undefined on i
 nput line 11.
 
 
-Package natbib Warning: Citation `linzen2018targeted' on page 61 undefined on i
+Package natbib Warning: Citation `linzen2018targeted' on page 59 undefined on i
 nput line 11.
 
 
-Package natbib Warning: Citation `linzen2016syntax' on page 61 undefined on inp
+Package natbib Warning: Citation `linzen2016syntax' on page 59 undefined on inp
 ut line 13.
 
 
-Package natbib Warning: Citation `gulordava2018colorless' on page 61 undefined 
+Package natbib Warning: Citation `gulordava2018colorless' on page 59 undefined 
 on input line 13.
 
 
-Package natbib Warning: Citation `linzen2018targeted' on page 61 undefined on i
+Package natbib Warning: Citation `linzen2018targeted' on page 59 undefined on i
 nput line 13.
 
 
-Package natbib Warning: Citation `linzen2016syntax' on page 61 undefined on inp
+Package natbib Warning: Citation `linzen2016syntax' on page 59 undefined on inp
 ut line 13.
 
 
-Package natbib Warning: Citation `tran2018recurrent' on page 61 undefined on in
+Package natbib Warning: Citation `tran2018recurrent' on page 59 undefined on in
 put line 13.
 
 
-Package natbib Warning: Citation `kuncoro2018learn' on page 61 undefined on inp
+Package natbib Warning: Citation `kuncoro2018learn' on page 59 undefined on inp
 ut line 13.
 
-[61
+[59
 
 ]
 
-Package natbib Warning: Citation `linzen2016syntax' on page 62 undefined on inp
+Package natbib Warning: Citation `linzen2016syntax' on page 60 undefined on inp
 ut line 18.
 
 
-Package natbib Warning: Citation `kuncoro2018learn' on page 62 undefined on inp
+Package natbib Warning: Citation `kuncoro2018learn' on page 60 undefined on inp
 ut line 18.
 
 
-Package natbib Warning: Citation `everaert2015structures' on page 62 undefined 
+Package natbib Warning: Citation `everaert2015structures' on page 60 undefined 
 on input line 20.
 
 
-Package natbib Warning: Citation `xiang2009illusory' on page 62 undefined on in
+Package natbib Warning: Citation `xiang2009illusory' on page 60 undefined on in
 put line 20.
 
-[62]
+[60]
 
 ! Class scrreprt Error: undefined old font command `\rm'.
 
@@ -3302,64 +3257,64 @@ To make it work for now, you can use the already also deprecated class option
 `enabledeprecatedfontcommands'.
 
 
-Package natbib Warning: Citation `enguehard2017multitask' on page 63 undefined 
+Package natbib Warning: Citation `enguehard2017multitask' on page 61 undefined 
 on input line 48.
 
 
-Package natbib Warning: Citation `linzen2018targeted' on page 63 undefined on i
+Package natbib Warning: Citation `linzen2018targeted' on page 61 undefined on i
 nput line 48.
 
 
-Package natbib Warning: Citation `caruana1997multitask' on page 63 undefined on
+Package natbib Warning: Citation `caruana1997multitask' on page 61 undefined on
  input line 48.
 
 
-Package natbib Warning: Citation `collobert2008unified' on page 63 undefined on
+Package natbib Warning: Citation `collobert2008unified' on page 61 undefined on
  input line 48.
 
 
-Package natbib Warning: Citation `collobert2011natural' on page 63 undefined on
+Package natbib Warning: Citation `collobert2011natural' on page 61 undefined on
  input line 48.
 
 
-Package natbib Warning: Citation `zhang2016multitask' on page 63 undefined on i
+Package natbib Warning: Citation `zhang2016multitask' on page 61 undefined on i
 nput line 48.
 
 
-Package natbib Warning: Citation `goldberg2016multitask' on page 63 undefined o
+Package natbib Warning: Citation `goldberg2016multitask' on page 61 undefined o
 n input line 48.
 
 
-Package natbib Warning: Citation `bangalore1999supertagging' on page 63 undefin
+Package natbib Warning: Citation `bangalore1999supertagging' on page 61 undefin
 ed on input line 50.
 
 
-Package natbib Warning: Citation `enguehard2017multitask' on page 63 undefined 
+Package natbib Warning: Citation `enguehard2017multitask' on page 61 undefined 
 on input line 50.
 
 
-Package natbib Warning: Citation `swayamdipta2018scaffold' on page 63 undefined
+Package natbib Warning: Citation `swayamdipta2018scaffold' on page 61 undefined
  on input line 50.
 
-[63] [64]
+[61] [62]
 
-Package natbib Warning: Citation `enguehard2017multitask' on page 65 undefined 
+Package natbib Warning: Citation `enguehard2017multitask' on page 63 undefined 
 on input line 81.
 
 
-Package natbib Warning: Citation `linzen2018targeted' on page 65 undefined on i
+Package natbib Warning: Citation `linzen2018targeted' on page 63 undefined on i
 nput line 81.
 
-[65] (../tables/lm-perplexities.tex)
+[63] (../tables/lm-perplexities.tex)
 
-Package natbib Warning: Citation `linzen2018targeted' on page 66 undefined on i
+Package natbib Warning: Citation `linzen2018targeted' on page 64 undefined on i
 nput line 103.
 
 
-Package natbib Warning: Citation `linzen2018targeted' on page 66 undefined on i
+Package natbib Warning: Citation `linzen2018targeted' on page 64 undefined on i
 nput line 103.
 
-[66] [67]
+[64] [65]
 *geometry* verbose mode - [ newgeometry ] result:
 * driver: pdftex
 * paper: <default>
@@ -3393,7 +3348,7 @@ nput line 103.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 
-<../figures/syneval/all_large-font.pdf, id=1501, 1132.33035pt x 1985.99767pt>
+<../figures/syneval/all_large-font.pdf, id=1502, 1132.33035pt x 1985.99767pt>
 File: ../figures/syneval/all_large-font.pdf Graphic file (type pdf)
 
 <use ../figures/syneval/all_large-font.pdf>
@@ -3404,8 +3359,8 @@ ne 117.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[68 <../figures/syneval/all_large-font.pdf>]
-<../figures/syneval/all-averaged.pdf, id=1522, 782.77693pt x 426.30957pt>
+[66 <../figures/syneval/all_large-font.pdf>]
+<../figures/syneval/all-averaged.pdf, id=1523, 782.77693pt x 426.30957pt>
 File: ../figures/syneval/all-averaged.pdf Graphic file (type pdf)
 
 <use ../figures/syneval/all-averaged.pdf>
@@ -3413,7 +3368,7 @@ Package pdftex.def Info: ../figures/syneval/all-averaged.pdf used on input line
  125.
 (pdftex.def)             Requested size: 376.4258pt x 205.01006pt.
 
-<../figures/syneval/rnng_lm_horizontal.pdf, id=1523, 1486.98665pt x 900.28534pt
+<../figures/syneval/rnng_lm_horizontal.pdf, id=1524, 1486.98665pt x 900.28534pt
 >
 File: ../figures/syneval/rnng_lm_horizontal.pdf Graphic file (type pdf)
  <use ../figures/syneval/rnng_lm_horizontal.pdf>
@@ -3425,7 +3380,7 @@ t line 132.
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-<../figures/syneval/rnng_lm_no-unk_horizontal.pdf, id=1524, 1486.98665pt x 900.
+<../figures/syneval/rnng_lm_no-unk_horizontal.pdf, id=1525, 1486.98665pt x 900.
 28534pt>
 File: ../figures/syneval/rnng_lm_no-unk_horizontal.pdf Graphic file (type pdf)
  <use ../figures/syneval/rnng_lm_no-unk_horizontal.pdf>
@@ -3437,45 +3392,45 @@ on input line 139.
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-Package natbib Warning: Citation `linzen2016syntax' on page 69 undefined on inp
+Package natbib Warning: Citation `linzen2016syntax' on page 67 undefined on inp
 ut line 145.
 
 
-Package natbib Warning: Citation `gulordava2018colorless' on page 69 undefined 
+Package natbib Warning: Citation `gulordava2018colorless' on page 67 undefined 
 on input line 145.
 
 
-Package natbib Warning: Citation `gulordava2018colorless' on page 69 undefined 
+Package natbib Warning: Citation `gulordava2018colorless' on page 67 undefined 
 on input line 145.
 
 
-Package natbib Warning: Citation `warstadt2018acceptability' on page 69 undefin
+Package natbib Warning: Citation `warstadt2018acceptability' on page 67 undefin
 ed on input line 145.
 
 
-Package natbib Warning: Citation `mccoy2018revisiting' on page 69 undefined on 
+Package natbib Warning: Citation `mccoy2018revisiting' on page 67 undefined on 
 input line 147.
 
 
-Package natbib Warning: Citation `everaert2015structures' on page 69 undefined 
+Package natbib Warning: Citation `everaert2015structures' on page 67 undefined 
 on input line 147.
 
 
-Package natbib Warning: Citation `chomsky1980rules' on page 69 undefined on inp
+Package natbib Warning: Citation `chomsky1980rules' on page 67 undefined on inp
 ut line 147.
 
 
-Package natbib Warning: Citation `zweig2011microsoft' on page 69 undefined on i
+Package natbib Warning: Citation `zweig2011microsoft' on page 67 undefined on i
 nput line 149.
 
 
-Package natbib Warning: Citation `sennrich2017grammatical' on page 69 undefined
+Package natbib Warning: Citation `sennrich2017grammatical' on page 67 undefined
  on input line 149.
 
-) [69
+) [67
 
 
- <../figures/syneval/all-averaged.pdf>] [70 <../figures/syneval/rnng_lm_horizon
+ <../figures/syneval/all-averaged.pdf>] [68 <../figures/syneval/rnng_lm_horizon
 tal.pdf> <../figures/syneval/rnng_lm_no-unk_horizontal.pdf
 
 pdfTeX warning: pdflatex (file ../figures/syneval/rnng_lm_no-unk_horizontal.pdf
@@ -3484,77 +3439,77 @@ pdfTeX warning: pdflatex (file ../figures/syneval/rnng_lm_no-unk_horizontal.pdf
 chapter 6.
 (../05-semisupervised/semisupervised.tex
 
-Package natbib Warning: Citation `kim2019unsupervised' on page 71 undefined on 
+Package natbib Warning: Citation `kim2019unsupervised' on page 69 undefined on 
 input line 1.
 
 
-Package natbib Warning: Citation `kim2019unsupervised' on page 71 undefined on 
+Package natbib Warning: Citation `kim2019unsupervised' on page 69 undefined on 
 input line 11.
 
-[71
+[69
 
 ]
 
-Package natbib Warning: Citation `jordan1999vi' on page 72 undefined on input l
+Package natbib Warning: Citation `jordan1999vi' on page 70 undefined on input l
 ine 22.
 
 
-Package natbib Warning: Citation `blei2016vi' on page 72 undefined on input lin
+Package natbib Warning: Citation `blei2016vi' on page 70 undefined on input lin
 e 22.
 
 
-Package natbib Warning: Citation `blei2016vi' on page 72 undefined on input lin
+Package natbib Warning: Citation `blei2016vi' on page 70 undefined on input lin
 e 31.
 
 
-Package natbib Warning: Citation `blei2016vi' on page 72 undefined on input lin
+Package natbib Warning: Citation `blei2016vi' on page 70 undefined on input lin
 e 36.
+
+[70]
+
+Package natbib Warning: Citation `kucukelbir2017automatic' on page 71 undefined
+ on input line 49.
+
+[71]
+
+Package natbib Warning: Citation `fu2006gradient' on page 72 undefined on input
+ line 91.
 
 [72]
 
-Package natbib Warning: Citation `kucukelbir2017automatic' on page 73 undefined
- on input line 49.
-
-[73]
-
-Package natbib Warning: Citation `fu2006gradient' on page 74 undefined on input
- line 91.
-
-[74]
-
-Package natbib Warning: Citation `williams1992reinforce' on page 75 undefined o
+Package natbib Warning: Citation `williams1992reinforce' on page 73 undefined o
 n input line 120.
 
 
-Package natbib Warning: Citation `paisley2012viss' on page 75 undefined on inpu
+Package natbib Warning: Citation `paisley2012viss' on page 73 undefined on inpu
 t line 120.
 
 
-Package natbib Warning: Citation `mnih2014nvil' on page 75 undefined on input l
+Package natbib Warning: Citation `mnih2014nvil' on page 73 undefined on input l
 ine 120.
 
 
-Package natbib Warning: Citation `ranganath2014black' on page 75 undefined on i
+Package natbib Warning: Citation `ranganath2014black' on page 73 undefined on i
 nput line 120.
 
 
-Package natbib Warning: Citation `mnih2016variational' on page 75 undefined on 
+Package natbib Warning: Citation `mnih2016variational' on page 73 undefined on 
 input line 120.
 
 
-Package natbib Warning: Citation `miao2016discrete' on page 75 undefined on inp
+Package natbib Warning: Citation `miao2016discrete' on page 73 undefined on inp
 ut line 120.
 
 
-Package natbib Warning: Citation `williams1992reinforce' on page 75 undefined o
+Package natbib Warning: Citation `williams1992reinforce' on page 73 undefined o
 n input line 120.
 
 
-Package natbib Warning: Citation `paisley2012viss' on page 75 undefined on inpu
+Package natbib Warning: Citation `paisley2012viss' on page 73 undefined on inpu
 t line 123.
 
 
-Package natbib Warning: Citation `rennie2017argmax' on page 75 undefined on inp
+Package natbib Warning: Citation `rennie2017argmax' on page 73 undefined on inp
 ut line 127.
 
 ! Undefined control sequence.
@@ -3567,86 +3522,78 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 
-Package natbib Warning: Citation `mnih2014nvil' on page 75 undefined on input l
+Package natbib Warning: Citation `mnih2014nvil' on page 73 undefined on input l
 ine 131.
 
 
-Package natbib Warning: Citation `miao2016discrete' on page 75 undefined on inp
+Package natbib Warning: Citation `miao2016discrete' on page 73 undefined on inp
 ut line 131.
 
 
-Package natbib Warning: Citation `yin2018structvae' on page 75 undefined on inp
+Package natbib Warning: Citation `yin2018structvae' on page 73 undefined on inp
 ut line 131.
+
+
+Package natbib Warning: Citation `kim2019unsupervised' on page 73 undefined on 
+input line 134.
+
+[73] [74]
+
+Package natbib Warning: Citation `kim2019unsupervised' on page 75 undefined on 
+input line 148.
 
 
 Package natbib Warning: Citation `kim2019unsupervised' on page 75 undefined on 
-input line 134.
-
-[75] [76]
-
-Package natbib Warning: Citation `kim2019unsupervised' on page 77 undefined on 
 input line 148.
 
 
-Package natbib Warning: Citation `kim2019unsupervised' on page 77 undefined on 
-input line 148.
-
-
-Package natbib Warning: Citation `paisley2012viss' on page 77 undefined on inpu
+Package natbib Warning: Citation `paisley2012viss' on page 75 undefined on inpu
 t line 151.
 
 
-Package natbib Warning: Citation `mnih2014nvil' on page 77 undefined on input l
+Package natbib Warning: Citation `mnih2014nvil' on page 75 undefined on input l
 ine 151.
 
 
-Package natbib Warning: Citation `ranganath2014black' on page 77 undefined on i
+Package natbib Warning: Citation `ranganath2014black' on page 75 undefined on i
 nput line 151.
 
 
-Package natbib Warning: Citation `mnih2016variational' on page 77 undefined on 
+Package natbib Warning: Citation `mnih2016variational' on page 75 undefined on 
 input line 151.
 
 
-Package natbib Warning: Citation `miao2016discrete' on page 77 undefined on inp
+Package natbib Warning: Citation `miao2016discrete' on page 75 undefined on inp
 ut line 151.
 
 
-Package natbib Warning: Citation `yin2018structvae' on page 77 undefined on inp
+Package natbib Warning: Citation `yin2018structvae' on page 75 undefined on inp
 ut line 151.
 
 
-Package natbib Warning: Citation `kim2019unsupervised' on page 77 undefined on 
+Package natbib Warning: Citation `kim2019unsupervised' on page 75 undefined on 
 input line 151.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 77 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 75 undefined on inp
 ut line 151.
 
 
-Package natbib Warning: Citation `linzen2018targeted' on page 77 undefined on i
+Package natbib Warning: Citation `linzen2018targeted' on page 75 undefined on i
 nput line 151.
 
-) [77]
+) [75]
 chapter 7.
 (../07-conclusion/conclusion.tex
-LaTeX Font Info:    Try loading font information for OT1+phv on input line 9.
 
-(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1phv.fd
-File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
-)
-LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/phv/b/n' tried instead on input line 9.
-
-
-Package natbib Warning: Citation `stern2017minimal' on page 78 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 76 undefined on inp
 ut line 10.
 
-[78
+[76
 
 ]
 
-Package natbib Warning: Citation `linzen2018targeted' on page 79 undefined on i
+Package natbib Warning: Citation `linzen2018targeted' on page 77 undefined on i
 nput line 13.
 
 
@@ -3661,19 +3608,20 @@ Overfull \hbox (4.4659pt too wide) in paragraph at lines 19--20
  []
 
 
-Package natbib Warning: Citation `kim2019unsupervised' on page 79 undefined on 
+Package natbib Warning: Citation `kim2019unsupervised' on page 77 undefined on 
 input line 39.
 
 
-Package natbib Warning: Citation `kim2019unsupervised' on page 79 undefined on 
+Package natbib Warning: Citation `kim2019unsupervised' on page 77 undefined on 
 input line 39.
 
+[77]
 
-Package natbib Warning: Citation `niculae2018sparsemap' on page 79 undefined on
+Package natbib Warning: Citation `niculae2018sparsemap' on page 78 undefined on
  input line 42.
 
 
-Package natbib Warning: Citation `niculae2018towards' on page 79 undefined on i
+Package natbib Warning: Citation `niculae2018towards' on page 78 undefined on i
 nput line 42.
 
 
@@ -3682,150 +3630,150 @@ Overfull \hbox (3.34723pt too wide) in paragraph at lines 42--43
 e re-cently pro-posed SparseMAP
  []
 
-[79]) [80]
+) [78]
 chapter A.
 (../09-app-implementation/implementation.tex
 
-Package natbib Warning: Citation `cross2016span' on page 81 undefined on input 
+Package natbib Warning: Citation `cross2016span' on page 79 undefined on input 
 line 9.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 81 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 79 undefined on inp
 ut line 9.
 
 
-Package natbib Warning: Citation `kitaev2018attentive' on page 81 undefined on 
+Package natbib Warning: Citation `kitaev2018attentive' on page 79 undefined on 
 input line 9.
 
 
-Package natbib Warning: Citation `hockenmaier2007ccgbank' on page 81 undefined 
+Package natbib Warning: Citation `hockenmaier2007ccgbank' on page 79 undefined 
 on input line 12.
 
 
-Package natbib Warning: Citation `enguehard2017multitask' on page 81 undefined 
+Package natbib Warning: Citation `enguehard2017multitask' on page 79 undefined 
 on input line 12.
 
 
-Package natbib Warning: Citation `linzen2018targeted' on page 81 undefined on i
+Package natbib Warning: Citation `linzen2018targeted' on page 79 undefined on i
 nput line 12.
 
 
-Package natbib Warning: Citation `chelba2013one' on page 81 undefined on input 
+Package natbib Warning: Citation `chelba2013one' on page 79 undefined on input 
 line 15.
 
 
-Package natbib Warning: Citation `jozefowicz2016exploring' on page 81 undefined
+Package natbib Warning: Citation `jozefowicz2016exploring' on page 79 undefined
  on input line 15.
 
 
-Package natbib Warning: Citation `merity2016pointer' on page 81 undefined on in
+Package natbib Warning: Citation `merity2016pointer' on page 79 undefined on in
 put line 15.
 
-[81
+[79
 
 ]
 
-Package natbib Warning: Citation `stern2017minimal' on page 82 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 80 undefined on inp
 ut line 24.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 82 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 80 undefined on input l
 ine 24.
 
 
-Package natbib Warning: Citation `petrov2006learning' on page 82 undefined on i
+Package natbib Warning: Citation `petrov2006learning' on page 80 undefined on i
 nput line 24.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 82 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 80 undefined on input l
 ine 24.
 
-[82]
+[80]
 
-Package natbib Warning: Citation `glorot2010understanding' on page 83 undefined
+Package natbib Warning: Citation `glorot2010understanding' on page 81 undefined
  on input line 28.
 
 
-Package natbib Warning: Citation `peters2018elmo' on page 83 undefined on input
+Package natbib Warning: Citation `peters2018elmo' on page 81 undefined on input
  line 28.
 
 
-Package natbib Warning: Citation `kitaev2018attentive' on page 83 undefined on 
+Package natbib Warning: Citation `kitaev2018attentive' on page 81 undefined on 
 input line 28.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 83 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 81 undefined on inp
 ut line 28.
 
 
-Package natbib Warning: Citation `stern2017minimal' on page 83 undefined on inp
+Package natbib Warning: Citation `stern2017minimal' on page 81 undefined on inp
 ut line 28.
 
 
-Package natbib Warning: Citation `stern2018analyis' on page 83 undefined on inp
+Package natbib Warning: Citation `stern2018analyis' on page 81 undefined on inp
 ut line 28.
 
 
-Package natbib Warning: Citation `neubig2017dynet' on page 83 undefined on inpu
+Package natbib Warning: Citation `neubig2017dynet' on page 81 undefined on inpu
 t line 54.
 
 
-Package natbib Warning: Citation `neubig2017fly' on page 83 undefined on input 
+Package natbib Warning: Citation `neubig2017fly' on page 81 undefined on input 
 line 54.
 
 
-Package natbib Warning: Citation `neubig2017dynet' on page 83 undefined on inpu
+Package natbib Warning: Citation `neubig2017dynet' on page 81 undefined on inpu
 t line 57.
 
 
-Package natbib Warning: Citation `baydin2018automatic' on page 83 undefined on 
+Package natbib Warning: Citation `baydin2018automatic' on page 81 undefined on 
 input line 57.
 
 
-Package natbib Warning: Citation `wilson2017marginal' on page 83 undefined on i
+Package natbib Warning: Citation `wilson2017marginal' on page 81 undefined on i
 nput line 57.
 
 
-Package natbib Warning: Citation `dyer2016rnng' on page 83 undefined on input l
+Package natbib Warning: Citation `dyer2016rnng' on page 81 undefined on input l
 ine 57.
 
 
-Package natbib Warning: Citation `kingma2014adam' on page 83 undefined on input
+Package natbib Warning: Citation `kingma2014adam' on page 81 undefined on input
  line 57.
 
 
-Package natbib Warning: Citation `kingma2014adam' on page 83 undefined on input
+Package natbib Warning: Citation `kingma2014adam' on page 81 undefined on input
  line 57.
 
 
-Package natbib Warning: Citation `ranganath2014black' on page 83 undefined on i
+Package natbib Warning: Citation `ranganath2014black' on page 81 undefined on i
 nput line 57.
 
 
-Package natbib Warning: Citation `klein2018reinforce' on page 83 undefined on i
+Package natbib Warning: Citation `klein2018reinforce' on page 81 undefined on i
 nput line 57.
 
-) [83] [84]
+) [81] [82]
 chapter B.
 (../10-app-crf/crf.tex
 
-Package natbib Warning: Citation `gallo1993directed' on page 85 undefined on in
+Package natbib Warning: Citation `gallo1993directed' on page 83 undefined on in
 put line 3.
 
 
-Package natbib Warning: Citation `klein2004parsing' on page 85 undefined on inp
+Package natbib Warning: Citation `klein2004parsing' on page 83 undefined on inp
 ut line 3.
 
 
-Package natbib Warning: Citation `goodman1999semiring' on page 85 undefined on 
+Package natbib Warning: Citation `goodman1999semiring' on page 83 undefined on 
 input line 3.
 
 
-Package natbib Warning: Citation `eisner2009semirings' on page 85 undefined on 
+Package natbib Warning: Citation `eisner2009semirings' on page 83 undefined on 
 input line 3.
 
 
-Package natbib Warning: Citation `klein2004parsing' on page 85 undefined on inp
+Package natbib Warning: Citation `klein2004parsing' on page 83 undefined on inp
 ut line 6.
 
 (../figures/hypergraph/hypergraph.tex
@@ -3834,97 +3782,97 @@ l.44 ... at ($(S)+(0,2)$){$\text{S}^{\dagger}_{0}^
                                                   {6}$} ;
 I treat `x^1^2' essentially like `x^1{}^2'.
 
-) [85
+) [83
 
-] [86]
+] [84]
 
-Package natbib Warning: Citation `goodman1999semiring' on page 87 undefined on 
+Package natbib Warning: Citation `goodman1999semiring' on page 85 undefined on 
 input line 124.
 
 
-Package natbib Warning: Citation `goodman1999semiring' on page 87 undefined on 
+Package natbib Warning: Citation `goodman1999semiring' on page 85 undefined on 
 input line 126.
 
-[87]
+[85]
 
-Package natbib Warning: Citation `eisner2009semirings' on page 88 undefined on 
+Package natbib Warning: Citation `eisner2009semirings' on page 86 undefined on 
 input line 145.
 
 
-Package natbib Warning: Citation `goodman1999semiring' on page 88 undefined on 
+Package natbib Warning: Citation `goodman1999semiring' on page 86 undefined on 
 input line 145.
 
 
-Package natbib Warning: Citation `baker1979trainable' on page 88 undefined on i
+Package natbib Warning: Citation `baker1979trainable' on page 86 undefined on i
 nput line 174.
 
-[88]
+[86]
 
-Package natbib Warning: Citation `goodman1999semiring' on page 89 undefined on 
+Package natbib Warning: Citation `goodman1999semiring' on page 87 undefined on 
 input line 212.
 
-[89]) [90]
+[87]) [88]
 chapter C.
 (../11-app-vi/vi.tex
 Overfull \hbox (22.3975pt too wide) in paragraph at lines 23--23
 [] 
  []
 
-[91
+[89
 
 ]
 
-Package natbib Warning: Citation `paisley2012viss' on page 92 undefined on inpu
+Package natbib Warning: Citation `paisley2012viss' on page 90 undefined on inpu
 t line 43.
 
 
-Package natbib Warning: Citation `ross2006simulation' on page 92 undefined on i
+Package natbib Warning: Citation `ross2006simulation' on page 90 undefined on i
 nput line 43.
 
-[92] [93]
+[90] [91]
 
-Package natbib Warning: Citation `ross2006simulation' on page 94 undefined on i
+Package natbib Warning: Citation `ross2006simulation' on page 92 undefined on i
 nput line 121.
 
-[94]
+[92]
 
-Package natbib Warning: Citation `baydin2018automatic' on page 95 undefined on 
+Package natbib Warning: Citation `baydin2018automatic' on page 93 undefined on 
 input line 176.
 
 
-Package natbib Warning: Citation `schulman2015gradient' on page 95 undefined on
+Package natbib Warning: Citation `schulman2015gradient' on page 93 undefined on
  input line 176.
 
-[95]) [96]
+[93]) [94]
 chapter D.
 (../12-app-syneval/syneval.tex
 
-Package natbib Warning: Citation `linzen2018targeted' on page 97 undefined on i
+Package natbib Warning: Citation `linzen2018targeted' on page 95 undefined on i
 nput line 3.
 
 
-Package natbib Warning: Citation `linzen2018targeted' on page 97 undefined on i
+Package natbib Warning: Citation `linzen2018targeted' on page 95 undefined on i
 nput line 3.
 
 LaTeX Font Info:    Font shape `OT1/ppl/bx/it' in size <10.95> not available
 (Font)              Font shape `OT1/ppl/b/it' tried instead on input line 41.
-[97
+[95
 
-]) (./thesis.bbl [98] [99
+]) (./thesis.bbl [96] [97
 
-] [100] [101]
+] [98] [99]
 Underfull \hbox (badness 2698) in paragraph at lines 310--314
 []\OT1/ppl/m/n/10.95 Yoav Gold-berg and Joakim Nivre.  Train-ing de-ter-min-is-
 tic parsers with non-
  []
 
-[102]
+[100]
 Underfull \hbox (badness 2111) in paragraph at lines 408--412
 []\OT1/ppl/m/n/10.95 Yoon Kim, Alexan-der M Rush, Lei Yu, Ad-hi-guna Kun-coro, 
 Chris Dyer, and
  []
 
-[103] [104] [105]
+[101] [102] [103]
 ! Misplaced alignment tab character &.
 <argument> Computer Speech &
                              Language
@@ -3937,11 +3885,11 @@ up above has ended a previous alignment prematurely,
 you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
-[106] [107])
+[104] [105])
 
 Package natbib Warning: There were undefined citations.
 
-[108]
+[106]
 
 ! LaTeX Error: \begin{example} on input line 121 ended by \end{document}.
 
@@ -3978,44 +3926,101 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 226.
 ### semi simple group (level 1) entered at line 121 (\begingroup)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 27301 strings out of 493014
- 508048 string characters out of 6133351
- 721136 words of memory out of 5000000
- 29591 multiletter control sequences out of 15000+600000
+ 27310 strings out of 493014
+ 508241 string characters out of 6133351
+ 721740 words of memory out of 5000000
+ 29589 multiletter control sequences out of 15000+600000
  46773 words of font info for 130 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  73i,19n,77p,8548b,1414s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc
-}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb>
-</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></
-usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></u
-sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb>
-</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
-/usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></u
-sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr
-/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/l
-ocal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loc
-al/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/
-texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/tex
-live/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texliv
-e/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
-/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/201
-6/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2016/
-texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texli
-ve/2016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/
-texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2016/texmf-d
-ist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf-dist/fon
-ts/type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/typ
-e1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/
-palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/palatin
-o/uplri8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmb8a.
-pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
-Output written on thesis.pdf (108 pages, 1408490 bytes).
+pdfTeX warning (dest): name{figure.caption.43} has been referen
+ced but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{figure.caption.42} has been referenced but does not
+ exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{figure.caption.41} has been referenced but does not
+ exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{figure.caption.40} has been referenced but does not
+ exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{table.caption.39} has been referenced but does not 
+exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{figure.caption.35} has been referenced but does not
+ exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{table.caption.32} has been referenced but does not 
+exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{table.caption.31} has been referenced but does not 
+exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{figure.caption.53} has been referenced but does not
+ exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{figure.caption.25} has been referenced but does not
+ exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{figure.caption.24} has been referenced but does not
+ exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{figure.caption.34} has been referenced but does not
+ exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{figure.caption.33} has been referenced but does not
+ exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{table.caption.21} has been referenced but does not 
+exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{table.caption.20} has been referenced but does not 
+exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{table.caption.30} has been referenced but does not 
+exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{table.caption.51} has been referenced but does not 
+exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{table.caption.13} has been referenced but does not 
+exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{figure.caption.12} has been referenced but does not
+ exist, replaced by a fixed one
+
+{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/tex
+live/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texl
+ive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texliv
+e/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive
+/2016/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb></usr/local/texl
+ive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texli
+ve/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive
+/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2
+016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/201
+6/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2016/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2016/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2016/texmf-
+dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2016/texmf-dis
+t/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2016/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2016/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2016/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2016/texmf-dist/fonts
+/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2016/texmf-dist/f
+onts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2016/texmf-di
+st/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts
+/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/
+urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/pal
+atino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/palatino/
+uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/palatino/uplr8a.
+pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb></
+usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/
+texlive/2016/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
+Output written on thesis.pdf (106 pages, 1403518 bytes).
 PDF statistics:
- 2334 PDF objects out of 2487 (max. 8388607)
- 1844 compressed objects within 19 object streams
- 612 named destinations out of 1000 (max. 500000)
+ 2343 PDF objects out of 2487 (max. 8388607)
+ 1855 compressed objects within 19 object streams
+ 623 named destinations out of 1000 (max. 500000)
  891 words of extra memory for PDF output out of 10000 (max. 10000000)
 

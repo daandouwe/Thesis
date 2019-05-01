@@ -1,14 +1,6 @@
 This is BibTeX, Version 0.99d (TeX Live 2016)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: thesis.aux
-White space in argument---line 28 of file thesis.aux
- : \citation{klein
- :                 grammar etc}
-I'm skipping whatever remains of this command
-White space in argument---line 29 of file thesis.aux
- : \citation{tree
- :                gumbel stuff}
-I'm skipping whatever remains of this command
 The style file: plainnat.bst
 Database file #1: ../src/bibliography.bib.bib
 Repeated entry---line 897 of file ../src/bibliography.bib.bib
@@ -60,4 +52,4 @@ warning$ -- 0
 while$ -- 582
 width$ -- 0
 write$ -- 1583
-(There were 4 error messages)
+(There were 2 error messages)
