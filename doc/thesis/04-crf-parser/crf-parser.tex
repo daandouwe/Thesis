@@ -93,7 +93,7 @@ In this chapter:
    With this structure in place, we are ready to derive the form of the inference algorithm particular to this structure.
 
   \subsection{Inside recursion}
-    The inside recursion computes quantities $\alpha(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. The quantity computed depends on the semiring used. In this section we derive the inside recursion specific to our hypergraph from the general result given.
+    The inside recursion computes quantities $\alpha(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$ with respect to a semiring. What the quantity represents depends on the semiring used. In this section we derive the inside recursion specific to our hypergraph from the general result given.
 
     Let $\mathcal{K}$ be some semiring with binary operations $\oplus$ and $\otimes$ and identity elements $\bar{0}$ and $\bar{1}$. The inside recursion is given by the formula \citep{goodman1999semiring}
     \begin{align*}
@@ -120,7 +120,7 @@ In this chapter:
         &= \omega(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \bigoplus_{B \in \Lambda} \alpha(B,i,k) \otimes \bigoplus_{C \in \Lambda} \alpha(C,k,j) \nonumber \\
         &= \omega(A, i, j) \otimes \bigoplus_{k=i+1}^{j-1} \sigma(i,k) \otimes \sigma(k,j),
     \end{align}
-    where we've introduced the notational abbreviation
+    where we have introduced the notational abbreviation
     \begin{align*}
         \sigma(i,j) &= \bigoplus_{A \in \Lambda} \alpha(A,i,j).
     \end{align*}
@@ -133,7 +133,7 @@ In this chapter:
     \end{align}
     where we put explicit brackets to emphasize that independence of the subproblems of labeling and splitting.
 
-    These values can be computed by visiting the nodes of the parse forest in topological order. This order ensures that the quantities in the tail of an edge will have been computed when the value at the node at the head is at turn. Given the highly regular form of the parse forest, this order boils down to something quite simple: the nodes are visited by increasing width of the span; the order in which the starting-points are visited does not matter because these nodes are not connected among each other.\footnote{\textit{Cf.} figure \ref{fig:hypergraph}: the width of the span determines the vertical level of the node in the parse forest; for a fixed width, the label and startpoint are all unconnected along this vertical level, and thus independent.}. We choose to visit the starting points from left to right, that is, from 0 to $n$.
+    These values can be computed by visiting the nodes of the parse forest in topological order. This order ensures that the quantities in the tail of an edge will have been computed when the value at the node at the head is at turn. Given the highly regular form of the parse forest, this order boils down to something quite simple: the nodes are visited by increasing width of the span; the order in which the starting-points are visited does not matter because these nodes are not connected among each other.\footnote{\textit{Cf.} figure \ref{fig:hypergraph} in appendix \ref{A3-crf}: the width of the span determines the vertical level of the node in the parse forest; for a fixed width, the label and startpoint are all unconnected along this vertical level, and thus independent.}. We choose to visit the starting points from left to right, that is, from 0 to $n$.
 
   \subsection{Outside recursion}
     The outside algorithm computes the quantities $\beta(A,i,j)$ for all labels $A \in \Lambda$ and all spans $0 \leq i < j \leq n$. The general recursion is given by:

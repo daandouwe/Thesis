@@ -269,7 +269,7 @@ Writing
   - [X] Entropy figures
   - [X] Perplexity figures.
   - [X] Helemaal rechtrekken.
-  - [ ] Complexity in Training
+  - [ ] Complexity in training
   - [ ] Speed in experiments, including convergence time.
 
 2. CRF
@@ -287,9 +287,9 @@ Writing
   - [ ] Fix ugly ordering of figures: put everything on one page?
 
 3. Semisup
-  - [ ] DiscRNNG: (labeled and unlabeled) from scratch impossible; from pretraining unrails completely.
-  - [ ] CRF: from pretraining impossible (tooo slow); from scratch looks promising, but we run into the problem of distribution.
-  - [ ] When move to unbinarized trees the approach is possible!
+  - [X] DiscRNNG: (labeled and unlabeled) from scratch impossible; from pretraining unrails completely.
+  - [X] CRF: from pretraining impossible (tooo slow); from scratch looks promising, but we run into the problem of distribution.
+  - [X] When move to unbinarized trees the approach is possible!
   - [X] Describe CRF as fully connected forest, then it is possible.
   - [X] Describe how to prune CRF forest.
 
@@ -303,8 +303,8 @@ Writing
   - [X] Everything
 
 6. VI appendix
-  - [ ] Baseline section.
-  - Confusion about baselines and control variates.... Not very relevant though. URNNG people write they use a "control variate". Also, confusion between E[f(X)] and E[f(X) grad_{theta} log p(X)]. Which is one are we dealing with?
+  - [X] Baseline section.
+  - [ ] Confusion about baselines and control variates.... Not very relevant though. URNNG people write they use a "control variate". Also, confusion between E[f(X)] and E[f(X) grad_{theta} log p(X)]. Which is one are we dealing with? Clear this up.
 
 
 ## April 23
@@ -316,3 +316,66 @@ Writing
 ## Writing
 1. Wrap up RNNG chapter, see checklist.
 2. Start working on semisupervised chapter
+
+
+# April 30
+Notes from discussion with Wilker, and other ideas.
+
+- [ ] To summarize our contribution in one line: introduce a CRF parser that can perform posterior inference with the additional benefit
+ of able to compute key quantities.
+
+- [ ] Introduction: joint models are nice, cite classifier image, describe p(x, y, z, ...) as the true model of the world (sentence x, with structure y, and meaning z, with speaker a, to speaker b, etc.), and that p(x) = sum_y sum_x ... p(x, y, z, ...) is the probability in isolation of the sentence. Maybe some example, p(x, speaker = Wilker) >> p(x, speaker = Daan) (maybe something like that?), and p(x) = sum_{speaker} p(x, speaker). We call y, z, ... latent variabels: they help expressiveness in the model.
+
+- [ ] CRFs are introduced by Cullum etc. Put in description of models, or in
+
+- [ ] CRF chapter: write that preliminary results show that the second solution is easy to implement, and is correct. But: no results yet
+ (out of time).
+
+- [ ] CRF: In section 4.4.1 compare the training of the CRF to the training of a local model.
+
+- [ ] CRF: In section 4.6 praise the semiring formulation of the inside and outside algorithms, which makes our live deriving the alternatives real easy.
+
+- [ ] CRF: say that implementation of new inference algorithm is working
+
+- [ ] CRF: derivational ambiguity consequences, mention that only really problems as proposal, not really as supervised parser. Mention how Stern et al deal with this (asigning same score to all dummy labels).
+
+- [ ] CRF: make nice point about entropy computation: the difference between the weight of all trees (log Z) and the weight of the expected tree sum_v [log psi(v) mu(v)]
+
+- [ ] What is the complexity?
+
+- [ ] Semisup Fix KL (should be KL(q || p)). (Maybe derive and say something about finding mean, but underestimating variance?)
+
+- [ ] Semisup say something more about ELBO and true posterior.
+
+- [ ] Conclusion: (Sparsemap) keep within the framework of VI: describe that the objective is to make inference model sparser. Still do reinforce, something like that. In this case, support of posterior needs only be subset of joint. The Sparsemap solution can choose to shrink that support.
+
+- [ ] Semisup: Support of posterior: maybe use the familiar KL image to illustrate.
+
+- [ ] RNNG: Reranking with p(x, y) for parsing is an approximation: we want to maximize p(y|x), but this is intractable because of sum p(y|x) =
+ p(x,y) / p(x). Instead approximate. We hope that KL(q(y|x)||p(y|x)) is small (just a hope). So instead get a whole bunch of y ~ p(y|x). Then if p(x,y) is high, then p(y|x) is high. Because p(y|x) propto p(x,y). In the case of VI, we actually _optimize_ q(y|x) to be like p(y|x).
+
+- [ ] Put SGD part with neural networks in background.
+
+- [ ] Change entropy notation to H(q(y|x)) (abusing notation)
+
+- [ ] Counting semiring in CRF appendix.
+
+- [ ] Related work in semisupervised learning: Lapatta paper. This paper does not do VI because they do not update the posterior
+ parameters (source: talk). Instead they use a pretrained posterior, that is kept fixed. The joint parameters are optimized to be close the posterior. This is not VI. Therefore, they did not run into this problem we had.
+
+- [ ] Related work: the structVAE: also transition based right? Did not derail, right? Why? Say something about that.
+
+- [ ] Syneval example: say something about our RNNG and that it still prefers the ungrammatical one despite the entropy in the posterior.
+
+- [ ] Syneval: entropy with discriminative models is a classification method.
+
+- [ ] Syneval example: Draw the trees? Or otherwise write them differently. Now they are too hard too read.
+
+- [ ] Future work: write down ideas about hurting the RNNG, with breaking Markov assumptions. Using latent factor model for labels. Every
+ time a constituent is closed, words following a closed constituent are conditionally independet of the words and subtrees in that constituent given the label.
+
+- [ ] Syneval figure: draw 0.5 line.
+
+- [ ] Syneval: look into object relatives (RNNG do well on them). Maybe change example?
+
+- [ ] E_{p(y|x)}[log Psi(x, y)] = E_{p(y|x)}[ sum_{v in Y} log psi(x, Y)]

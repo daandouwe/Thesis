@@ -17,38 +17,40 @@
 \gdef\HyperFirstAtBeginDocument#1{#1}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
-\citation{dyer2016rnng,buys2015generative,buys2018exact}
-\citation{dyer2016rnng}
-\citation{buys2018exact}
-\citation{dyer2016rnng}
-\citation{stern2017minimal}
-\citation{dyer2016rnng}
 \@writefile{toc}{\contentsline {chapter}{\numberline {1}Introduction}{7}{chapter.1}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \newlabel{01-introduction}{{1}{7}{Introduction}{chapter.1}{}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline The approximate marginalization}{7}{section*.5}}
+\citation{dyer2016rnng}
+\citation{dyer2016rnng,buys2015generative,buys2018exact}
+\citation{dyer2016rnng}
+\citation{buys2018exact}
+\citation{klein grammar etc}
+\citation{tree gumbel stuff}
+\citation{stern2017minimal}
+\citation{dyer2016rnng}
 \citation{fu2006gradient}
 \citation{williams1992reinforce}
 \citation{rennie2017argmax}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Semi-supervised training by including unlabeled data}{8}{section*.6}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Alternative, simpler, models}{8}{section*.7}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Targeted syntactic evaluation}{8}{section*.8}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline The approximate marginalization}{9}{section*.5}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Semisupervised and unsupervised learning of the RNNG}{9}{section*.6}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Multitask learning of neural language models}{10}{section*.7}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Targeted syntactic evaluation}{10}{section*.8}}
 \citation{huddleston2002grammar}
 \citation{carnie2010constituent}
 \citation{everaert2015structures}
 \citation{huddleston2002grammar}
 \citation{carnie2010constituent}
-\@writefile{toc}{\contentsline {chapter}{\numberline {2}Background}{9}{chapter.2}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {2}Background}{11}{chapter.2}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{02-background}{{2}{9}{Background}{chapter.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.1}Syntax}{9}{section.2.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.1}Constituents}{9}{subsection.2.1.1}}
+\newlabel{02-background}{{2}{11}{Background}{chapter.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.1}Syntax}{11}{section.2.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.1}Constituents}{11}{subsection.2.1.1}}
 \citation{carnie2010constituent}
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{fig:bird-tree}{{\caption@xref {fig:bird-tree}{ on input line 26}}{10}{Constituents}{figure.caption.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.2}Categories}{10}{subsection.2.1.2}}
+\newlabel{fig:bird-tree}{{\caption@xref {fig:bird-tree}{ on input line 26}}{12}{Constituents}{figure.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.2}Categories}{12}{subsection.2.1.2}}
 \citation{everaert2015structures}
 \citation{everaert2015structures}
 \citation{everaert2015structures}
@@ -57,10 +59,10 @@
 \citation{everaert2015structures}
 \citation{everaert2015structures}
 \citation{everaert2015structures}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.3}Hierarchy}{11}{subsection.2.1.3}}
-\newlabel{ref:trees-npi}{{(3)}{11}{Hierarchy}{Item.12}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces Dependance on hierarchical structure of negative polarity items. Left shows the word \textit  {anybody} in the licensing context of \textit  {not}. Right shows the ungrammatical sentence where the word is not. Figure taken from \cite  {everaert2015structures}. The triangles indicate substructre that is not further explicated.\relax }}{11}{figure.caption.11}}
-\newlabel{fig:trees-npi}{{2.1}{11}{Dependance on hierarchical structure of negative polarity items. Left shows the word \textit {anybody} in the licensing context of \textit {not}. Right shows the ungrammatical sentence where the word is not. Figure taken from \cite {everaert2015structures}. The triangles indicate substructre that is not further explicated.\relax }{figure.caption.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.3}Hierarchy}{13}{subsection.2.1.3}}
+\newlabel{ref:trees-npi}{{(3)}{13}{Hierarchy}{Item.12}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces Dependance on hierarchical structure of negative polarity items. Left shows the word \textit  {anybody} in the licensing context of \textit  {not}. Right shows the ungrammatical sentence where the word is not. Figure taken from \cite  {everaert2015structures}. The triangles indicate substructre that is not further explicated.\relax }}{13}{figure.caption.11}}
+\newlabel{fig:trees-npi}{{2.1}{13}{Dependance on hierarchical structure of negative polarity items. Left shows the word \textit {anybody} in the licensing context of \textit {not}. Right shows the ungrammatical sentence where the word is not. Figure taken from \cite {everaert2015structures}. The triangles indicate substructre that is not further explicated.\relax }{figure.caption.11}{}}
 \citation{tesniere1959elements,nivre2005dependency,hudson2010introduction}
 \citation{frank2012hierarchical}
 \citation{everaert2015structures}
@@ -68,13 +70,13 @@
 \citation{conway2008neurocognitive,gillespie2011hierarchy,christiansen2012similar,gillespie2013against,frank2012hierarchical}
 \citation{marcus1993penn}
 \citation{marcus1994annotating}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.4}Controversy}{12}{subsection.2.1.4}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.2}Parsing}{12}{section.2.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.4}Controversy}{14}{subsection.2.1.4}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.2}Parsing}{14}{section.2.2}}
 \citation{andor2016globally}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.1}Treebank}{13}{subsection.2.2.1}}
-\@writefile{lot}{\contentsline {table}{\numberline {2.1}{\ignorespaces Two representations of the tree in \ref  {fig:tree-cnf-spans}.\relax }}{13}{table.caption.13}}
-\newlabel{tab:spans-rules}{{2.1}{13}{Two representations of the tree in \ref {fig:tree-cnf-spans}.\relax }{table.caption.13}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.2}Models}{13}{subsection.2.2.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.1}Treebank}{15}{subsection.2.2.1}}
+\@writefile{lot}{\contentsline {table}{\numberline {2.1}{\ignorespaces Two representations of the tree in \ref  {fig:tree-cnf-spans}.\relax }}{15}{table.caption.13}}
+\newlabel{tab:spans-rules}{{2.1}{15}{Two representations of the tree in \ref {fig:tree-cnf-spans}.\relax }{table.caption.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.2}Models}{15}{subsection.2.2.2}}
 \citation{lafferty2001crf}
 \citation{lafferty2001crf}
 \citation{goldberg2013dynamic}
@@ -83,9 +85,9 @@
 \citation{ballesteros2016exploration}
 \citation{klein2018reinforce}
 \citation{black1991parseval}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.3}Metrics}{15}{subsection.2.2.3}}
-\newlabel{eq:fscore}{{2.1}{15}{Metrics}{equation.2.2.1}{}}
 \citation{sekine1997evalb}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.3}Metrics}{17}{subsection.2.2.3}}
+\newlabel{eq:fscore}{{2.1}{17}{Metrics}{equation.2.2.1}{}}
 \citation{chen1999empirical,kneser1995improved}
 \citation{rosenfeld1996loglinear,bengio2003neural}
 \citation{mikolov2010recurrent}
@@ -94,10 +96,11 @@
 \citation{chelba2017n}
 \citation{kalchbrenner2014convolutional}
 \citation{vaswani2017attention}
-\@writefile{toc}{\contentsline {section}{\numberline {2.3}Language models}{16}{section.2.3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.1}Models}{16}{subsection.2.3.1}}
-\newlabel{eq:lm-factorized}{{2.2}{16}{Models}{equation.2.3.2}{}}
 \citation{dyer2016rnng}
+\@writefile{toc}{\contentsline {section}{\numberline {2.3}Language models}{18}{section.2.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.1}Models}{18}{subsection.2.3.1}}
+\newlabel{eq:lm-factorized}{{2.2}{18}{Models}{equation.2.3.2}{}}
+\newlabel{eq:lm-latent}{{2.3}{18}{Models}{equation.2.3.3}{}}
 \citation{roark2001probabilistic}
 \citation{chelba2000structured,emami2005neural}
 \citation{pauls2012treelets}
@@ -105,78 +108,74 @@
 \citation{merity2016pointer}
 \citation{jelinek1997information}
 \citation{chelba2017n}
-\newlabel{eq:lm-latent}{{2.3}{17}{Models}{equation.2.3.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.2}Data}{17}{subsection.2.3.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.3}Metrics}{17}{subsection.2.3.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.2}Data}{19}{subsection.2.3.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.3}Metrics}{19}{subsection.2.3.3}}
 \citation{smith2012adversarial}
 \citation{linzen2016syntax}
 \citation{linzen2018targeted}
 \citation{linzen2018targeted}
-\@writefile{toc}{\contentsline {section}{\numberline {2.4}Neural networks}{18}{section.2.4}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.4}Neural networks}{20}{section.2.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.1}Functions}{20}{subsection.2.4.1}}
 \citation{hochreiter1997long}
-\newlabel{fig:tree-original}{{2.2a}{20}{Original Penn Treebank tree.\relax }{figure.caption.12}{}}
-\newlabel{sub@fig:tree-original}{{a}{20}{Original Penn Treebank tree.\relax }{figure.caption.12}{}}
-\newlabel{fig:tree-simplified}{{2.2b}{20}{Function tags and traces removed.\relax }{figure.caption.12}{}}
-\newlabel{sub@fig:tree-simplified}{{b}{20}{Function tags and traces removed.\relax }{figure.caption.12}{}}
-\newlabel{fig:tree-cnf}{{2.2c}{20}{Converted to normal form using a dummy label $\varnothing $.\relax }{figure.caption.12}{}}
-\newlabel{sub@fig:tree-cnf}{{c}{20}{Converted to normal form using a dummy label $\varnothing $.\relax }{figure.caption.12}{}}
-\newlabel{fig:tree-cnf-spans}{{2.2d}{20}{In normal form with spans.\relax }{figure.caption.12}{}}
-\newlabel{sub@fig:tree-cnf-spans}{{d}{20}{In normal form with spans.\relax }{figure.caption.12}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces Converting a treebank tree (withouth part-of-speech tags).\relax }}{20}{figure.caption.12}}
-\newlabel{fig:trees-ptb}{{2.2}{20}{Converting a treebank tree (withouth part-of-speech tags).\relax }{figure.caption.12}{}}
+\citation{robbins1951stochastic}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.2}Optimization}{21}{subsection.2.4.2}}
+\newlabel{fig:tree-original}{{2.2a}{22}{Original Penn Treebank tree.\relax }{figure.caption.12}{}}
+\newlabel{sub@fig:tree-original}{{a}{22}{Original Penn Treebank tree.\relax }{figure.caption.12}{}}
+\newlabel{fig:tree-simplified}{{2.2b}{22}{Function tags and traces removed.\relax }{figure.caption.12}{}}
+\newlabel{sub@fig:tree-simplified}{{b}{22}{Function tags and traces removed.\relax }{figure.caption.12}{}}
+\newlabel{fig:tree-cnf}{{2.2c}{22}{Converted to normal form using a dummy label $\varnothing $.\relax }{figure.caption.12}{}}
+\newlabel{sub@fig:tree-cnf}{{c}{22}{Converted to normal form using a dummy label $\varnothing $.\relax }{figure.caption.12}{}}
+\newlabel{fig:tree-cnf-spans}{{2.2d}{22}{In normal form with spans.\relax }{figure.caption.12}{}}
+\newlabel{sub@fig:tree-cnf-spans}{{d}{22}{In normal form with spans.\relax }{figure.caption.12}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces Converting a treebank tree (withouth part-of-speech tags).\relax }}{22}{figure.caption.12}}
+\newlabel{fig:trees-ptb}{{2.2}{22}{Converting a treebank tree (withouth part-of-speech tags).\relax }{figure.caption.12}{}}
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
-\@writefile{toc}{\contentsline {chapter}{\numberline {3}Recurrent Neural Network Grammars}{21}{chapter.3}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {3}Recurrent Neural Network Grammars}{23}{chapter.3}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{03-rnng}{{3}{21}{Recurrent Neural Network Grammars}{chapter.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.1}Model}{21}{section.3.1}}
+\newlabel{03-rnng}{{3}{23}{Recurrent Neural Network Grammars}{chapter.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.1}Model}{23}{section.3.1}}
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1.1}Transition sytem}{22}{subsection.3.1.1}}
-\newlabel{ex:disc-states}{{3.1.1}{22}{}{theorem.3.1.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {3.1}{\ignorespaces Discriminative transition system. Example from \citet  {dyer2016rnng}.\relax }}{22}{table.caption.14}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1.1}Transition sytem}{24}{subsection.3.1.1}}
+\newlabel{ex:disc-states}{{3.1.1}{24}{}{theorem.3.1.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.1}{\ignorespaces Discriminative transition system. Example from \citet  {dyer2016rnng}.\relax }}{24}{table.caption.14}}
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
-\@writefile{lot}{\contentsline {table}{\numberline {3.2}{\ignorespaces Generative transition system. Example from \citet  {dyer2016rnng}.\relax }}{23}{table.caption.15}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1.2}Model}{23}{subsection.3.1.2}}
-\newlabel{eq:naive-rnng-model}{{3.1}{23}{Model}{equation.3.1.1}{}}
-\newlabel{def:disc-rnng}{{3.1.3}{24}{}{theorem.3.1.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.2}{\ignorespaces Generative transition system. Example from \citet  {dyer2016rnng}.\relax }}{25}{table.caption.15}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1.2}Model}{25}{subsection.3.1.2}}
+\newlabel{eq:naive-rnng-model}{{3.1}{25}{Model}{equation.3.1.1}{}}
+\newlabel{def:disc-rnng}{{3.1.3}{26}{}{theorem.3.1.3}{}}
 \citation{dyer2016rnng}
 \citation{hale2018beam}
-\newlabel{def:gen-rnng}{{3.1.4}{25}{}{theorem.3.1.4}{}}
-\newlabel{eq:action-regression}{{3.6}{25}{Model}{equation.3.1.6}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.2}Parametrization}{26}{section.3.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.1}Stack encoder}{26}{subsection.3.2.1}}
+\newlabel{def:gen-rnng}{{3.1.4}{27}{}{theorem.3.1.4}{}}
+\newlabel{eq:action-regression}{{3.6}{27}{Model}{equation.3.1.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.2}Parametrization}{28}{section.3.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.1}Stack encoder}{28}{subsection.3.2.1}}
 \citation{dyer2016rnng}
 \citation{kuncoro2017syntax}
 \citation{kuncoro2017syntax}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.2}Composition function}{27}{subsection.3.2.2}}
 \citation{kuncoro2017syntax}
-\citation{robbins1951stochastic}
-\@writefile{toc}{\contentsline {section}{\numberline {3.3}Training}{28}{section.3.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.2}Composition function}{29}{subsection.3.2.2}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.3}Training}{30}{section.3.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.4}Inference}{30}{section.3.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.1}Discriminative model}{30}{subsection.3.4.1}}
 \citation{dyer2016rnng}
-\@writefile{toc}{\contentsline {section}{\numberline {3.4}Inference}{29}{section.3.4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.1}Discriminative model}{29}{subsection.3.4.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.2}Generative model}{29}{subsection.3.4.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.2}Generative model}{31}{subsection.3.4.2}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Approximate marginalization}{31}{section*.16}}
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
 \citation{gal2016theoretically}
 \citation{neubig2017dynet}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Approximate marginalization}{30}{section*.16}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Approximate MAP tree}{30}{section*.17}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Proposal distribution}{30}{section*.18}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.5}Experiments}{30}{section.3.5}}
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
-\citation{dyer2016rnng}
-\citation{dyer2016rnng}
-\citation{dyer2016rnng}
-\citation{kuncoro2017syntax}
-\citation{dyer2016rnng}
-\citation{dyer2016rnng}
-\citation{kuncoro2017syntax}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Approximate MAP tree}{32}{section*.17}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Proposal distribution}{32}{section*.18}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.5}Experiments}{32}{section.3.5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.1}Setup}{32}{subsection.3.5.1}}
+\newlabel{sec:impl-embedding}{{3.5.1}{32}{Setup}{subsection.3.5.1}{}}
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
@@ -184,87 +183,93 @@
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
 \citation{kuncoro2017syntax}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.1}Setup}{31}{subsection.3.5.1}}
-\newlabel{sec:impl-embedding}{{3.5.1}{31}{Setup}{subsection.3.5.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.2}Results}{31}{subsection.3.5.2}}
-\@writefile{lot}{\contentsline {table}{\numberline {3.3}{\ignorespaces F1 scores for the discriminative RNNG.\relax }}{31}{table.caption.19}}
-\newlabel{tab:disc-fscores}{{3.3}{31}{F1 scores for the discriminative RNNG.\relax }{table.caption.19}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {3.4}{\ignorespaces F1 scores for the generative RNNG for different proposal models.\relax }}{32}{table.caption.20}}
-\newlabel{tab:gen-fscores}{{3.4}{32}{F1 scores for the generative RNNG for different proposal models.\relax }{table.caption.20}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {3.5}{\ignorespaces Perplexity of the generative RNNG for different proposal models.\relax }}{32}{table.caption.21}}
-\newlabel{tab:gen-perplexities}{{3.5}{32}{Perplexity of the generative RNNG for different proposal models.\relax }{table.caption.21}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.3}Analysis}{32}{subsection.3.5.3}}
+\citation{dyer2016rnng}
+\citation{dyer2016rnng}
+\citation{dyer2016rnng}
+\citation{kuncoro2017syntax}
+\citation{dyer2016rnng}
+\citation{dyer2016rnng}
+\citation{kuncoro2017syntax}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.2}Results}{33}{subsection.3.5.2}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.3}{\ignorespaces F1 scores for the discriminative RNNG.\relax }}{33}{table.caption.19}}
+\newlabel{tab:disc-fscores}{{3.3}{33}{F1 scores for the discriminative RNNG.\relax }{table.caption.19}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.4}{\ignorespaces F1 scores for the generative RNNG for different proposal models.\relax }}{33}{table.caption.20}}
+\newlabel{tab:gen-fscores}{{3.4}{33}{F1 scores for the generative RNNG for different proposal models.\relax }{table.caption.20}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.5}{\ignorespaces Perplexity of the generative RNNG for different proposal models.\relax }}{33}{table.caption.21}}
+\newlabel{tab:gen-perplexities}{{3.5}{33}{Perplexity of the generative RNNG for different proposal models.\relax }{table.caption.21}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.3}Analysis}{34}{subsection.3.5.3}}
 \citation{titov2007generative,buys2015bayesian,buys2015generative,buys2018exact}
 \citation{roark2001probabilistic}
 \citation{kuncoro2017syntax}
 \citation{linzen2016syntax,kuncoro2018learn}
+\@writefile{toc}{\contentsline {section}{\numberline {3.6}Related work}{35}{section.3.6}}
 \citation{brennan2016abstract}
 \citation{hale2018beam}
 \citation{stern2017beam}
-\@writefile{toc}{\contentsline {section}{\numberline {3.6}Related work}{34}{section.3.6}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces F1 estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.\relax }}{35}{figure.caption.22}}
-\newlabel{fig:samples-fscores}{{3.1}{35}{F1 estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.\relax }{figure.caption.22}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces Perplexity estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.\relax }}{35}{figure.caption.22}}
-\newlabel{fig:samples-perplexities}{{3.2}{35}{Perplexity estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.\relax }{figure.caption.22}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces Conditional entropy estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.\relax }}{36}{figure.caption.23}}
-\newlabel{fig:samples-entropy}{{3.3}{36}{Conditional entropy estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.\relax }{figure.caption.23}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces F1 estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.\relax }}{37}{figure.caption.22}}
+\newlabel{fig:samples-fscores}{{3.1}{37}{F1 estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.\relax }{figure.caption.22}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces Perplexity estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.\relax }}{37}{figure.caption.22}}
+\newlabel{fig:samples-perplexities}{{3.2}{37}{Perplexity estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.\relax }{figure.caption.22}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces Conditional entropy estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.\relax }}{38}{figure.caption.23}}
+\newlabel{fig:samples-entropy}{{3.3}{38}{Conditional entropy estimated with increasing number of samples, with and without annealed distributions, for 10 independent repetitions. Horizontal lines show values of individual outcomes.\relax }{figure.caption.23}{}}
 \citation{stern2017minimal}
 \citation{stern2017minimal}
-\@writefile{toc}{\contentsline {chapter}{\numberline {4}Conditional Random Field parser}{37}{chapter.4}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}Conditional Random Field parser}{39}{chapter.4}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{04-crf}{{4}{37}{Conditional Random Field parser}{chapter.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.1}Model}{37}{section.4.1}}
+\newlabel{04-crf}{{4}{39}{Conditional Random Field parser}{chapter.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}Model}{39}{section.4.1}}
 \citation{finkel2008crf,klein2015crf}
 \citation{stern2017minimal}
 \citation{stern2017minimal}
-\newlabel{eq:crf-model}{{4.1}{38}{Model}{equation.4.1.1}{}}
+\newlabel{eq:crf-model}{{4.1}{40}{Model}{equation.4.1.1}{}}
 \citation{stern2017minimal}
 \citation{dozat2016deep}
 \citation{stern2018analyis}
 \citation{stern2018analyis}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Representation for the span $(1, 4)$ computed from RNN encodings. Figure taken from \citet  {stern2018analyis}.\relax }}{39}{figure.caption.24}}
-\newlabel{fig:span-feature}{{4.1}{39}{Representation for the span $(1, 4)$ computed from RNN encodings. Figure taken from \citet {stern2018analyis}.\relax }{figure.caption.24}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}Parametrization}{39}{section.4.2}}
-\newlabel{eq:span-feature}{{4.3}{39}{Parametrization}{equation.4.2.3}{}}
-\newlabel{eq:potential-function}{{4.4}{39}{Parametrization}{equation.4.2.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}Inference}{39}{section.4.3}}
-\newlabel{sect:inference}{{4.3}{39}{Inference}{section.4.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Representation for the span $(1, 4)$ computed from RNN encodings. Figure taken from \citet  {stern2018analyis}.\relax }}{41}{figure.caption.24}}
+\newlabel{fig:span-feature}{{4.1}{41}{Representation for the span $(1, 4)$ computed from RNN encodings. Figure taken from \citet {stern2018analyis}.\relax }{figure.caption.24}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}Parametrization}{41}{section.4.2}}
+\newlabel{eq:span-feature}{{4.3}{41}{Parametrization}{equation.4.2.3}{}}
+\newlabel{eq:potential-function}{{4.4}{41}{Parametrization}{equation.4.2.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}Inference}{41}{section.4.3}}
+\newlabel{sect:inference}{{4.3}{41}{Inference}{section.4.3}{}}
 \citation{baker1979trainable}
 \citation{goodman1999semiring}
 \citation{gallo1993directed,klein2004parsing}
 \citation{goodman1999semiring,eisner2009semirings}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}Weighted parse forest}{40}{subsection.4.3.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}Weighted parse forest}{42}{subsection.4.3.1}}
 \citation{goodman1999semiring}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces The edge-types making up the hypergraph. The edges are instatiated for all $A, B, C \in \Lambda $ and all $0 \leq i < j \leq n$. Only for the rightmost edge holds the restriction $A \not =\varnothing $, to ensure that the dummy label cannot be the top node.\relax }}{41}{figure.caption.25}}
-\newlabel{fig:crf-edges}{{4.2}{41}{The edge-types making up the hypergraph. The edges are instatiated for all $A, B, C \in \Lambda $ and all $0 \leq i < j \leq n$. Only for the rightmost edge holds the restriction $A \neq \varnothing $, to ensure that the dummy label cannot be the top node.\relax }{figure.caption.25}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}Inside recursion}{41}{subsection.4.3.2}}
-\newlabel{eq:inside-base}{{4.5}{42}{Inside recursion}{equation.4.3.5}{}}
-\newlabel{eq:inside}{{4.6}{42}{Inside recursion}{equation.4.3.6}{}}
-\newlabel{eq:inside-simplified}{{4.7}{42}{Inside recursion}{equation.4.3.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.3}Outside recursion}{43}{subsection.4.3.3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.4}Solutions}{44}{subsection.4.3.4}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Normalizer}{44}{section*.26}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Parse}{44}{section*.27}}
-\newlabel{eq:viterbi-score}{{4.8}{44}{Parse}{equation.4.3.8}{}}
-\newlabel{eq:viterbi-tree}{{4.10}{44}{Parse}{equation.4.3.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces The edge-types making up the hypergraph. The edges are instatiated for all $A, B, C \in \Lambda $ and all $0 \leq i < j \leq n$. Only for the rightmost edge holds the restriction $A \not =\varnothing $, to ensure that the dummy label cannot be the top node.\relax }}{43}{figure.caption.25}}
+\newlabel{fig:crf-edges}{{4.2}{43}{The edge-types making up the hypergraph. The edges are instatiated for all $A, B, C \in \Lambda $ and all $0 \leq i < j \leq n$. Only for the rightmost edge holds the restriction $A \neq \varnothing $, to ensure that the dummy label cannot be the top node.\relax }{figure.caption.25}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}Inside recursion}{43}{subsection.4.3.2}}
+\newlabel{eq:inside-base}{{4.5}{43}{Inside recursion}{equation.4.3.5}{}}
+\newlabel{eq:inside}{{4.6}{44}{Inside recursion}{equation.4.3.6}{}}
+\newlabel{eq:inside-simplified}{{4.7}{44}{Inside recursion}{equation.4.3.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.3}Outside recursion}{45}{subsection.4.3.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.4}Solutions}{46}{subsection.4.3.4}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Normalizer}{46}{section*.26}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Parse}{46}{section*.27}}
+\newlabel{eq:viterbi-score}{{4.8}{46}{Parse}{equation.4.3.8}{}}
+\newlabel{eq:viterbi-tree}{{4.10}{46}{Parse}{equation.4.3.10}{}}
 \citation{goodman1999semiring}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Sample}{45}{section*.28}}
-\newlabel{eq:sample}{{4.12}{45}{Sample}{equation.4.3.12}{}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Entropy}{45}{section*.29}}
-\newlabel{eq:node-marginal}{{4.13}{45}{Entropy}{equation.4.3.13}{}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Sample}{47}{section*.28}}
+\newlabel{eq:sample}{{4.12}{47}{Sample}{equation.4.3.12}{}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Entropy}{47}{section*.29}}
+\newlabel{eq:node-marginal}{{4.13}{47}{Entropy}{equation.4.3.13}{}}
 \citation{eisner2009semirings}
 \citation{eisner2016backprop}
 \citation{kim2017structured}
 \citation{neubig2017dynet}
 \citation{stern2017minimal}
-\newlabel{eq:crf-entropy}{{4.15}{46}{Entropy}{equation.4.3.15}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.4}Traning}{46}{section.4.4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}Objective}{46}{subsection.4.4.1}}
+\newlabel{eq:crf-entropy}{{4.15}{48}{Entropy}{equation.4.3.15}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}Traning}{48}{section.4.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}Objective}{48}{subsection.4.4.1}}
 \citation{stern2017minimal}
 \citation{stern2017minimal}
 \citation{stern2017minimal}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}Speed and complexity}{47}{subsection.4.4.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}Speed and complexity}{49}{subsection.4.4.2}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.5}Experiments}{49}{section.4.5}}
 \citation{stern2017minimal}
 \citation{stern2017minimal}
 \citation{stern2017minimal}
@@ -272,40 +277,39 @@
 \citation{stern2017minimal}
 \citation{stern2017minimal}
 \citation{stern2017minimal}
-\@writefile{toc}{\contentsline {section}{\numberline {4.5}Experiments}{48}{section.4.5}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.1}Setup}{48}{subsection.4.5.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.2}Results}{48}{subsection.4.5.2}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces F1 scores for the CRF.\relax }}{48}{table.caption.30}}
-\newlabel{tab:disc-fscores}{{4.1}{48}{F1 scores for the CRF.\relax }{table.caption.30}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.1}Setup}{50}{subsection.4.5.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.2}Results}{50}{subsection.4.5.2}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces F1 scores for the CRF.\relax }}{50}{table.caption.30}}
+\newlabel{tab:disc-fscores}{{4.1}{50}{F1 scores for the CRF.\relax }{table.caption.30}{}}
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
 \citation{kuncoro2017syntax}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.3}Proposal distribution}{49}{subsection.4.5.3}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.2}{\ignorespaces F1 scores for the generative RNNG for different proposal models.\relax }}{49}{table.caption.31}}
-\newlabel{tab:gen-fscores-crf}{{4.2}{49}{F1 scores for the generative RNNG for different proposal models.\relax }{table.caption.31}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.3}{\ignorespaces Perplexity on the PTB of the generative RNNG, for different proposal models.\relax }}{49}{table.caption.32}}
-\newlabel{tab:gen-perplexities-crf}{{4.3}{49}{Perplexity on the PTB of the generative RNNG, for different proposal models.\relax }{table.caption.32}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.4}Analysis}{49}{subsection.4.5.4}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces F1 estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha =0.8$, for 10 independent repetitions.\relax }}{50}{figure.caption.33}}
-\newlabel{fig:samples-fscores}{{4.3}{50}{F1 estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha =0.8$, for 10 independent repetitions.\relax }{figure.caption.33}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Perplexity estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha =0.8$, for 10 independent repetitions.\relax }}{51}{figure.caption.34}}
-\newlabel{fig:samples-perplexities}{{4.4}{51}{Perplexity estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha =0.8$, for 10 independent repetitions.\relax }{figure.caption.34}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces Conditional entropy estimated with increasing number of samples.\relax }}{51}{figure.caption.34}}
-\newlabel{fig:samples-entropy}{{4.5}{51}{Conditional entropy estimated with increasing number of samples.\relax }{figure.caption.34}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.6}Trees and derivations}{52}{section.4.6}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.1}Derivational ambiguity}{52}{subsection.4.6.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.6}{\ignorespaces Two normal form derivations that collapse to the same tree.\relax }}{52}{figure.caption.35}}
-\newlabel{fig:normal-form-trees}{{4.6}{52}{Two normal form derivations that collapse to the same tree.\relax }{figure.caption.35}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.3}Proposal distribution}{51}{subsection.4.5.3}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.2}{\ignorespaces F1 scores for the generative RNNG for different proposal models.\relax }}{51}{table.caption.31}}
+\newlabel{tab:gen-fscores-crf}{{4.2}{51}{F1 scores for the generative RNNG for different proposal models.\relax }{table.caption.31}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.3}{\ignorespaces Perplexity on the PTB of the generative RNNG, for different proposal models.\relax }}{51}{table.caption.32}}
+\newlabel{tab:gen-perplexities-crf}{{4.3}{51}{Perplexity on the PTB of the generative RNNG, for different proposal models.\relax }{table.caption.32}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.4}Analysis}{51}{subsection.4.5.4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces F1 estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha =0.8$, for 10 independent repetitions.\relax }}{52}{figure.caption.33}}
+\newlabel{fig:samples-fscores}{{4.3}{52}{F1 estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha =0.8$, for 10 independent repetitions.\relax }{figure.caption.33}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Perplexity estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha =0.8$, for 10 independent repetitions.\relax }}{53}{figure.caption.34}}
+\newlabel{fig:samples-perplexities}{{4.4}{53}{Perplexity estimated with increasing number of samples, with CRF and discriminative RNNG annealed with $\alpha =0.8$, for 10 independent repetitions.\relax }{figure.caption.34}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces Conditional entropy estimated with increasing number of samples.\relax }}{53}{figure.caption.34}}
+\newlabel{fig:samples-entropy}{{4.5}{53}{Conditional entropy estimated with increasing number of samples.\relax }{figure.caption.34}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.6}Trees and derivations}{54}{section.4.6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.1}Derivational ambiguity}{54}{subsection.4.6.1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.6}{\ignorespaces Two normal form derivations that collapse to the same tree.\relax }}{54}{figure.caption.35}}
+\newlabel{fig:normal-form-trees}{{4.6}{54}{Two normal form derivations that collapse to the same tree.\relax }{figure.caption.35}{}}
 \citation{petrov2006learning}
 \citation{sima2002computational}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.2}Consequences}{53}{subsection.4.6.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.3}Solutions}{53}{subsection.4.6.3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.4}Unrestricted parse forest}{54}{subsection.4.6.4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.5}Pruned parse forest}{55}{subsection.4.6.5}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.7}{\ignorespaces Edges in the parse forest that produce the derivational ambiguity, whenever $k > i+1$.\relax }}{56}{figure.caption.36}}
-\newlabel{fig:illegal-edges}{{4.7}{56}{Edges in the parse forest that produce the derivational ambiguity, whenever $k > i+1$.\relax }{figure.caption.36}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.2}Consequences}{55}{subsection.4.6.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.3}Solutions}{55}{subsection.4.6.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.4}Unrestricted parse forest}{56}{subsection.4.6.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.5}Pruned parse forest}{57}{subsection.4.6.5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.7}{\ignorespaces Edges in the parse forest that produce the derivational ambiguity, whenever $k > i+1$.\relax }}{58}{figure.caption.36}}
+\newlabel{fig:illegal-edges}{{4.7}{58}{Edges in the parse forest that produce the derivational ambiguity, whenever $k > i+1$.\relax }{figure.caption.36}{}}
 \citation{finkel2008crf,klein2015crf}
 \citation{stern2017minimal}
 \citation{hall2014less}
@@ -313,7 +317,7 @@
 \citation{klein2015crf}
 \citation{hall2014less}
 \citation{stern2017minimal}
-\@writefile{toc}{\contentsline {section}{\numberline {4.7}Related work}{57}{section.4.7}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.7}Related work}{59}{section.4.7}}
 \citation{collins2003head}
 \citation{klein2003accurate}
 \citation{petrov2006learning}
@@ -326,39 +330,39 @@
 \citation{linzen2016syntax}
 \citation{tran2018recurrent}
 \citation{kuncoro2018learn}
-\@writefile{toc}{\contentsline {chapter}{\numberline {5}Syntactic evaluation}{59}{chapter.5}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {5}Syntactic evaluation}{61}{chapter.5}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{06-syneval}{{5}{59}{Syntactic evaluation}{chapter.5}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.1}Syntactic evaluation}{59}{section.5.1}}
+\newlabel{06-syneval}{{5}{61}{Syntactic evaluation}{chapter.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.1}Syntactic evaluation}{61}{section.5.1}}
 \citation{linzen2016syntax}
 \citation{kuncoro2018learn}
 \citation{everaert2015structures,xiang2009illusory}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.1}Dataset}{60}{subsection.5.1.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.1}Dataset}{62}{subsection.5.1.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.2}RNNG}{62}{subsection.5.1.2}}
 \citation{enguehard2017multitask,linzen2018targeted}
 \citation{caruana1997multitask}
 \citation{collobert2008unified,collobert2011natural,zhang2016multitask,goldberg2016multitask}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.2}RNNG}{61}{subsection.5.1.2}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.2}Multitask learning}{61}{section.5.2}}
 \citation{bangalore1999supertagging}
 \citation{enguehard2017multitask}
 \citation{swayamdipta2018scaffold}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.1}Multitask objective}{62}{subsection.5.2.1}}
-\newlabel{eq:multitask-objective}{{5.1}{62}{Multitask objective}{equation.5.2.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.2}Models}{62}{subsection.5.2.2}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.2}Multitask learning}{63}{section.5.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.1}Multitask objective}{64}{subsection.5.2.1}}
+\newlabel{eq:multitask-objective}{{5.1}{64}{Multitask objective}{equation.5.2.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.2}Models}{64}{subsection.5.2.2}}
 \citation{enguehard2017multitask}
 \citation{linzen2018targeted}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Word labeling}{63}{section*.37}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Span labeling}{63}{section*.38}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Word labeling}{65}{section*.37}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Span labeling}{65}{section*.38}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.3}Experiments}{65}{section.5.3}}
 \citation{linzen2018targeted}
 \citation{linzen2018targeted}
-\@writefile{lot}{\contentsline {table}{\numberline {5.1}{\ignorespaces Perplexity of the language models on the PTB test set.\relax }}{64}{table.caption.39}}
-\newlabel{tab:gen-perplexities-crf}{{5.1}{64}{Perplexity of the language models on the PTB test set.\relax }{table.caption.39}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.3}Experiments}{64}{section.5.3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.1}Setup}{64}{subsection.5.3.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.2}Results}{64}{subsection.5.3.2}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.1}{\ignorespaces Syneval results for all models per category, bars showing standard deviation. The categories are described in appendix \ref  {A5-syneval}.\relax }}{67}{figure.caption.40}}
-\newlabel{fig:syneval-all}{{5.1}{67}{Syneval results for all models per category, bars showing standard deviation. The categories are described in appendix \ref {A5-syneval}.\relax }{figure.caption.40}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5.1}{\ignorespaces Perplexity of the language models on the PTB test set.\relax }}{66}{table.caption.39}}
+\newlabel{tab:lm-perplexities}{{5.1}{66}{Perplexity of the language models on the PTB test set.\relax }{table.caption.39}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.1}Setup}{66}{subsection.5.3.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.2}Results}{66}{subsection.5.3.2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.1}{\ignorespaces Syneval results for all models per category, bars showing standard deviation. The categories are described in appendix \ref  {A5-syneval}.\relax }}{68}{figure.caption.40}}
+\newlabel{fig:syneval-all}{{5.1}{68}{Syneval results for all models per category, bars showing standard deviation. The categories are described in appendix \ref {A5-syneval}.\relax }{figure.caption.40}{}}
 \citation{linzen2016syntax}
 \citation{gulordava2018colorless}
 \citation{gulordava2018colorless}
@@ -368,31 +372,31 @@
 \citation{chomsky1980rules}
 \citation{zweig2011microsoft}
 \citation{sennrich2017grammatical}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.2}{\ignorespaces Syneval results averaged over the three main categories.\relax }}{68}{figure.caption.41}}
-\newlabel{fig:syneval-all-averaged}{{5.2}{68}{Syneval results averaged over the three main categories.\relax }{figure.caption.41}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.4}Related work}{68}{section.5.4}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.3}{\ignorespaces Syneval results for RNNLM and RNNG.\relax }}{69}{figure.caption.42}}
-\newlabel{fig:syneval-lm-rnng}{{5.3}{69}{Syneval results for RNNLM and RNNG.\relax }{figure.caption.42}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.4}{\ignorespaces Syneval results for RNNLM and RNNG, pairs with unknown words removed.\relax }}{69}{figure.caption.43}}
-\newlabel{fig:syneval-lm-rnng-nounk}{{5.4}{69}{Syneval results for RNNLM and RNNG, pairs with unknown words removed.\relax }{figure.caption.43}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.2}{\ignorespaces Syneval results averaged over the three main categories.\relax }}{69}{figure.caption.41}}
+\newlabel{fig:syneval-all-averaged}{{5.2}{69}{Syneval results averaged over the three main categories.\relax }{figure.caption.41}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.4}Related work}{69}{section.5.4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.3}{\ignorespaces Syneval results for RNNLM and RNNG.\relax }}{70}{figure.caption.42}}
+\newlabel{fig:syneval-lm-rnng}{{5.3}{70}{Syneval results for RNNLM and RNNG.\relax }{figure.caption.42}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.4}{\ignorespaces Syneval results for RNNLM and RNNG, pairs with unknown words removed.\relax }}{70}{figure.caption.43}}
+\newlabel{fig:syneval-lm-rnng-nounk}{{5.4}{70}{Syneval results for RNNLM and RNNG, pairs with unknown words removed.\relax }{figure.caption.43}{}}
 \citation{kim2019unsupervised}
 \citation{kim2019unsupervised}
-\@writefile{toc}{\contentsline {chapter}{\numberline {6}Semisupervised learning}{70}{chapter.6}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {6}Semisupervised learning}{71}{chapter.6}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{05-semisupervised}{{6}{70}{Semisupervised learning}{chapter.6}{}}
+\newlabel{05-semisupervised}{{6}{71}{Semisupervised learning}{chapter.6}{}}
 \citation{jordan1999vi,blei2016vi}
 \citation{blei2016vi}
 \citation{blei2016vi}
-\@writefile{toc}{\contentsline {section}{\numberline {6.1}Unsupervised learning}{71}{section.6.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.1}Variational approximation}{71}{subsection.6.1.1}}
-\newlabel{eq:lowerbound}{{6.1}{71}{Variational approximation}{equation.6.1.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.1}Unsupervised learning}{72}{section.6.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.1}Variational approximation}{72}{subsection.6.1.1}}
+\newlabel{eq:lowerbound}{{6.1}{72}{Variational approximation}{equation.6.1.1}{}}
 \citation{kucukelbir2017automatic}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.2}Approximate posterior}{72}{subsection.6.1.2}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.2}Training}{72}{section.6.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.2}Approximate posterior}{73}{subsection.6.1.2}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.2}Training}{73}{section.6.2}}
 \citation{fu2006gradient}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.1}Gradients of generative model}{73}{subsection.6.2.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.2}Gradients of inference model}{73}{subsection.6.2.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.1}Gradients of generative model}{74}{subsection.6.2.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.2}Gradients of inference model}{74}{subsection.6.2.2}}
 \citation{williams1992reinforce,paisley2012viss,mnih2014nvil,ranganath2014black,mnih2016variational}
 \citation{miao2016discrete}
 \citation{williams1992reinforce}
@@ -400,11 +404,11 @@
 \citation{rennie2017argmax}
 \citation{mnih2014nvil,miao2016discrete}
 \citation{yin2018structvae}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.3}Variance reduction}{74}{subsection.6.2.3}}
 \citation{kim2019unsupervised}
-\@writefile{toc}{\contentsline {section}{\numberline {6.3}Experiments}{75}{section.6.3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3.1}RNNG posterior}{75}{subsection.6.3.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3.2}CRF posterior}{75}{subsection.6.3.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.3}Variance reduction}{75}{subsection.6.2.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.3}Experiments}{76}{section.6.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3.1}RNNG posterior}{76}{subsection.6.3.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3.2}CRF posterior}{76}{subsection.6.3.2}}
 \citation{kim2019unsupervised}
 \citation{kim2019unsupervised}
 \citation{paisley2012viss,mnih2014nvil,ranganath2014black,mnih2016variational}
@@ -412,24 +416,21 @@
 \citation{kim2019unsupervised}
 \citation{stern2017minimal}
 \citation{linzen2018targeted}
-\@writefile{toc}{\contentsline {section}{\numberline {6.4}Related work}{76}{section.6.4}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.4}Related work}{77}{section.6.4}}
 \citation{stern2017minimal}
-\@writefile{toc}{\contentsline {chapter}{\numberline {7}Conclusion}{77}{chapter.7}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {7}Conclusion}{78}{chapter.7}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{07-conclusion}{{7}{77}{Conclusion}{chapter.7}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {7.1}Main contributions}{77}{section.7.1}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Neural CRF parser}{77}{section*.44}}
+\newlabel{07-conclusion}{{7}{78}{Conclusion}{chapter.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7.1}Main contributions}{78}{section.7.1}}
+\citation{linzen2018targeted}
 \citation{kim2019unsupervised}
 \citation{kim2019unsupervised}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Syntactic evaluation of RNNG}{78}{section*.45}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Comparison with multitask learning}{78}{section*.46}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Semisupervised learning of RNNG}{78}{section*.47}}
-\@writefile{toc}{\contentsline {section}{\numberline {7.2}Future work}{78}{section.7.2}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Unsupervised RNNG with CRF posterior}{78}{section*.48}}
 \citation{niculae2018sparsemap}
 \citation{niculae2018towards}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline SparseMAP inference}{79}{section*.49}}
+\@writefile{toc}{\contentsline {section}{\numberline {7.2}Future work}{79}{section.7.2}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Unsupervised RNNG with CRF posterior}{79}{section*.44}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline SparseMAP inference}{80}{section*.45}}
 \citation{cross2016span}
 \citation{stern2017minimal,kitaev2018attentive}
 \citation{hockenmaier2007ccgbank}
@@ -438,21 +439,21 @@
 \citation{chelba2013one}
 \citation{jozefowicz2016exploring}
 \citation{merity2016pointer}
-\@writefile{toc}{\contentsline {chapter}{\numberline {A}Implementation}{80}{appendix.A}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {A}Implementation}{81}{appendix.A}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{A2-implementation}{{A}{80}{Implementation}{appendix.A}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.1}Data}{80}{section.A.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.1.1}Datasets}{80}{subsection.A.1.1}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Penn Treebank}{80}{section*.50}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline CCG supertags}{80}{section*.51}}
+\newlabel{A2-implementation}{{A}{81}{Implementation}{appendix.A}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.1}Data}{81}{section.A.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1.1}Datasets}{81}{subsection.A.1.1}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Penn Treebank}{81}{section*.46}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline CCG supertags}{81}{section*.47}}
 \citation{stern2017minimal}
 \citation{dyer2016rnng}
 \citation{petrov2006learning}
 \citation{dyer2016rnng}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline One Billion Word Benchmark}{81}{section*.52}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.1.2}Vocabularies}{81}{subsection.A.1.2}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Unknown words}{81}{section*.53}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline One Billion Word Benchmark}{82}{section*.48}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1.2}Vocabularies}{82}{subsection.A.1.2}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Unknown words}{82}{section*.49}}
 \citation{glorot2010understanding}
 \citation{peters2018elmo}
 \citation{kitaev2018attentive}
@@ -467,61 +468,61 @@
 \citation{kingma2014adam}
 \citation{kingma2014adam}
 \citation{ranganath2014black,klein2018reinforce}
-\newlabel{sec:impl-embedding}{{A.1.2}{82}{Embeddings}{section*.54}{}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Embeddings}{82}{section*.54}}
-\@writefile{lot}{\contentsline {table}{\numberline {A.1}{\ignorespaces Number of parameters of all models used.\relax }}{82}{table.caption.55}}
-\newlabel{tab:num-params}{{A.1}{82}{Number of parameters of all models used.\relax }{table.caption.55}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.2}Implementation}{82}{section.A.2}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Optimization}{82}{section*.56}}
+\newlabel{sec:impl-embedding}{{A.1.2}{83}{Embeddings}{section*.50}{}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Embeddings}{83}{section*.50}}
+\@writefile{lot}{\contentsline {table}{\numberline {A.1}{\ignorespaces Number of parameters of all models used.\relax }}{83}{table.caption.51}}
+\newlabel{tab:num-params}{{A.1}{83}{Number of parameters of all models used.\relax }{table.caption.51}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.2}Implementation}{83}{section.A.2}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Optimization}{83}{section*.52}}
 \citation{gallo1993directed,klein2004parsing}
 \citation{goodman1999semiring,eisner2009semirings}
 \citation{klein2004parsing}
-\@writefile{toc}{\contentsline {chapter}{\numberline {B}Semiring parsing}{84}{appendix.B}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {B}Semiring parsing}{85}{appendix.B}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{A3-crf}{{B}{84}{Semiring parsing}{appendix.B}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.1}Hypergraph}{84}{section.B.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {B.1}{\ignorespaces A fraction of a parse hypergraph showing two possible parses.\relax }}{85}{figure.caption.57}}
-\newlabel{fig:hypergraph}{{B.1}{85}{A fraction of a parse hypergraph showing two possible parses.\relax }{figure.caption.57}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.2}Semiring}{85}{section.B.2}}
+\newlabel{A3-crf}{{B}{85}{Semiring parsing}{appendix.B}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.1}Hypergraph}{85}{section.B.1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.1}{\ignorespaces A fraction of a parse hypergraph showing two possible parses.\relax }}{86}{figure.caption.53}}
+\newlabel{fig:hypergraph}{{B.1}{86}{A fraction of a parse hypergraph showing two possible parses.\relax }{figure.caption.53}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.2}Semiring}{86}{section.B.2}}
 \citation{goodman1999semiring}
 \citation{goodman1999semiring}
-\@writefile{toc}{\contentsline {section}{\numberline {B.3}Semiring parsing}{86}{section.B.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.3}Semiring parsing}{87}{section.B.3}}
 \citation{eisner2009semirings}
 \citation{goodman1999semiring}
 \citation{baker1979trainable}
-\newlabel{eq:derivation-weight}{{B.3}{87}{}{equation.B.3.3}{}}
-\newlabel{eq:hypergraph-weight}{{B.4}{87}{}{equation.B.3.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.3.1}Inside and outside recursions}{87}{subsection.B.3.1}}
+\newlabel{eq:derivation-weight}{{B.3}{88}{}{equation.B.3.3}{}}
+\newlabel{eq:hypergraph-weight}{{B.4}{88}{}{equation.B.3.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.3.1}Inside and outside recursions}{88}{subsection.B.3.1}}
 \citation{goodman1999semiring}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.3.2}Instantiated recursions}{88}{subsection.B.3.2}}
-\newlabel{ex:vit-weight}{{B.3.7}{88}{}{theorem.B.3.7}{}}
-\newlabel{ex:vit-derivation}{{B.3.8}{88}{}{theorem.B.3.8}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {C}Variational inference}{90}{appendix.C}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.3.2}Instantiated recursions}{89}{subsection.B.3.2}}
+\newlabel{ex:vit-weight}{{B.3.7}{89}{}{theorem.B.3.7}{}}
+\newlabel{ex:vit-derivation}{{B.3.8}{89}{}{theorem.B.3.8}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {C}Variational inference}{91}{appendix.C}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{A4-vi}{{C}{90}{Variational inference}{appendix.C}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C.1}Score function estimator}{90}{section.C.1}}
-\newlabel{eq:score-function-estimator}{{C.1}{90}{Score function estimator}{equation.C.1.1}{}}
+\newlabel{A4-vi}{{C}{91}{Variational inference}{appendix.C}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.1}Score function estimator}{91}{section.C.1}}
+\newlabel{eq:score-function-estimator}{{C.1}{91}{Score function estimator}{equation.C.1.1}{}}
 \citation{paisley2012viss}
 \citation{ross2006simulation}
-\@writefile{toc}{\contentsline {section}{\numberline {C.2}Variance reduction}{91}{section.C.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.1}Control variates}{91}{subsection.C.2.1}}
-\newlabel{eq:variance-reduction}{{C.2}{92}{Control variates}{equation.C.2.2}{}}
-\newlabel{eq:cv-scale}{{C.3}{92}{Control variates}{equation.C.2.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.2}Variance reduction}{92}{section.C.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.1}Control variate}{92}{subsection.C.2.1}}
+\newlabel{eq:variance-reduction}{{C.2}{93}{Control variate}{equation.C.2.2}{}}
+\newlabel{eq:cv-scale}{{C.3}{93}{Control variate}{equation.C.2.3}{}}
 \citation{ross2006simulation}
-\newlabel{eq:var-red}{{C.4}{93}{Control variates}{equation.C.2.4}{}}
+\newlabel{eq:var-red}{{C.4}{94}{Control variate}{equation.C.2.4}{}}
 \citation{baydin2018automatic}
 \citation{schulman2015gradient}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.2}Baseline}{94}{subsection.C.2.2}}
-\@writefile{toc}{\contentsline {section}{\numberline {C.3}Optimization}{94}{section.C.3}}
-\newlabel{eq:surrogate}{{C.11}{95}{Optimization}{equation.C.3.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.2}Baseline}{95}{subsection.C.2.2}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.3}Optimization}{95}{section.C.3}}
+\newlabel{eq:surrogate}{{C.11}{96}{Optimization}{equation.C.3.11}{}}
 \citation{linzen2018targeted}
 \citation{linzen2018targeted}
-\@writefile{toc}{\contentsline {chapter}{\numberline {D}Syneval dataset}{96}{appendix.D}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {D}Syneval dataset}{97}{appendix.D}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{A5-syneval}{{D}{96}{Syneval dataset}{appendix.D}{}}
+\newlabel{A5-syneval}{{D}{97}{Syneval dataset}{appendix.D}{}}
 \bibstyle{plainnat}
 \bibdata{../src/bibliography.bib}
 \bibcite{andor2016globally}{{1}{2016}{{Andor et~al.}}{{Andor, Alberti, Weiss, Severyn, Presta, Ganchev, Petrov, and Collins}}}

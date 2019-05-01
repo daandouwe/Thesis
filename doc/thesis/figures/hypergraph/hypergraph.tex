@@ -4,15 +4,15 @@
 % \usepackage{amsmath,amssymb,amsfonts}
 %
 % \usetikzlibrary{arrows,calc}
-
+%
 % \newcommand{\boundellipse}[3]% center, x rad, y rad
 % {(#1) ellipse [x radius=#2,y radius=#3]
 % }
 
 % \begin{document}
-
+%
 % \tikzstyle{every node}=[circle, draw, inner sep=0pt, minimum size=7mm]
-
+%
 % \tikzstyle{every node}=[circle, draw, inner sep=0pt, minimum size=11mm, node distance =1 cm and 1cm ]
 
 % \begin{tikzpicture}
@@ -33,12 +33,13 @@
 
 \node(ADJP) at ($(B)+(0.8,2)$){$\text{ADJP}_{1}^{3}$} ;
 
-\node(EMPTY) at ($(ADJP)+(0.5,2)$){$\varnothing_{1}^{4}$} ;
-\node(NP) at ($(ADJP)+(2,2.5)$){$\text{NP}_{1}^{4}$} ;
+\node(EMPTY) at ($(ADJP)+(1,3)$){$\varnothing_{1}^{4}$} ;
+\node(NP) at ($(ADJP)+(3,3)$){$\text{NP}_{1}^{4}$} ;
 
-\node(NP2) at ($(A)+(2,7)$){$\text{NP}_{0}^{4}$} ;
+\node(NP2) at ($(A)+(3,8)$){$\text{NP}_{0}^{4}$} ;
 
-\node(EMPTY2) at ($(b)+(1.5,11)$){$\varnothing_{0}^{5}$} ;
+% \node(EMPTY2) at ($(b)+(1.5,11)$){$\varnothing_{0}^{5}$} ;
+\node(EMPTY2) at ($(E)+(0.5,5)$){$\varnothing_{4}^{6}$} ;
 \node(S) at ($(c)+(0,14)$){$\text{S}_{0}^{6}$} ;
 \node(TOP) at ($(S)+(0,2)$){$\text{S}^{\dagger}_{0}^{6}$} ;
 
@@ -59,19 +60,20 @@
 \draw[dashed,->] (ADJP) to [in=-90,out=90](NP);
 \draw[dashed,->] (D) to [in=-90,out=90](NP);
 
-\draw[->] (A) to ++(-0.2,3) to [in=-90,out=90](NP2) ;
+\draw[->] (A) to ++(-0.1,3) to [in=-90,out=90](NP2) ;
 \draw[->] (EMPTY) to [in=-90,out=90](NP2) ;
 
 \draw[dashed,->] (A) to [in=-90,out=90](NP2) ;
 \draw[dashed,->] (NP) to [in=-90,out=90](NP2) ;
 
-\draw[->] (NP2) to [in=-90,out=90](EMPTY2);
 \draw[->] (E) to [in=-90,out=90](EMPTY2);
+\draw[->] (F) to [in=-90,out=90](EMPTY2);
 
 \draw[->] (EMPTY2) to [in=-90,out=90](S);
-\draw[->] (F) to [in=-90,out=90](S);
+% \draw[->] (F) to [in=-90,out=90](S);
+\draw[->] (NP2) to [in=-90,out=90](S);
 \draw[->] (S) to [in=-90,out=90](TOP);
 
 % \end{tikzpicture}
-%
+
 % \end{document}

@@ -1,7 +1,7 @@
 This section provides background on the four topics that are combined in this thesis: syntax, parsing, language modelling, and neural networks.
 
 \section{Syntax}
-We first introduce some concepts relating to syntax that are relevant for this thesis. In particular, we introduce the notion of a \textit{constituent}, and the hierarchical organization of constituents in a sentence as described by phrase-structure grammars. The aim is to provide a succinct and compelling answer to the question: \textit{Why should we care about constituency structure when modelling language?}
+We first introduce some concepts relating to syntax that are relevant for this thesis. In particular, we introduce the notion of a \textit{constituent}, and the hierarchical organization of constituents in a sentence as described by phrase-structure grammars. The aim is to provide a succinct and compelling answer to the question: why should we care about constituency structure when modelling language?
 
 The exposition primarily follows \citet{huddleston2002grammar}, a well established reference grammar of the English language that is relatively agnostic with respect to theoretical framework, with some excursions into \citet{carnie2010constituent} and \citet{everaert2015structures}, which are less language-specific but rooted more in a particular theoretical framework\footnote{Broadly subsumable under the name \textit{generative grammar}.}.
 
@@ -15,7 +15,7 @@ To each principle we now dedicate a separate section.
 
 \subsection{Constituents}
 Sentences consist of parts that may themselves have parts. The parts are groups of words that function as units and are called \textit{constituents}. Consider the simple sentence \textit{A bird hit the car.} The immediate constituents are \textit{a bird} (the subject) and \textit{hit the car} (the predicate). The phrase \textit{hit the car} can be analyzed further as containing the constituent \textit{the car}. The ultimate constituents of a sentence are the atomic words, and the entire analysis is called the constituent structure of the sentence. This structure can be indicated succinctly with the use of brackets
-\exi. [ [ A bird ] [ hit [ the car ] ] ]
+\exi. [ A bird ] [ hit [ the car ] ] 
 
 or less succinctly as a tree diagram.
 \begin{figure}[h]
@@ -247,31 +247,54 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
 
 \section{Neural networks}
 
-  In this thesis we use neural networks to parametrize probability distributions. We consider a neural network an abstraction that denotes a certain type of parametrized differentiable function. Let $x$ be a word from a finite vocabulary $\mathcal{X}$, and let $\vecx$ and $\vecy$ be vectors in respectively $\reals^{n}$ and $\reals^{m}$.
+  In this thesis we use neural networks to parametrize probability distributions. We consider a neural network an abstraction that denotes a certain type of parametrized differentiable function. We describe the functions used in this thesis, and describe how they are optimized using stochastic gradients.
 
-  \begin{definition}{} A \textit{word embedding} is vector representation of a word, assigned by an embeding function $\embed$ that takes elements from $\mathcal{X}$ to $\reals^{n}$:
-  \begin{align*}
-    \vecx = \embed( x ).
-  \end{align*}
-  The function can be a simple lookup table, or a more elaborate function that depends for example on the orthography of the word.
-  \end{definition}
+  \subsection{Functions}
+    Let $x$ be a word from a finite vocabulary $\mathcal{X}$, and let $\vecx$ and $\vecy$ be vectors in respectively $\reals^{n}$ and $\reals^{m}$.
 
-  \begin{definition}{} A \textit{feedforward neural network} is a parametrized function $\ff$ from $\reals^{n}$ to $\reals^{m}$:
-  \begin{align*}
-    \vecy = \ff( \vecx ).
-  \end{align*}
-  Internally, the function computes stacks of affine transformations followed by an elementwise application of a nonlinear function. The number of repetitions of these applications is refered to as the number of layers of the network.
-  \end{definition}
+    \begin{definition}{} A \textit{word embedding} is vector representation of a word, assigned by an embeding function $\embed$ that takes elements from $\mathcal{X}$ to $\reals^{n}$:
+    \begin{align*}
+      \vecx = \embed( x ).
+    \end{align*}
+    The function can be a simple lookup table, or a more elaborate function that depends for example on the orthography of the word.
+    \end{definition}
 
-  \begin{definition}{} A \textit{recurrent neural network} (RNN) is a parametrized function $\rnn$ that takes a sequence of vectors $\mathbf{x}_1^k = [ \vecx_1, \vecx_2, \dots, \vecx_k ]$, each in $\reals^{n}$, and produces a sequence of output vectors $[\vecy_1, \vecy_2, \dots,\vecy_n]$ each in $\reals^{m}$:
-  \begin{align*}
-    [\vecy_1, \vecy_2, \dots, \vecy_k] = \rnn( \mathbf{x}_1^k ).
-  \end{align*}
-  Each vector $\vecy_i$ is a function of the vectors $[\vecx_1, \vecx_2, \dots, \vecx_i ]$, for which reason we refer to the vector $\vecy_i$ as a context-dependent \textit{encoding} of the vector $\vecx_i$. An $\rnn$ can be applied to the input sequence in reverse. This makes each $\vecy_i$ a function of the vectors $[\vecx_i, \vecx_{i+1}, \dots, \vecx_k ]$. We denote the output of the forward direction with $\fw$ and the output of the backward direction with $\bw$.
-  \end{definition}
+    \begin{definition}{} A \textit{feedforward neural network} is a parametrized function $\ff$ from $\reals^{n}$ to $\reals^{m}$:
+    \begin{align*}
+      \vecy = \ff( \vecx ).
+    \end{align*}
+    Internally, the function computes stacks of affine transformations followed by an elementwise application of a nonlinear function. The number of repetitions of these applications is refered to as the number of layers of the network.
+    \end{definition}
 
-  \begin{definition}{} An RNN is \textit{bidirectional} when it combines the output of an RNN that runs in the forward direction, with the output of an RNN that  runs in the backward direction. Combining their output vectors by concatenation gives for each position a vector $\h_i = [ \fw_i; \bw_i ]$ that is a function of the entire input sequence.
-  \end{definition}
+    \begin{definition}{} A \textit{recurrent neural network} (RNN) is a parametrized function $\rnn$ that takes a sequence of vectors $\mathbf{x}_1^k = [ \vecx_1, \vecx_2, \dots, \vecx_k ]$, each in $\reals^{n}$, and produces a sequence of output vectors $[\vecy_1, \vecy_2, \dots,\vecy_n]$ each in $\reals^{m}$:
+    \begin{align*}
+      [\vecy_1, \vecy_2, \dots, \vecy_k] = \rnn( \mathbf{x}_1^k ).
+    \end{align*}
+    Each vector $\vecy_i$ is a function of the vectors $[\vecx_1, \vecx_2, \dots, \vecx_i ]$, for which reason we refer to the vector $\vecy_i$ as a context-dependent \textit{encoding} of the vector $\vecx_i$. An $\rnn$ can be applied to the input sequence in reverse. This makes each $\vecy_i$ a function of the vectors $[\vecx_i, \vecx_{i+1}, \dots, \vecx_k ]$. We denote the output of the forward direction with $\fw$ and the output of the backward direction with $\bw$.
+    \end{definition}
 
-  \begin{definition}{} An LSTM \citep{hochreiter1997long} is a particular way to implement the internals of the RNN function. It is the only type of RNN used in this work, and we use the two names exchangeably.
-  \end{definition}
+    \begin{definition}{} An RNN is \textit{bidirectional} when it combines the output of an RNN that runs in the forward direction, with the output of an RNN that  runs in the backward direction. Combining their output vectors by concatenation gives for each position a vector $\h_i = [ \fw_i; \bw_i ]$ that is a function of the entire input sequence.
+    \end{definition}
+
+    \begin{definition}{} An LSTM \citep{hochreiter1997long} is a particular way to implement the internals of the RNN function. It is the only type of RNN used in this work, and we use the two names exchangeably.
+    \end{definition}
+
+  \subsection{Optimization}
+    We use the neural networks to parametrize probability distributions, subtly summarized by the set of parameters $\theta$ in a probability mass function $p_{\theta}$. These parameters are optimized using gradients. Our prototypical objective is optimization of the maximum likelihood of a set observations
+    \begin{align*}
+      \objective(\theta) = \sum_{\x \in \dataset} \log \ptheta(x)
+    \end{align*}
+    with respect to $\theta$. We perfom iterative parameter updates, optaining new parameters $\theta^{(t+1)}$ at timestep $t+1$ from parameters $\theta^{(t)}$ at timestep $t$ using the update rule
+    \begin{align*}
+      \theta^{(t+1)} = \theta^{(t)} + \gamma^{(t)} \nabla_{\theta^{(t)}} \mathcal{L}( \theta^{(t)} ),
+    \end{align*}
+    where the value $\gamma^{(t)}$ is a time-indexed learning rate. We replace $\nabla_{\theta} \mathcal{L}(\theta)$ with an unbiased estimate
+    \begin{align*}
+      \sum_{k=1}^{K} \nabla_{\theta} \log \ptheta (\x^{(k)}),
+    \end{align*}
+    where $\x^{(k)}$ are sampled uniformly from $\dataset$, making our optimization procedure stochastic. This works because for uniformly sampled $x^{(s)}$
+    \begin{align*}
+      \nabla_{\theta} \mathcal{L}(\theta)
+        &\propto \expect [ \nabla_{\theta} \log \ptheta (\x^{(s)}) ].
+    \end{align*}
+    For this estimate we use minibatches. Under certain conditions on the learning rate $\gamma^{(t)}$ this method is guaranteed to converge to a local optimum \citep{robbins1951stochastic}.

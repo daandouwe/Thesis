@@ -189,20 +189,22 @@ In this chapter:
   \begin{align*}
     \mathcal{L}(\theta) = \sum_{(\x, \y) \in \dataset} \log \ptheta (\x, \y),
   \end{align*}
-  by gradient-based optimization on the parameters $\theta$. We perfom iterative parameter updates, optaining new parameters $\theta^{(t+1)}$ at timestept $t+1$ from parameters $\theta^{(t)}$ at timestep $t$ using the update rule
-  \begin{align*}
-    \theta^{(t+1)} = \theta^{(t)} + \gamma^{(t)} \nabla_{\theta^{(t)}} \mathcal{L}( \theta^{(t)} ),
-  \end{align*}
-  where the value $\gamma^{(t)}$ is a time-indexed learning rate. We replace $\nabla_{\theta} \mathcal{L}(\theta)$ with an unbiased estimate
-  \begin{align*}
-    \sum_{k=1}^{K} \nabla_{\theta} \log \ptheta (\x^{(k)}, \y^{(k)}),
-  \end{align*}
-  where pairs $(\x^{(k)}, \y^{(k)})$ are sampled uniformly from $\dataset$, which works because for uniformly random sampled pairs $(\x^{(s)}, \y^{(s)})$ from the dataset.
-  \begin{align*}
-    \nabla_{\theta} \mathcal{L}(\theta)
-      &\propto \expect [ \nabla_{\theta} \log \ptheta (\x^{(s)}, \y^{(s)}) ].
-  \end{align*}
-  We use minibatches for this estimates, making our optimization procedure stochastic. Under certain conditions on $\gamma^{(t)}$ this method is guaranteed to converge to a local optimum \citep{robbins1951stochastic}.
+  by gradient-based optimization on the parameters $\theta$.
+
+  % We perfom iterative parameter updates, optaining new parameters $\theta^{(t+1)}$ at timestept $t+1$ from parameters $\theta^{(t)}$ at timestep $t$ using the update rule
+  % \begin{align*}
+  %   \theta^{(t+1)} = \theta^{(t)} + \gamma^{(t)} \nabla_{\theta^{(t)}} \mathcal{L}( \theta^{(t)} ),
+  % \end{align*}
+  % where the value $\gamma^{(t)}$ is a time-indexed learning rate. We replace $\nabla_{\theta} \mathcal{L}(\theta)$ with an unbiased estimate
+  % \begin{align*}
+  %   \sum_{k=1}^{K} \nabla_{\theta} \log \ptheta (\x^{(k)}, \y^{(k)}),
+  % \end{align*}
+  % where pairs $(\x^{(k)}, \y^{(k)})$ are sampled uniformly from $\dataset$, which works because for uniformly random sampled pairs $(\x^{(s)}, \y^{(s)})$ from the dataset.
+  % \begin{align*}
+  %   \nabla_{\theta} \mathcal{L}(\theta)
+  %     &\propto \expect [ \nabla_{\theta} \log \ptheta (\x^{(s)}, \y^{(s)}) ].
+  % \end{align*}
+  % We use minibatches for this estimates, making our optimization procedure stochastic. Under certain conditions on $\gamma^{(t)}$ this method is guaranteed to converge to a local optimum \citep{robbins1951stochastic}.
 
 
 \section{Inference}

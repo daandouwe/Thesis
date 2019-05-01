@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  8 MAR 2019 17:06
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  1 MAY 2019 10:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -182,7 +182,7 @@ r/m/n/10 0)$\OT1/cmr/m/it/10 .
 
 ! Undefined control sequence.
 l.27 \node
-          (A) at ($(a)+(0,2)$){$\varnothing_{0,1}$} ;
+          (A) at ($(a)+(0,2)$){$\varnothing_{0}^{1}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -197,7 +197,7 @@ Type  H <return>  for immediate help.
  ...                                              
                                                   
 l.27 \node(
-           A) at ($(a)+(0,2)$){$\varnothing_{0,1}$} ;
+           A) at ($(a)+(0,2)$){$\varnothing_{0}^{1}$} ;
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
@@ -212,7 +212,7 @@ Missing character: There is no ) in font nullfont!
 <recently read> \varnothing 
                             
 l.27 \node(A) at ($(a)+(0,2)$){$\varnothing
-                                           _{0,1}$} ;
+                                           _{0}^{1}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -222,7 +222,7 @@ and I'll forget about whatever was undefined.
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
 l.28 \node
-          (B) at ($(A)+(2.5,0)$){$\varnothing_{1,2}$} ;
+          (B) at ($(A)+(2.5,0)$){$\varnothing_{1}^{2}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -240,7 +240,7 @@ Missing character: There is no ) in font nullfont!
 <recently read> \varnothing 
                             
 l.28 \node(B) at ($(A)+(2.5,0)$){$\varnothing
-                                             _{1,2}$} ;
+                                             _{1}^{2}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -250,7 +250,7 @@ and I'll forget about whatever was undefined.
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
 l.29 \node
-          (C) at ($(B)+(2.5,0)$){$\varnothing_{2,3}$} ;
+          (C) at ($(B)+(2.5,0)$){$\varnothing_{2}^{3}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -268,7 +268,7 @@ Missing character: There is no ) in font nullfont!
 <recently read> \varnothing 
                             
 l.29 \node(C) at ($(B)+(2.5,0)$){$\varnothing
-                                             _{2,3}$} ;
+                                             _{2}^{3}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -278,7 +278,7 @@ and I'll forget about whatever was undefined.
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
 l.30 \node
-          (D) at ($(C)+(2.5,0)$){$\varnothing_{3,4}$} ;
+          (D) at ($(C)+(2.5,0)$){$\varnothing_{3}^{4}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -296,7 +296,7 @@ Missing character: There is no ) in font nullfont!
 <recently read> \varnothing 
                             
 l.30 \node(D) at ($(C)+(2.5,0)$){$\varnothing
-                                             _{3,4}$} ;
+                                             _{3}^{4}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -306,7 +306,7 @@ and I'll forget about whatever was undefined.
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
 l.31 \node
-          (E) at ($(D)+(2.5,0)$){$VP_{4,5}$} ;
+          (E) at ($(D)+(2.5,0)$){$\text{VP}_{4}^{5}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -320,10 +320,21 @@ Missing character: There is no a in font nullfont!
 Missing character: There is no t in font nullfont!
 Missing character: There is no ( in font nullfont!
 Missing character: There is no ) in font nullfont!
+! Undefined control sequence.
+<recently read> \text 
+                      
+l.31 \node(E) at ($(D)+(2.5,0)$){$\text
+                                       {VP}_{4}^{5}$} ;
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
 l.32 \node
-          (F) at ($(E)+(2.5,0)$){$\varnothing_{5,6}$} ;
+          (F) at ($(E)+(2.5,0)$){$\varnothing_{5}^{6}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -341,7 +352,7 @@ Missing character: There is no ) in font nullfont!
 <recently read> \varnothing 
                             
 l.32 \node(F) at ($(E)+(2.5,0)$){$\varnothing
-                                             _{5,6}$} ;
+                                             _{5}^{6}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -360,7 +371,7 @@ Overfull \hbox (20.84149pt too wide) in paragraph at lines 27--33
  []
 
 
-Overfull \hbox (33.0695pt too wide) in paragraph at lines 27--33
+Overfull \hbox (26.70837pt too wide) in paragraph at lines 27--33
 \OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2)$$[]$
  []
 
@@ -370,7 +381,7 @@ Overfull \hbox (23.05562pt too wide) in paragraph at lines 27--33
  []
 
 
-Overfull \hbox (40.8473pt too wide) in paragraph at lines 27--33
+Overfull \hbox (34.48618pt too wide) in paragraph at lines 27--33
 \OT1/cmr/m/n/10 (2\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 5\OML/cmm/m/it/10 ; \OT1/cm
 r/m/n/10 0)$$[]$
  []
@@ -381,7 +392,7 @@ Overfull \hbox (23.64241pt too wide) in paragraph at lines 27--33
  []
 
 
-Overfull \hbox (40.8473pt too wide) in paragraph at lines 27--33
+Overfull \hbox (34.48618pt too wide) in paragraph at lines 27--33
 \OT1/cmr/m/n/10 (2\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 5\OML/cmm/m/it/10 ; \OT1/cm
 r/m/n/10 0)$$[]$
  []
@@ -392,7 +403,7 @@ Overfull \hbox (23.41809pt too wide) in paragraph at lines 27--33
  []
 
 
-Overfull \hbox (40.8473pt too wide) in paragraph at lines 27--33
+Overfull \hbox (34.48618pt too wide) in paragraph at lines 27--33
 \OT1/cmr/m/n/10 (2\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 5\OML/cmm/m/it/10 ; \OT1/cm
 r/m/n/10 0)$$[]$
  []
@@ -403,9 +414,9 @@ Overfull \hbox (24.11255pt too wide) in paragraph at lines 27--33
  []
 
 
-Overfull \hbox (55.323pt too wide) in paragraph at lines 27--33
+Overfull \hbox (50.35077pt too wide) in paragraph at lines 27--33
 \OT1/cmr/m/n/10 (2\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 5\OML/cmm/m/it/10 ; \OT1/cm
-r/m/n/10 0)$$\OML/cmm/m/it/10 VP[]$
+r/m/n/10 0)$$[][]$
  []
 
 
@@ -414,14 +425,14 @@ Overfull \hbox (23.51392pt too wide) in paragraph at lines 27--33
  []
 
 
-Overfull \hbox (40.8473pt too wide) in paragraph at lines 27--33
+Overfull \hbox (34.48618pt too wide) in paragraph at lines 27--33
 \OT1/cmr/m/n/10 (2\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 5\OML/cmm/m/it/10 ; \OT1/cm
 r/m/n/10 0)$$[]$
  []
 
 ! Undefined control sequence.
 l.34 \node
-          (ADJP) at ($(B)+(0.8,2)$){$ADJP_{1,3}$} ;
+          (ADJP) at ($(B)+(0.8,2)$){$\text{ADJP}_{1}^{3}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -436,7 +447,7 @@ Type  H <return>  for immediate help.
  ...                                              
                                                   
 l.34 \node(
-           ADJP) at ($(B)+(0.8,2)$){$ADJP_{1,3}$} ;
+           ADJP) at ($(B)+(0.8,2)$){$\text{ADJP}_{1}^{3}$} ;
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
@@ -450,6 +461,17 @@ Missing character: There is no a in font nullfont!
 Missing character: There is no t in font nullfont!
 Missing character: There is no ( in font nullfont!
 Missing character: There is no ) in font nullfont!
+! Undefined control sequence.
+<recently read> \text 
+                      
+l.34 \node(ADJP) at ($(B)+(0.8,2)$){$\text
+                                          {ADJP}_{1}^{3}$} ;
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
 Missing character: There is no ; in font nullfont!
 
 Overfull \hbox (20.0pt too wide) in paragraph at lines 34--35
@@ -462,14 +484,14 @@ Overfull \hbox (23.64241pt too wide) in paragraph at lines 34--35
  []
 
 
-Overfull \hbox (69.83134pt too wide) in paragraph at lines 34--35
+Overfull \hbox (64.85912pt too wide) in paragraph at lines 34--35
 \OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 8\OML/cmm/m/it/10 ; \OT1/cm
-r/m/n/10 2)$$\OML/cmm/m/it/10 ADJP[]$
+r/m/n/10 2)$$[][]$
  []
 
 ! Undefined control sequence.
 l.36 \node
-          (EMPTY) at ($(ADJP)+(0.5,2)$){$\varnothing_{1,4}$} ;
+          (EMPTY) at ($(ADJP)+(1,3)$){$\varnothing_{1}^{4}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -484,7 +506,7 @@ Type  H <return>  for immediate help.
  ...                                              
                                                   
 l.36 \node(
-           EMPTY) at ($(ADJP)+(0.5,2)$){$\varnothing_{1,4}$} ;
+           EMPTY) at ($(ADJP)+(1,3)$){$\varnothing_{1}^{4}$} ;
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
@@ -502,8 +524,8 @@ Missing character: There is no ) in font nullfont!
 ! Undefined control sequence.
 <recently read> \varnothing 
                             
-l.36 ...(EMPTY) at ($(ADJP)+(0.5,2)$){$\varnothing
-                                                  _{1,4}$} ;
+l.36 \node(EMPTY) at ($(ADJP)+(1,3)$){$\varnothing
+                                                  _{1}^{4}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -513,7 +535,7 @@ and I'll forget about whatever was undefined.
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
 l.37 \node
-          (NP) at ($(ADJP)+(2,2.5)$){$NP_{1,4}$} ;
+          (NP) at ($(ADJP)+(3,3)$){$\text{NP}_{1}^{4}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -528,6 +550,17 @@ Missing character: There is no a in font nullfont!
 Missing character: There is no t in font nullfont!
 Missing character: There is no ( in font nullfont!
 Missing character: There is no ) in font nullfont!
+! Undefined control sequence.
+<recently read> \text 
+                      
+l.37 \node(NP) at ($(ADJP)+(3,3)$){$\text
+                                         {NP}_{1}^{4}$} ;
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
 Missing character: There is no ; in font nullfont!
 
 Overfull \hbox (20.0pt too wide) in paragraph at lines 36--38
@@ -540,9 +573,8 @@ Overfull \hbox (45.92854pt too wide) in paragraph at lines 36--38
  []
 
 
-Overfull \hbox (40.8473pt too wide) in paragraph at lines 36--38
-\OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 5\OML/cmm/m/it/10 ; \OT1/cm
-r/m/n/10 2)$$[]$
+Overfull \hbox (26.70837pt too wide) in paragraph at lines 36--38
+\OT1/cmr/m/n/10 (1\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 3)$$[]$
  []
 
 
@@ -551,14 +583,13 @@ Overfull \hbox (45.92854pt too wide) in paragraph at lines 36--38
  []
 
 
-Overfull \hbox (56.39241pt too wide) in paragraph at lines 36--38
-\OT1/cmr/m/n/10 (2\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2\OML/cmm/m/it/10 :\OT1/cm
-r/m/n/10 5)$$\OML/cmm/m/it/10 NP[]$
+Overfull \hbox (43.64238pt too wide) in paragraph at lines 36--38
+\OT1/cmr/m/n/10 (3\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 3)$$[][]$
  []
 
 ! Undefined control sequence.
 l.39 \node
-          (NP2) at ($(A)+(2,7)$){$NP_{0,4}$} ;
+          (NP2) at ($(A)+(3,8)$){$\text{NP}_{0}^{4}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -573,7 +604,7 @@ Type  H <return>  for immediate help.
  ...                                              
                                                   
 l.39 \node(
-           NP2) at ($(A)+(2,7)$){$NP_{0,4}$} ;
+           NP2) at ($(A)+(3,8)$){$\text{NP}_{0}^{4}$} ;
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
@@ -586,6 +617,17 @@ Missing character: There is no a in font nullfont!
 Missing character: There is no t in font nullfont!
 Missing character: There is no ( in font nullfont!
 Missing character: There is no ) in font nullfont!
+! Undefined control sequence.
+<recently read> \text 
+                      
+l.39 \node(NP2) at ($(A)+(3,8)$){$\text
+                                       {NP}_{0}^{4}$} ;
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
 Missing character: There is no ; in font nullfont!
 
 Overfull \hbox (20.0pt too wide) in paragraph at lines 39--40
@@ -598,14 +640,13 @@ Overfull \hbox (23.05562pt too wide) in paragraph at lines 39--40
  []
 
 
-Overfull \hbox (48.61461pt too wide) in paragraph at lines 39--40
-\OT1/cmr/m/n/10 (2\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 7)$$\OML/cmm/m/it/10 NP[]$
-
+Overfull \hbox (43.64238pt too wide) in paragraph at lines 39--40
+\OT1/cmr/m/n/10 (3\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 8)$$[][]$
  []
 
 ! Undefined control sequence.
-l.41 \node
-          (EMPTY2) at ($(b)+(1.5,11)$){$\varnothing_{0,5}$} ;
+l.42 \node
+          (EMPTY2) at ($(E)+(0.5,5)$){$\varnothing_{4}^{6}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -619,8 +660,8 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.41 \node(
-           EMPTY2) at ($(b)+(1.5,11)$){$\varnothing_{0,5}$} ;
+l.42 \node(
+           EMPTY2) at ($(E)+(0.5,5)$){$\varnothing_{4}^{6}$} ;
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
@@ -639,8 +680,8 @@ Missing character: There is no ) in font nullfont!
 ! Undefined control sequence.
 <recently read> \varnothing 
                             
-l.41 ...e(EMPTY2) at ($(b)+(1.5,11)$){$\varnothing
-                                                  _{0,5}$} ;
+l.42 \node(EMPTY2) at ($(E)+(0.5,5)$){$\varnothing
+                                                  _{4}^{6}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -649,8 +690,8 @@ and I'll forget about whatever was undefined.
 
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
-l.42 \node
-          (S) at ($(c)+(0,13)$){$S_{0,6}$} ;
+l.43 \node
+          (S) at ($(c)+(0,14)$){$\text{S}_{0}^{6}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -664,10 +705,21 @@ Missing character: There is no a in font nullfont!
 Missing character: There is no t in font nullfont!
 Missing character: There is no ( in font nullfont!
 Missing character: There is no ) in font nullfont!
+! Undefined control sequence.
+<recently read> \text 
+                      
+l.43 \node(S) at ($(c)+(0,14)$){$\text
+                                      {S}_{0}^{6}$} ;
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
-l.43 \node
-          (TOP) at ($(c)+(0,15)$){$S^{\dagger}_{0,6}$} ;
+l.44 \node
+          (TOP) at ($(S)+(0,2)$){$\text{S}^{\dagger}_{0}^{6}$} ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -683,47 +735,63 @@ Missing character: There is no a in font nullfont!
 Missing character: There is no t in font nullfont!
 Missing character: There is no ( in font nullfont!
 Missing character: There is no ) in font nullfont!
+! Undefined control sequence.
+<recently read> \text 
+                      
+l.44 \node(TOP) at ($(S)+(0,2)$){$\text
+                                       {S}^{\dagger}_{0}^{6}$} ;
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Double superscript.
+l.44 ... at ($(S)+(0,2)$){$\text{S}^{\dagger}_{0}^
+                                                  {6}$} ;
+I treat `x^1^2' essentially like `x^1{}^2'.
+
 Missing character: There is no ; in font nullfont!
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 41--44
+Overfull \hbox (20.0pt too wide) in paragraph at lines 42--45
 []
  []
 
 
-Overfull \hbox (19.84726pt too wide) in paragraph at lines 41--44
-\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 b\OT1/cmr/m/n/10 ) +
+Overfull \hbox (23.51392pt too wide) in paragraph at lines 42--45
+\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 E\OT1/cmr/m/n/10 ) +
  []
 
 
-Overfull \hbox (45.84732pt too wide) in paragraph at lines 41--44
-\OT1/cmr/m/n/10 (1\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 5\OML/cmm/m/it/10 ; \OT1/cm
-r/m/n/10 11)$$[]$
+Overfull \hbox (34.48618pt too wide) in paragraph at lines 42--45
+\OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 5\OML/cmm/m/it/10 ; \OT1/cm
+r/m/n/10 5)$$[]$
  []
 
 
-Overfull \hbox (19.88316pt too wide) in paragraph at lines 41--44
+Overfull \hbox (19.88316pt too wide) in paragraph at lines 42--45
 \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 c\OT1/cmr/m/n/10 ) +
  []
 
 
-Overfull \hbox (44.20146pt too wide) in paragraph at lines 41--44
-\OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 13)$$\OML/cmm/m/it/10 S[]$
+Overfull \hbox (38.4167pt too wide) in paragraph at lines 42--45
+\OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 14)$$\OML/cmm/m/it/10 S[]$
 
  []
 
 
-Overfull \hbox (19.88316pt too wide) in paragraph at lines 41--44
-\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 c\OT1/cmr/m/n/10 ) +
+Overfull \hbox (22.26392pt too wide) in paragraph at lines 42--45
+\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 S\OT1/cmr/m/n/10 ) +
  []
 
 
-Overfull \hbox (44.20146pt too wide) in paragraph at lines 41--44
-\OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 15)$$\OML/cmm/m/it/10 S[]$
-
+Overfull \hbox (37.58336pt too wide) in paragraph at lines 42--45
+\OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2)$$\OML/cmm/m/it/10 S[][]
+$
  []
 
 ! Undefined control sequence.
-l.46 \draw
+l.47 \draw
           [->] (a) to [in=-90,out=90](A);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -738,7 +806,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.46 \draw[
+l.47 \draw[
            ->] (a) to [in=-90,out=90](A);
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
@@ -772,7 +840,7 @@ Missing character: There is no A in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
-l.47 \draw
+l.48 \draw
           [->] (b) to [in=-90,out=90](B);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -809,7 +877,7 @@ Missing character: There is no B in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
-l.48 \draw
+l.49 \draw
           [->] (c) to [in=-90,out=90](C);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -846,7 +914,7 @@ Missing character: There is no C in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
-l.49 \draw
+l.50 \draw
           [->] (d) to [in=-90,out=90](D);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -883,7 +951,7 @@ Missing character: There is no D in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
-l.50 \draw
+l.51 \draw
           [->] (e) to [in=-90,out=90](E);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -920,7 +988,7 @@ Missing character: There is no E in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
-l.51 \draw
+l.52 \draw
           [->] (f) to [in=-90,out=90](F);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -957,12 +1025,12 @@ Missing character: There is no F in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 46--52
+Overfull \hbox (20.0pt too wide) in paragraph at lines 47--53
 []
  []
 
 ! Undefined control sequence.
-l.53 \draw
+l.54 \draw
           [->] (B) to [in=-90,out=90](ADJP);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -977,7 +1045,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.53 \draw[
+l.54 \draw[
            ->] (B) to [in=-90,out=90](ADJP);
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
@@ -1014,7 +1082,7 @@ Missing character: There is no P in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
-l.54 \draw
+l.55 \draw
           [->] (C) to [in=-90,out=90](ADJP);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1054,12 +1122,12 @@ Missing character: There is no P in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 53--55
+Overfull \hbox (20.0pt too wide) in paragraph at lines 54--56
 []
  []
 
 ! Undefined control sequence.
-l.56 \draw
+l.57 \draw
           [->] (ADJP) to [in=-90,out=90](EMPTY);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1074,7 +1142,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.56 \draw[
+l.57 \draw[
            ->] (ADJP) to [in=-90,out=90](EMPTY);
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
@@ -1115,7 +1183,7 @@ Missing character: There is no Y in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
-l.57 \draw
+l.58 \draw
           [->] (D) to [in=-90,out=90](EMPTY);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1156,12 +1224,12 @@ Missing character: There is no Y in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 56--58
+Overfull \hbox (20.0pt too wide) in paragraph at lines 57--59
 []
  []
 
 ! Undefined control sequence.
-l.59 \draw
+l.60 \draw
           [dashed,->] (ADJP) to [in=-90,out=90](NP);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1176,7 +1244,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.59 \draw[
+l.60 \draw[
            dashed,->] (ADJP) to [in=-90,out=90](NP);
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
@@ -1221,7 +1289,7 @@ Missing character: There is no P in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
-l.60 \draw
+l.61 \draw
           [dashed,->] (D) to [in=-90,out=90](NP);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1266,13 +1334,13 @@ Missing character: There is no P in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 59--61
+Overfull \hbox (20.0pt too wide) in paragraph at lines 60--62
 []
  []
 
 ! Undefined control sequence.
-l.62 \draw
-          [->] (A) to ++(-0.2,3) to [in=-90,out=90](NP2) ;
+l.63 \draw
+          [->] (A) to ++(-0.1,3) to [in=-90,out=90](NP2) ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -1286,8 +1354,8 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.62 \draw[
-           ->] (A) to ++(-0.2,3) to [in=-90,out=90](NP2) ;
+l.63 \draw[
+           ->] (A) to ++(-0.1,3) to [in=-90,out=90](NP2) ;
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
@@ -1306,7 +1374,7 @@ Missing character: There is no ( in font nullfont!
 Missing character: There is no - in font nullfont!
 Missing character: There is no 0 in font nullfont!
 Missing character: There is no . in font nullfont!
-Missing character: There is no 2 in font nullfont!
+Missing character: There is no 1 in font nullfont!
 Missing character: There is no , in font nullfont!
 Missing character: There is no 3 in font nullfont!
 Missing character: There is no ) in font nullfont!
@@ -1334,7 +1402,7 @@ Missing character: There is no 2 in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
-l.63 \draw
+l.64 \draw
           [->] (EMPTY) to [in=-90,out=90](NP2) ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1377,12 +1445,12 @@ Missing character: There is no 2 in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 62--64
+Overfull \hbox (20.0pt too wide) in paragraph at lines 63--65
 []
  []
 
 ! Undefined control sequence.
-l.65 \draw
+l.66 \draw
           [dashed,->] (A) to [in=-90,out=90](NP2) ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1397,7 +1465,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.65 \draw[
+l.66 \draw[
            dashed,->] (A) to [in=-90,out=90](NP2) ;
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
@@ -1440,7 +1508,7 @@ Missing character: There is no 2 in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
-l.66 \draw
+l.67 \draw
           [dashed,->] (NP) to [in=-90,out=90](NP2) ;
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1487,13 +1555,13 @@ Missing character: There is no 2 in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 65--67
+Overfull \hbox (20.0pt too wide) in paragraph at lines 66--68
 []
  []
 
 ! Undefined control sequence.
-l.68 \draw
-          [->] (NP2) to [in=-90,out=90](EMPTY2);
+l.69 \draw
+          [->] (E) to [in=-90,out=90](EMPTY2);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -1507,8 +1575,8 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.68 \draw[
-           ->] (NP2) to [in=-90,out=90](EMPTY2);
+l.69 \draw[
+           ->] (E) to [in=-90,out=90](EMPTY2);
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
@@ -1517,9 +1585,7 @@ Missing character: There is no - in font nullfont!
 Missing character: There is no > in font nullfont!
 Missing character: There is no ] in font nullfont!
 Missing character: There is no ( in font nullfont!
-Missing character: There is no N in font nullfont!
-Missing character: There is no P in font nullfont!
-Missing character: There is no 2 in font nullfont!
+Missing character: There is no E in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no t in font nullfont!
 Missing character: There is no o in font nullfont!
@@ -1548,8 +1614,8 @@ Missing character: There is no 2 in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
-l.69 \draw
-          [->] (E) to [in=-90,out=90](EMPTY2);
+l.70 \draw
+          [->] (F) to [in=-90,out=90](EMPTY2);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -1561,7 +1627,7 @@ Missing character: There is no - in font nullfont!
 Missing character: There is no > in font nullfont!
 Missing character: There is no ] in font nullfont!
 Missing character: There is no ( in font nullfont!
-Missing character: There is no E in font nullfont!
+Missing character: There is no F in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no t in font nullfont!
 Missing character: There is no o in font nullfont!
@@ -1590,12 +1656,12 @@ Missing character: There is no 2 in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 68--70
+Overfull \hbox (20.0pt too wide) in paragraph at lines 69--71
 []
  []
 
 ! Undefined control sequence.
-l.71 \draw
+l.72 \draw
           [->] (EMPTY2) to [in=-90,out=90](S);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1610,7 +1676,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.71 \draw[
+l.72 \draw[
            ->] (EMPTY2) to [in=-90,out=90](S);
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
@@ -1649,8 +1715,8 @@ Missing character: There is no S in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
-l.72 \draw
-          [->] (F) to [in=-90,out=90](S);
+l.74 \draw
+          [->] (NP2) to [in=-90,out=90](S);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
@@ -1662,7 +1728,9 @@ Missing character: There is no - in font nullfont!
 Missing character: There is no > in font nullfont!
 Missing character: There is no ] in font nullfont!
 Missing character: There is no ( in font nullfont!
-Missing character: There is no F in font nullfont!
+Missing character: There is no N in font nullfont!
+Missing character: There is no P in font nullfont!
+Missing character: There is no 2 in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no t in font nullfont!
 Missing character: There is no o in font nullfont!
@@ -1686,7 +1754,7 @@ Missing character: There is no S in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 ! Undefined control sequence.
-l.73 \draw
+l.75 \draw
           [->] (S) to [in=-90,out=90](TOP);
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1725,7 +1793,7 @@ Missing character: There is no P in font nullfont!
 Missing character: There is no ) in font nullfont!
 Missing character: There is no ; in font nullfont!
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 71--74
+Overfull \hbox (20.0pt too wide) in paragraph at lines 72--76
 []
  []
 
@@ -1737,10 +1805,10 @@ Overfull \hbox (20.0pt too wide) in paragraph at lines 71--74
 
  
 Here is how much of TeX's memory you used:
- 11 strings out of 493014
- 202 string characters out of 6133351
+ 12 strings out of 493014
+ 206 string characters out of 6133351
  55601 words of memory out of 5000000
- 3653 multiletter control sequences out of 15000+600000
+ 3654 multiletter control sequences out of 15000+600000
  3986 words of font info for 15 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  18i,2n,12p,120b,69s stack positions out of 5000i,500n,10000p,200000b,80000s

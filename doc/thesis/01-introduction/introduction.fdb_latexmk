@@ -1,19 +1,12 @@
 # Fdb version 3
-["bibtex introduction"] 1548674031 "introduction.aux" "introduction.bbl" "introduction" 1548698000
-  "introduction.aux" 1548086837 8 a94a2480d3289e625eea47cd1b285758 ""
-  "introduction.bcf" 0 -1 0 ""
-  (generated)
-  "introduction.blg"
-  "introduction.bbl"
-["pdflatex"] 1548698000 "introduction.tex" "introduction.pdf" "introduction" 1548698000
+["pdflatex"] 1556708495 "introduction.tex" "introduction.pdf" "introduction" 1556708495
   "/usr/local/texlive/2016/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmti10.tfm" 1136768653 1480 aa8e34af0eb6a2941b776984cf1dfdc4 ""
   "/usr/local/texlive/2016/texmf-dist/web2c/texmf.cnf" 1463093894 31953 b9489e6e586f798610c60aec1f5ec548 ""
   "/usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt" 1485894833 3873397 68ff021935db8719c30e28db2297c232 ""
   "/usr/local/texlive/2016/texmf.cnf" 1463979140 577 2938757e76f31531e65cc647e3507693 ""
   "introduction.aux" 1548086837 8 a94a2480d3289e625eea47cd1b285758 ""
-  "introduction.bbl" 1548674031 0 d41d8cd98f00b204e9800998ecf8427e "bibtex introduction"
-  "introduction.tex" 1548697841 5839 7c58b79757d78a7331c45971359175f8 ""
+  "introduction.tex" 1556708494 8241 2bda0e7d69c591a528a6b1f5fa4ce216 ""
   (generated)
   "introduction.log"
   "introduction.pdf"

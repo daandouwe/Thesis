@@ -14,86 +14,88 @@
 \BOOKMARK [2][-]{subsection.2.3.2}{Data}{section.2.3}% 14
 \BOOKMARK [2][-]{subsection.2.3.3}{Metrics}{section.2.3}% 15
 \BOOKMARK [1][-]{section.2.4}{Neural networks}{chapter.2}% 16
-\BOOKMARK [0][-]{chapter.3}{Recurrent Neural Network Grammars}{}% 17
-\BOOKMARK [1][-]{section.3.1}{Model}{chapter.3}% 18
-\BOOKMARK [2][-]{subsection.3.1.1}{Transition sytem}{section.3.1}% 19
-\BOOKMARK [2][-]{subsection.3.1.2}{Model}{section.3.1}% 20
-\BOOKMARK [1][-]{section.3.2}{Parametrization}{chapter.3}% 21
-\BOOKMARK [2][-]{subsection.3.2.1}{Stack encoder}{section.3.2}% 22
-\BOOKMARK [2][-]{subsection.3.2.2}{Composition function}{section.3.2}% 23
-\BOOKMARK [1][-]{section.3.3}{Training}{chapter.3}% 24
-\BOOKMARK [1][-]{section.3.4}{Inference}{chapter.3}% 25
-\BOOKMARK [2][-]{subsection.3.4.1}{Discriminative model}{section.3.4}% 26
-\BOOKMARK [2][-]{subsection.3.4.2}{Generative model}{section.3.4}% 27
-\BOOKMARK [1][-]{section.3.5}{Experiments}{chapter.3}% 28
-\BOOKMARK [2][-]{subsection.3.5.1}{Setup}{section.3.5}% 29
-\BOOKMARK [2][-]{subsection.3.5.2}{Results}{section.3.5}% 30
-\BOOKMARK [2][-]{subsection.3.5.3}{Analysis}{section.3.5}% 31
-\BOOKMARK [1][-]{section.3.6}{Related work}{chapter.3}% 32
-\BOOKMARK [0][-]{chapter.4}{Conditional Random Field parser}{}% 33
-\BOOKMARK [1][-]{section.4.1}{Model}{chapter.4}% 34
-\BOOKMARK [1][-]{section.4.2}{Parametrization}{chapter.4}% 35
-\BOOKMARK [1][-]{section.4.3}{Inference}{chapter.4}% 36
-\BOOKMARK [2][-]{subsection.4.3.1}{Weighted parse forest}{section.4.3}% 37
-\BOOKMARK [2][-]{subsection.4.3.2}{Inside recursion}{section.4.3}% 38
-\BOOKMARK [2][-]{subsection.4.3.3}{Outside recursion}{section.4.3}% 39
-\BOOKMARK [2][-]{subsection.4.3.4}{Solutions}{section.4.3}% 40
-\BOOKMARK [1][-]{section.4.4}{Traning}{chapter.4}% 41
-\BOOKMARK [2][-]{subsection.4.4.1}{Objective}{section.4.4}% 42
-\BOOKMARK [2][-]{subsection.4.4.2}{Speed and complexity}{section.4.4}% 43
-\BOOKMARK [1][-]{section.4.5}{Experiments}{chapter.4}% 44
-\BOOKMARK [2][-]{subsection.4.5.1}{Setup}{section.4.5}% 45
-\BOOKMARK [2][-]{subsection.4.5.2}{Results}{section.4.5}% 46
-\BOOKMARK [2][-]{subsection.4.5.3}{Proposal distribution}{section.4.5}% 47
-\BOOKMARK [2][-]{subsection.4.5.4}{Analysis}{section.4.5}% 48
-\BOOKMARK [1][-]{section.4.6}{Trees and derivations}{chapter.4}% 49
-\BOOKMARK [2][-]{subsection.4.6.1}{Derivational ambiguity}{section.4.6}% 50
-\BOOKMARK [2][-]{subsection.4.6.2}{Consequences}{section.4.6}% 51
-\BOOKMARK [2][-]{subsection.4.6.3}{Solutions}{section.4.6}% 52
-\BOOKMARK [2][-]{subsection.4.6.4}{Unrestricted parse forest}{section.4.6}% 53
-\BOOKMARK [2][-]{subsection.4.6.5}{Pruned parse forest}{section.4.6}% 54
-\BOOKMARK [1][-]{section.4.7}{Related work}{chapter.4}% 55
-\BOOKMARK [0][-]{chapter.5}{Syntactic evaluation}{}% 56
-\BOOKMARK [1][-]{section.5.1}{Syntactic evaluation}{chapter.5}% 57
-\BOOKMARK [2][-]{subsection.5.1.1}{Dataset}{section.5.1}% 58
-\BOOKMARK [2][-]{subsection.5.1.2}{RNNG}{section.5.1}% 59
-\BOOKMARK [1][-]{section.5.2}{Multitask learning}{chapter.5}% 60
-\BOOKMARK [2][-]{subsection.5.2.1}{Multitask objective}{section.5.2}% 61
-\BOOKMARK [2][-]{subsection.5.2.2}{Models}{section.5.2}% 62
-\BOOKMARK [1][-]{section.5.3}{Experiments}{chapter.5}% 63
-\BOOKMARK [2][-]{subsection.5.3.1}{Setup}{section.5.3}% 64
-\BOOKMARK [2][-]{subsection.5.3.2}{Results}{section.5.3}% 65
-\BOOKMARK [1][-]{section.5.4}{Related work}{chapter.5}% 66
-\BOOKMARK [0][-]{chapter.6}{Semisupervised learning}{}% 67
-\BOOKMARK [1][-]{section.6.1}{Unsupervised learning}{chapter.6}% 68
-\BOOKMARK [2][-]{subsection.6.1.1}{Variational approximation}{section.6.1}% 69
-\BOOKMARK [2][-]{subsection.6.1.2}{Approximate posterior}{section.6.1}% 70
-\BOOKMARK [1][-]{section.6.2}{Training}{chapter.6}% 71
-\BOOKMARK [2][-]{subsection.6.2.1}{Gradients of generative model}{section.6.2}% 72
-\BOOKMARK [2][-]{subsection.6.2.2}{Gradients of inference model}{section.6.2}% 73
-\BOOKMARK [2][-]{subsection.6.2.3}{Variance reduction}{section.6.2}% 74
-\BOOKMARK [1][-]{section.6.3}{Experiments}{chapter.6}% 75
-\BOOKMARK [2][-]{subsection.6.3.1}{RNNG posterior}{section.6.3}% 76
-\BOOKMARK [2][-]{subsection.6.3.2}{CRF posterior}{section.6.3}% 77
-\BOOKMARK [1][-]{section.6.4}{Related work}{chapter.6}% 78
-\BOOKMARK [0][-]{chapter.7}{Conclusion}{}% 79
-\BOOKMARK [1][-]{section.7.1}{Main contributions}{chapter.7}% 80
-\BOOKMARK [1][-]{section.7.2}{Future work}{chapter.7}% 81
-\BOOKMARK [0][-]{appendix.A}{Implementation}{}% 82
-\BOOKMARK [1][-]{section.A.1}{Data}{appendix.A}% 83
-\BOOKMARK [2][-]{subsection.A.1.1}{Datasets}{section.A.1}% 84
-\BOOKMARK [2][-]{subsection.A.1.2}{Vocabularies}{section.A.1}% 85
-\BOOKMARK [1][-]{section.A.2}{Implementation}{appendix.A}% 86
-\BOOKMARK [0][-]{appendix.B}{Semiring parsing}{}% 87
-\BOOKMARK [1][-]{section.B.1}{Hypergraph}{appendix.B}% 88
-\BOOKMARK [1][-]{section.B.2}{Semiring}{appendix.B}% 89
-\BOOKMARK [1][-]{section.B.3}{Semiring parsing}{appendix.B}% 90
-\BOOKMARK [2][-]{subsection.B.3.1}{Inside and outside recursions}{section.B.3}% 91
-\BOOKMARK [2][-]{subsection.B.3.2}{Instantiated recursions}{section.B.3}% 92
-\BOOKMARK [0][-]{appendix.C}{Variational inference}{}% 93
-\BOOKMARK [1][-]{section.C.1}{Score function estimator}{appendix.C}% 94
-\BOOKMARK [1][-]{section.C.2}{Variance reduction}{appendix.C}% 95
-\BOOKMARK [2][-]{subsection.C.2.1}{Control variates}{section.C.2}% 96
-\BOOKMARK [2][-]{subsection.C.2.2}{Baseline}{section.C.2}% 97
-\BOOKMARK [1][-]{section.C.3}{Optimization}{appendix.C}% 98
-\BOOKMARK [0][-]{appendix.D}{Syneval dataset}{}% 99
+\BOOKMARK [2][-]{subsection.2.4.1}{Functions}{section.2.4}% 17
+\BOOKMARK [2][-]{subsection.2.4.2}{Optimization}{section.2.4}% 18
+\BOOKMARK [0][-]{chapter.3}{Recurrent Neural Network Grammars}{}% 19
+\BOOKMARK [1][-]{section.3.1}{Model}{chapter.3}% 20
+\BOOKMARK [2][-]{subsection.3.1.1}{Transition sytem}{section.3.1}% 21
+\BOOKMARK [2][-]{subsection.3.1.2}{Model}{section.3.1}% 22
+\BOOKMARK [1][-]{section.3.2}{Parametrization}{chapter.3}% 23
+\BOOKMARK [2][-]{subsection.3.2.1}{Stack encoder}{section.3.2}% 24
+\BOOKMARK [2][-]{subsection.3.2.2}{Composition function}{section.3.2}% 25
+\BOOKMARK [1][-]{section.3.3}{Training}{chapter.3}% 26
+\BOOKMARK [1][-]{section.3.4}{Inference}{chapter.3}% 27
+\BOOKMARK [2][-]{subsection.3.4.1}{Discriminative model}{section.3.4}% 28
+\BOOKMARK [2][-]{subsection.3.4.2}{Generative model}{section.3.4}% 29
+\BOOKMARK [1][-]{section.3.5}{Experiments}{chapter.3}% 30
+\BOOKMARK [2][-]{subsection.3.5.1}{Setup}{section.3.5}% 31
+\BOOKMARK [2][-]{subsection.3.5.2}{Results}{section.3.5}% 32
+\BOOKMARK [2][-]{subsection.3.5.3}{Analysis}{section.3.5}% 33
+\BOOKMARK [1][-]{section.3.6}{Related work}{chapter.3}% 34
+\BOOKMARK [0][-]{chapter.4}{Conditional Random Field parser}{}% 35
+\BOOKMARK [1][-]{section.4.1}{Model}{chapter.4}% 36
+\BOOKMARK [1][-]{section.4.2}{Parametrization}{chapter.4}% 37
+\BOOKMARK [1][-]{section.4.3}{Inference}{chapter.4}% 38
+\BOOKMARK [2][-]{subsection.4.3.1}{Weighted parse forest}{section.4.3}% 39
+\BOOKMARK [2][-]{subsection.4.3.2}{Inside recursion}{section.4.3}% 40
+\BOOKMARK [2][-]{subsection.4.3.3}{Outside recursion}{section.4.3}% 41
+\BOOKMARK [2][-]{subsection.4.3.4}{Solutions}{section.4.3}% 42
+\BOOKMARK [1][-]{section.4.4}{Traning}{chapter.4}% 43
+\BOOKMARK [2][-]{subsection.4.4.1}{Objective}{section.4.4}% 44
+\BOOKMARK [2][-]{subsection.4.4.2}{Speed and complexity}{section.4.4}% 45
+\BOOKMARK [1][-]{section.4.5}{Experiments}{chapter.4}% 46
+\BOOKMARK [2][-]{subsection.4.5.1}{Setup}{section.4.5}% 47
+\BOOKMARK [2][-]{subsection.4.5.2}{Results}{section.4.5}% 48
+\BOOKMARK [2][-]{subsection.4.5.3}{Proposal distribution}{section.4.5}% 49
+\BOOKMARK [2][-]{subsection.4.5.4}{Analysis}{section.4.5}% 50
+\BOOKMARK [1][-]{section.4.6}{Trees and derivations}{chapter.4}% 51
+\BOOKMARK [2][-]{subsection.4.6.1}{Derivational ambiguity}{section.4.6}% 52
+\BOOKMARK [2][-]{subsection.4.6.2}{Consequences}{section.4.6}% 53
+\BOOKMARK [2][-]{subsection.4.6.3}{Solutions}{section.4.6}% 54
+\BOOKMARK [2][-]{subsection.4.6.4}{Unrestricted parse forest}{section.4.6}% 55
+\BOOKMARK [2][-]{subsection.4.6.5}{Pruned parse forest}{section.4.6}% 56
+\BOOKMARK [1][-]{section.4.7}{Related work}{chapter.4}% 57
+\BOOKMARK [0][-]{chapter.5}{Syntactic evaluation}{}% 58
+\BOOKMARK [1][-]{section.5.1}{Syntactic evaluation}{chapter.5}% 59
+\BOOKMARK [2][-]{subsection.5.1.1}{Dataset}{section.5.1}% 60
+\BOOKMARK [2][-]{subsection.5.1.2}{RNNG}{section.5.1}% 61
+\BOOKMARK [1][-]{section.5.2}{Multitask learning}{chapter.5}% 62
+\BOOKMARK [2][-]{subsection.5.2.1}{Multitask objective}{section.5.2}% 63
+\BOOKMARK [2][-]{subsection.5.2.2}{Models}{section.5.2}% 64
+\BOOKMARK [1][-]{section.5.3}{Experiments}{chapter.5}% 65
+\BOOKMARK [2][-]{subsection.5.3.1}{Setup}{section.5.3}% 66
+\BOOKMARK [2][-]{subsection.5.3.2}{Results}{section.5.3}% 67
+\BOOKMARK [1][-]{section.5.4}{Related work}{chapter.5}% 68
+\BOOKMARK [0][-]{chapter.6}{Semisupervised learning}{}% 69
+\BOOKMARK [1][-]{section.6.1}{Unsupervised learning}{chapter.6}% 70
+\BOOKMARK [2][-]{subsection.6.1.1}{Variational approximation}{section.6.1}% 71
+\BOOKMARK [2][-]{subsection.6.1.2}{Approximate posterior}{section.6.1}% 72
+\BOOKMARK [1][-]{section.6.2}{Training}{chapter.6}% 73
+\BOOKMARK [2][-]{subsection.6.2.1}{Gradients of generative model}{section.6.2}% 74
+\BOOKMARK [2][-]{subsection.6.2.2}{Gradients of inference model}{section.6.2}% 75
+\BOOKMARK [2][-]{subsection.6.2.3}{Variance reduction}{section.6.2}% 76
+\BOOKMARK [1][-]{section.6.3}{Experiments}{chapter.6}% 77
+\BOOKMARK [2][-]{subsection.6.3.1}{RNNG posterior}{section.6.3}% 78
+\BOOKMARK [2][-]{subsection.6.3.2}{CRF posterior}{section.6.3}% 79
+\BOOKMARK [1][-]{section.6.4}{Related work}{chapter.6}% 80
+\BOOKMARK [0][-]{chapter.7}{Conclusion}{}% 81
+\BOOKMARK [1][-]{section.7.1}{Main contributions}{chapter.7}% 82
+\BOOKMARK [1][-]{section.7.2}{Future work}{chapter.7}% 83
+\BOOKMARK [0][-]{appendix.A}{Implementation}{}% 84
+\BOOKMARK [1][-]{section.A.1}{Data}{appendix.A}% 85
+\BOOKMARK [2][-]{subsection.A.1.1}{Datasets}{section.A.1}% 86
+\BOOKMARK [2][-]{subsection.A.1.2}{Vocabularies}{section.A.1}% 87
+\BOOKMARK [1][-]{section.A.2}{Implementation}{appendix.A}% 88
+\BOOKMARK [0][-]{appendix.B}{Semiring parsing}{}% 89
+\BOOKMARK [1][-]{section.B.1}{Hypergraph}{appendix.B}% 90
+\BOOKMARK [1][-]{section.B.2}{Semiring}{appendix.B}% 91
+\BOOKMARK [1][-]{section.B.3}{Semiring parsing}{appendix.B}% 92
+\BOOKMARK [2][-]{subsection.B.3.1}{Inside and outside recursions}{section.B.3}% 93
+\BOOKMARK [2][-]{subsection.B.3.2}{Instantiated recursions}{section.B.3}% 94
+\BOOKMARK [0][-]{appendix.C}{Variational inference}{}% 95
+\BOOKMARK [1][-]{section.C.1}{Score function estimator}{appendix.C}% 96
+\BOOKMARK [1][-]{section.C.2}{Variance reduction}{appendix.C}% 97
+\BOOKMARK [2][-]{subsection.C.2.1}{Control variate}{section.C.2}% 98
+\BOOKMARK [2][-]{subsection.C.2.2}{Baseline}{section.C.2}% 99
+\BOOKMARK [1][-]{section.C.3}{Optimization}{appendix.C}% 100
+\BOOKMARK [0][-]{appendix.D}{Syneval dataset}{}% 101

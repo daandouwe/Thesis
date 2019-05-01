@@ -178,7 +178,7 @@ By instanstiating the inside and outside recursions with different semirings we 
   In our CRF parser, the function $\omega$ is given by the nonnegative function $\Psi$.
 \end{example}
 
-\begin{example}{(Logartihmic domain)}
+\begin{example}{(Logarithmic domain)}
   When we are concerned with numerical stability, or we only need the logarithm of the quantities of interest, we can use the \textit{log-real semiring}. The values $\alpha(v)$ and $\beta(v)$ now give the log-inside and log-outside values respectively. In particular, the value $\alpha$ at the root now gives the lognormalizer:
   \begin{align*}
     \alpha(\text{S}^{\dagger}, 0, n) = \log Z(\x).
@@ -187,7 +187,7 @@ By instanstiating the inside and outside recursions with different semirings we 
   \begin{align*}
     \log(e^{a} + e^{b}) = a + \log(1 + e^{b-a}) = b + \log(1 + e^{a-b})
   \end{align*}
-  and choosing the expression with the smaller exponent. In the CRF, the function $\omega$ is given by the composed function $\log \circ \Psi$.
+  and choosing the expression with the smaller exponent. In the CRF, the function $\omega$ is given by the composed function $\log \circ \, \Psi$.
 \end{example}
 
 \begin{example}{(Viterbi weight)}
@@ -209,7 +209,7 @@ By instanstiating the inside and outside recursions with different semirings we 
   \begin{align*}
     \alpha(\text{S}^{\dagger}, 0, n) = \hat{\y}, \qquad \hat{\y} \defeq \argmax_{\y \in \yieldx} p(\y \mid \x).
   \end{align*}
-  Roughly spearking, because although this idea can be made precise by a constructing the \textit{Viterbi-derivation semiring} \citep{goodman1999semiring} over the set of possible derrivations, with corresponding binary operations and set-typed identity elements $\bar{0}$ and $\bar{1}$, it is a litle more complicated than that\footnote{And most of all, a bit cumbersome.}.
+  Roughly spearking, because although this idea can be made precise by a constructing the \textit{Viterbi-derivation semiring} \citep{goodman1999semiring} over the set of possible derrivations, with corresponding binary operations and set-typed identity elements $\bar{0}$ and $\bar{1}$, it is a litle more complicated than that.\footnote{And most of all, a bit cumbersome.}
 \end{example}
 
 \begin{example}{(Recognition)}
