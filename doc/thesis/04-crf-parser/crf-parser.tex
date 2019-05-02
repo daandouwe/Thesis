@@ -4,9 +4,9 @@ In this chapter:
 \begin{itemize}
   \item We present the model and describe how it is an adaptation into a CRF of the max-margin trained model of \citet{stern2017minimal}.
   \item We show how several inference problems of interest---parsing, sampling, and computing the entropy---can be solved exactly and efficiently by deriving specific instances of the inside and outside algorithms.
-  \item We train the model in and show its effectiveness as discriminative parser: with the same number of parameters as the discriminative RNNG it achieves 90.04 F1, surpassing RNNG by more than 1 point.
+  \item We train the model in and show its effectiveness as discriminative parser: with the same number of parameters as the discriminative RNNG it achieves 90.04 F1, surpassing RNNG by more than 1 point F1.
   \item We use the trained model as a proposal distribution for the generative RNNG, and show that this does not affect the parsing accuracy, but does affect the perplexity, albeit negatively.
-  \item We desribe the drawbacks of this model as a proposal model for the RNNG, and discuss solutions.
+  \item We desribe the problems of the current formulation of the model as a proposal model for the RNNG, and we provide solutions.
 \end{itemize}
 
 \section{Model}
@@ -23,7 +23,7 @@ In this chapter:
     \end{align*}
     is the normalizer, or partition function, that sums over the exponential number of trees availlable for $\x$.
 
-    To allow efficient computation of the normalizer, we let the scoring function $\Psi$ factorize over the parts of $\y$. We consider a tree as a set of labeled spans $\y_a = (A, i, j)$, indicating that a label $A$ spans the words $\langle x_{i+1}, \dots, \x_j \rangle$, and thus write $\y = \{ \y_a \}_{a=1}^A$. The value $\Psi(\x, \y)$ is then defined as the product
+    To allow efficient computation of the normalizer, we let the scoring function $\Psi$ factorize over the parts of $\y$. We consider a tree as a set of labeled spans $\y_a = (A, i, j)$, indicating that a label $A \in \Lambda$ spans the words $\langle x_{i+1}, \dots, \x_j \rangle$, and thus write $\y = \{ \y_a \}_{a=1}^A$. The value $\Psi(\x, \y)$ is then defined as the product
     \begin{align}
       \Psi(\x, \y) = \prod_{a=1}^A \psi(\x, \y_a),
     \end{align}
@@ -62,7 +62,7 @@ In this chapter:
   These problems can be solved by instances of the \textit{inside algorithm} and \textit{outside algorithm} \citep{baker1979trainable} with differentent semirings, an insight we take from semiring parsing \citep{goodman1999semiring}. In the following derivations we will make use of the notion of a \textit{weighted hypergraph} as a compact representation of all parses and their scores \citep{gallo1993directed,klein2004parsing}, and use some of the ideas and notation of \textit{semiring parsing} \citep{goodman1999semiring,eisner2009semirings}. First we describe the structure of the parse forest specified by our CRF parser, and then derrive the particular form of the inside and outside recursions for this hypergraph from the general formulations. We refer the reader to appendix \ref{A3-crf} for background on these ideas, and the introduction of the notation.
 
   \subsection{Weighted parse forest}
-    The the CRF parser defines a hypergraph $G = (\mathcal{V}, \mathcal{E})$ with the following structure.
+    The the CRF parser defines a hypergraph $G = (\mathcal{V}, \mathcal{E})$ with the following structure. We treat the dummy label $\varnothing \in \Lambda$ as any other label, unless we explictly indicate otherwise.
 
     The set $\mathcal{V}$ is defined relative to the sentence $\x$, and contains the invidual words of a sentence $\x$, together with all possible labeled spans over that sentence:
     \begin{align*}
@@ -70,7 +70,7 @@ In this chapter:
     \end{align*}
     where $(S^{\dagger}, 0, n)$ is a designated root node. The dependence on $x$ can be made explicit by writing $\mathcal{V}(x)$.
 
-    The set of hyperedges $\mathcal{E} \subseteq 2^{\mathcal{V}} \times \mathcal{V}$ specifies all the ways that adjacent constituents can be combined to form a larger constituent, under a particular grammar. Because we (implicitly) assume a normal form grammar that contains \textit{all} possible productions, the set of hyperedges is particularly regular: the set $\mathcal{E}$ contains all edges that connect nodes $(B, i, k)$ and $(C, k, j)$ at the tail with $(A, i, j)$ at the head for all $0 \leq i < k < j \leq n$, all edges that connect $\x_i$ to $(A, i, i+1)$, and all labels can appear in the top node, with the exception of the dummy label $\varnothing$:
+    The set of hyperedges $\mathcal{E} \subseteq 2^{\mathcal{V}} \times \mathcal{V}$ specifies all the ways that adjacent constituents can be combined to form a larger constituent, under a particular grammar. The edges connect sets of nodes at the \textit{tail} with a singel node at the \textit{head}. Because we (implicitly) assume a normal form grammar that contains \textit{all} possible productions, the set of hyperedges is particularly regular: the set $\mathcal{E}$ contains all edges that connect nodes $(B, i, k)$ and $(C, k, j)$ at the tail with $(A, i, j)$ at the head for all $0 \leq i < k < j \leq n$, all edges that connect $\x_i$ to $(A, i, i+1)$, and all labels can appear in the top node, with the exception of the dummy label $\varnothing$:
     \begin{align*}
       \mathcal{E}
         &= \Bigg\{ \Big\langle \Big\{ (B, i, k), (C, k, j) \Big\},  (A, i, j) \Big\rangle \; \Bigg\vert \; A, B, C \in \Lambda, \; 0 \leq i < k < j \leq n \Bigg\}  \\
@@ -255,15 +255,14 @@ In this chapter:
           &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v) \mu(v)
       \end{align}
 
-\section{Traning}
-  The training objective is to maximize the likelihood of the training data
+\section{Training}
+  The CRF is trained to maximize the log likelihood of a labeled dataset $\dataset$ of pairs $(\x, \y)$
   \begin{align*}
     \mathcal{L}(\theta)
       &= \sum_{(\x, \y) \in \dataset} \log \ptheta(\y \mid \x)
   \end{align*}
   with respect to the model parameters $\theta$.
 
-  \subsection{Objective}
     Writing out the objective for a single example as
     \begin{align*}
       \log \ptheta(\y \mid \x) = \log \Psi(\x, \y) - \log Z(x)
@@ -278,14 +277,14 @@ In this chapter:
     \end{align*}
     maximizing the score of the correct tree, and minimizing the score of the predicted tree.\footnote{The full objective reported in the paper is minimizing the hinge loss $\max \Big(0, 1 - \log \Psi(\x, \y) + \log \Psi(\x, \hat{\y}) \Big)$, and the above is what the actual implementation comes down to. Note that Viterbi ensures that for all $\y$, $\log \Psi(\x, \hat{\y}) \geq \log \Psi(\x, \y)$.} This objective shows a striking similarity with our CRF objective, with one very particular difference. The goal is still to maximize the score of the gold tree. But the minimization that in the CRF objective concerns all possible trees through $Z(x)$, in this objective concerns just the single tree $\hat{\y}$ that was incorrectly predicted. The scores of all other nodes not observed in either tree are not affected directly.
 
-  \subsection{Speed and complexity}
-    The model is slow. Here we will describe how slow it is, and what can be done about it.
-    \begin{itemize}
-      \item During training the computation time is dominated by two computations: the forward pass with the neural networks that obtains the node scores, and the time complexity of the inside algorithm. The complexity of the and how it depends on both label size and sentence length
-      \item Describe how slow the model is to train of CPU (use Lisa times): around 7 hours per epoch, so around 15 days for convergence (around 50 epochs).
-      \item Describe how we can speed up linearly by pruning the labelset: we can remove 70\% of labels while keeping 98\% of the training sentences. These labels are mostly very rare unary chains. The speedup we get from this is linear!
-      \item Our model is X times slower than the model of \citet{stern2017minimal}. This difference bust be in the inside algorithm. The inside algorithm used by us and the viterbi algorithm used by \citet{stern2017minimal} have the same structure and time complexity. The difference must be in the computation graph built by either computation. The viterbi algorithm builds a sparse computation graph, connecting only nodes that are in a single tree, whereas the computation graph built by the inside algorithm is dense with all trees.
-    \end{itemize}
+  % \subsection{Speed and complexity}
+  %   The model is slow. Here we will describe how slow it is, and what can be done about it.
+  %   \begin{itemize}
+  %     \item During training the computation time is dominated by two computations: the forward pass with the neural networks that obtains the node scores, and the time complexity of the inside algorithm. The complexity of the and how it depends on both label size and sentence length
+  %     \item Describe how slow the model is to train of CPU (use Lisa times): around 7 hours per epoch, so around 15 days for convergence (around 50 epochs).
+  %     \item Describe how we can speed up linearly by pruning the labelset: we can remove 70\% of labels while keeping 98\% of the training sentences. These labels are mostly very rare unary chains. The speedup we get from this is linear!
+  %     \item Our model is X times slower than the model of \citet{stern2017minimal}. This difference bust be in the inside algorithm. The inside algorithm used by us and the viterbi algorithm used by \citet{stern2017minimal} have the same structure and time complexity. The difference must be in the computation graph built by either computation. The viterbi algorithm builds a sparse computation graph, connecting only nodes that are in a single tree, whereas the computation graph built by the inside algorithm is dense with all trees.
+  %   \end{itemize}
 
 \section{Experiments}
   This section reports the results of the experiments performed with the CRF parser. We first train the model on the Penn Treebank and show that it is a strong parser. The CRF obtains a higher F1 than the discriminative RNNG when trained with the same number of parameters; an even higher F1 is obtained when or models is trained with the same hyperparameters as the model in \citet{stern2017minimal}. We then use the CRF as an alternative proposal model for the generative RNNG and perform analyses similar to those in chapter \ref{03-rnng}. This use of the CRF leads to some theoretical challenges. We note these, but discuss them in detail in the next section.

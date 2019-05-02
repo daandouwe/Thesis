@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  2 MAY 2019 15:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  3 MAY 2019 01:15
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -55,7 +55,7 @@ Package: scrkbase 2016/05/10 v3.20 KOMA-Script package (KOMA-Script-dependent b
 asics and keyval usage)
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/koma-script/scrbase.sty
-Package: scrbase 2016/05/10 v3.20 KOMA-Script package (KOMA-Script-independent 
+Package: scrbase 2016/05/10 v3.20 KOMA-Script package (KOMA-Script-independent
 basics and keyval usage)
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/koma-script/scrlfile.sty
@@ -1196,10 +1196,10 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 
 See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.32 
-     
+ ...
+
+l.32
+
 The package hyperref has already been loaded with options:
   []
 There has now been an attempt to load it with options
@@ -1210,7 +1210,7 @@ to your \documentclass declaration may fix this.
 Try typing  <return>  to proceed.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/palatino.sty
-Package: palatino 2005/04/12 PSNFSS-v9.2a (SPQR) 
+Package: palatino 2005/04/12 PSNFSS-v9.2a (SPQR)
 )
 (/usr/local/texlive/2016/texmf-dist/tex/latex/epigraph/epigraph.sty
 Package: epigraph 2009/09/02 v1.5c typesetting epigraphs
@@ -1238,10 +1238,10 @@ File: tikzlibrarycalc.code.tex 2013/07/15 v3.0.1a (rcs-revision 1.9)
 
 See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
+ ...
+
 l.49 \newcommand{\eg}{\emph{e.g.}}
-                                  
+
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
@@ -1251,21 +1251,21 @@ or  <return>  to continue without it.
 (./thesis.aux)
 \openout1 = `thesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 139.
-LaTeX Font Info:    ... okay on input line 139.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 139.
-LaTeX Font Info:    ... okay on input line 139.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 139.
-LaTeX Font Info:    ... okay on input line 139.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 139.
-LaTeX Font Info:    ... okay on input line 139.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 139.
-LaTeX Font Info:    ... okay on input line 139.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 139.
-LaTeX Font Info:    ... okay on input line 139.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 139.
-LaTeX Font Info:    ... okay on input line 139.
-LaTeX Font Info:    Try loading font information for OT1+ppl on input line 139.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 140.
+LaTeX Font Info:    ... okay on input line 140.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 140.
+LaTeX Font Info:    ... okay on input line 140.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 140.
+LaTeX Font Info:    ... okay on input line 140.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 140.
+LaTeX Font Info:    ... okay on input line 140.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 140.
+LaTeX Font Info:    ... okay on input line 140.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 140.
+LaTeX Font Info:    ... okay on input line 140.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 140.
+LaTeX Font Info:    ... okay on input line 140.
+LaTeX Font Info:    Try loading font information for OT1+ppl on input line 140.
 
  (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1ppl.fd
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
@@ -1299,10 +1299,10 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \AtBeginShipoutBox=\box51
-Package hyperref Info: Link coloring OFF on input line 139.
-LaTeX Info: Redefining \ref on input line 139.
-LaTeX Info: Redefining \pageref on input line 139.
-LaTeX Info: Redefining \nameref on input line 139.
+Package hyperref Info: Link coloring OFF on input line 140.
+LaTeX Info: Redefining \ref on input line 140.
+LaTeX Info: Redefining \pageref on input line 140.
+LaTeX Info: Redefining \nameref on input line 140.
 
 (./thesis.out) (./thesis.out)
 \@outlinefile=\write4
@@ -1318,7 +1318,7 @@ Package caption Info: End \AtBeginDocument code.
 * paper: <default>
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
-* modes: 
+* modes:
 * h-part:(L,W,R)=(89.6271pt, 418.25372pt, 89.6271pt)
 * v-part:(T,H,B)=(101.40665pt, 591.53027pt, 152.11002pt)
 * \paperwidth=597.50793pt
@@ -1346,27 +1346,27 @@ Package caption Info: End \AtBeginDocument code.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 141.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 142.
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 141.
-LaTeX Font Info:    Try loading font information for U+msa on input line 141.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 142.
+LaTeX Font Info:    Try loading font information for U+msa on input line 142.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 141.
+LaTeX Font Info:    Try loading font information for U+msb on input line 142.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+lasy on input line 141.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 142.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/base/ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <8> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 141.
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 142.
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <6> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 141.
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 142.
 Package epstopdf Info: Source file: <illclogo.eps>
 (epstopdf)                    date: 2019-04-29 00:26:20
 (epstopdf)                    size: 92608 bytes
@@ -1375,14 +1375,14 @@ Package epstopdf Info: Source file: <illclogo.eps>
 (epstopdf)                    size: 22835 bytes
 (epstopdf)             Command: <repstopdf --outfile=illclogo-eps-converted-to.
 pdf illclogo.eps>
-(epstopdf)             \includegraphics on input line 141.
+(epstopdf)             \includegraphics on input line 142.
 Package epstopdf Info: Output file is already uptodate.
 
-<illclogo-eps-converted-to.pdf, id=413, 356.33125pt x 56.21pt>
+<illclogo-eps-converted-to.pdf, id=404, 356.33125pt x 56.21pt>
 File: illclogo-eps-converted-to.pdf Graphic file (type pdf)
 
 <use illclogo-eps-converted-to.pdf>
-Package pdftex.def Info: illclogo-eps-converted-to.pdf used on input line 141.
+Package pdftex.def Info: illclogo-eps-converted-to.pdf used on input line 142.
 (pdftex.def)             Requested size: 356.33037pt x 56.20985pt.
  [1
 
@@ -1391,10 +1391,10 @@ Package pdftex.def Info: illclogo-eps-converted-to.pdf used on input line 141.
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./illcl
 ogo-eps-converted-to.pdf>]
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 143.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 144.
  [2]
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <20.74> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 161.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 162.
 
 (./thesis.toc [3
 
@@ -1417,19 +1417,19 @@ File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
 LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <10.95> not available
 (Font)              Font shape `OT1/phv/b/n' tried instead on input line 93.
  [8]
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 114.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 115.
 
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 ))
-Overfull \hbox (4.63266pt too wide) in paragraph at lines 114--171
+Overfull \hbox (4.63266pt too wide) in paragraph at lines 115--172
 []\OT1/ppl/m/n/10.95 Our im-ple-men-ta-tions are avail-able at []$\OT1/pcr/m/n/
 10.95 https : / / github . com / daandouwe / thesis$[]\OT1/ppl/m/n/10.95 .
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 114--171
+Underfull \hbox (badness 10000) in paragraph at lines 115--172
 
  []
 
@@ -1446,10 +1446,10 @@ LaTeX Font Info:    Font shape `U/lasy/b/n' in size <5> not available
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.17 
-     
+ ...
+
+l.17
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1470,10 +1470,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.17 
-     
+ ...
+
+l.17
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1494,10 +1494,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.17 
-     
+ ...
+
+l.17
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1518,10 +1518,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.17 
-     
+ ...
+
+l.17
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1542,10 +1542,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.17 
-     
+ ...
+
+l.17
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1566,10 +1566,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.17 
-     
+ ...
+
+l.17
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1591,7 +1591,7 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 [10
 
 ] [11]
-<../figures/trees/npi-licensed.pdf, id=654, 526.77112pt x 259.41167pt>
+<../figures/trees/npi-licensed.pdf, id=649, 526.77112pt x 259.41167pt>
 File: ../figures/trees/npi-licensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-licensed.pdf>
@@ -1599,7 +1599,7 @@ Package pdftex.def Info: ../figures/trees/npi-licensed.pdf used on input line 5
 7.
 (pdftex.def)             Requested size: 209.12686pt x 102.98303pt.
 
-<../figures/trees/npi-unlicensed.pdf, id=655, 482.62106pt x 256.61702pt>
+<../figures/trees/npi-unlicensed.pdf, id=650, 482.62106pt x 256.61702pt>
 File: ../figures/trees/npi-unlicensed.pdf Graphic file (type pdf)
 
 <use ../figures/trees/npi-unlicensed.pdf>
@@ -1610,7 +1610,7 @@ Package pdftex.def Info: ../figures/trees/npi-unlicensed.pdf used on input line
 LaTeX Font Info:    Try loading font information for OMS+ppl on input line 71.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omsppl.fd
-File: omsppl.fd 
+File: omsppl.fd
 )
 LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 71.
@@ -1620,7 +1620,7 @@ LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10.95> not available
 * paper: <default>
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
-* modes: 
+* modes:
 * h-part:(L,W,R)=(89.6271pt, 418.25372pt, 89.6271pt)
 * v-part:(T,H,B)=(28.45274pt, 788.14145pt, 28.45274pt)
 * \paperwidth=597.50793pt
@@ -1662,26 +1662,42 @@ chapter 3.
 
 ] (../tables/disc-transitions.tex) [24]
 (../tables/gen-transitions.tex) [25] [26] [27]
-Overfull \hbox (7.78178pt too wide) in paragraph at lines 135--136
+Overfull \hbox (7.78178pt too wide) in paragraph at lines 163--164
 \OT1/ppl/m/n/10.95 The tran-si-tion prob-a-bil-i-ties are com-puted from the ve
 c-tor $\OT1/cmr/bx/n/10.95 u[]$ \OT1/ppl/m/n/10.95 that sum-ma-rizes the parser
 's
  []
 
 [28] [29] [30]
-Overfull \hbox (21.0442pt too wide) in paragraph at lines 236--237
+Overfull \hbox (21.0442pt too wide) in paragraph at lines 264--265
  []\OT1/ppl/b/n/10.95 Approximate marginal-iza-tion[] \OT1/ppl/m/n/10.95 The pr
 o-posal dis-tri-bu-tion al-lows us to rewrite the marginal
  []
 
-[31] [32] (../tables/disc-fscores.tex) (../tables/gen-fscores.tex)
-(../tables/gen-perplexities.tex) [33] [34] [35]
+[31] [32] (../tables/disc-fscores.tex) (../tables/gen-fscores.tex
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+) (../tables/gen-perplexities.tex
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+) [33] [34]
+<../figures/sample-experiment/fscore/disc_temp.pdf, id=1258, 722.7pt x 361.35pt
+>
+File: ../figures/sample-experiment/fscore/disc_temp.pdf Graphic file (type pdf)
+
+ <use ../figures/sample-experiment/fscore/disc_temp.pdf>
+Package pdftex.def Info: ../figures/sample-experiment/fscore/disc_temp.pdf used
+ on input line 327.
+(pdftex.def)             Requested size: 376.4258pt x 188.21185pt.
+ [35 <../figures/sample-experiment/fscore/disc_temp.pdf>]
 *geometry* verbose mode - [ newgeometry ] result:
 * driver: pdftex
 * paper: <default>
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
-* modes: 
+* modes:
 * h-part:(L,W,R)=(89.6271pt, 418.25372pt, 89.6271pt)
 * v-part:(T,H,B)=(101.40665pt, 591.53027pt, 152.11002pt)
 * \paperwidth=597.50793pt
@@ -1709,72 +1725,72 @@ o-posal dis-tri-bu-tion al-lows us to rewrite the marginal
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 
-<../figures/sample-experiment/fscore/disc_temp.pdf, id=1278, 722.7pt x 361.35pt
->
-File: ../figures/sample-experiment/fscore/disc_temp.pdf Graphic file (type pdf)
-
- <use ../figures/sample-experiment/fscore/disc_temp.pdf>
-Package pdftex.def Info: ../figures/sample-experiment/fscore/disc_temp.pdf used
- on input line 294.
-(pdftex.def)             Requested size: 376.4258pt x 188.21185pt.
-
-<../figures/sample-experiment/ppl/disc_temp.pdf, id=1279, 722.7pt x 361.35pt>
+<../figures/sample-experiment/ppl/disc_temp.pdf, id=1297, 722.7pt x 361.35pt>
 File: ../figures/sample-experiment/ppl/disc_temp.pdf Graphic file (type pdf)
 
 <use ../figures/sample-experiment/ppl/disc_temp.pdf>
 Package pdftex.def Info: ../figures/sample-experiment/ppl/disc_temp.pdf used on
- input line 298.
+ input line 335.
 (pdftex.def)             Requested size: 376.4258pt x 188.21185pt.
- [36 <../figures/sample-experiment/fscore/disc_temp.pdf> <../figures/sample-exp
-eriment/ppl/disc_temp.pdf
 
-pdfTeX warning: pdflatex (file ../figures/sample-experiment/ppl/disc_temp.pdf):
- PDF inclusion: multiple pdfs with page group included in a single page
->]
-<../figures/sample-experiment/entropy/disc_temp.pdf, id=1343, 361.35pt x 722.7p
+<../figures/sample-experiment/entropy/disc_temp.pdf, id=1298, 361.35pt x 722.7p
 t>
 File: ../figures/sample-experiment/entropy/disc_temp.pdf Graphic file (type pdf
 )
  <use ../figures/sample-experiment/entropy/disc_temp.pdf>
 Package pdftex.def Info: ../figures/sample-experiment/entropy/disc_temp.pdf use
-d on input line 328.
+d on input line 339.
 (pdftex.def)             Requested size: 167.29893pt x 334.59639pt.
- [37
 
 
-]) [38 <../figures/sample-experiment/entropy/disc_temp.pdf>] [39]
+LaTeX Warning: Float too large for page by 33.87798pt on input line 342.
+
+[36 <../figures/sample-experiment/ppl/disc_temp.pdf> <../figures/sample-experim
+ent/entropy/disc_temp.pdf
+
+pdfTeX warning: pdflatex (file ../figures/sample-experiment/entropy/disc_temp.p
+df): PDF inclusion: multiple pdfs with page group included in a single page
+>] [37
+
+
+]) [38]
 chapter 4.
-(../04-crf-parser/crf-parser.tex [40
+(../04-crf-parser/crf-parser.tex [39
 
-] [41]
-<../figures/span-encoding.pdf, id=1457, 464.0005pt x 150.49072pt>
+] [40]
+<../figures/span-encoding.pdf, id=1439, 464.0005pt x 150.49072pt>
 File: ../figures/span-encoding.pdf Graphic file (type pdf)
 
 <use ../figures/span-encoding.pdf>
 Package pdftex.def Info: ../figures/span-encoding.pdf used on input line 48.
 (pdftex.def)             Requested size: 418.25372pt x 135.66083pt.
- [42 <../figures/span-encoding.pdf>]
-(../figures/edges/edges.tex)
+ [41 <../figures/span-encoding.pdf>] [42]
+(../figures/edges/edges.tex) [43] [44] [45] [46] [47] [48] [49]
+(../tables/crf-fscores.tex) (../tables/gen-fscores-crf.tex)
+(../tables/gen-perplexities-crf.tex
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[43] [44] [45] [46] [47] [48] [49] [50] (../tables/crf-fscores.tex) [51]
-(../tables/gen-fscores-crf.tex) (../tables/gen-perplexities-crf.tex) [52]
-<../figures/sample-experiment/fscore/crf_disc_08.pdf, id=1696, 722.7pt x 361.35
+) [50]
+<../figures/sample-experiment/fscore/crf_disc_08.pdf, id=1667, 722.7pt x 361.35
 pt>
 File: ../figures/sample-experiment/fscore/crf_disc_08.pdf Graphic file (type pd
 f)
  <use ../figures/sample-experiment/fscore/crf_disc_08.pdf>
 Package pdftex.def Info: ../figures/sample-experiment/fscore/crf_disc_08.pdf us
-ed on input line 343.
+ed on input line 342.
 (pdftex.def)             Requested size: 376.4258pt x 188.21185pt.
- [53 <../figures/sample-experiment/fscore/crf_disc_08.pdf>]
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[51] [52 <../figures/sample-experiment/fscore/crf_disc_08.pdf>]
 *geometry* verbose mode - [ newgeometry ] result:
 * driver: pdftex
 * paper: <default>
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
-* modes: 
+* modes:
 * h-part:(L,W,R)=(89.6271pt, 418.25372pt, 89.6271pt)
 * v-part:(T,H,B)=(14.22636pt, 816.59421pt, 14.22636pt)
 * \paperwidth=597.50793pt
@@ -1802,52 +1818,77 @@ ed on input line 343.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 
-<../figures/sample-experiment/ppl/crf_disc08.pdf, id=1734, 578.16pt x 433.62pt>
+<../figures/sample-experiment/ppl/crf_disc08.pdf, id=1712, 578.16pt x 433.62pt>
 File: ../figures/sample-experiment/ppl/crf_disc08.pdf Graphic file (type pdf)
 <use ../figures/sample-experiment/ppl/crf_disc08.pdf>
 Package pdftex.def Info: ../figures/sample-experiment/ppl/crf_disc08.pdf used o
-n input line 351.
+n input line 350.
 (pdftex.def)             Requested size: 334.60425pt x 250.9506pt.
 
-<../figures/sample-experiment/entropy/all.pdf, id=1735, 361.35pt x 722.7pt>
+<../figures/sample-experiment/entropy/all.pdf, id=1713, 361.35pt x 722.7pt>
 File: ../figures/sample-experiment/entropy/all.pdf Graphic file (type pdf)
 
 <use ../figures/sample-experiment/entropy/all.pdf>
 Package pdftex.def Info: ../figures/sample-experiment/entropy/all.pdf used on i
-nput line 355.
+nput line 354.
 (pdftex.def)             Requested size: 209.12686pt x 418.251pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[54 <../figures/sample-experiment/ppl/crf_disc08.pdf> <../figures/sample-experi
+[53 <../figures/sample-experiment/ppl/crf_disc08.pdf> <../figures/sample-experi
 ment/entropy/all.pdf
 
 pdfTeX warning: pdflatex (file ../figures/sample-experiment/entropy/all.pdf): P
 DF inclusion: multiple pdfs with page group included in a single page
 >] (../figures/normal-form/cnf-valid.tex)
 (../figures/normal-form/cnf-invalid.tex)
-Overfull \hbox (2.0805pt too wide) in paragraph at lines 372--384
-[][] [] 
+Overfull \hbox (2.0805pt too wide) in paragraph at lines 371--383
+[][] []
  []
 
-[55
+[54
 
 
-] [56] [57] [58] (../figures/edges/illegal-edges.tex) [59] [60]) [61]
+] [55] [56] [57] (../figures/edges/illegal-edges.tex) [58] [59]) [60]
 chapter 5.
-(../06-syneval/syneval.tex [62
+(../05-semisupervised/semisupervised.tex [61
 
-] [63]
+] [62] [63] [64]
+! Undefined control sequence.
+l.125 ...ax decoding of the posterior, that \texit
+                                                  {almost} depends on the sa...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+[65] [66]
+! You can't use `macro parameter character #' in horizontal mode.
+<argument> ... talk: https://vimeo.com/234957682##
+                                                  t=601s.
+l.153 ...alk: https://vimeo.com/234957682#t=601s.}
+                                                   Although this does circum...
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+[67]) [68]
+chapter 6.
+(../06-syneval/syneval.tex [69
+
+] [70]
 
 ! Class scrreprt Error: undefined old font command `\rm'.
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.36 
-     
+ ...
+
+l.36
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1868,10 +1909,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.36 
-     
+ ...
+
+l.36
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1892,10 +1933,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.36 
-     
+ ...
+
+l.36
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1916,10 +1957,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.36 
-     
+ ...
+
+l.36
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1940,10 +1981,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.36 
-     
+ ...
+
+l.36
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1964,10 +2005,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.36 
-     
+ ...
+
+l.36
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1988,10 +2029,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.36 
-     
+ ...
+
+l.36
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2012,10 +2053,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.36 
-     
+ ...
+
+l.36
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2036,10 +2077,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.36 
-     
+ ...
+
+l.36
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2060,10 +2101,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.36 
-     
+ ...
+
+l.36
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2084,10 +2125,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.40 
-     
+ ...
+
+l.40
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2108,10 +2149,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.40 
-     
+ ...
+
+l.40
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2132,10 +2173,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.40 
-     
+ ...
+
+l.40
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2156,10 +2197,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.40 
-     
+ ...
+
+l.40
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2180,10 +2221,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.40 
-     
+ ...
+
+l.40
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2204,10 +2245,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.40 
-     
+ ...
+
+l.40
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2228,10 +2269,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.40 
-     
+ ...
+
+l.40
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2252,10 +2293,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.40 
-     
+ ...
+
+l.40
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2276,10 +2317,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.40 
-     
+ ...
+
+l.40
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2300,10 +2341,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.40 
-     
+ ...
+
+l.40
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2324,10 +2365,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.44 
-     
+ ...
+
+l.44
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2348,10 +2389,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.44 
-     
+ ...
+
+l.44
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2372,10 +2413,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.44 
-     
+ ...
+
+l.44
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2396,10 +2437,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.44 
-     
+ ...
+
+l.44
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2420,10 +2461,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.44 
-     
+ ...
+
+l.44
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2444,10 +2485,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.44 
-     
+ ...
+
+l.44
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2468,10 +2509,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.44 
-     
+ ...
+
+l.44
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2492,10 +2533,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.44 
-     
+ ...
+
+l.44
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2516,10 +2557,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.44 
-     
+ ...
+
+l.44
+
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -2535,13 +2576,13 @@ you should replace it, e.g., by `\normalfont \rmfamily '.
 To make it work for now, you can use the already also deprecated class option
 `enabledeprecatedfontcommands'.
 
-[64] [65] [66] (../tables/lm-perplexities.tex) [67] [68] [69]
+[71] [72] [73] (../tables/lm-perplexities.tex) [74] [75] [76]
 *geometry* verbose mode - [ newgeometry ] result:
 * driver: pdftex
 * paper: <default>
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
-* modes: 
+* modes:
 * h-part:(L,W,R)=(89.6271pt, 418.25372pt, 89.6271pt)
 * v-part:(T,H,B)=(14.22636pt, 816.59421pt, 14.22636pt)
 * \paperwidth=597.50793pt
@@ -2569,7 +2610,7 @@ To make it work for now, you can use the already also deprecated class option
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 
-<../figures/syneval/all_large-font.pdf, id=2027, 1132.33035pt x 1985.99767pt>
+<../figures/syneval/all_large-font.pdf, id=2161, 1132.33035pt x 1985.99767pt>
 File: ../figures/syneval/all_large-font.pdf Graphic file (type pdf)
 
 <use ../figures/syneval/all_large-font.pdf>
@@ -2580,8 +2621,8 @@ ne 117.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[70 <../figures/syneval/all_large-font.pdf>]
-<../figures/syneval/all-averaged.pdf, id=2048, 782.77693pt x 426.30957pt>
+[77 <../figures/syneval/all_large-font.pdf>]
+<../figures/syneval/all-averaged.pdf, id=2182, 782.77693pt x 426.30957pt>
 File: ../figures/syneval/all-averaged.pdf Graphic file (type pdf)
 
 <use ../figures/syneval/all-averaged.pdf>
@@ -2589,7 +2630,7 @@ Package pdftex.def Info: ../figures/syneval/all-averaged.pdf used on input line
  125.
 (pdftex.def)             Requested size: 376.4258pt x 205.01006pt.
 
-<../figures/syneval/rnng_lm_horizontal.pdf, id=2049, 1486.98665pt x 900.28534pt
+<../figures/syneval/rnng_lm_horizontal.pdf, id=2183, 1486.98665pt x 900.28534pt
 >
 File: ../figures/syneval/rnng_lm_horizontal.pdf Graphic file (type pdf)
  <use ../figures/syneval/rnng_lm_horizontal.pdf>
@@ -2601,52 +2642,38 @@ t line 132.
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-<../figures/syneval/rnng_lm_no-unk_horizontal.pdf, id=2050, 1486.98665pt x 900.
+<../figures/syneval/rnng_lm_no-unk_horizontal.pdf, id=2184, 1486.98665pt x 900.
 28534pt>
 File: ../figures/syneval/rnng_lm_no-unk_horizontal.pdf Graphic file (type pdf)
  <use ../figures/syneval/rnng_lm_no-unk_horizontal.pdf>
-Package pdftex.def Info: ../figures/syneval/rnng_lm_no-unk_horizontal.pdf used 
+Package pdftex.def Info: ../figures/syneval/rnng_lm_no-unk_horizontal.pdf used
 on input line 139.
 (pdftex.def)             Requested size: 418.25372pt x 253.21837pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-) [71
+) [78
 
 
- <../figures/syneval/all-averaged.pdf>] [72 <../figures/syneval/rnng_lm_horizon
+ <../figures/syneval/all-averaged.pdf>] [79 <../figures/syneval/rnng_lm_horizon
 tal.pdf> <../figures/syneval/rnng_lm_no-unk_horizontal.pdf
 
 pdfTeX warning: pdflatex (file ../figures/syneval/rnng_lm_no-unk_horizontal.pdf
 ): PDF inclusion: multiple pdfs with page group included in a single page
 >]
-chapter 6.
-(../05-semisupervised/semisupervised.tex [73
-
-] [74] [75] [76]
-! Undefined control sequence.
-l.125 ...ax decoding of the posterior, that \texit
-                                                  {almost} depends on the sa...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-[77] [78]) [79]
 chapter 7.
 (../07-conclusion/conclusion.tex [80
 
 ]
-Overfull \hbox (15.43765pt too wide) in paragraph at lines 13--14
-[]\OT1/ppl/m/n/10.95 We per-formed tar-geted syn-tac-tic eval-u-a-tion of the R
-NNG
+Overfull \hbox (4.4659pt too wide) in paragraph at lines 13--14
+[]\OT1/ppl/m/n/10.95 We for-mu-lated semisu-per-vised and un-su-per-vised
  []
 
 
-Overfull \hbox (4.4659pt too wide) in paragraph at lines 19--20
-[]\OT1/ppl/m/n/10.95 We for-mu-lated semisu-per-vised and un-su-per-vised
+Overfull \hbox (15.43765pt too wide) in paragraph at lines 16--17
+[]\OT1/ppl/m/n/10.95 We per-formed tar-geted syn-tac-tic eval-u-a-tion of the R
+NNG
  []
 
 [81]) [82]
@@ -2666,8 +2693,8 @@ I treat `x^1^2' essentially like `x^1{}^2'.
 ] [88] [89] [90] [91]) [92]
 chapter C.
 (../11-app-vi/vi.tex
-Overfull \hbox (22.3975pt too wide) in paragraph at lines 23--23
-[] 
+Overfull \hbox (27.85591pt too wide) in paragraph at lines 23--23
+[]
  []
 
 [93
@@ -2682,14 +2709,14 @@ LaTeX Font Info:    Font shape `OT1/ppl/bx/it' in size <10.95> not available
 ]) (./thesis.bbl [100] [101
 
 ] [102] [103]
-Underfull \hbox (badness 2698) in paragraph at lines 310--314
+Underfull \hbox (badness 2698) in paragraph at lines 317--321
 []\OT1/ppl/m/n/10.95 Yoav Gold-berg and Joakim Nivre.  Train-ing de-ter-min-is-
 tic parsers with non-
  []
 
 [104]
-Underfull \hbox (badness 2111) in paragraph at lines 408--412
-[]\OT1/ppl/m/n/10.95 Yoon Kim, Alexan-der M Rush, Lei Yu, Ad-hi-guna Kun-coro, 
+Underfull \hbox (badness 2111) in paragraph at lines 415--419
+[]\OT1/ppl/m/n/10.95 Yoon Kim, Alexan-der M Rush, Lei Yu, Ad-hi-guna Kun-coro,
 Chris Dyer, and
  []
 
@@ -2697,7 +2724,7 @@ Chris Dyer, and
 ! Misplaced alignment tab character &.
 <argument> Computer Speech &
                              Language
-l.663 \newblock \emph{Computer Speech & Language}
+l.670 \newblock \emph{Computer Speech & Language}
                                                  , 10\penalty0 (3):\penalty0...
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -2706,71 +2733,71 @@ up above has ended a previous alignment prematurely,
 you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
-[108] [109]) [110]
+[108] [109] [110]) [111]
 
 ! LaTeX Error: \begin{example} on input line 121 ended by \end{document}.
 
 See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.230 \end{document}
-                    
+ ...
+
+l.231 \end{document}
+
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 230.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 230.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 231.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 231.
 (./thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 230.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 230.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 231.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 231.
 Package rerunfilecheck Info: File `thesis.out' has not changed.
-(rerunfilecheck)             Checksum: 01F8DBB3790F7BBA905D59C40A8321BD;6374.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 230.
+(rerunfilecheck)             Checksum: B52E60C5ECC287AA2DF6DAA8A95B5590;6236.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 231.
  )
 (\end occurred inside a group at level 1)
 
 ### semi simple group (level 1) entered at line 121 (\begingroup)
-### bottom level 
+### bottom level
 Here is how much of TeX's memory you used:
- 27295 strings out of 493014
- 508012 string characters out of 6133351
- 718952 words of memory out of 5000000
- 29591 multiletter control sequences out of 15000+600000
- 45784 words of font info for 128 fonts, out of 8000000 for 9000
+ 27303 strings out of 493014
+ 508249 string characters out of 6133351
+ 719171 words of memory out of 5000000
+ 29597 multiletter control sequences out of 15000+600000
+ 45375 words of font info for 127 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  73i,19n,77p,8548b,1412s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc
 }</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb>
-</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></
-usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></u
-sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb>
-</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
-/usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></u
-sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr
-/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/l
-ocal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loc
-al/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/
-texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/tex
-live/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texliv
-e/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
-/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/201
-6/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2016/
-texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texm
-f-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2016/texmf-dist/
-fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/t
-ype1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/u
-rw/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/pala
-tino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/palatino/up
-lri8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmb8a.pfb>
-</usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
-Output written on thesis.pdf (110 pages, 1425018 bytes).
+</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></
+usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></us
+r/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr
+/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb></
+usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></u
+sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr
+/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/l
+ocal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/loc
+al/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local
+/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/te
+xlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texli
+ve/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/
+2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2
+016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/201
+6/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2016/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2016/te
+xmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/201
+6/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texmf-
+dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2016/texmf-dist/fo
+nts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/typ
+e1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw
+/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/palati
+no/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/palatino/uplr
+i8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></
+usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
+Output written on thesis.pdf (111 pages, 1436062 bytes).
 PDF statistics:
- 2968 PDF objects out of 2984 (max. 8388607)
+ 2970 PDF objects out of 2984 (max. 8388607)
  2463 compressed objects within 25 object streams
- 607 named destinations out of 1000 (max. 500000)
- 891 words of extra memory for PDF output out of 10000 (max. 10000000)
-
+ 609 named destinations out of 1000 (max. 500000)
+ 875 words of extra memory for PDF output out of 10000 (max. 10000000)

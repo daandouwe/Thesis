@@ -1,4 +1,4 @@
-\begin{thebibliography}{119}
+\begin{thebibliography}{122}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -129,6 +129,13 @@ Stanley~F Chen and Joshua Goodman.
 \newblock An empirical study of smoothing techniques for language modeling.
 \newblock \emph{Computer Speech \& Language}, 13\penalty0 (4):\penalty0
   359--394, 1999.
+
+\bibitem[Cheng et~al.(2017)Cheng, Lopez, and Lapata]{cheng2017rnng}
+Jianpeng Cheng, Adam Lopez, and Mirella Lapata.
+\newblock A generative parser with a discriminative recognition algorithm.
+\newblock In \emph{Proceedings of the 55th Annual Meeting of the Association
+  for Computational Linguistics (Volume 2: Short Papers)}, pages 118--124.
+  Association for Computational Linguistics, 2017.
 
 \bibitem[Chomsky(1980)]{chomsky1980rules}
 Noam Chomsky.
@@ -775,6 +782,14 @@ Alex Warstadt, Amanpreet Singh, and Samuel~R Bowman.
 \newblock Neural network acceptability judgments.
 \newblock \emph{arXiv preprint arXiv:1805.12471}, 2018.
 
+\bibitem[Williams et~al.(2018)Williams, Drozdov, and
+  Bowman]{williams2018latent}
+Adina Williams, Andrew Drozdov, and Samuel~R Bowman.
+\newblock Do latent tree learning models identify meaningful structure in
+  sentences?
+\newblock \emph{Transactions of the Association of Computational Linguistics},
+  6:\penalty0 253--267, 2018.
+
 \bibitem[Williams(1992)]{williams1992reinforce}
 Ronald~J Williams.
 \newblock Simple statistical gradient-following algorithms for connectionist
@@ -799,6 +814,12 @@ Pengcheng Yin, Chunting Zhou, Junxian He, and Graham Neubig.
 \newblock Structvae: Tree-structured latent variable models for semi-supervised
   semantic parsing.
 \newblock \emph{arXiv preprint arXiv:1806.07832}, 2018.
+
+\bibitem[Yogatama et~al.(2016)Yogatama, Blunsom, Dyer, Grefenstette, and
+  Ling]{yogatama2016reinforcement}
+Dani Yogatama, Phil Blunsom, Chris Dyer, Edward Grefenstette, and Wang Ling.
+\newblock Learning to compose words into sentences with reinforcement learning.
+\newblock \emph{arXiv preprint arXiv:1611.09100}, 2016.
 
 \bibitem[Zaremba et~al.(2014)Zaremba, Sutskever, and
   Vinyals]{zaremba2014recurrent}

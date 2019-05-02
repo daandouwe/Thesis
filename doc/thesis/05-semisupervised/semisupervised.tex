@@ -35,7 +35,7 @@ In this chapter:
     \begin{align*}
       \elbo(\theta, \lambda; \x) &= \log \ptheta(\x) - \kl(\qlambda(\y \mid \x) \rvert\lvert \ptheta(\y \mid \x)).
     \end{align*}
-    This reveals that maximizing the ELBO is equivalent to minimizing the KL divergenge between the approximate posterior $\qlambda(\y \mid \x)$ and the true posterior $\ptheta(\y \mid \x)$, while maximizing the marginal log likelihood $\log \ptheta(\x)$. Because the true posterior $\ptheta(\y \mid \x)$ cannot be computed efficiently---for the same reason that we cannot compute the marginalization---this formulation has no purposes for us other than theoretical insight. The alternative formulation will have practical purpose:\footnote{We move to a slightly different notation for the entropy, emphasizing the distribution, and write $\entropy(\qlambda(\y \mid \x)) \defeq - \sum_{\y \in \yieldx} \qlambda(\y \mid \x) \log \qlambda(\y \mid \x)$.}
+    This reveals that maximizing the ELBO is equivalent to minimizing the KL divergenge between the approximate posterior $\qlambda(\y \mid \x)$ and the true posterior $\ptheta(\y \mid \x)$, while maximizing the marginal log likelihood $\log \ptheta(\x)$.\footnote{The KL divergence is a measure of divergence between two probability distributions. It is asymetric and positive, and $\kl(q \rvert\lvert p) = 0$ only when $p = q$.} Because the true posterior $\ptheta(\y \mid \x)$ cannot be computed efficiently---for the same reason that we cannot compute the marginalization---this formulation has no purposes for us other than theoretical insight. The alternative formulation will have practical purpose:\footnote{We move to a slightly different notation for the entropy, emphasizing the distribution, and write $\entropy(\qlambda(\y \mid \x)) \defeq - \sum_{\y \in \yieldx} \qlambda(\y \mid \x) \log \qlambda(\y \mid \x)$.}
     \begin{align}
       \elbo(\theta, \lambda; \x)
         &= \expect_{\qlambda} [ \log \ptheta( \x, \y ) ] - \expect_{\qlambda} [ \log \qlambda(\y | \x) ]  \nonumber \\
@@ -88,45 +88,45 @@ In this chapter:
   \subsection{Gradients of inference model}
     Computing the gradient with respect to $\lambda$ is less straightforward. The difference will be in the expectation: where in the previous derivations we could freely exchange gradients and expectations now we cannot. This requires us to rewrite the gradient as the \textit{score function estimator} \citep{fu2006gradient}.  We will first derive the estimator for the RNNG ELBO and define the \textit{learning signal} as everything that is inside the expectation
     \begin{equation}
-      L(\x, \y) = \log \ptheta(\x, \y) - \log \qlambda(\y | \x).
+      L_{\lambda}(\x, \y) = \log \ptheta(\x, \y) - \log \qlambda(\y | \x).
     \end{equation}
     We then use equality \ref{eq:score-function-estimator} to derive
     \begin{align}
       \nabla_{\lambda} \elbo_{\text{RNNG}}(\theta, \lambda)
-        &= \nabla_{\lambda} \expect_{\qlambda} [ L(\x, \y) ]  \nonumber \\
-        &= \expect_{\qlambda} [ L(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ]
+        &= \nabla_{\lambda} \expect_{\qlambda} [ L_{\lambda}(\x, \y) ]  \nonumber \\
+        &= \expect_{\qlambda} [ L_{\lambda}(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ]
     \end{align}
     In this rewritten form the gradient is an expectation, which does permit a straightforward MC estimate:
     \begin{align}
-      \expect_{\qlambda} [ L(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ]
-        &\approx \frac{1}{K}\sum_{k=1}^K  L(\x, \y^{(k)})\nabla_{\lambda} \log \qlambda(\x | \y^{(k)})
+      \expect_{\qlambda} [ L_{\lambda}(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ]
+        &\approx \frac{1}{K}\sum_{k=1}^K  L_{\lambda}(\x, \y^{(k)})\nabla_{\lambda} \log \qlambda(\x | \y^{(k)})
     \end{align}
     where again $y^{(k)}$ are independent samples from $\qlambda(\cdot | \x)$.
 
     For the CRF posterior we need the score function estimator only for the part inside the expectation---the gradient of the entropy can be computed exactly. We thus define
     \begin{equation}
-      L(\x, \y) = \log \ptheta(\x, \y),
+      L_{\lambda}(\x, \y) = \log \ptheta(\x, \y),
     \end{equation}
     and derive
     \begin{align}
       \nabla_{\lambda} \elbo_{\text{CRF}}(\theta, \lambda)
-        &= \nabla_{\lambda} \expect_{\qlambda} [ L(\x, \y) ] +  \nabla_{\lambda} \entropy(\qlambda(\y \mid \x)) ] \nonumber  \\
-        &= \expect_{\qlambda} [ L(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ] + \nabla_{\lambda} \entropy(\qlambda(\y \mid \x)).
+        &= \nabla_{\lambda} \expect_{\qlambda} [ L_{\lambda}(\x, \y) ] +  \nabla_{\lambda} \entropy(\qlambda(\y \mid \x))  \nonumber  \\
+        &= \expect_{\qlambda} [ L_{\lambda}(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ] + \nabla_{\lambda} \entropy(\qlambda(\y \mid \x)).
     \end{align}
     The computation of $\entropy(\qlambda(\y \mid \x))$ is fully differentiable ($\cf$ \ref{eq:crf-entropy}), and so we can rely on automatic differentiation to compute $\nabla_{\lambda} \entropy(\qlambda(\y \mid \x))$.
 
-    Estimators of this form have been derived by \citet{williams1992reinforce,paisley2012viss,mnih2014nvil,ranganath2014black,mnih2016variational} and \citet{miao2016discrete}, and is also known as the \textit{reinforce estimator} \citep{williams1992reinforce}.
+    Estimators of this form have been derived by \citet{williams1992reinforce,paisley2012viss,mnih2014nvil,ranganath2014black} and \citet{mnih2016variational}, and is also known as the \textit{reinforce estimator} \citep{williams1992reinforce}.
 
   \subsection{Variance reduction}
     The score function estimator is unbiased but is known to have high variance---often too much to be useful in practice  \citep{paisley2012viss}. To reduce variance we use a data dependent baseline $b(\x)$ and redefine the estimator as
     \begin{align}
-      \frac{1}{K}\sum_{k=1}^K  (L(\x, \y^{(k)}) - b(\x))\nabla_{\lambda} \log \qlambda(\x | \y^{(k)}).
+      \frac{1}{K}\sum_{k=1}^K  (L_{\lambda}(\x, \y^{(k)}) - b(\x))\nabla_{\lambda} \log \qlambda(\x | \y^{(k)}).
     \end{align}
-    The more the value $b(\x)$ correlates with with $L(\x, \y^{(k)})$ the greater the reduction in variance, but the baseline cannot depend on the samples $\y^{(k)}$ ($\cf$ appendix \ref{A4-vi}). We use a clever baseline introduced by \citet{rennie2017argmax} which is based on the argmax decoding of the posterior, that \texit{almost} depends on the samples without being a control variate. Letting $\hat{\y} = \argmax_y \qlambda(\y \mid \x)$ we define
+    The more the value $b(\x)$ correlates with with $L_{\lambda}(\x, \y^{(k)})$ the greater the reduction in variance, but the baseline cannot depend on the samples $\y^{(k)}$ ($\cf$ appendix \ref{A4-vi}). We use a clever baseline introduced by \citet{rennie2017argmax} which is based on the argmax decoding of the posterior, that \texit{almost} depends on the samples without being a control variate. Letting $\hat{\y} = \argmax_y \qlambda(\y \mid \x)$ we define
     \begin{align}
-      b(x) = L(\x, \hat{\y}).
+      b(x) = L_{\lambda}(\x, \hat{\y}).
     \end{align}
-    The reasoning is elegant: the samples will tend to look like $\hat{\y}$ when the mass of the $\qlambda$ concentrates, in turn making $L(\x, \hat{\y})$ close to $L(\x, \y^{(k)})$. And while this is a data dependent baseline it involves no additional parameters, in contrast with baselines based on feedforward networks \citep{mnih2014nvil, miao2016discrete} or RNN language models \citep{yin2018structvae}. For the RNNG, we compute use the gready approximation $\y^*$ but with the CRF we can obtain $\hat{\y}$ exactly.
+    The reasoning is elegant: the samples will tend to look like $\hat{\y}$ when the mass of the $\qlambda$ concentrates, in turn making $L_{\lambda}(\x, \hat{\y})$ close to $L_{\lambda}(\x, \y^{(k)})$. And while this is a data dependent baseline it involves no additional parameters, in contrast with baselines based on feedforward networks \citep{mnih2014nvil, miao2016discrete} or RNN language models \citep{yin2018structvae}. For the RNNG, we compute use the gready approximation $\y^*$ but with the CRF we can obtain $\hat{\y}$ exactly.
 
 \section{Experiments}
   The above training objectives give us a range of options to investigate, and we explore them all. We have two posteriors at our disposal, labeled and unlabeled data, and the option to work with unlabeled trees. Yet unfortunately, none of the experiments we describe will lead to any defnitive results. But while we show how some approaches do not work for reasons practical and theoretical, other directions look promising. One stands out: to use the CRF posterior as posterior, on unlabeled trees, in the semisupervised and even unsupervised learning setting. In fact concurrent work by \citet{kim2019unsupervised}---recently published and remarkably similar to ours---shows that, with the proper optimization strategies, such an approach can be made to work with unlabeled, binary trees. Our approach differs from theirs because we dot not restrict our CRF to binary trees, and use the original formulation of the RNNG and not a simpler binary TreeLSTM. Unfortunately---as we will describe---the derivational ambiguity in the CRF comes back with a vengeance, and our attempts at this approach strand. For now.
@@ -146,6 +146,12 @@ In this chapter:
     The way forward from here is clear---we have already discussed the core solution in chapter \ref{04-crf}. Altering the inference algorithms will remove the derivational ambiguity and allows us to compute the correct entropy term. Furthermore, we can learn from the optimization details of \citet{kim2019unsupervised}, who found that their approach required considerable finetuning to avoid the posterior to collapse to trivial trees.\footnote{Binary right branching trees in their case.} This required separate optimizers for the generative and inference models, annealing the posterior entropy, and freezing the posterior after two epochs \citep{kim2019unsupervised}. This could turn out to be necessary for our approach as well.
 
 \section{Related work}
-  Our approach is informed by work in neural variational inference with discrete latent variables---in general \citep{paisley2012viss,mnih2014nvil,ranganath2014black,mnih2016variational} and in natural language processing in particular \citep{miao2016discrete,yin2018structvae}. The concurrent work \citet{kim2019unsupervised} shares many ideas with our work: the use of a CRF inference model, the parametrization of the CRF following \citet{stern2017minimal}, the exact entropy computation, and even syntactic evaluation on the dataset of \citet{linzen2018targeted}. We consider these similarities to be a remarkable coincidence.
+  Our approach is informed by work in (neural) variational inference with (discrete) latent variables using the score function estimator \citep{paisley2012viss,mnih2014nvil,ranganath2014black,mnih2016variational}. In language, this approach has been applied to---among others---text summarization \citep{miao2016discrete}, semisupervised semantic parsing \citep{yin2018structvae}, and tree induction in the context of classification \citep{yogatama2016reinforcement}.
+
+  Close to our approach is \citet{yogatama2016reinforcement}, who induce binary tree structures in a classification task by maximizing the expected log likelihood of a tree-structured neural classifier under a distribution described by a shift-reduce parser. Their use of a shif-reduce parser conjures up our use of the RNNG as approximate posterior, and they also obtain gradient estimates using the score function estimator. Although this method is highly consistent over random restarts, it invariably produces trivial left-branching trees \citet{williams2018latent}.
+
+  Semisupervised learning of the RNNG has been investigated by \citet{cheng2017rnng}, who like us derive a lower bound on the marginal log likelihood and use the discriminative RNNG as approximate posterior. It appears however that they use pretrained models, keeping the parameters of the approximate posterior fixed while updating only the parameters of the generative models, based on the samples of the approximate posterior.\footnote{\textit{Cf.} this conference talk: https://vimeo.com/234957682#t=601s.} Although this does circumvents the need for gradient estimation using the score function estimator, it does not constitute variational inference. Instead of optimizing the models in tandem, this method actually fits the \textit{true} posterior to the \textit{approximate} posterior. Doinf this, however, does appear to be helpful as this method of finetuning does lower the perplexity on the Penn Treebank \citep{cheng2017rnng}.
+
+  Finally, the concurrent work of \citet{kim2019unsupervised} in particular shares many ideas with our work: the use of a CRF inference model, the parametrization of the CRF following \citet{stern2017minimal}, the exact entropy computation, and even syntactic evaluation on the dataset of \citet{linzen2018targeted}. We consider these similarities to be a remarkable coincidence. Our work differs from theirs however because we do not restrict to binary trees and use the original formulation of the RNNG.
 
   % Training with the policy gradient of a risk-objective as a surrogate for training with a dynamic oracle \citep{klein2018reinforce}.

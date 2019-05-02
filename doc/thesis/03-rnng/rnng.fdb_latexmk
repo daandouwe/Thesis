@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1556799811 "rnng.tex" "rnng.pdf" "rnng" 1556799811
+["pdflatex"] 1556823830 "rnng.tex" "rnng.pdf" "rnng" 1556823830
   "../tables/disc-fscores.tex" 1556037363 516 f5426f0555876f63644bce8b8751a6f5 ""
   "../tables/disc-transitions.tex" 1556799232 1857 5abbaec804169a067a939f3133e1fe70 ""
   "../tables/gen-fscores.tex" 1556267044 929 9659aaefc3efe813da1124f970f86071 ""
@@ -16,7 +16,7 @@
   "/usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt" 1485894833 3873397 68ff021935db8719c30e28db2297c232 ""
   "/usr/local/texlive/2016/texmf.cnf" 1463979140 577 2938757e76f31531e65cc647e3507693 ""
   "rnng.aux" 1548784972 8 a94a2480d3289e625eea47cd1b285758 ""
-  "rnng.tex" 1556799811 37561 081b557553270b4b01a077d2a05b00b2 ""
+  "rnng.tex" 1556823829 40832 24ab100f63892ee87d7ce698d2c854ee ""
   (generated)
-  "rnng.pdf"
   "rnng.log"
+  "rnng.pdf"

@@ -4,22 +4,22 @@ This appendix contain derivations and background used in chapter \ref{05-semisup
   In this section we derive the score function estimator
   \begin{align}
     \label{eq:score-function-estimator}
-    \nabla_{\lambda} \expect_{q} [ L(\x, \y) ] = \expect_{q} [ L(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ],
+    \nabla_{\lambda} \expect_{q} [ L_{\lambda}(\x, \y) ] = \expect_{q} [ L_{\lambda}(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ],
   \end{align}
-  where $L(x, y)$ is some function of $\x$ and $\y$. We derive it for the case where
+  where $L_{\lambda}(x, y)$ is some function of $\x$ and $\y$. We derive it for the case where
   \begin{equation*}
-    L(\x, \y) \defeq \log \ptheta(\x, \y) - \log \qlambda(\y | \x),
+    L_{\lambda}(\x, \y) \defeq \log \ptheta(\x, \y) - \log \qlambda(\y | \x),
   \end{equation*}
   which is the form used for the RNNG posterior, and note that the simpler form for the CRF posterior follows from it. The line by line derivation is given by
   \begin{align*}
-    \nabla_{\lambda} \expect_{q} [ L(\x, \y) ] &=
+    \nabla_{\lambda} \expect_{q} [ L_{\lambda}(\x, \y) ] &=
     \nabla_{\lambda} \expect_{q} [ \log \ptheta(\x, \y) - \log \qlambda(\y | \x) ] \\
       &= \nabla_{\lambda} \sum_{\y \in \yieldx} \qlambda(\y | \x) \log \ptheta(\x, \y) - \qlambda(\y | \x)\log \qlambda(\y | \x) \\
       &= \sum_{\y \in \yieldx} \nabla_{\lambda} \qlambda(\y | \x) \log \ptheta(\x, \y)  - \nabla_{\lambda} \qlambda(\y | \x)\log \qlambda(\y | \x) -  \qlambda(\y | \x)\nabla_{\lambda}\log \qlambda(\y | \x) \\
       &= \sum_{\y \in \yieldx} \nabla_{\lambda} \qlambda(\y | \x) \log \ptheta(\x, \y) - \nabla_{\lambda} \qlambda(\y | \x)\log \qlambda(\y | \x) \\
-      &= \sum_{\y \in \yieldx} L(\x, \y)\nabla_{\lambda} \qlambda(\y | \x) \\
-      &= \sum_{\y \in \yieldx} L(\x, \y) \qlambda(\y | \x) \nabla_{\lambda} \log \qlambda(\y | \x)   \\
-      &= \expect_{q} [ L(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ].
+      &= \sum_{\y \in \yieldx} L_{\lambda}(\x, \y)\nabla_{\lambda} \qlambda(\y | \x) \\
+      &= \sum_{\y \in \yieldx} L_{\lambda}(\x, \y) \qlambda(\y | \x) \nabla_{\lambda} \log \qlambda(\y | \x)   \\
+      &= \expect_{q} [ L_{\lambda}(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ].
   \end{align*}
   In this derivation we used the identity
   \begin{align*}
@@ -176,7 +176,7 @@ This appendix contain derivations and background used in chapter \ref{05-semisup
   We use automatic differentiation \citep{baydin2018automatic} to obtain all our gradients. In order to obtain the gradients in formula \ref{eq:score-function-estimator} using this method we rewrite it in the form of a \textit{surrogate objective} \citep{schulman2015gradient}:
   \begin{align}
     \label{eq:surrogate}
-    \objective_{ \textsc{surr} }(\theta, \lambda) &= \frac{1}{K}\sum_{k=1}^K \log \qlambda(\x | \y^{(k)}) \blockgrad( L(\x, \y^{(k)}) ).
+    \objective_{ \textsc{surr} }(\theta, \lambda) &= \frac{1}{K}\sum_{k=1}^K \log \qlambda(\x | \y^{(k)}) \blockgrad( L_{\lambda}(\x, \y^{(k)}) ).
   \end{align}
   The function $\blockgrad$ detaches a node from its upstream computation graph, removing its dependence on the parameters. To roughly illustrate this, let $f$ be function (computed by a node in the computation graph) with parameters $\theta$ and input $\x$, then
   \begin{align*}
@@ -188,6 +188,6 @@ This appendix contain derivations and background used in chapter \ref{05-semisup
   \end{align*}
   Automatic differentiation of equation \ref{eq:surrogate} with respect to $\lambda$ will give us the exact expression we are looking for
   \begin{align*}
-    \nabla_{\lambda} \objective_{ \textsc{surr} }(\theta, \lambda) &= \frac{1}{K}\sum_{k=1}^K L(\x, \y^{(k)}) \nabla_{\lambda} \log\qlambda( \x | \y^{(k)} ),
+    \nabla_{\lambda} \objective_{ \textsc{surr} }(\theta, \lambda) &= \frac{1}{K}\sum_{k=1}^K L_{\lambda}(\x, \y^{(k)}) \nabla_{\lambda} \log\qlambda( \x | \y^{(k)} ),
   \end{align*}
   hence the adjective \textit{surrogate}.

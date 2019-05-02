@@ -321,14 +321,9 @@ Notes from discussion with Wilker, and other ideas.
    of able to compute key quantities.
   - [X] Introduction: joint models are nice, cite classifier image, describe p(x, y, z, ...) as the true model of the world (sentence x, with structure y, and meaning z, with speaker a, to speaker b, etc.), and that p(x) = sum_y sum_x ... p(x, y, z, ...) is the probability in isolation of the sentence. Maybe some example, p(x, speaker = Wilker) >> p(x, speaker = Daan) (maybe something like that?), and p(x) = sum_{speaker} p(x, speaker). We call y, z, ... latent variabels: they help expressiveness in the model.
   - [X] CRFs are introduced by Cullum etc. Put in description of models, or in
-  - [ ] CRF: In section 4.4.1 compare the training of the CRF to the training of a local model.
-  - [ ] CRF: In section 4.6 praise the semiring formulation of the inside and outside algorithms, which makes our live deriving the alternatives real easy.
-  - [ ] CRF: derivational ambiguity consequences, mention that only really problems as proposal, not really as supervised parser. Mention how Stern et al deal with this (asigning same score to all dummy labels).
-  - [ ] CRF: make nice point about entropy computation: the difference between the weight of all trees (log Z) and the weight of the expected tree sum_v [log psi(v) mu(v)]
-  - [ ] What is the complexity?
   - [X] Semisup Fix KL (should be KL(q || p)). (Maybe derive and say something about finding mean, but underestimating variance?)
-  - [ ] Conclusion: (Sparsemap) keep within the framework of VI: describe that the objective is to make inference model sparser. Still do reinforce, something like that. In this case, support of posterior needs only be subset of joint. The Sparsemap solution can choose to shrink that support.
   - [X] Put SGD part with neural networks in background.
+  - [ ] CRF: In section 4.4.1 compare the training of the CRF to the training of a local model.
   - [ ] Counting semiring in CRF appendix.
   - [ ] Syneval example: say something about our RNNG and that it still prefers the ungrammatical one despite the entropy in the posterior.
   - [ ] Syneval: entropy with discriminative models is a classification method.
@@ -337,36 +332,57 @@ Notes from discussion with Wilker, and other ideas.
    time a constituent is closed, words following a closed constituent are conditionally independet of the words and subtrees in that constituent given the label.
   - [ ] Syneval figure: draw 0.5 line.
   - [ ] Syneval: look into object relatives (RNNG do well on them). Maybe change example?
-  - [ ] CRF: E_{p(y|x)}[log Psi(x, y)] = E_{p(y|x)}[ sum_{v in Y} log psi(x, Y)]
+  - [ ] Conclusion: (Sparsemap) keep within the framework of VI: describe that the objective is to make inference model sparser. Still do reinforce, something like that. In this case, support of posterior needs only be subset of joint. The Sparsemap solution can choose to shrink that support.
 
 
 ## Most important
 
 ## Intro
-- [ ] RNNGs are strong language models.
+- [X] RNNGs are strong language models.
 
 ### Background
 - [X] Trees on right page.
-- [ ] Call the normal form binarization and mention CRF chapter
+- [X] Call the normal form binarization and mention CRF chapter
 
 ### RNNG
 - [X] Move images close into chapter.
-- [ ] RNNG: Reranking with p(x, y) for parsing is an approximation: we want to maximize p(y|x), but this is intractable because of sum p(y|x) =
+- [X] RNNG: Reranking with p(x, y) for parsing is an approximation: we want to maximize p(y|x), but this is intractable because of sum p(y|x) =
  p(x,y) / p(x). Instead approximate. We hope that KL(q(y|x)||p(y|x)) is small (just a hope). So instead get a whole bunch of y ~ p(y|x). Then if p(x,y) is high, then p(y|x) is high. Because p(y|x) propto p(x,y). In the case of VI, we actually _optimize_ q(y|x) to be like p(y|x).
 
 ### CRF
 - [X] Fix ugly ordering of figures: put everything on one page?
-- [ ] Add note on binarization, referring to the trees image, note that varnothing is in Lambda.
+- [X] Add note on binarization, referring to the trees image, note that varnothing is in Lambda.
 - [X] CRF: indicator notation
-- [ ] CRF: say that implementation of new inference algorithm is working, solution is easy to implement. But: no results yet (out of time).
+- [ ] FIX SPEED AND COMPLEXITY IN TRAINING
 - [ ] Write logscore as cliques prod_{c in mathcal{C}} psi(a_c), or as index sets prod_{I} psi(a_I)
 - [ ] Recall complexity in the training objective, and note dependence also on labelset.
-- [ ] Note that speedup is possible we can speed up by training on less labels.
+- [ ] Note that speedup is possible we can speed up by training on less labels. Note though that O(n^3 |G|) = O(n^3 |Lambda|^3)!!! So cubic in the number of
+- [ ] CRF: say that implementation of new inference algorithm is working, solution is easy to implement. But: no results yet (out of time).
+- [ ] CRF: derivational ambiguity consequences, mention that only really problems as proposal, not really as supervised parser. Mention how Stern et al deal with this (asigning same score to all dummy labels).
+- [ ] CRF: make nice point about entropy computation: the difference between the weight of all trees (log Z) and the weight of the expected tree sum_v [log psi(v) mu(v)]
+- [ ] CRF: E_{p(y|x)}[log Psi(x, y)] = E_{p(y|x)}[ sum_{v in Y} log psi(x, Y)]
+
+### Syneval
+- [ ] Ugly too long trees, draw as trees? Otherwise introduce notation in background.
 
 ### Semisup
 - [X] Change entropy notation to H(q(y|x)) (abusing notation)
-- [ ] Make L a function of lambda
-- [ ] Semisup: define KL divergence, explaining KL(q||p) >= 0 and 0 when q = p. Difference with EM: q is approximation to p and we cannot get KL(q||p) = 0.
-- [ ] Related work: the structVAE: also transition based right? Did not derail, right? Why? Say something about that.
-- [ ] Related work in semisupervised learning: Lapatta paper. This paper does not do VI because they do not update the posterior
+- [X] Make L a function of lambda
+- [X] Semisup: define KL divergence, explaining KL(q||p) >= 0 and 0 when q = p. Difference with EM: q is approximation to p and we cannot get KL(q||p) = 0.
+- [X] Related work: the structVAE: also transition based right? Did not derail, right? Why? Say something about that.
+- [X] Related work in semisupervised learning: Lapatta paper. This paper does not do VI because they do not update the posterior
  parameters (source: talk). Instead they use a pretrained posterior, that is kept fixed. The joint parameters are optimized to be close the posterior. This is not VI. Therefore, they did not run into this problem we had.
+
+## Conclusion
+- [ ] Our approach of neural joint p(x,h) + CRF posterior q(h|x) is possible for other latent structure: h tags (p(x,h) a RNN LM + tag information), linear chain CRF for q(h|x); h  dependency tree p(x,h) a generative dep parser, and a matrix tree theorem CRF for q(h|x).
+
+# Request Wilker to look at:
+  1. Optimization background (page 22)
+  2. Newer RNNG definition (pages 26-27)
+  3. RNNG inference small notes about proposal and true posterior (page 32)
+
+# Response Wilker
+  1. I have greatly expanded the semisup related work (with all the stuff I was actually planning but dropped). I've added Neubig (VAEs with tree-structured latent variables), and Lapatta (RNNG 'VI').
+  3. I'm not sure I understand Caio's work... is it like a reparameterization trick for trees? Like fully differentiable using Gumbels softmax instead of argmax inside an Eisner inference program? But they don't obtain a _hard_ tree, only a _soft_ mixture of trees? Something like that?  And is it differentiable... or not? To avoid embarassing myself (I do not have time to properly read the paper again) I'd like to not include it...
+  3. I'm sorry for Jelle that he doesn't get his deserved credit but tbh I don't see the need of citing the TreeLSTM: it is used for encoding in classification models p(c|x) with c some label like sentiment (right?). This does not remotely appear anywhere in my thesis.
+  4. I have looked a little bit at the "syntax in features" work that you mention, but I'd like to keep it out of the semisup chapter. Like, the "structured attention" paper (https://arxiv.org/abs/1702.00887) looks suuuuper complicated with the Li en Eisner second order semiring stuff, but as far as I can tell it's just compting some attention weights and averaging vectors, right? Again, not really relevant I feel. I mean, I can discuss it when the questions arise in the presentation, and then I'll just say that: p(x, y1) + p(x, y2)!= p(x, y1 "+" y2) (!)
