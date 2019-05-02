@@ -68,7 +68,8 @@
 %% math symbols
 \newcommand{\reals}{\ensuremath{\mathbb{R}}}  % real numbers
 \newcommand{\dataset}{\ensuremath{\mathcal{D}}}  % dataset
-\newcommand{\defeq}{\ensuremath{\triangleq}}  % define something with an equation
+% \newcommand{\defeq}{\ensuremath{\triangleq}}  % define something with an equation
+\newcommand{\defeq}{\ensuremath{:=}}  % define something with an equation
 %% miscelaneous
 \newcommand{\x}{\ensuremath{x}}  % sentence
 \newcommand{\y}{\ensuremath{y}}  % tree
@@ -126,12 +127,13 @@
 \title{Neural language models with latent syntax}
 \author{Daan van Stigt}
 \birthdate{August 17, 1992}
-\birthplace{Amsterdam, Netherlands}
+\birthplace{Amsterdam, The Netherlands}
 \defensedate{May 24, 2019}
 \supervisor{Dr. Wilker Aziz}
 \committeemember{Dr. Caio Corro}
-\committeemember{Prof. Dr. Khalil Sima`an}
+% \committeemember{Prof. Dr. Khalil Sima`an}
 \committeemember{Prof. Dr. Yde Venema}
+\committeemember{Dr. Willem Zuidema}
 
 
 \begin{document}
@@ -139,7 +141,7 @@
 
 
 \begin{abstract}
-  We study neural language models that are obtained by approximate marginalization of a joint model of both sentences and explicit phrase structure called the recurrent neural network grammar (RNNG) \citep{dyer2016rnng}. We introduce a neural conditional random field (CRF) constituency parser that can be used as an alternative proposal model for the approximate inference, and experiment with the CRF as approximtate posterior in variational learning of the RNNG, in which we learn both models jointly by optimizing a lower bound on the marginal likelihood. This opens the door to semisupervised and unsupervised learning. To evaluate how the joint formulation differentiates the RNNG from other neural language models we perform targeted syntactic evaluation and compare the model's performance with that of alternative models that are based on multitask learning.
+  We study neural language models that are obtained by approximate marginalization of the recurrent neural network grammar (RNNG), a joint model of sentences and their syntactic structure. [Problem] Supervised RNNGs produce competitive language models, but the intractable sum over the structured variable complicates learning from unlabeled data in which the structure is latent. [The effectiveness of approximate learning with variational inference will depend on the quality of the posterior approximation.] [How] We introduce a neural conditional random field (CRF) constituency parser that can be used as alternative proposal model for approximate inference of a supervised RNNG, and experiment with the CRF as approximate posterior in variational learning, in which we learn both models jointly by optimizing a lower bound on the marginal likelihood. This opens the door to semisupervised and unsupervised learning. [Why] The CRF formulation of the parser allows the exact computation of key quantities involved in the computation of the lower bound, and the global normalization provides a robust distribution for the sampling based gradient estimation. [Results] Preliminary results with unlabeled trees suggest the potential of this approach for unsupervised $n$-ary tree induction, and we formulate future work towards this goal. Finally, to evaluate how the joint formulation differentiates the RNNG from other neural language models we perform targeted syntactic evaluation and compare its performance with that of alternative models that are based on multitask learning.
 
   % In this thesis I investigate the question: \textit{What are effective ways of incorporating syntactic structure into neural language models?}
 

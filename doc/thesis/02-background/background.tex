@@ -3,9 +3,7 @@ This section provides background on the four topics that are combined in this th
 \section{Syntax}
 We first introduce some concepts relating to syntax that are relevant for this thesis. In particular, we introduce the notion of a \textit{constituent}, and the hierarchical organization of constituents in a sentence as described by phrase-structure grammars. The aim is to provide a succinct and compelling answer to the question: why should we care about constituency structure when modelling language?
 
-The exposition primarily follows \citet{huddleston2002grammar}, a well established reference grammar of the English language that is relatively agnostic with respect to theoretical framework, with some excursions into \citet{carnie2010constituent} and \citet{everaert2015structures}, which are less language-specific but rooted more in a particular theoretical framework\footnote{Broadly subsumable under the name \textit{generative grammar}.}.
-
-We take the following three principles from \citet{huddleston2002grammar} as guiding:
+Our exposition primarily follows \citet{huddleston2002grammar}, a well established reference grammar of the English language that is relatively agnostic with respect to theoretical framework, with some excursions into \citet{carnie2010constituent} and \citet{everaert2015structures}, which are less language-specific but rooted more in a particular theoretical framework\footnote{Broadly subsumable under the name \textit{generative grammar}.}. We take the following three principles from \citet{huddleston2002grammar} as guiding:
 \begin{enumerate}[noitemsep]
   \item \textit{Sentences consist of parts that may themselves have parts.}
   \item \textit{These parts belong to a limited range of types.}
@@ -15,7 +13,7 @@ To each principle we now dedicate a separate section.
 
 \subsection{Constituents}
 Sentences consist of parts that may themselves have parts. The parts are groups of words that function as units and are called \textit{constituents}. Consider the simple sentence \textit{A bird hit the car.} The immediate constituents are \textit{a bird} (the subject) and \textit{hit the car} (the predicate). The phrase \textit{hit the car} can be analyzed further as containing the constituent \textit{the car}. The ultimate constituents of a sentence are the atomic words, and the entire analysis is called the constituent structure of the sentence. This structure can be indicated succinctly with the use of brackets
-\exi. [ A bird ] [ hit [ the car ] ] 
+\exi. [ A bird ] [ hit [ the car ] ]
 
 or less succinctly as a tree diagram.
 \begin{figure}[h]
@@ -81,11 +79,12 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
 \section{Parsing}
   Parsing is the task of predicting a tree $\y$ for a sentence $\x$. Probabilitic parsers solve this problem by learning a probabilistic model $p$ that describes a probability distribution over \textit{all} the possible parses $\y$ of a sentence $\x$. This distribution quantifies the uncertainty over the syntactic analyses of the sentence, and can be used to make predictions by finding the trees with highest probability. A further benefit of the probabilistic formulation is that the uncertainty over the parses can be determined quantitatively by computing the entropy of the distribution, and qualitatively by obtaining samples from the distribution. This section describes the form that such probabilistic models take, and the data from which they are estimated.
 
+  \newgeometry{top=10mm, bottom=10mm}  % enables full page view
   \begin{figure}[ht]
 
     \begin{subfigure}[b]{\textwidth}
       \center
-      \begin{tikzpicture}[scale=.6]
+      \begin{tikzpicture}[scale=.7]
         \input{../figures/trees/original.tex}
       \end{tikzpicture}
       \subcaption{Original Penn Treebank tree.}
@@ -94,7 +93,7 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
 
     \begin{subfigure}[b]{\textwidth}
       \center
-      \begin{tikzpicture}[scale=.6]
+      \begin{tikzpicture}[scale=.7]
         \input{../figures/trees/simplified.tex}
       \end{tikzpicture}
       \tiny
@@ -104,7 +103,7 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
 
     \begin{subfigure}[b]{\textwidth}
       \center
-      \begin{tikzpicture}[scale=.6]
+      \begin{tikzpicture}[scale=.7]
         \input{../figures/trees/binary.tex}
       \end{tikzpicture}
       \tiny
@@ -114,7 +113,7 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
 
     \begin{subfigure}[b]{\textwidth}
       \center
-      \begin{tikzpicture}[scale=.6]
+      \begin{tikzpicture}[scale=.7]
         \input{../figures/trees/spans.tex}
       \end{tikzpicture}
       \tiny
@@ -125,6 +124,7 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
   \caption{Converting a treebank tree (withouth part-of-speech tags).}
   \label{fig:trees-ptb}
   \end{figure}
+  \restoregeometry
 
   \subsection{Treebank}
     A treebank is a collection of sentences annotated with their grammatical structure that allows the estimation of statistical parsings models. The Penn Treebank \citep{marcus1993penn} is such a collection, consisting of sentences annotated with their constituency structure. Figure \ref{fig:tree-original} shows an example tree from this dataset and figure \ref{fig:tree-simplified} shows the tree after basic processing\footnote{This removes the functional tags and annotation of argument structure introduced in version 2 of the Penn Treebank \citep{marcus1994annotating}.}. Some of the models in this work require trees to be in \textit{normal form}: fully binary, but with unary branches at the terminals. Figure \ref{fig:tree-cnf} show the result of this (invertible) normalization, that is obtained by introduction of an empty dummy label $\varnothing$. Annotating the labels with left and right endpoints of the words they span results in the tree in figure \ref{fig:tree-cnf-spans}.
@@ -280,9 +280,9 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
     \end{definition}
 
   \subsection{Optimization}
-    We use the neural networks to parametrize probability distributions, subtly summarized by the set of parameters $\theta$ in a probability mass function $p_{\theta}$. These parameters are optimized using gradients. Our prototypical objective is optimization of the maximum likelihood of a set observations
+    We use the neural networks to parametrize probability distributions, subtly summarized by the set of parameters $\theta$ in a probability mass function $p_{\theta}$. These parameters are optimized using gradients. Our prototypical objective is optimization of the maximum likelihood of a set of independent observations $\dataset = \{ \x^{(n)} \}_{n=1}^N$
     \begin{align*}
-      \objective(\theta) = \sum_{\x \in \dataset} \log \ptheta(x)
+      \objective(\theta) = \sum_{n=1}^N \log \ptheta(x^{(n)})
     \end{align*}
     with respect to $\theta$. We perfom iterative parameter updates, optaining new parameters $\theta^{(t+1)}$ at timestep $t+1$ from parameters $\theta^{(t)}$ at timestep $t$ using the update rule
     \begin{align*}
@@ -292,9 +292,9 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
     \begin{align*}
       \sum_{k=1}^{K} \nabla_{\theta} \log \ptheta (\x^{(k)}),
     \end{align*}
-    where $\x^{(k)}$ are sampled uniformly from $\dataset$, making our optimization procedure stochastic. This works because for uniformly sampled $x^{(s)}$
+    where $\{ \x^{(1)}, \dots, \x^{(K)}\}$ are sampled uniformly from $\dataset$, making our optimization procedure stochastic. This works because for and index $s$ distributed uniformly between 1 and $N$ the gradients equals an expectation
     \begin{align*}
       \nabla_{\theta} \mathcal{L}(\theta)
-        &\propto \expect [ \nabla_{\theta} \log \ptheta (\x^{(s)}) ].
+        &=  N \, \expect [ \nabla_{\theta} \log \ptheta (\x^{(s)}) ].
     \end{align*}
-    For this estimate we use minibatches. Under certain conditions on the learning rate $\gamma^{(t)}$ this method is guaranteed to converge to a local optimum \citep{robbins1951stochastic}.
+    Under certain conditions on the learning rate $\gamma^{(t)}$ this method is guaranteed to converge to a local optimum \citep{robbins1951stochastic}. For the computation of $\nabla_{\theta} \log \ptheta (\x)$ we rely on automatic differentation \citep{kucukelbir2017automatic}.

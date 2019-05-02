@@ -1,4 +1,4 @@
-The generative RNNG defines a joint distribution over trees and sentences. In chapter \ref{03-rnng} we showed how this distribution can be estimated from labeled data. In this chapter we show how estimation can be extended to unlabeled data. We optimize a tractable lower bound on the marginal log likelihood using amortized variational inference with an approximate posterior---a procedure reminiscent of the importance sampling inference, and both the discriminative RNNG as the CRF can be used. To compute gradients we use samples from the posterior, and the CRF particularly excels in this role: the entropy term in the lower bound can be computed exactly, and the global normalization of the distribution makes the model a well behaved sampler. The lower bound allows us to formulate a semisupervised training objective. This in principle allows us to add any amount of unlabeled data to the already existing labeled data, thus extending the training to both more data and different domains. A further question is whether the RNNG can be estimated from unlabeled data alone. This is particularly challenging because the RNNG makes no independence assumptions and as such it is questionable whether a model so expressive possesses enough inductive bias to induce any consistent structure without supervision. Very recently \citep{kim2019unsupervised} have shown the success of this approach for unlabeled binary trees in an approach that is remarkably similar to ours, also making use of a CRF inference model.
+The generative RNNG defines a joint distribution over trees and sentences. In chapter \ref{03-rnng} we showed how this distribution can be estimated from labeled data. In this chapter we show how estimation can be extended to unlabeled data. We optimize a tractable lower bound on the marginal log likelihood using amortized variational inference with an approximate posterior---a procedure reminiscent of the importance sampling inference, and both the discriminative RNNG as the CRF can be used. To compute gradients we use samples from the posterior, and the CRF particularly excels in this role: the entropy term in the lower bound can be computed exactly, and the global normalization of the distribution makes the model a well behaved sampler. The lower bound allows us to formulate a semisupervised training objective. This in principle allows us to add any amount of unlabeled data to the already existing labeled data, thus extending the training to both more data and different domains. A further question is whether the RNNG can be estimated from unlabeled data alone. This is particularly challenging because the RNNG makes no independence assumptions and as such it is questionable whether a model so expressive possesses enough inductive bias to induce any consistent structure without supervision. Very recently, concurrent work by \citet{kim2019unsupervised} has shown the success of this approach for unlabeled binary trees in an approach that is remarkably similar to ours, also making use of a CRF inference model.
 
 In this chapter:
 \begin{itemize}
@@ -33,13 +33,13 @@ In this chapter:
 
     The objective is optimized with respect to both the generative and inference parameters. We can rewrite it in two ways, each providing different perspective on this optimization procedure. On the one hand we can write the as \citep{blei2016vi}
     \begin{align*}
-      \elbo(\theta, \lambda; \x) &= \log \ptheta(\x) - \kl(\ptheta(\y \mid \x) \rvert\lvert \qlambda(\y \mid \x)).
+      \elbo(\theta, \lambda; \x) &= \log \ptheta(\x) - \kl(\qlambda(\y \mid \x) \rvert\lvert \ptheta(\y \mid \x)).
     \end{align*}
-    This reveals that maximizing the ELBO is equivalent to minimizing the KL divergenge between the approximate posterior $\qlambda(\y \mid \x)$ and the true posterior $\ptheta(\y \mid \x)$, while maximizing the marginal log likelihood $\log \ptheta(\x)$. Because the true posterior $\ptheta(\y \mid \x)$ cannot be computed efficiently---for the same reason that we cannot compute the marginalization---this formulation has no purposes for us other than theoretical insight. The alternative formulation will have practical purpose:
+    This reveals that maximizing the ELBO is equivalent to minimizing the KL divergenge between the approximate posterior $\qlambda(\y \mid \x)$ and the true posterior $\ptheta(\y \mid \x)$, while maximizing the marginal log likelihood $\log \ptheta(\x)$. Because the true posterior $\ptheta(\y \mid \x)$ cannot be computed efficiently---for the same reason that we cannot compute the marginalization---this formulation has no purposes for us other than theoretical insight. The alternative formulation will have practical purpose:\footnote{We move to a slightly different notation for the entropy, emphasizing the distribution, and write $\entropy(\qlambda(\y \mid \x)) \defeq - \sum_{\y \in \yieldx} \qlambda(\y \mid \x) \log \qlambda(\y \mid \x)$.}
     \begin{align}
       \elbo(\theta, \lambda; \x)
         &= \expect_{\qlambda} [ \log \ptheta( \x, \y ) ] - \expect_{\qlambda} [ \log \qlambda(\y | \x) ]  \nonumber \\
-        &= \expect_{\qlambda} [ \log \ptheta( \x, \y ) ] + \entropy_{\qlambda}(Y | X = x).
+        &= \expect_{\qlambda} [ \log \ptheta( \x, \y ) ] + \entropy(\qlambda(\y \mid \x)).
     \end{align}
     The first term is the expectation of the joint model under the the posterior distribution, and the second is the entropy of that distribution. This reveals that the objective is twofold: the posterior is encouraged to put its mass on those trees that have likelihood under the joint model, while the entropy regularizes $\qlambda$ from overly concentrating probability mass. The first part of the objective is now in the form of an expectation which we can approximate using samples from the our approximate posterior. Whether the entropy can be computed depends on the choice of posterior, and can otherwise be estimated with samples as well.
 
@@ -47,7 +47,7 @@ In this chapter:
     As approximate posterior we can use both the RNNG and CRF: both models satisfy the condition that their support is a subset of the support of the true posterior $p(\y \mid \x)$, which is required for the ELBO optimization \citep{kucukelbir2017automatic}. The support of the RNNGs match up. The support of the CRF is a strict subset, because although it can handle common unary chains, it cannot handle the arbitrary chains that are in the support of the generative RNNG. Because this is a marginal phenomenon the space outside the reach of the CRF will be low density anyhow.
 
 \section{Training}
-  We use the ELBO to formulate a semisupervised and an unsupervised optimization objective. Let $\dataset_L = \{ (\x_i, \y^{(k)})\}_{i=1}^N$ be the familiar dataset from the supervised training, and let $\dataset_U = \{ \x_i \}_{i=1}^M$ be an unlabeled dataset consisting merely of sentences $\x$. The unsupervised objective is then to maximize
+  We use the ELBO to formulate a semisupervised and an unsupervised optimization objective. Let $\dataset_L = \{ (\x^{(n)}, \y^{(n)})\}_{n=1}^N$ be the familiar dataset from the supervised training, and let $\dataset_U = \{ \x^{(m)} \}_{m=1}^M$ be an unlabeled dataset consisting merely of sentences $\x$. The unsupervised objective is then to maximize
   \begin{align}
     \elbo(\theta, \lambda) = \sum_{ x \in \dataset_U } \elbo(\theta, \lambda; \x),
   \end{align}
@@ -60,7 +60,7 @@ In this chapter:
   The objectives are optimized with gradient based optimization, which means that we need to compute the gradients $\nabla_{\theta} \elbo(\theta, \lambda)$ and $\nabla_{\lambda} \elbo(\theta, \lambda)$. These gradients are estimated with samples from the posterior, and the form of those estimates will depend on the posterior model used. With the CRF as posterior, we write ELBO as
   \begin{align}
     \elbo_{\text{CRF}}(\theta, \lambda; \x)
-      &= \expect_{\qlambda} [ \log \ptheta( \x, \y ) ] + \entropy_{\qlambda}(Y | X = x),
+      &= \expect_{\qlambda} [ \log \ptheta( \x, \y ) ] + \entropy(\qlambda(\y \mid \x)),
   \end{align}
   to emphasize that we can compute the entropy exactly and that only the first part of the sum needs to be estimated. With the RNNG as posterior we write the ELBO as
   \begin{align}
@@ -73,7 +73,7 @@ In this chapter:
     Computing the gradient with respect to $\theta$ is easy and permits a straightforward Monte-Carlo estimate:
     \begin{align}
       \nabla_{\theta} \elbo_{\text{CRF}}(\theta, \lambda; \x)
-        &= \nabla_{\theta} \expect_{\qlambda} [ \log \ptheta(\x, \y) ]  + \nabla_{\theta} \entropy_{\qlambda}( Y | X = x)  \nonumber \\
+        &= \nabla_{\theta} \expect_{\qlambda} [ \log \ptheta(\x, \y) ]  + \nabla_{\theta} \entropy(\qlambda(\y \mid \x))  \nonumber \\
         &= \expect_{\qlambda} [ \nabla_{\theta} \log \ptheta(\x, \y) ]  \nonumber \\
         &\approx \frac{1}{K}\sum_{k=1}^K  \nabla_{\theta} \log \ptheta(\x, \y^{(k)})
     \end{align}
@@ -110,10 +110,10 @@ In this chapter:
     and derive
     \begin{align}
       \nabla_{\lambda} \elbo_{\text{CRF}}(\theta, \lambda)
-        &= \nabla_{\lambda} \expect_{\qlambda} [ L(\x, \y) ] +  \nabla_{\lambda} \entropy_{\qlambda}( Y | X = x) ] \nonumber  \\
-        &= \expect_{\qlambda} [ L(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ] + \nabla_{\lambda} \entropy_{\qlambda}( Y | X = x).
+        &= \nabla_{\lambda} \expect_{\qlambda} [ L(\x, \y) ] +  \nabla_{\lambda} \entropy(\qlambda(\y \mid \x)) ] \nonumber  \\
+        &= \expect_{\qlambda} [ L(\x, \y) \nabla_{\lambda} \log \qlambda(\y | \x) ] + \nabla_{\lambda} \entropy(\qlambda(\y \mid \x)).
     \end{align}
-    The computation of $\entropy_{\qlambda}( Y | X = x)$ is fully differentiable ($\cf$ \ref{eq:crf-entropy}), and so we can rely on automatic differentiation to compute $\nabla_{\lambda} \entropy_{\qlambda}( Y | X = x)$.
+    The computation of $\entropy(\qlambda(\y \mid \x))$ is fully differentiable ($\cf$ \ref{eq:crf-entropy}), and so we can rely on automatic differentiation to compute $\nabla_{\lambda} \entropy(\qlambda(\y \mid \x))$.
 
     Estimators of this form have been derived by \citet{williams1992reinforce,paisley2012viss,mnih2014nvil,ranganath2014black,mnih2016variational} and \citet{miao2016discrete}, and is also known as the \textit{reinforce estimator} \citep{williams1992reinforce}.
 
