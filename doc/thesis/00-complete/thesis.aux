@@ -123,7 +123,7 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.4.1}Functions}{21}{subsection.2.4.1}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.4.2}Optimization}{21}{subsection.2.4.2}}
 \citation{robbins1951stochastic}
-\citation{kucukelbir2017automatic}
+\citation{baydin2018automatic}
 \citation{dyer2016rnng}
 \citation{dyer2016rnng}
 \@writefile{toc}{\contentsline {chapter}{\numberline {3}Recurrent Neural Network Grammars}{23}{chapter.3}}
@@ -300,6 +300,7 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.6.5}Pruned parse forest}{57}{subsection.4.6.5}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4.7}{\ignorespaces Edges in the parse forest that produce the derivational ambiguity, whenever $k > i+1$.\relax }}{58}{figure.caption.32}}
 \newlabel{fig:illegal-edges}{{4.7}{58}{Edges in the parse forest that produce the derivational ambiguity, whenever $k > i+1$.\relax }{figure.caption.32}{}}
+\newlabel{eq:inside-pruned}{{4.16}{58}{Pruned parse forest}{equation.4.6.16}{}}
 \citation{finkel2008crf,klein2015crf}
 \citation{stern2017minimal}
 \citation{hall2014less}
@@ -307,6 +308,7 @@
 \citation{klein2015crf}
 \citation{hall2014less}
 \citation{stern2017minimal}
+\newlabel{eq:outside-pruned}{{4.18}{59}{Pruned parse forest}{equation.4.6.18}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4.7}Related work}{59}{section.4.7}}
 \citation{collins2003head}
 \citation{klein2003accurate}
@@ -360,6 +362,7 @@
 \citation{enguehard2017multitask}
 \citation{linzen2018targeted}
 \citation{linzen2018targeted}
+\citation{linzen2018targeted}
 \@writefile{toc}{\contentsline {chapter}{\numberline {6}Syntactic evaluation}{69}{chapter.6}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
@@ -373,30 +376,37 @@
 \citation{kuncoro2018learn}
 \citation{everaert2015structures,xiang2009illusory}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.1.1}Dataset}{70}{subsection.6.1.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.2}RNNG}{71}{subsection.6.1.2}}
 \citation{enguehard2017multitask,linzen2018targeted}
 \citation{caruana1997multitask}
 \citation{collobert2008unified,collobert2011natural,zhang2016multitask,goldberg2016multitask}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.2}RNNG}{71}{subsection.6.1.2}}
+\newlabel{fig:syneval-grammatical}{{6.1a}{72}{Predicted parse for sentence (1a).\relax }{figure.caption.33}{}}
+\newlabel{sub@fig:syneval-grammatical}{{a}{72}{Predicted parse for sentence (1a).\relax }{figure.caption.33}{}}
+\newlabel{fig:syneval-ungrammatical}{{6.1b}{72}{Predicted parse for sentence (1b).\relax }{figure.caption.33}{}}
+\newlabel{sub@fig:syneval-ungrammatical}{{b}{72}{Predicted parse for sentence (1b).\relax }{figure.caption.33}{}}
+\newlabel{fig:syneval-ungrammatical-sample}{{6.1c}{72}{Sample for sentence (1b).\relax }{figure.caption.33}{}}
+\newlabel{sub@fig:syneval-ungrammatical-sample}{{c}{72}{Sample for sentence (1b).\relax }{figure.caption.33}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.1}{\ignorespaces Examples from the posterior for the grammatical sentence (1a) and ungrammatical sentence (1b).\relax }}{72}{figure.caption.33}}
 \citation{bangalore1999supertagging}
 \citation{enguehard2017multitask}
 \citation{swayamdipta2018scaffold}
-\@writefile{toc}{\contentsline {section}{\numberline {6.2}Multitask learning}{72}{section.6.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.1}Multitask objective}{72}{subsection.6.2.1}}
-\newlabel{eq:multitask-objective}{{6.1}{72}{Multitask objective}{equation.6.2.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.2}Multitask learning}{73}{section.6.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.1}Multitask objective}{73}{subsection.6.2.1}}
+\newlabel{eq:multitask-objective}{{6.1}{73}{Multitask objective}{equation.6.2.1}{}}
 \citation{enguehard2017multitask}
 \citation{linzen2018targeted}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.2}Models}{73}{subsection.6.2.2}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Word labeling}{73}{section*.33}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Span labeling}{73}{section*.34}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.2}Models}{74}{subsection.6.2.2}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Word labeling}{74}{section*.34}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Span labeling}{74}{section*.35}}
 \citation{linzen2018targeted}
 \citation{linzen2018targeted}
-\@writefile{lot}{\contentsline {table}{\numberline {6.1}{\ignorespaces Perplexity of the language models on the PTB test set.\relax }}{74}{table.caption.35}}
-\newlabel{tab:lm-perplexities}{{6.1}{74}{Perplexity of the language models on the PTB test set.\relax }{table.caption.35}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.3}Experiments}{74}{section.6.3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3.1}Setup}{74}{subsection.6.3.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3.2}Results}{75}{subsection.6.3.2}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6.1}{\ignorespaces Syneval results for all models per category, bars showing standard deviation. The categories are described in appendix \ref  {A5-syneval}.\relax }}{77}{figure.caption.36}}
-\newlabel{fig:syneval-all}{{6.1}{77}{Syneval results for all models per category, bars showing standard deviation. The categories are described in appendix \ref {A5-syneval}.\relax }{figure.caption.36}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6.1}{\ignorespaces Perplexity of the language models on the PTB test set.\relax }}{75}{table.caption.36}}
+\newlabel{tab:lm-perplexities}{{6.1}{75}{Perplexity of the language models on the PTB test set.\relax }{table.caption.36}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.3}Experiments}{75}{section.6.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3.1}Setup}{75}{subsection.6.3.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3.2}Results}{76}{subsection.6.3.2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.2}{\ignorespaces Syneval results for all models per category, bars showing standard deviation. The categories are described in appendix \ref  {A5-syneval}.\relax }}{78}{figure.caption.37}}
+\newlabel{fig:syneval-all}{{6.2}{78}{Syneval results for all models per category, bars showing standard deviation. The categories are described in appendix \ref {A5-syneval}.\relax }{figure.caption.37}{}}
 \citation{linzen2016syntax}
 \citation{gulordava2018colorless}
 \citation{gulordava2018colorless}
@@ -406,25 +416,25 @@
 \citation{chomsky1980rules}
 \citation{zweig2011microsoft}
 \citation{sennrich2017grammatical}
-\@writefile{lof}{\contentsline {figure}{\numberline {6.2}{\ignorespaces Syneval results averaged over the three main categories.\relax }}{78}{figure.caption.37}}
-\newlabel{fig:syneval-all-averaged}{{6.2}{78}{Syneval results averaged over the three main categories.\relax }{figure.caption.37}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.4}Related work}{78}{section.6.4}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6.3}{\ignorespaces Syneval results for RNNLM and RNNG.\relax }}{79}{figure.caption.38}}
-\newlabel{fig:syneval-lm-rnng}{{6.3}{79}{Syneval results for RNNLM and RNNG.\relax }{figure.caption.38}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6.4}{\ignorespaces Syneval results for RNNLM and RNNG, pairs with unknown words removed.\relax }}{79}{figure.caption.39}}
-\newlabel{fig:syneval-lm-rnng-nounk}{{6.4}{79}{Syneval results for RNNLM and RNNG, pairs with unknown words removed.\relax }{figure.caption.39}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.3}{\ignorespaces Syneval results averaged over the three main categories.\relax }}{79}{figure.caption.38}}
+\newlabel{fig:syneval-all-averaged}{{6.3}{79}{Syneval results averaged over the three main categories.\relax }{figure.caption.38}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.4}Related work}{79}{section.6.4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.4}{\ignorespaces Syneval results for RNNLM and RNNG.\relax }}{80}{figure.caption.39}}
+\newlabel{fig:syneval-lm-rnng}{{6.4}{80}{Syneval results for RNNLM and RNNG.\relax }{figure.caption.39}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.5}{\ignorespaces Syneval results for RNNLM and RNNG, pairs with unknown words removed.\relax }}{80}{figure.caption.40}}
+\newlabel{fig:syneval-lm-rnng-nounk}{{6.5}{80}{Syneval results for RNNLM and RNNG, pairs with unknown words removed.\relax }{figure.caption.40}{}}
 \citation{stern2017minimal}
-\@writefile{toc}{\contentsline {chapter}{\numberline {7}Conclusion}{80}{chapter.7}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {7}Conclusion}{81}{chapter.7}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{07-conclusion}{{7}{80}{Conclusion}{chapter.7}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {7.1}Main contributions}{80}{section.7.1}}
+\newlabel{07-conclusion}{{7}{81}{Conclusion}{chapter.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7.1}Main contributions}{81}{section.7.1}}
 \citation{linzen2018targeted}
 \citation{kim2019unsupervised}
 \citation{kim2019unsupervised}
+\@writefile{toc}{\contentsline {section}{\numberline {7.2}Future work}{82}{section.7.2}}
 \citation{niculae2018sparsemap}
 \citation{niculae2018towards}
-\@writefile{toc}{\contentsline {section}{\numberline {7.2}Future work}{81}{section.7.2}}
 \citation{cross2016span}
 \citation{stern2017minimal,kitaev2018attentive}
 \citation{hockenmaier2007ccgbank}
@@ -433,21 +443,21 @@
 \citation{chelba2013one}
 \citation{jozefowicz2016exploring}
 \citation{merity2016pointer}
-\@writefile{toc}{\contentsline {chapter}{\numberline {A}Implementation}{83}{appendix.A}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {A}Implementation}{84}{appendix.A}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{A2-implementation}{{A}{83}{Implementation}{appendix.A}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.1}Data}{83}{section.A.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.1.1}Datasets}{83}{subsection.A.1.1}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Penn Treebank}{83}{section*.40}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline CCG supertags}{83}{section*.41}}
+\newlabel{A2-implementation}{{A}{84}{Implementation}{appendix.A}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.1}Data}{84}{section.A.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1.1}Datasets}{84}{subsection.A.1.1}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Penn Treebank}{84}{section*.41}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline CCG supertags}{84}{section*.42}}
 \citation{stern2017minimal}
 \citation{dyer2016rnng}
 \citation{petrov2006learning}
 \citation{dyer2016rnng}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline One Billion Word Benchmark}{84}{section*.42}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.1.2}Vocabularies}{84}{subsection.A.1.2}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Unknown words}{84}{section*.43}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline One Billion Word Benchmark}{85}{section*.43}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1.2}Vocabularies}{85}{subsection.A.1.2}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Unknown words}{85}{section*.44}}
 \citation{glorot2010understanding}
 \citation{peters2018elmo}
 \citation{kitaev2018attentive}
@@ -462,61 +472,61 @@
 \citation{kingma2014adam}
 \citation{kingma2014adam}
 \citation{ranganath2014black,klein2018reinforce}
-\newlabel{sec:impl-embedding}{{A.1.2}{85}{Embeddings}{section*.44}{}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Embeddings}{85}{section*.44}}
-\@writefile{lot}{\contentsline {table}{\numberline {A.1}{\ignorespaces Number of parameters of all models used.\relax }}{85}{table.caption.45}}
-\newlabel{tab:num-params}{{A.1}{85}{Number of parameters of all models used.\relax }{table.caption.45}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.2}Implementation}{85}{section.A.2}}
-\@writefile{toc}{\contentsline {paragraph}{\nonumberline Optimization}{85}{section*.46}}
+\newlabel{sec:impl-embedding}{{A.1.2}{86}{Embeddings}{section*.45}{}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Embeddings}{86}{section*.45}}
+\@writefile{lot}{\contentsline {table}{\numberline {A.1}{\ignorespaces Number of parameters of all models used.\relax }}{86}{table.caption.46}}
+\newlabel{tab:num-params}{{A.1}{86}{Number of parameters of all models used.\relax }{table.caption.46}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.2}Implementation}{86}{section.A.2}}
+\@writefile{toc}{\contentsline {paragraph}{\nonumberline Optimization}{86}{section*.47}}
 \citation{gallo1993directed,klein2004parsing}
 \citation{goodman1999semiring,eisner2009semirings}
 \citation{klein2004parsing}
-\@writefile{toc}{\contentsline {chapter}{\numberline {B}Semiring parsing}{87}{appendix.B}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {B}Semiring parsing}{88}{appendix.B}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{A3-crf}{{B}{87}{Semiring parsing}{appendix.B}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.1}Hypergraph}{87}{section.B.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {B.1}{\ignorespaces A fraction of a parse hypergraph showing two possible parses.\relax }}{88}{figure.caption.47}}
-\newlabel{fig:hypergraph}{{B.1}{88}{A fraction of a parse hypergraph showing two possible parses.\relax }{figure.caption.47}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.2}Semiring}{88}{section.B.2}}
+\newlabel{A3-crf}{{B}{88}{Semiring parsing}{appendix.B}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.1}Hypergraph}{88}{section.B.1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.1}{\ignorespaces A fraction of a parse hypergraph showing two possible parses.\relax }}{89}{figure.caption.48}}
+\newlabel{fig:hypergraph}{{B.1}{89}{A fraction of a parse hypergraph showing two possible parses.\relax }{figure.caption.48}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.2}Semiring}{89}{section.B.2}}
 \citation{goodman1999semiring}
 \citation{goodman1999semiring}
-\@writefile{toc}{\contentsline {section}{\numberline {B.3}Semiring parsing}{89}{section.B.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.3}Semiring parsing}{90}{section.B.3}}
 \citation{eisner2009semirings}
 \citation{goodman1999semiring}
 \citation{baker1979trainable}
-\newlabel{eq:derivation-weight}{{B.3}{90}{}{equation.B.3.3}{}}
-\newlabel{eq:hypergraph-weight}{{B.4}{90}{}{equation.B.3.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.3.1}Inside and outside recursions}{90}{subsection.B.3.1}}
+\newlabel{eq:derivation-weight}{{B.3}{91}{}{equation.B.3.3}{}}
+\newlabel{eq:hypergraph-weight}{{B.4}{91}{}{equation.B.3.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.3.1}Inside and outside recursions}{91}{subsection.B.3.1}}
 \citation{goodman1999semiring}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.3.2}Instantiated recursions}{91}{subsection.B.3.2}}
-\newlabel{ex:vit-weight}{{B.3.7}{91}{}{theorem.B.3.7}{}}
-\newlabel{ex:vit-derivation}{{B.3.8}{91}{}{theorem.B.3.8}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {C}Variational inference}{93}{appendix.C}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.3.2}Instantiated recursions}{92}{subsection.B.3.2}}
+\newlabel{ex:vit-weight}{{B.3.7}{92}{}{theorem.B.3.7}{}}
+\newlabel{ex:vit-derivation}{{B.3.8}{92}{}{theorem.B.3.8}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {C}Variational inference}{94}{appendix.C}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{A4-vi}{{C}{93}{Variational inference}{appendix.C}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C.1}Score function estimator}{93}{section.C.1}}
-\newlabel{eq:score-function-estimator}{{C.1}{93}{Score function estimator}{equation.C.1.1}{}}
+\newlabel{A4-vi}{{C}{94}{Variational inference}{appendix.C}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.1}Score function estimator}{94}{section.C.1}}
+\newlabel{eq:score-function-estimator}{{C.1}{94}{Score function estimator}{equation.C.1.1}{}}
 \citation{paisley2012viss}
 \citation{ross2006simulation}
-\@writefile{toc}{\contentsline {section}{\numberline {C.2}Variance reduction}{94}{section.C.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.1}Control variate}{94}{subsection.C.2.1}}
-\newlabel{eq:variance-reduction}{{C.2}{95}{Control variate}{equation.C.2.2}{}}
-\newlabel{eq:cv-scale}{{C.3}{95}{Control variate}{equation.C.2.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.2}Variance reduction}{95}{section.C.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.1}Control variate}{95}{subsection.C.2.1}}
+\newlabel{eq:variance-reduction}{{C.2}{96}{Control variate}{equation.C.2.2}{}}
+\newlabel{eq:cv-scale}{{C.3}{96}{Control variate}{equation.C.2.3}{}}
 \citation{ross2006simulation}
-\newlabel{eq:var-red}{{C.4}{96}{Control variate}{equation.C.2.4}{}}
+\newlabel{eq:var-red}{{C.4}{97}{Control variate}{equation.C.2.4}{}}
 \citation{baydin2018automatic}
 \citation{schulman2015gradient}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.2}Baseline}{97}{subsection.C.2.2}}
-\@writefile{toc}{\contentsline {section}{\numberline {C.3}Optimization}{97}{section.C.3}}
-\newlabel{eq:surrogate}{{C.11}{98}{Optimization}{equation.C.3.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.2}Baseline}{98}{subsection.C.2.2}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.3}Optimization}{98}{section.C.3}}
+\newlabel{eq:surrogate}{{C.11}{99}{Optimization}{equation.C.3.11}{}}
 \citation{linzen2018targeted}
 \citation{linzen2018targeted}
-\@writefile{toc}{\contentsline {chapter}{\numberline {D}Syneval dataset}{99}{appendix.D}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {D}Syneval dataset}{100}{appendix.D}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{A5-syneval}{{D}{99}{Syneval dataset}{appendix.D}{}}
+\newlabel{A5-syneval}{{D}{100}{Syneval dataset}{appendix.D}{}}
 \bibstyle{plainnat}
 \bibdata{../src/bibliography.bib}
 \bibcite{andor2016globally}{{1}{2016}{{Andor et~al.}}{{Andor, Alberti, Weiss, Severyn, Presta, Ganchev, Petrov, and Collins}}}

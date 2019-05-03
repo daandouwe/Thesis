@@ -280,21 +280,21 @@ Our work, however, takes a pragmatic position with respect to such questions: sy
     \end{definition}
 
   \subsection{Optimization}
-    We use the neural networks to parametrize probability distributions, subtly summarized by the set of parameters $\theta$ in a probability mass function $p_{\theta}$. These parameters are optimized using gradients. Our prototypical objective is to optimize the log likelihood of a set of independent observations $\dataset = \{ \x^{(n)} \}_{n=1}^N$
+    We use the neural networks to parametrize probability distributions, subtly summarized by the set of parameters $\theta$ in a probability mass function $p_{\theta}$. The parameters $\theta$ are optimized to find a maximum of an \textit{objective} function $\objective$ using gradients. With neural networks, the function $\objective$ will be highly nonconvex, in which case we can at most hope to find $\theta$ that give a good local optimum of $\objective$ (\textit{i.e.} satisfying $\nabla_{\theta} \objective(\theta) = 0$).  Our prototypical objective is to optimize the log likelihood of a set of independent observations $\dataset = \{ \x^{(n)} \}_{n=1}^N$:
     \begin{align*}
-      \objective(\theta) = \sum_{n=1}^N \log \ptheta(x^{(n)})
+      \objective(\theta) = \sum_{n=1}^N \log \ptheta(x^{(n)}).
     \end{align*}
-    with respect to $\theta$. We perfom iterative parameter updates, optaining new parameters $\theta^{(t+1)}$ at timestep $t+1$ from parameters $\theta^{(t)}$ at timestep $t$ using the update rule
+    We perfom iterative parameter updates, obtaining new parameters $\theta^{(t+1)}$ at timestep $t+1$ from parameters $\theta^{(t)}$ at timestep $t$ using the update rule
     \begin{align*}
       \theta^{(t+1)} = \theta^{(t)} + \gamma^{(t)} \nabla_{\theta^{(t)}} \mathcal{L}( \theta^{(t)} ),
     \end{align*}
     where the value $\gamma^{(t)}$ is a time-indexed learning rate. We replace $\nabla_{\theta} \mathcal{L}(\theta)$ with an unbiased estimate
     \begin{align*}
-      \sum_{k=1}^{K} \nabla_{\theta} \log \ptheta (\x^{(k)}),
+      \frac{N}{K} \sum_{k=1}^{K} \nabla_{\theta} \log \ptheta (\x^{(k)}),
     \end{align*}
-    where $\{ \x^{(1)}, \dots, \x^{(K)}\}$ are sampled uniformly from $\dataset$, making our optimization procedure stochastic. This works because for and index $s$ distributed uniformly between 1 and $N$ the gradients equals an expectation
+    where $\{ \x^{(1)}, \dots, \x^{(K)}\}$ are sampled uniformly from $\dataset$, making our optimization procedure stochastic. This set of data samples is referred to as a minibatch. This works because for and index $s$ distributed uniformly between 1 and $N$ the gradients equals an expectation
     \begin{align*}
       \nabla_{\theta} \mathcal{L}(\theta)
-        &=  N \, \expect [ \nabla_{\theta} \log \ptheta (\x^{(s)}) ].
+        &=  N \expect \Big[ \nabla_{\theta} \log \ptheta (\x^{(s)}) \Big].
     \end{align*}
-    Under certain conditions on the learning rate $\gamma^{(t)}$ this method is guaranteed to converge to a local optimum \citep{robbins1951stochastic}. For the computation of $\nabla_{\theta} \log \ptheta (\x)$ we rely on automatic differentation \citep{kucukelbir2017automatic}.
+    Under certain conditions on the learning rate $\gamma^{(t)}$ this method is guaranteed to converge to a local optimum \citep{robbins1951stochastic}. For the computation of $\nabla_{\theta} \log \ptheta (\x)$ we rely on automatic differentation \citep{baydin2018automatic}.

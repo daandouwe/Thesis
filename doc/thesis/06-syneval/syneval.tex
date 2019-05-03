@@ -5,6 +5,7 @@ In this chapter:
   \item We review the Syneval dataset: we describe syntactic phenomena that it tests and discuss how this dataset relates to other work on syntactic evaluation.
   \item We modify the training of standard RNN language model by adding a syntactic side objective, a form of multitask learning previously proposed to improve RNN language models on this task. We review a previously proposed approach that combines language modelling with CCG supertagging \citep{enguehard2017multitask}, and introduce a novel multitask language model based on span labeling inspired by the scoring function of our CRF parser.
   \item We evaluate all the models introduced thus far on this dataset and show that this gives finegrained differentation between the various models, generally favoring the RNNG, but often closely followed by and sometimes surpassed by the multitask models.
+  \item We conclude that none of the models particularly excel on the tasks, with some performance close to a coin-flip baseline. In comparison with \citet{linzen2018targeted} we can attribute to our relatively small dataset. Finally, performance on the class of negative polarity items is so variable between runs of the same model that we conclude that on our small dataset none of the models converge to consistent judgements.
 \end{itemize}
 
 \section{Syntactic evaluation}
@@ -25,24 +26,71 @@ In this chapter:
       \end{enumerate}
     The dataset contains constructions of increasing difficulty for each of these categories. For example, the distance between two words in a syntactic dependency can be increased by separating them with a prepositional phrase: \textit{The farmer next to the guards smiles}. In this example \textit{the guards} additionally forms a distractor for the proper conjugation of \textit{smiles}, making the example extra challenging. The dataset is constructed automatically using handcrafted context-free grammars. The lexical rules are finegrained so that the resulting sentences are semantically plausible. In particular there are rules for animate and innanimate objects so a sentence like \textit{The apple laughs} cannot be constructed. The total dataset consists of around 350,000 sentence pairs. The full set of sentence types per category, including examples, is listed appendix \ref{A5-syneval}.
 
+  % \subsection{RNNG}
+  %   What would be the advantage of the RNNG on this task? To illustrate this, consider the following the example taken from the dataset, which will also illustrate the important role played by the posterior. One of the classes---long VP coordination---has the sentence pair
+  %   \exi. \a. the author knows many different foreign languages and \textit{likes} to watch television shows
+  %     \b. *the author knows many different foreign languages and \textit{like} to watch television shows
+  %
+  %   as first example. Parsing the grammatical sentence with the discriminative RNNG gives the sensible analysis
+  %   % \exi. (S (NP the author) (VP (VP knows (NP many different foreign languages)) and (VP likes (S (VP to (VP watch (NP television shows)))))))
+  %   \exi. [S [NP the author] [VP [VP knows [NP many different foreign languages] and [VP likes [S [VP to [VP watch [NP television shows]]]]]]]]
+  %
+  %   as prediction, while parsing the ungramatical sentence results in
+  %   % \exi. (S (NP The author) (VP knows (NP many different foreign languages) (FRAG and like (S (VP to (VP watch (NP television shows)))))) .).
+  %   \exi. [S [NP the author] [VP knows [NP many different foreign languages] [FRAG and like [S [VP to [VP watch [NP television shows]]]]]] ].
+  %
+  %   The first analysis correctly recognizes the verb phrase `knows $x$ and likes $y$' as the conjunction of two verb phrases. The most likely analysis of the odd \textit{like} in the second sentence seems to be dangle as a fragment. For the grammatical tree the samples all correspond closely to the predicted parse, while  the samples for the second sentences vary greatly, containing such unlikely trees as
+  %   % \exi. (S (NP the author) (VP knows (NP many different foreign languages) and (PP like (S (VP to (VP watch (NP television shows))))))),
+  %   \exi. [S [NP the author] [VP knows [NP many different foreign languages] and [PP like [S [VP to [VP watch [NP television shows]]]]]]]
+  %
+  %   that interpret \textit{like} as a preposition. A similar pattern is observed for the CRF parser, in which case the observed difference in the conditional distributions can additionally be confirmed by their difference in entropy: 1.43 for the grammatical sentence against 4.23 for the ungrammatical one. In other words: for the grammatical sentence the generative RNNG will receive quality trees of high likelihood, while for the ungrammatical sentence incoherent trees of low likelihood. Of course, the final probability of the sentence will depend equally on the joint probability that the RNNG will assign to each of the trees.\footnote{Spoiler alert: the marginalized RNNG actually gets this prediction \textit{wrong} (but so does the RNN language model). It is, apparently, a challenging sentence.}
+
   \subsection{RNNG}
     What would be the advantage of the RNNG on this task? To illustrate this, consider the following the example taken from the dataset, which will also illustrate the important role played by the posterior. One of the classes---long VP coordination---has the sentence pair
     \exi. \a. the author knows many different foreign languages and \textit{likes} to watch television shows
       \b. *the author knows many different foreign languages and \textit{like} to watch television shows
 
-    as first example. Parsing the grammatical sentence with the discriminative RNNG gives the sensible analysis
-    % \exi. (S (NP the author) (VP (VP knows (NP many different foreign languages)) and (VP likes (S (VP to (VP watch (NP television shows)))))))
-    \exi. [S [NP the author] [VP [VP knows [NP many different foreign languages] and [VP likes [S [VP to [VP watch [NP television shows]]]]]]]]
+    as first example.
 
-    as prediction, while parsing the ungramatical sentence results in
-    % \exi. (S (NP The author) (VP knows (NP many different foreign languages) (FRAG and like (S (VP to (VP watch (NP television shows)))))) .).
-    \exi. [S [NP the author] [VP knows [NP many different foreign languages] [FRAG and like [S [VP to [VP watch [NP television shows]]]]]] ].
+    Parsing the grammatical sentence with the discriminative RNNG gives the sensible analysis shown in figure \ref{fig:syneval-grammatical} as prediction, while parsing the ungramatical sentence results in the tree shown in figure \ref{fig:syneval-ungrammatical}.     While the first analysis correctly recognizes the verb phrase `knows $x$ and likes $y$' as the conjunction of two verb phrases, the most likely analysis of the odd \textit{like} in the second sentence seems to be dangle as a fragment. Moreover, for the grammatical tree the samples all correspond closely to the predicted parse, while  the samples for the second sentences vary greatly, containing such unlikely trees as those in figure \ref{fig:syneval-ungrammatical-sample}, which interpret \textit{like} as a preposition.
 
-    The first analysis correctly recognizes the verb phrase `knows $x$ and likes $y$' as the conjunction of two verb phrases. The most likely analysis of the odd \textit{like} in the second sentence seems to be dangle as a fragment. For the grammatical tree the samples all correspond closely to the predicted parse, while  the samples for the second sentences vary greatly, containing such unlikely trees as
-    % \exi. (S (NP the author) (VP knows (NP many different foreign languages) and (PP like (S (VP to (VP watch (NP television shows))))))),
-    \exi. [S [NP the author] [VP knows [NP many different foreign languages] and [PP like [S [VP to [VP watch [NP television shows]]]]]]]
+    A similar pattern is observed for the CRF parser, in which case the observed difference in the conditional distributions can additionally be confirmed by their difference in entropy: 1.43 for the grammatical sentence against 4.23 for the ungrammatical one. In other words: for the grammatical sentence the generative RNNG will receive quality trees of high likelihood, while for the ungrammatical sentence incoherent trees of low likelihood. Of course, the final probability of the sentence will depend equally on the joint probability that the RNNG will assign to each of the trees.\footnote{Spoiler alert: the marginalized RNNG actually gets this prediction \textit{wrong} (but so does the RNN language model). It is, apparently, a challenging sentence.}
 
-    that interpret \textit{like} as a preposition. A similar pattern is observed for the CRF parser, in which case the observed difference in the conditional distributions can additionally be confirmed by their difference in entropy: 1.43 for the grammatical sentence against 4.23 for the ungrammatical one. In other words: for the grammatical sentence the generative RNNG will receive quality trees of high likelihood, while for the ungrammatical sentence incoherent trees of low likelihood. Of course, the final probability of the sentence will depend equally on the joint probability that the RNNG will assign to the trees.
+    \begin{figure}[H]
+
+      \begin{subfigure}[b]{\textwidth}
+        \center
+        \begin{tikzpicture}[scale=.7]
+          \Tree [.S [.NP the author ] [.VP [.VP knows [.NP many different foreign languages ] and [.VP likes [.S [.VP to [.VP watch [.NP television shows ] ] ] ] ] ] ] ]
+        \end{tikzpicture}
+        \caption{Predicted parse for sentence (1a).}
+        \label{fig:syneval-grammatical}
+      \end{subfigure}
+
+      \vspace
+
+      \begin{subfigure}[b]{\textwidth}
+        \center
+        \begin{tikzpicture}[scale=.7]
+          \Tree [. S [. NP the author ] [. VP knows [. NP many different foreign languages ] [. FRAG and like [. S [. VP to [. VP watch [. NP television shows ] ] ] ] ] ] ]
+        \end{tikzpicture}
+        \caption{Predicted parse for sentence (1b).}
+        \label{fig:syneval-ungrammatical}
+      \end{subfigure}
+
+      \vspace
+
+      \begin{subfigure}[b]{\textwidth}
+        \center
+        \begin{tikzpicture}[scale=.7]
+          \Tree [. S [. NP the author ] [. VP knows [. NP many different foreign languages ] and [. PP like [. S [. VP to [. VP watch [. NP television shows ] ] ] ] ] ] ]
+        \end{tikzpicture}
+        \caption{Sample for sentence (1b).}
+        \label{fig:syneval-ungrammatical-sample}
+      \end{subfigure}
+
+    \caption{Examples from the posterior for the grammatical sentence (1a) and ungrammatical sentence (1b).}
+    \end{figure}
 
 \section{Multitask learning}
   One method that makes language models perform better in the tasks described in this chapter is to provide stronger syntactic supervision by using multitask learning \citep{enguehard2017multitask,linzen2018targeted}. Multitask learning is a simple yet effective way of providing additional supervision to neural network models by combining multiple tasks in a single objective while sharing parameters \citep{caruana1997multitask}, and has been succcesfully applied in natural language processing \citep{collobert2008unified,collobert2011natural,zhang2016multitask,goldberg2016multitask}. By combining objectives that share parameters the model is encouraged to learn representations that are useful in all the tasks.
@@ -144,6 +192,6 @@ In this chapter:
 \section{Related work}
   There has been a surge recently of work on syntactic evaluation. \citet{linzen2016syntax} introduce the task of long distance subject-verb agreement and \citet{gulordava2018colorless} make this test more challenging by turning the sentences nonsensical while keeping them grammatical. Both datasets are extracted from a wikipedia corpus based on properties of their predicted dependency parse. To make the sentences nonsensical, \citet{gulordava2018colorless} randomly substitute words from the same grammatical category.\footnote{An approach inspired by Chomsky's (in)famous sentence \textit{Colorless green ideas sleep furiously} that is both grammatical and nonsensical.} \citet{warstadt2018acceptability} fine-tune neural models to learn to immitate grammatical acceptability judgments gathered from linguistics textbooks.
 
-  \citet{mccoy2018revisiting} train a neural machine translation that turns a declarative sentence into a question, a kind of transformation that linguists have argued requires the existence of hierarchical structure in language \citep{everaert2015structures}.\footnote{Such declarative-question pairs play a central role as empirical evidence in the argument---known as the \textit{argument from the poverty of the stimulus}---that humans have an innate predisposition for generalizations that rely on hierarchical structure rather than linear order \citep{chomsky1980rules}.}
+  In a similar syntactic spirit, \citet{mccoy2018revisiting} train a neural machine translation that turns a declarative sentence into a question, a kind of transformation that linguists have argued requires the existence of hierarchical structure in language \citep{everaert2015structures}.\footnote{Such declarative-question pairs play a central role as empirical evidence in the argument---known as the \textit{argument from the poverty of the stimulus}---that humans have an innate predisposition for generalizations that rely on hierarchical structure rather than linear order \citep{chomsky1980rules}.}
 
   Finally, targeted evaluation has been introduced previously for semantic comprehension by \citet{zweig2011microsoft} in a sentence completion task, and minimal contrastive sentence pairs have been used to evaluate neural machine translation by \citet{sennrich2017grammatical}.

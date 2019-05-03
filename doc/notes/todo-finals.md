@@ -322,16 +322,13 @@ Notes from discussion with Wilker, and other ideas.
   - [X] Introduction: joint models are nice, cite classifier image, describe p(x, y, z, ...) as the true model of the world (sentence x, with structure y, and meaning z, with speaker a, to speaker b, etc.), and that p(x) = sum_y sum_x ... p(x, y, z, ...) is the probability in isolation of the sentence. Maybe some example, p(x, speaker = Wilker) >> p(x, speaker = Daan) (maybe something like that?), and p(x) = sum_{speaker} p(x, speaker). We call y, z, ... latent variabels: they help expressiveness in the model.
   - [X] CRFs are introduced by Cullum etc. Put in description of models, or in
   - [X] Semisup Fix KL (should be KL(q || p)). (Maybe derive and say something about finding mean, but underestimating variance?)
+  - [X] Syneval example: say something about our RNNG and that it still prefers the ungrammatical one despite the entropy in the posterior.
   - [X] Put SGD part with neural networks in background.
   - [ ] CRF: In section 4.4.1 compare the training of the CRF to the training of a local model.
   - [ ] Counting semiring in CRF appendix.
-  - [ ] Syneval example: say something about our RNNG and that it still prefers the ungrammatical one despite the entropy in the posterior.
   - [ ] Syneval: entropy with discriminative models is a classification method.
-  - [ ] Syneval example: Draw the trees? Or otherwise write them differently. Now they are too hard too read.
   - [ ] Future work: write down ideas about hurting the RNNG, with breaking Markov assumptions. Using latent factor model for labels. Every
    time a constituent is closed, words following a closed constituent are conditionally independet of the words and subtrees in that constituent given the label.
-  - [ ] Syneval figure: draw 0.5 line.
-  - [ ] Syneval: look into object relatives (RNNG do well on them). Maybe change example?
   - [ ] Conclusion: (Sparsemap) keep within the framework of VI: describe that the objective is to make inference model sparser. Still do reinforce, something like that. In this case, support of posterior needs only be subset of joint. The Sparsemap solution can choose to shrink that support.
 
 
@@ -348,6 +345,7 @@ Notes from discussion with Wilker, and other ideas.
 - [X] Move images close into chapter.
 - [X] RNNG: Reranking with p(x, y) for parsing is an approximation: we want to maximize p(y|x), but this is intractable because of sum p(y|x) =
  p(x,y) / p(x). Instead approximate. We hope that KL(q(y|x)||p(y|x)) is small (just a hope). So instead get a whole bunch of y ~ p(y|x). Then if p(x,y) is high, then p(y|x) is high. Because p(y|x) propto p(x,y). In the case of VI, we actually _optimize_ q(y|x) to be like p(y|x).
+ - [ ] Related work: Buys, neural syntactic language model with exact marginalization. Strong independence assumptions and no syntax dependent computation allow exact marginalization.
 
 ### CRF
 - [X] Fix ugly ordering of figures: put everything on one page?
@@ -360,10 +358,10 @@ Notes from discussion with Wilker, and other ideas.
 - [ ] CRF: say that implementation of new inference algorithm is working, solution is easy to implement. But: no results yet (out of time).
 - [ ] CRF: derivational ambiguity consequences, mention that only really problems as proposal, not really as supervised parser. Mention how Stern et al deal with this (asigning same score to all dummy labels).
 - [ ] CRF: make nice point about entropy computation: the difference between the weight of all trees (log Z) and the weight of the expected tree sum_v [log psi(v) mu(v)]
-- [ ] CRF: E_{p(y|x)}[log Psi(x, y)] = E_{p(y|x)}[ sum_{v in Y} log psi(x, Y)]
+- [ ] CRF: E_{p(y|x)}[ sum_{v in Y} log psi(x, Y)] = E_{p(y|x)}[log Psi(x, y)] is "expected tree"
 
 ### Syneval
-- [ ] Ugly too long trees, draw as trees? Otherwise introduce notation in background.
+- [X] Ugly too long trees, draw as trees? Otherwise introduce notation in background.
 
 ### Semisup
 - [X] Change entropy notation to H(q(y|x)) (abusing notation)

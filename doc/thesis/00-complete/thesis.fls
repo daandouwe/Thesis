@@ -226,6 +226,8 @@ INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/bbm-macros/bbm.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/bbm-macros/bbm.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/tools/bm.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/tools/bm.sty
+INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/float/float.sty
+INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/float/float.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/natbib/natbib.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/natbib/natbib.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/todonotes/todonotes.sty

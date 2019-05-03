@@ -391,7 +391,7 @@ In this chapter:
     \end{align*}
     As a consequence $p(d \mid x) \leq p(y \mid x)$ for all of the derivations $d$ that collapse to $y$. This has three direct consequences:
     \begin{itemize}
-      \item We overestimate the marginal probability:
+      \item We overestimate the marginal probability in the importance sampling:
         \begin{align*}
           \frac{1}{K}\sum_{i=1}^K  \frac{\ptheta( \x, \y^{(i)} )}{\qlambda(d^{(i)} \mid \x)}
             &\geq \frac{1}{K}\sum_{i=1}^K  \frac{\ptheta( \x, \y^{(i)} )}{\sum_{d \in f^{-1}(y^{(i)})} \qlambda(d \mid \x)}  \\
@@ -465,35 +465,37 @@ In this chapter:
     \end{figure}
 
     With this characterization in hand, we can alter the recursions, starting with the inside algorithm.
-    \begin{align*}
+    \begin{align}
+      \label{eq:inside-pruned}
       \alpha(A, i, j)
-        &= \displaystyle\bigoplus_{B \in \Lambda} \displaystyle\bigoplus_{C \in \Lambda} \omega(A, i, j) \otimes \alpha(B,i,i+1) \otimes \alpha(C,i+1,j) \\
-          &\qquad\oplus \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \displaystyle\bigoplus_{C \in \Lambda} \displaystyle\bigoplus_{k=i+2}^{j-1} \omega(A, i, j) \otimes \alpha(B,i,k) \otimes \alpha(C,k,j) \\
-        &= \omega(A, i, j) \otimes  \Bigg[ \displaystyle\bigoplus_{B \in \Lambda}\alpha(B,i,i+1) \otimes  \displaystyle\bigoplus_{C \in \Lambda} \alpha(C,i+1,j)  \\
-          &\qquad\oplus \displaystyle\bigoplus_{k=i+2}^{j-1} \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \alpha(B,i,k) \otimes \displaystyle\bigoplus_{C \in \Lambda} \alpha(C,k,j)  \Bigg]  \\
+        &= \displaystyle\bigoplus_{B \in \Lambda} \displaystyle\bigoplus_{C \in \Lambda} \omega(A, i, j) \otimes \alpha(B,i,i+1) \otimes \alpha(C,i+1,j) \nonumber \\
+          &\qquad\oplus \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \displaystyle\bigoplus_{C \in \Lambda} \displaystyle\bigoplus_{k=i+2}^{j-1} \omega(A, i, j) \otimes \alpha(B,i,k) \otimes \alpha(C,k,j) \nonumber \\
+        &= \omega(A, i, j) \otimes  \Bigg[ \displaystyle\bigoplus_{B \in \Lambda}\alpha(B,i,i+1) \otimes  \displaystyle\bigoplus_{C \in \Lambda} \alpha(C,i+1,j)  \nonumber \\
+          &\qquad\oplus \displaystyle\bigoplus_{k=i+2}^{j-1} \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \alpha(B,i,k) \otimes \displaystyle\bigoplus_{C \in \Lambda} \alpha(C,k,j)  \Bigg]  \nonumber \\
         &= \omega(A, i, j) \otimes \Bigg[ \sigma(i,i+1) \otimes \sigma(i+1,j) \oplus \displaystyle\bigoplus_{k=i+2}^{j-1} \tilde{\sigma}(i,k) \otimes \sigma(k,j) \Bigg]
-    \end{align*}
+    \end{align}
     where
-    \begin{align*}
+    \begin{align}
       \tilde{\sigma}(i,k) = \displaystyle\bigoplus_{B \in \Lambda \setminus \{ \varnothing \} } \alpha(A, i, k).
-    \end{align*}
+    \end{align}
 
     For the outside algorithm we need to split cases: the outside algorithm sums over ways to complete a labeled span into a larger labeled span, and as we have noted, the node $(A, i, j)$, for all $A \neq \varnothing$, is allowed to combine in ways that $(\varnothing, i, j)$ is not, whenever $j > i + 1$. Specifically, when $j > i + 1$, the node $(\varnothing, i, j)$ is not allowed to combine \textit{with any node} of the form $(C, j, k)$ for any $C \in \Lambda$. That would constitute an edge that we deemed illegal. We thus split the computation of $\beta(A, i, j)$ into the following two cases: the case where $j > i + 1$ and $ A = \varnothing$, and otherwise.
 
     First, consider the case where either $A \neq \varnothing$, or $j = i + 1$. In this case, the node $(A, i, j)$ can combine any way it desires, as the left node, and as the right node, but note that when we complete it as the right node---thus adding a node to it on the left---we still need to avoid completing it with $(\varnothing, k, i)$ if $k \neq i-1$. Taking this into account we can derive
-    \begin{align*}
+    \begin{align}
+      \label{eq:outside-pruned}
       \beta(A, i, j)
         &= \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda}  \omega(B, i-1, j) \otimes \alpha(C, i-1, i) \otimes \beta(B, i-1, j)  \\
           &\qquad \oplus \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda \setminus \{ \varnothing \}} \bigoplus_{k=1}^{i-2} \omega(B, k, j) \otimes \alpha(C, k, i) \otimes \beta(B, k, j) \\
           &\qquad \oplus \bigoplus_{B \in \Lambda} \bigoplus_{C \in \Lambda} \bigoplus_{k=j+1}^{n} \omega(B, i, k) \otimes \beta(B, i, k) \otimes \alpha(C, j, k)  \\
         &= \sigma'(i-1, j) \otimes \sigma(i-1, i) \oplus \bigoplus_{k=1}^{i-2} \sigma'(k, j) \otimes \tilde{\sigma}(k, i) \oplus \bigoplus_{k=j+1}^{n} \sigma'(i, k) \otimes \sigma(j, k).
-    \end{align*}
+    \end{align}
 
     Now consider the special case where $ A = \varnothing$ and $j > i + 1$. In this case we must disallow the node to combine in the left position. This corresponds simply to removing that part of the sum; in the above derivation this is the third term. This gives:
-    \begin{align*}
+    \begin{align}
       \beta(A, i, j) &=
         \sigma'(i-1, j) \otimes \sigma(i-1, i) \oplus \displaystyle\bigoplus_{k=1}^{i-2} \sigma'(k, j) \otimes \tilde{\sigma}(k, i)
-    \end{align*}
+    \end{align}
 
     % Writing this by case gives us
     % \begin{align*}

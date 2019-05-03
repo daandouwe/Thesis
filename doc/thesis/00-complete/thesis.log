@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  3 MAY 2019 01:15
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.1.31)  3 MAY 2019 13:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -55,7 +55,7 @@ Package: scrkbase 2016/05/10 v3.20 KOMA-Script package (KOMA-Script-dependent b
 asics and keyval usage)
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/koma-script/scrbase.sty
-Package: scrbase 2016/05/10 v3.20 KOMA-Script package (KOMA-Script-independent
+Package: scrbase 2016/05/10 v3.20 KOMA-Script package (KOMA-Script-independent 
 basics and keyval usage)
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/koma-script/scrlfile.sty
@@ -1116,12 +1116,20 @@ Package: bm 2016/02/27 v1.2a Bold Symbol Support (DPC/FMi)
 LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 142.
 LaTeX Info: Redefining \bm on input line 208.
 )
+(/usr/local/texlive/2016/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count153
+\float@exts=\toks47
+\float@box=\box50
+\@float@everytoks=\toks48
+\@floatcapt=\box51
+)
 (/usr/local/texlive/2016/texmf-dist/tex/latex/natbib/natbib.sty
 Package: natbib 2010/09/13 8.31b (PWD, AO)
 \bibhang=\skip82
 \bibsep=\skip83
 LaTeX Info: Redefining \cite on input line 694.
-\c@NAT@ctr=\count153
+\c@NAT@ctr=\count154
 )
 (/usr/local/texlive/2016/texmf-dist/tex/latex/todonotes/todonotes.sty
 Package: todonotes 2015/07/09 .dtx Todonotes source and documentation.
@@ -1132,10 +1140,10 @@ Package: xkeyval 2014/12/03 v2.7a package option processing (HA)
 
 (/usr/local/texlive/2016/texmf-dist/tex/generic/xkeyval/xkeyval.tex
 (/usr/local/texlive/2016/texmf-dist/tex/generic/xkeyval/xkvutils.tex
-\XKV@toks=\toks47
-\XKV@tempa@toks=\toks48
+\XKV@toks=\toks49
+\XKV@tempa@toks=\toks50
 )
-\XKV@depth=\count154
+\XKV@depth=\count155
 File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
 ))
 (/usr/local/texlive/2016/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
@@ -1144,18 +1152,18 @@ File: tikzlibrarypositioning.code.tex 2008/10/06 v3.0.1a (rcs-revision 1.7)
 )
 (/usr/local/texlive/2016/texmf-dist/tex/latex/tools/calc.sty
 Package: calc 2014/10/28 v4.3 Infix arithmetic (KKT,FJ)
-\calc@Acount=\count155
-\calc@Bcount=\count156
+\calc@Acount=\count156
+\calc@Bcount=\count157
 \calc@Adimen=\dimen262
 \calc@Bdimen=\dimen263
 \calc@Askip=\skip84
 \calc@Bskip=\skip85
 LaTeX Info: Redefining \setlength on input line 80.
 LaTeX Info: Redefining \addtolength on input line 81.
-\calc@Ccount=\count157
+\calc@Ccount=\count158
 \calc@Cskip=\skip86
 )
-\c@@todonotes@numberoftodonotes=\count158
+\c@@todonotes@numberoftodonotes=\count159
 )
 (/usr/local/texlive/2016/texmf-dist/tex/latex/mathtools/mathtools.sty
 Package: mathtools 2015/11/12 v1.18 mathematical typesetting tools
@@ -1167,7 +1175,7 @@ LaTeX Info: Thecontrolsequence`\('isalreadyrobust on input line 129.
 LaTeX Info: Thecontrolsequence`\)'isalreadyrobust on input line 129.
 LaTeX Info: Thecontrolsequence`\['isalreadyrobust on input line 129.
 LaTeX Info: Thecontrolsequence`\]'isalreadyrobust on input line 129.
-\g_MT_multlinerow_int=\count159
+\g_MT_multlinerow_int=\count160
 \l_MT_multwidth_dim=\dimen264
 \origjot=\skip87
 \l_MT_shortvdotswithinadjustabove_dim=\dimen265
@@ -1179,9 +1187,9 @@ LaTeX Info: Thecontrolsequence`\]'isalreadyrobust on input line 129.
 )
 (/usr/local/texlive/2016/texmf-dist/tex/latex/appendix/appendix.sty
 Package: appendix 2009/09/02 v1.2b extra appendix facilities
-\c@@pps=\count160
-\c@@ppsavesec=\count161
-\c@@ppsaveapp=\count162
+\c@@pps=\count161
+\c@@ppsavesec=\count162
+\c@@ppsaveapp=\count163
 )
 (/usr/local/texlive/2016/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
@@ -1189,17 +1197,17 @@ Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 (/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
-\c@section@level=\count163
+\c@section@level=\count164
 )
 
 ! LaTeX Error: Option clash for package hyperref.
 
 See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
- ...
-
-l.32
-
+ ...                                              
+                                                  
+l.33 
+     
 The package hyperref has already been loaded with options:
   []
 There has now been an attempt to load it with options
@@ -1210,7 +1218,7 @@ to your \documentclass declaration may fix this.
 Try typing  <return>  to proceed.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/palatino.sty
-Package: palatino 2005/04/12 PSNFSS-v9.2a (SPQR)
+Package: palatino 2005/04/12 PSNFSS-v9.2a (SPQR) 
 )
 (/usr/local/texlive/2016/texmf-dist/tex/latex/epigraph/epigraph.sty
 Package: epigraph 2009/09/02 v1.5c typesetting epigraphs
@@ -1238,51 +1246,51 @@ File: tikzlibrarycalc.code.tex 2013/07/15 v3.0.1a (rcs-revision 1.9)
 
 See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
- ...
-
-l.49 \newcommand{\eg}{\emph{e.g.}}
-
+ ...                                              
+                                                  
+l.50 \newcommand{\eg}{\emph{e.g.}}
+                                  
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-\c@theorem=\count164
-\c@condition=\count165
+\c@theorem=\count165
+\c@condition=\count166
 (./thesis.aux)
 \openout1 = `thesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 140.
-LaTeX Font Info:    ... okay on input line 140.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 140.
-LaTeX Font Info:    ... okay on input line 140.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 140.
-LaTeX Font Info:    ... okay on input line 140.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 140.
-LaTeX Font Info:    ... okay on input line 140.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 140.
-LaTeX Font Info:    ... okay on input line 140.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 140.
-LaTeX Font Info:    ... okay on input line 140.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 140.
-LaTeX Font Info:    ... okay on input line 140.
-LaTeX Font Info:    Try loading font information for OT1+ppl on input line 140.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 142.
+LaTeX Font Info:    ... okay on input line 142.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 142.
+LaTeX Font Info:    ... okay on input line 142.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 142.
+LaTeX Font Info:    ... okay on input line 142.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 142.
+LaTeX Font Info:    ... okay on input line 142.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 142.
+LaTeX Font Info:    ... okay on input line 142.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 142.
+LaTeX Font Info:    ... okay on input line 142.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 142.
+LaTeX Font Info:    ... okay on input line 142.
+LaTeX Font Info:    Try loading font information for OT1+ppl on input line 142.
 
  (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1ppl.fd
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
 )
 (/usr/local/texlive/2016/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count166
+\scratchcounter=\count167
 \scratchdimen=\dimen272
-\scratchbox=\box50
-\nofMPsegments=\count167
-\nofMParguments=\count168
-\everyMPshowfont=\toks49
-\MPscratchCnt=\count169
+\scratchbox=\box52
+\nofMPsegments=\count168
+\nofMParguments=\count169
+\everyMPshowfont=\toks51
+\MPscratchCnt=\count170
 \MPscratchDim=\dimen273
-\MPnumerator=\count170
-\makeMPintoPDFobject=\count171
-\everyMPtoPDFconversion=\toks50
+\MPnumerator=\count171
+\makeMPintoPDFobject=\count172
+\everyMPtoPDFconversion=\toks52
 ) (/usr/local/texlive/2016/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
 
@@ -1298,17 +1306,18 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-\AtBeginShipoutBox=\box51
-Package hyperref Info: Link coloring OFF on input line 140.
-LaTeX Info: Redefining \ref on input line 140.
-LaTeX Info: Redefining \pageref on input line 140.
-LaTeX Info: Redefining \nameref on input line 140.
+\AtBeginShipoutBox=\box53
+Package hyperref Info: Link coloring OFF on input line 142.
+LaTeX Info: Redefining \ref on input line 142.
+LaTeX Info: Redefining \pageref on input line 142.
+LaTeX Info: Redefining \nameref on input line 142.
 
 (./thesis.out) (./thesis.out)
 \@outlinefile=\write4
 \openout4 = `thesis.out'.
 
 Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: float package is loaded.
 Package caption Info: End \AtBeginDocument code.
  ABD: EveryShipout initializing macros
 *geometry* driver: auto-detecting
@@ -1318,7 +1327,7 @@ Package caption Info: End \AtBeginDocument code.
 * paper: <default>
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
-* modes:
+* modes: 
 * h-part:(L,W,R)=(89.6271pt, 418.25372pt, 89.6271pt)
 * v-part:(T,H,B)=(101.40665pt, 591.53027pt, 152.11002pt)
 * \paperwidth=597.50793pt
@@ -1346,27 +1355,27 @@ Package caption Info: End \AtBeginDocument code.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 142.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 144.
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 142.
-LaTeX Font Info:    Try loading font information for U+msa on input line 142.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 144.
+LaTeX Font Info:    Try loading font information for U+msa on input line 144.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 142.
+LaTeX Font Info:    Try loading font information for U+msb on input line 144.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+lasy on input line 142.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 144.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/base/ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <8> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 142.
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 144.
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <6> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 142.
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 144.
 Package epstopdf Info: Source file: <illclogo.eps>
 (epstopdf)                    date: 2019-04-29 00:26:20
 (epstopdf)                    size: 92608 bytes
@@ -1375,14 +1384,14 @@ Package epstopdf Info: Source file: <illclogo.eps>
 (epstopdf)                    size: 22835 bytes
 (epstopdf)             Command: <repstopdf --outfile=illclogo-eps-converted-to.
 pdf illclogo.eps>
-(epstopdf)             \includegraphics on input line 142.
+(epstopdf)             \includegraphics on input line 144.
 Package epstopdf Info: Output file is already uptodate.
 
 <illclogo-eps-converted-to.pdf, id=404, 356.33125pt x 56.21pt>
 File: illclogo-eps-converted-to.pdf Graphic file (type pdf)
 
 <use illclogo-eps-converted-to.pdf>
-Package pdftex.def Info: illclogo-eps-converted-to.pdf used on input line 142.
+Package pdftex.def Info: illclogo-eps-converted-to.pdf used on input line 144.
 (pdftex.def)             Requested size: 356.33037pt x 56.20985pt.
  [1
 
@@ -1391,10 +1400,10 @@ Package pdftex.def Info: illclogo-eps-converted-to.pdf used on input line 142.
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./illcl
 ogo-eps-converted-to.pdf>]
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 144.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 148.
  [2]
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <20.74> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 162.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 158.
 
 (./thesis.toc [3
 
@@ -1406,6 +1415,21 @@ LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <20.74> not available
 
 ]
 chapter 1.
+
+Class scrreprt Warning: \float@addtolists detected!
+(scrreprt)              Implementation of \float@addtolist became
+(scrreprt)              deprecated in KOMA-Script v3.01 2008/11/14 and
+(scrreprt)              has been replaced by several more flexible
+(scrreprt)              features of package `tocbasic`.
+(scrreprt)              Since Version 3.12 support for deprecated
+(scrreprt)              \float@addtolist interface has been
+(scrreprt)              restricted to only some of the KOMA-Script
+(scrreprt)              features and been removed from others.
+(scrreprt)              Loading of package `scrhack' may help to
+(scrreprt)              avoid this warning, if you are using a
+(scrreprt)              a package that still implements the
+(scrreprt)              deprecated \float@addtolist interface .
+
 (../01-introduction/introduction.tex [7
 
 ]
@@ -1423,13 +1447,13 @@ LaTeX Font Info:    Try loading font information for OT1+pcr on input line 115.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 ))
-Overfull \hbox (4.63266pt too wide) in paragraph at lines 115--172
+Overfull \hbox (4.63266pt too wide) in paragraph at lines 115--168
 []\OT1/ppl/m/n/10.95 Our im-ple-men-ta-tions are avail-able at []$\OT1/pcr/m/n/
 10.95 https : / / github . com / daandouwe / thesis$[]\OT1/ppl/m/n/10.95 .
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 115--172
+Underfull \hbox (badness 10000) in paragraph at lines 115--168
 
  []
 
@@ -1446,10 +1470,10 @@ LaTeX Font Info:    Font shape `U/lasy/b/n' in size <5> not available
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...
-
-l.17
-
+ ...                                              
+                                                  
+l.17 
+     
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1470,10 +1494,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...
-
-l.17
-
+ ...                                              
+                                                  
+l.17 
+     
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1494,10 +1518,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...
-
-l.17
-
+ ...                                              
+                                                  
+l.17 
+     
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1518,10 +1542,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...
-
-l.17
-
+ ...                                              
+                                                  
+l.17 
+     
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1542,10 +1566,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...
-
-l.17
-
+ ...                                              
+                                                  
+l.17 
+     
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1566,10 +1590,10 @@ To make it work for now, you can use the already also deprecated class option
 
 See the scrreprt class documentation for explanation.
 Type  H <return>  for immediate help.
- ...
-
-l.17
-
+ ...                                              
+                                                  
+l.17 
+     
 You should note that since 1994 LaTeX2e provides a new font selection scheme
 called NFSS2 with several new, combinable font commands. New KOMA-Script
 classes have defined the old font commands like `\rm' only for compatibility
@@ -1610,7 +1634,7 @@ Package pdftex.def Info: ../figures/trees/npi-unlicensed.pdf used on input line
 LaTeX Font Info:    Try loading font information for OMS+ppl on input line 71.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omsppl.fd
-File: omsppl.fd
+File: omsppl.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 71.
@@ -1620,7 +1644,7 @@ LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10.95> not available
 * paper: <default>
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
-* modes:
+* modes: 
 * h-part:(L,W,R)=(89.6271pt, 418.25372pt, 89.6271pt)
 * v-part:(T,H,B)=(28.45274pt, 788.14145pt, 28.45274pt)
 * \paperwidth=597.50793pt
@@ -1697,7 +1721,7 @@ Package pdftex.def Info: ../figures/sample-experiment/fscore/disc_temp.pdf used
 * paper: <default>
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
-* modes:
+* modes: 
 * h-part:(L,W,R)=(89.6271pt, 418.25372pt, 89.6271pt)
 * v-part:(T,H,B)=(101.40665pt, 591.53027pt, 152.11002pt)
 * \paperwidth=597.50793pt
@@ -1790,7 +1814,7 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 * paper: <default>
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
-* modes:
+* modes: 
 * h-part:(L,W,R)=(89.6271pt, 418.25372pt, 89.6271pt)
 * v-part:(T,H,B)=(14.22636pt, 816.59421pt, 14.22636pt)
 * \paperwidth=597.50793pt
@@ -1844,7 +1868,7 @@ DF inclusion: multiple pdfs with page group included in a single page
 >] (../figures/normal-form/cnf-valid.tex)
 (../figures/normal-form/cnf-invalid.tex)
 Overfull \hbox (2.0805pt too wide) in paragraph at lines 371--383
-[][] []
+[][] [] 
  []
 
 [54
@@ -1864,725 +1888,38 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[65] [66]
-! You can't use `macro parameter character #' in horizontal mode.
-<argument> ... talk: https://vimeo.com/234957682##
-                                                  t=601s.
-l.153 ...alk: https://vimeo.com/234957682#t=601s.}
-                                                   Although this does circum...
-Sorry, but I'm not programmed to handle this case;
-I'll just pretend that you didn't ask for it.
-If you're in the wrong mode, you might be able to
-return to the right one by typing `I}' or `I$' or `I\par'.
-
-[67]) [68]
+[65] [66] [67]) [68]
 chapter 6.
 (../06-syneval/syneval.tex [69
 
 ] [70]
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.36
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.36
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.36
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.36
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.36
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.36
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.36
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.36
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.36
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.36
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.40
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.40
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.40
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.40
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.40
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.40
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.40
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.40
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.40
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.40
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.44
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.44
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.44
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.44
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.44
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.44
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.44
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.44
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-! Class scrreprt Error: undefined old font command `\rm'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...
-
-l.44
-
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. New KOMA-Script
-classes have defined the old font commands like `\rm' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warn abouts soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\rm', e.g., by `\normalfont \rmfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\rm' yourself,
-you should replace it, e.g., by `\normalfont \rmfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-[71] [72] [73] (../tables/lm-perplexities.tex) [74] [75] [76]
+Runaway argument?
+! Paragraph ended before \@vspace was complete.
+<to be read again> 
+                   \par 
+l.71 
+     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+Runaway argument?
+! Paragraph ended before \@vspace was complete.
+<to be read again> 
+                   \par 
+l.82 
+     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+[71] [72] [73] [74] (../tables/lm-perplexities.tex) [75] [76] [77]
 *geometry* verbose mode - [ newgeometry ] result:
 * driver: pdftex
 * paper: <default>
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
-* modes:
+* modes: 
 * h-part:(L,W,R)=(89.6271pt, 418.25372pt, 89.6271pt)
 * v-part:(T,H,B)=(14.22636pt, 816.59421pt, 14.22636pt)
 * \paperwidth=597.50793pt
@@ -2610,60 +1947,60 @@ To make it work for now, you can use the already also deprecated class option
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 
-<../figures/syneval/all_large-font.pdf, id=2161, 1132.33035pt x 1985.99767pt>
+<../figures/syneval/all_large-font.pdf, id=2179, 1132.33035pt x 1985.99767pt>
 File: ../figures/syneval/all_large-font.pdf Graphic file (type pdf)
 
 <use ../figures/syneval/all_large-font.pdf>
 Package pdftex.def Info: ../figures/syneval/all_large-font.pdf used on input li
-ne 117.
+ne 165.
 (pdftex.def)             Requested size: 418.25372pt x 733.56519pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[77 <../figures/syneval/all_large-font.pdf>]
-<../figures/syneval/all-averaged.pdf, id=2182, 782.77693pt x 426.30957pt>
+[78 <../figures/syneval/all_large-font.pdf>]
+<../figures/syneval/all-averaged.pdf, id=2200, 782.77693pt x 426.30957pt>
 File: ../figures/syneval/all-averaged.pdf Graphic file (type pdf)
 
 <use ../figures/syneval/all-averaged.pdf>
 Package pdftex.def Info: ../figures/syneval/all-averaged.pdf used on input line
- 125.
+ 173.
 (pdftex.def)             Requested size: 376.4258pt x 205.01006pt.
 
-<../figures/syneval/rnng_lm_horizontal.pdf, id=2183, 1486.98665pt x 900.28534pt
+<../figures/syneval/rnng_lm_horizontal.pdf, id=2201, 1486.98665pt x 900.28534pt
 >
 File: ../figures/syneval/rnng_lm_horizontal.pdf Graphic file (type pdf)
  <use ../figures/syneval/rnng_lm_horizontal.pdf>
 Package pdftex.def Info: ../figures/syneval/rnng_lm_horizontal.pdf used on inpu
-t line 132.
+t line 180.
 (pdftex.def)             Requested size: 418.25372pt x 253.21837pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-<../figures/syneval/rnng_lm_no-unk_horizontal.pdf, id=2184, 1486.98665pt x 900.
+<../figures/syneval/rnng_lm_no-unk_horizontal.pdf, id=2202, 1486.98665pt x 900.
 28534pt>
 File: ../figures/syneval/rnng_lm_no-unk_horizontal.pdf Graphic file (type pdf)
  <use ../figures/syneval/rnng_lm_no-unk_horizontal.pdf>
-Package pdftex.def Info: ../figures/syneval/rnng_lm_no-unk_horizontal.pdf used
-on input line 139.
+Package pdftex.def Info: ../figures/syneval/rnng_lm_no-unk_horizontal.pdf used 
+on input line 187.
 (pdftex.def)             Requested size: 418.25372pt x 253.21837pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-) [78
+) [79
 
 
- <../figures/syneval/all-averaged.pdf>] [79 <../figures/syneval/rnng_lm_horizon
+ <../figures/syneval/all-averaged.pdf>] [80 <../figures/syneval/rnng_lm_horizon
 tal.pdf> <../figures/syneval/rnng_lm_no-unk_horizontal.pdf
 
 pdfTeX warning: pdflatex (file ../figures/syneval/rnng_lm_no-unk_horizontal.pdf
 ): PDF inclusion: multiple pdfs with page group included in a single page
 >]
 chapter 7.
-(../07-conclusion/conclusion.tex [80
+(../07-conclusion/conclusion.tex [81
 
 ]
 Overfull \hbox (4.4659pt too wide) in paragraph at lines 13--14
@@ -2676,11 +2013,11 @@ Overfull \hbox (15.43765pt too wide) in paragraph at lines 16--17
 NNG
  []
 
-[81]) [82]
+[82]) [83]
 chapter A.
-(../09-app-implementation/implementation.tex [83
+(../09-app-implementation/implementation.tex [84
 
-] [84]) [85] [86]
+] [85]) [86] [87]
 chapter B.
 (../10-app-crf/crf.tex (../figures/hypergraph/hypergraph.tex
 ! Double superscript.
@@ -2688,39 +2025,39 @@ l.44 ... at ($(S)+(0,2)$){$\text{S}^{\dagger}_{0}^
                                                   {6}$} ;
 I treat `x^1^2' essentially like `x^1{}^2'.
 
-) [87
+) [88
 
-] [88] [89] [90] [91]) [92]
+] [89] [90] [91] [92]) [93]
 chapter C.
 (../11-app-vi/vi.tex
 Overfull \hbox (27.85591pt too wide) in paragraph at lines 23--23
-[]
+[] 
  []
 
-[93
+[94
 
-] [94] [95] [96] [97]) [98]
+] [95] [96] [97] [98]) [99]
 chapter D.
 (../12-app-syneval/syneval.tex
 LaTeX Font Info:    Font shape `OT1/ppl/bx/it' in size <10.95> not available
 (Font)              Font shape `OT1/ppl/b/it' tried instead on input line 41.
- [99
+ [100
 
-]) (./thesis.bbl [100] [101
+]) (./thesis.bbl [101] [102
 
-] [102] [103]
+] [103] [104]
 Underfull \hbox (badness 2698) in paragraph at lines 317--321
 []\OT1/ppl/m/n/10.95 Yoav Gold-berg and Joakim Nivre.  Train-ing de-ter-min-is-
 tic parsers with non-
  []
 
-[104]
+[105]
 Underfull \hbox (badness 2111) in paragraph at lines 415--419
-[]\OT1/ppl/m/n/10.95 Yoon Kim, Alexan-der M Rush, Lei Yu, Ad-hi-guna Kun-coro,
+[]\OT1/ppl/m/n/10.95 Yoon Kim, Alexan-der M Rush, Lei Yu, Ad-hi-guna Kun-coro, 
 Chris Dyer, and
  []
 
-[105] [106] [107]
+[106] [107] [108]
 ! Misplaced alignment tab character &.
 <argument> Computer Speech &
                              Language
@@ -2733,41 +2070,45 @@ up above has ended a previous alignment prematurely,
 you're probably due for more error messages, and you
 might try typing `S' now just to see what is salvageable.
 
-[108] [109] [110]) [111]
+[109] [110] [111]) [112]
 
 ! LaTeX Error: \begin{example} on input line 121 ended by \end{document}.
 
 See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
- ...
-
-l.231 \end{document}
-
+ ...                                              
+                                                  
+l.227 \end{document}
+                    
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 231.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 231.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 227.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 227.
 (./thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 231.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 231.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 227.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 227.
 Package rerunfilecheck Info: File `thesis.out' has not changed.
 (rerunfilecheck)             Checksum: B52E60C5ECC287AA2DF6DAA8A95B5590;6236.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 231.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 227.
  )
 (\end occurred inside a group at level 1)
 
 ### semi simple group (level 1) entered at line 121 (\begingroup)
-### bottom level
+### bottom level 
 Here is how much of TeX's memory you used:
- 27303 strings out of 493014
- 508249 string characters out of 6133351
- 719171 words of memory out of 5000000
- 29597 multiletter control sequences out of 15000+600000
+ 28475 strings out of 493014
+ 530509 string characters out of 6133351
+ 750069 words of memory out of 5000000
+ 30758 multiletter control sequences out of 15000+600000
  45375 words of font info for 127 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 73i,19n,77p,8548b,1412s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 73i,19n,77p,8548b,1461s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc
 }</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb>
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></
@@ -2795,9 +2136,10 @@ e1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw
 no/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/palatino/uplr
 i8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></
 usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
-Output written on thesis.pdf (111 pages, 1436062 bytes).
+Output written on thesis.pdf (112 pages, 1442170 bytes).
 PDF statistics:
- 2970 PDF objects out of 2984 (max. 8388607)
- 2463 compressed objects within 25 object streams
- 609 named destinations out of 1000 (max. 500000)
+ 2992 PDF objects out of 3580 (max. 8388607)
+ 2484 compressed objects within 25 object streams
+ 616 named destinations out of 1000 (max. 500000)
  875 words of extra memory for PDF output out of 10000 (max. 10000000)
+

@@ -282,7 +282,7 @@ In this chapter:
       \begin{align*}
         \argmax_y \ptheta( \y \mid \x ) = \argmax_y \ptheta(\x, \y),
       \end{align*}
-      which is precisely what we wanted. For this approximation it is thus beneficial for the proposal model $\qlambda(\y \mid \x)$ to be `close to' the true posterior $\ptheta(\y \mid \x)$. \footnote{The notion of `close to' is made precise in variational inference as the KL divergence between $\qlambda$ and the true posterior in a setup similar to this. About this more in chapter \ref{05-semisupervised}.}
+      which is precisely what we wanted. For this approximation it is thus beneficial for the proposal model $\qlambda(\y \mid \x)$ to be `close to' the true posterior $\ptheta(\y \mid \x)$. \footnote{The notion of `close to' is made precise in variational inference as the KL divergence between $\qlambda$ and the true posterior in a setup similar to this. More about this in chapter \ref{05-semisupervised}.}
 
     \paragraph{Proposal distribution}
       The proposal distribution must have a support that covers that of the joint model. This corresponds to the property that for all $\x$ and $\y \in \yieldx$

@@ -21,6 +21,7 @@
 \usepackage{multirow}
 \usepackage{bbm}
 \usepackage{bm}
+\usepackage{float}
 
 \usepackage{natbib}
 \usepackage{todonotes}
@@ -130,6 +131,7 @@
 \birthplace{Amsterdam, The Netherlands}
 \defensedate{May 24, 2019}
 \supervisor{Dr. Wilker Aziz}
+\committeemember{Dr. Wilker Aziz}
 \committeemember{Dr. Caio Corro}
 % \committeemember{Prof. Dr. Khalil Sima`an}
 \committeemember{Dr. Ekaterina Shutova}
@@ -141,18 +143,12 @@
 \maketitle
 
 
+% We study neural language models that are obtained by approximate marginalization of the recurrent neural network grammar (RNNG), a joint model of sentences and their syntactic structure.
+
 \begin{abstract}
-  We study neural language models that are obtained by approximate marginalization of the recurrent neural network grammar (RNNG), a joint model of sentences and their syntactic structure. [Problem] Supervised RNNGs produce competitive language models, but the intractable sum over the structured variable complicates learning from unlabeled data in which the structure is latent. [The effectiveness of approximate learning with variational inference will depend on the quality of the posterior approximation.] [How] We introduce a neural conditional random field (CRF) constituency parser that can be used as alternative proposal model for approximate inference of a supervised RNNG, and experiment with the CRF as approximate posterior in variational learning, in which we learn both models jointly by optimizing a lower bound on the marginal likelihood. This opens the door to semisupervised and unsupervised learning. [Why] The CRF formulation of the parser allows the exact computation of key quantities involved in the computation of the lower bound, and the global normalization provides a robust distribution for the sampling based gradient estimation. [Results] Preliminary results with unlabeled trees suggest the potential of this approach for unsupervised $n$-ary tree induction, and we formulate future work towards this goal. Finally, to evaluate how the joint formulation differentiates the RNNG from other neural language models we perform targeted syntactic evaluation and compare its performance with that of alternative models that are based on multitask learning.
+  We study neural language models that are obtained by marginalizing tree latent variables in the recurrent neural network grammar (RNNG), a joint model of sentences and their syntactic structure. [Problem] Supervised RNNGs produce competitive language models, but the intractable sum over the structured variable complicates learning from unlabeled data in which the structure is latent. [The effectiveness of approximate learning with variational inference will depend on the quality of the posterior approximation.] [How] We introduce a neural conditional random field (CRF) constituency parser that can be used as alternative proposal model for approximate inference of a supervised RNNG, and experiment with the CRF as approximate posterior in variational learning, in which we learn both models jointly by optimizing a lower bound on the marginal likelihood. This opens the door to semisupervised and unsupervised learning. [Why] The CRF formulation of the parser allows the exact computation of key quantities involved in the computation of the lower bound, and the global normalization provides a robust distribution for the sampling based gradient estimation. [Results] Preliminary results with unlabeled trees suggest the potential of this approach for unsupervised $n$-ary tree induction, and we formulate future work towards this goal. Finally, to evaluate how the joint formulation differentiates the RNNG from other neural language models we perform targeted syntactic evaluation and compare its performance with that of alternative models that are based on multitask learning.
 
-  % In this thesis I investigate the question: \textit{What are effective ways of incorporating syntactic structure into neural language models?}
 
-  % In this thesis I:
-  % \begin{itemize}
-  %   \item study a class of neural language models that merges generative transition-based parsing with recurrent neural networks in order to model sentences together with their latent syntactic structure;
-  %   \item propose a new globally trained chart-based parser as an alternative proposal distribution used in the approximate marginalization;
-  %   \item propose effective methods for semisupervised learning, making the syntactic structure a latent variable;
-  %   \item perform targeted syntactic evaluation and compare the model's performance with that of alternative models that are based on multitask learning.
-  % \end{itemize}
 \end{abstract}
 
 
