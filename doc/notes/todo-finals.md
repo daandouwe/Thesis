@@ -293,14 +293,13 @@ Writing
   - [X] Introduction
   - [X] Result plots.
   - [X] Describe
-  - [ ] All results are rather bad, barely above random. The results reported in the Linzen paper are much better. Probably because of the small dataset.
 
 5. Conclusion
   - [X] Everything
 
 6. VI appendix
   - [X] Baseline section.
-  - [ ] Confusion about baselines and control variates.... Not very relevant though. URNNG people write they use a "control variate". Also, confusion between E[f(X)] and E[f(X) grad_{theta} log p(X)]. Which is one are we dealing with? Clear this up.
+  - [X] Confusion about baselines and control variates.... Not very relevant though. URNNG people write they use a "control variate". Also, confusion between E[f(X)] and E[f(X) grad_{theta} log p(X)]. Which is one are we dealing with? Clear this up.
 
 
 ## April 23
@@ -351,18 +350,20 @@ Notes from discussion with Wilker, and other ideas.
 - [X] Fix ugly ordering of figures: put everything on one page?
 - [X] Add note on binarization, referring to the trees image, note that varnothing is in Lambda.
 - [X] CRF: indicator notation
+- [X] CRF: say that implementation of new inference algorithm is working, solution is easy to implement. But: no results yet (out of time).
+- [X] CRF: say that implementation of new inference algorithm is working, solution is easy to implement. But: no results yet (out of time).
+- [X] Write logscore as cliques prod_{C in mathcal{C}} psi(a_C), with mathcal{C} subseteq mathcal{P}({1,...,m})
+- [X] CRF: say that implementation of new inference algorithm is working, solution is easy to implement. But: no results yet (out of time).
 - [ ] FIX SPEED AND COMPLEXITY IN TRAINING
-
-- [ ] Write logscore as cliques prod_{C in mathcal{C}} psi(a_C), with mathcal{C} subseteq mathcal{P}({1,...,m})
 - [ ] Recall complexity in the training objective, and note dependence also on labelset.
 - [ ] Note that speedup is possible we can speed up by training on less labels. Note though that O(n^3 |G|) = O(n^3 |Lambda|^3)!!! So cubic in the number of
-- [ ] CRF: say that implementation of new inference algorithm is working, solution is easy to implement. But: no results yet (out of time).
 - [ ] CRF: derivational ambiguity consequences, mention that only really problems as proposal, not really as supervised parser. Mention how Stern et al deal with this (asigning same score to all dummy labels).
 - [ ] CRF: make nice point about entropy computation: the difference between the weight of all trees (log Z) and the weight of the expected tree sum_v [log psi(v) mu(v)]
 - [ ] CRF: E_{p(y|x)}[ sum_{v in Y} log psi(x, Y)] = E_{p(y|x)}[log Psi(x, y)] is "expected tree"
 
 ### Syneval
 - [X] Ugly too long trees, draw as figures? Otherwise introduce notation in background.
+- [ ] All results are rather bad, barely above random. The results reported in the Linzen paper are much better. Probably because of the small dataset.
 
 ### Semisup
 - [X] Change entropy notation to H(q(y|x)) (abusing notation)
@@ -385,3 +386,14 @@ Notes from discussion with Wilker, and other ideas.
   3. I'm not sure I understand Caio's work... is it like a reparameterization trick for trees? Like fully differentiable using Gumbels softmax instead of argmax inside an Eisner inference program? But they don't obtain a _hard_ tree, only a _soft_ mixture of trees? Something like that?  And is it differentiable... or not? To avoid embarassing myself (I do not have time to properly read the paper again) I'd like to not include it...
   3. I'm sorry for Jelle that he doesn't get his deserved credit but tbh I don't see the need of citing the TreeLSTM: it is used for encoding in classification models p(c|x) with c some label like sentiment (right?). This does not remotely appear anywhere in my thesis.
   4. I have looked a little bit at the "syntax in features" work that you mention, but I'd like to keep it out of the semisup chapter. Like, the "structured attention" paper (https://arxiv.org/abs/1702.00887) looks suuuuper complicated with the Li en Eisner second order semiring stuff, but as far as I can tell it's just compting some attention weights and averaging vectors, right? Again, not really relevant I feel. I mean, I can discuss it when the questions arise in the presentation, and then I'll just say that: p(x, y1) + p(x, y2)!= p(x, y1 "+" y2) (!)
+
+
+Order of importance:
+1. - [X] Finish abstract
+2. - [ ] Wiler suggestions for semisupervised.
+2. - [ ] Final smoothing of CRF chapter.
+4. - [ ] Syneval mention bad results, and NPI variability.
+5. - [ ] Add that one point about joint models to conclusion.
+6. - [ ] Harmonize intro and conclusion
+7. - [ ] Print thesis
+8. - [ ] Sit down with pencil finding ultimate errors

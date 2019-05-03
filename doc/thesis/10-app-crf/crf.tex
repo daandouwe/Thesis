@@ -123,12 +123,12 @@ The derivation of the inference algorithms in chapter \ref{04-crf} makes use of 
 
   The key result derived by \citet{goodman1999semiring} is that many quantities of interest can be computed by a single recursion but over different semirings. First, we establish the relation between the weight function and the structures encoded in the hypergraph by defining the weight of a derivation and the weight of an entire hypergraph.
 
-  \begin{definition}{(Hypergraph weights)} Let $G_{\omega} = (V, E, \omega)$ be a weighted hypergraph, with $\omega$ defined over a semiring $\mathcal{K}$. We define the weight of the derrivation $D \subseteq E$ as the product of the weights of the edges:
+  \begin{definition}{(Hypergraph weights)} Let $G_{\omega} = (V, E, \omega)$ be a weighted hypergraph, with $\omega$ defined over a semiring $\mathcal{K}$. We define the weight of the derivation $D \subseteq E$ as the product of the weights of the edges:
   \begin{align}
     \label{eq:derivation-weight}
     \bigotimes_{e \in D} \omega(e).
   \end{align}
-  Let $\mathcal{D} \subseteq 2^E$ be the set of all derivations in the hypergraph $G$. Then the total weight of the hypergraph under $\omega$ is defined as the sum of the weights of all the derrivations in it:
+  Let $\mathcal{D} \subseteq 2^E$ be the set of all derivations in the hypergraph $G$. Then the total weight of the hypergraph under $\omega$ is defined as the sum of the weights of all the derivations in it:
   \begin{align}
     \label{eq:hypergraph-weight}
     \bigoplus_{D \in \mathcal{D}} \bigotimes_{e \in D} \omega(e).
@@ -136,7 +136,7 @@ The derivation of the inference algorithms in chapter \ref{04-crf} makes use of 
   \end{definition}
 
   \begin{example}{(CRF parser)}
-    The CRF parser assigns a score $\Psi(\x, \y) \geq 0$ by factorizing over parts of $\y = \{ \y_a \}_{a=1}^{A}$ as a product of potentials $\psi(\x, \y_a) \geq 0$ of the parts. The parts $\y_a$ are the edges in the hyperpath that create the derivation $\y$. In our CRF, thus, the weight function $\omega$ is given by the function $\psi$; the function $\Psi$ is equivalent to equation \ref{eq:derivation-weight}; and the sum over $\yieldx$ is equivalent to equation \ref{eq:hypergraph-weight}.
+    The CRF parser assigns a score $\Psi(\x, \y) \geq 0$ by factorizing over parts of $\y = \{ \y_c \}_{c=1}^{C}$ as a product of potentials $\psi(\x, \y_c) \geq 0$ of the parts. The parts $\y_c$ are the edges in the hyperpath that create the derivation $\y$. In our CRF, thus, the weight function $\omega$ is given by the function $\psi$; the function $\Psi$ is equivalent to equation \ref{eq:derivation-weight}; and the sum over $\yieldx$ is equivalent to equation \ref{eq:hypergraph-weight}.
   \end{example}
 
   \subsection{Inside and outside recursions}
@@ -190,7 +190,7 @@ By instanstiating the inside and outside recursions with different semirings we 
 
 \begin{example}{(Viterbi weight)}
   \label{ex:vit-weight}
-  When we intantiate the inside recursion with the \textit{max-tropical semiring} we get the recursion that computes at each node the subtree of maximum weight. The value $\alpha$ at the root is the weight of the derrivation with the maximum weight
+  When we intantiate the inside recursion with the \textit{max-tropical semiring} we get the recursion that computes at each node the subtree of maximum weight. The value $\alpha$ at the root is the weight of the derivation with the maximum weight
   \begin{align*}
     \alpha(\text{S}^{\dagger}, 0, n) = \log \Psi(\x, \hat{\y}),
   \end{align*}
@@ -207,7 +207,7 @@ By instanstiating the inside and outside recursions with different semirings we 
   \begin{align*}
     \alpha(\text{S}^{\dagger}, 0, n) = \hat{\y}, \qquad \hat{\y} \defeq \argmax_{\y \in \yieldx} p(\y \mid \x).
   \end{align*}
-  Roughly spearking, because although this idea can be made precise by a constructing the \textit{Viterbi-derivation semiring} \citep{goodman1999semiring} over the set of possible derrivations, with corresponding binary operations and set-typed identity elements $\bar{0}$ and $\bar{1}$, it is a litle more complicated than that.\footnote{And most of all, a bit cumbersome.}
+  Roughly spearking, because although this idea can be made precise by a constructing the \textit{Viterbi-derivation semiring} \citep{goodman1999semiring} over the set of possible derivations, with corresponding binary operations and set-typed identity elements $\bar{0}$ and $\bar{1}$, it is a litle more complicated than that.\footnote{And most of all, a bit cumbersome.}
 \end{example}
 
 \begin{example}{(Recognition)}
