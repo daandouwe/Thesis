@@ -352,7 +352,8 @@ Notes from discussion with Wilker, and other ideas.
 - [X] Add note on binarization, referring to the trees image, note that varnothing is in Lambda.
 - [X] CRF: indicator notation
 - [ ] FIX SPEED AND COMPLEXITY IN TRAINING
-- [ ] Write logscore as cliques prod_{c in mathcal{C}} psi(a_c), or as index sets prod_{I} psi(a_I)
+
+- [ ] Write logscore as cliques prod_{C in mathcal{C}} psi(a_C), with mathcal{C} subseteq mathcal{P}({1,...,m})
 - [ ] Recall complexity in the training objective, and note dependence also on labelset.
 - [ ] Note that speedup is possible we can speed up by training on less labels. Note though that O(n^3 |G|) = O(n^3 |Lambda|^3)!!! So cubic in the number of
 - [ ] CRF: say that implementation of new inference algorithm is working, solution is easy to implement. But: no results yet (out of time).
@@ -361,7 +362,7 @@ Notes from discussion with Wilker, and other ideas.
 - [ ] CRF: E_{p(y|x)}[ sum_{v in Y} log psi(x, Y)] = E_{p(y|x)}[log Psi(x, y)] is "expected tree"
 
 ### Syneval
-- [X] Ugly too long trees, draw as trees? Otherwise introduce notation in background.
+- [X] Ugly too long trees, draw as figures? Otherwise introduce notation in background.
 
 ### Semisup
 - [X] Change entropy notation to H(q(y|x)) (abusing notation)

@@ -252,8 +252,6 @@ INPUT /usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/palatino.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/palatino.sty
-INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/epigraph/epigraph.sty
-INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/epigraph/epigraph.sty
 INPUT /usr/local/texlive/2016/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryarrows.code.tex
 INPUT /usr/local/texlive/2016/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryarrows.code.tex
 INPUT /usr/local/texlive/2016/texmf-dist/tex/generic/pgf/libraries/pgflibraryarrows.code.tex
