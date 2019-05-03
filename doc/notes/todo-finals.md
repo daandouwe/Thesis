@@ -387,10 +387,9 @@ Notes from discussion with Wilker, and other ideas.
   3. I'm sorry for Jelle that he doesn't get his deserved credit but tbh I don't see the need of citing the TreeLSTM: it is used for encoding in classification models p(c|x) with c some label like sentiment (right?). This does not remotely appear anywhere in my thesis.
   4. I have looked a little bit at the "syntax in features" work that you mention, but I'd like to keep it out of the semisup chapter. Like, the "structured attention" paper (https://arxiv.org/abs/1702.00887) looks suuuuper complicated with the Li en Eisner second order semiring stuff, but as far as I can tell it's just compting some attention weights and averaging vectors, right? Again, not really relevant I feel. I mean, I can discuss it when the questions arise in the presentation, and then I'll just say that: p(x, y1) + p(x, y2)!= p(x, y1 "+" y2) (!)
 
-
 Order of importance:
 1. - [X] Finish abstract
-2. - [ ] Wiler suggestions for semisupervised.
+2. - [X] Wiler suggestions for semisupervised.
 2. - [ ] Final smoothing of CRF chapter.
 4. - [ ] Syneval mention bad results, and NPI variability.
 5. - [ ] Add that one point about joint models to conclusion.

@@ -1,4 +1,4 @@
-\begin{thebibliography}{122}
+\begin{thebibliography}{127}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -178,6 +178,12 @@ Christopher~M Conway and David~B Pisoni.
   its relation to language processing.
 \newblock \emph{Annals of the New York Academy of Sciences}, 1145\penalty0
   (1):\penalty0 113--131, 2008.
+
+\bibitem[Corro and Titov(2018)]{corro2018differentiable}
+Caio Corro and Ivan Titov.
+\newblock Differentiable perturb-and-parse: Semi-supervised parsing with a
+  structured variational autoencoder.
+\newblock \emph{arXiv preprint arXiv:1807.09875}, 2018.
 
 \bibitem[Cross and Huang(2016)]{cross2016span}
 James Cross and Liang Huang.
@@ -383,6 +389,11 @@ Richard Hudson.
 \newblock \emph{An introduction to word grammar}.
 \newblock Cambridge University Press, 2010.
 
+\bibitem[Jang et~al.(2017)Jang, Gu, and Poole]{jang2017gumbel}
+Eric Jang, Shixiang Gu, and Ben Poole.
+\newblock Categorical reparameterization with gumbel-softmax.
+\newblock \emph{ICLR}, 2017.
+
 \bibitem[Jelinek(1997)]{jelinek1997information}
 Frederick Jelinek.
 \newblock Information extraction from speech and text, chapter 8, 1997.
@@ -421,6 +432,11 @@ Yoon Kim, Alexander~M Rush, Lei Yu, Adhiguna Kuncoro, Chris Dyer, and G{\'a}bor
 Diederik~P. Kingma and Jimmy Ba.
 \newblock Adam: {A} method for stochastic optimization.
 \newblock \emph{CoRR}, abs/1412.6980, 2014.
+
+\bibitem[Kingma and Welling(2014)]{kingma2014vae}
+Diederik~P. Kingma and Max Welling.
+\newblock Auto-encoding variational bayes.
+\newblock In \emph{International Conference on Learning Representations}, 2014.
 
 \bibitem[Kitaev and Klein(2018)]{kitaev2018attentive}
 Nikita Kitaev and Dan Klein.
@@ -499,6 +515,12 @@ Tal Linzen, Emmanuel Dupoux, and Yoav Goldberg.
   dependencies.
 \newblock \emph{Transactions of the Association for Computational Linguistics},
   4:\penalty0 521--535, 2016.
+
+\bibitem[Maddison et~al.(2017)Maddison, Mnih, and Teh]{maddison2017concrete}
+Chris~J Maddison, Andriy Mnih, and Yee~Whye Teh.
+\newblock The concrete distribution: A continuous relaxation of discrete random
+  variables.
+\newblock \emph{ICLR}, 2017.
 
 \bibitem[Marcus et~al.(1994)Marcus, Kim, Marcinkiewicz, MacIntyre, Bies,
   Ferguson, Katz, and Schasberger]{marcus1994annotating}
@@ -650,6 +672,14 @@ Steven~J. Rennie, Etienne Marcheret, Youssef Mroueh, Jarret Ross, and Vaibhava
 \newblock Self-critical sequence training for image captioning.
 \newblock \emph{2017 IEEE Conference on Computer Vision and Pattern Recognition
   (CVPR)}, pages 1179--1195, 2017.
+
+\bibitem[Rezende et~al.(2014)Rezende, Mohamed, and Wierstra]{rezende2014dgm}
+Danilo~Jimenez Rezende, Shakir Mohamed, and Daan Wierstra.
+\newblock Stochastic backpropagation and approximate inference in deep
+  generative models.
+\newblock In \emph{Proceedings of the 31th International Conference on Machine
+  Learning, {ICML} 2014, Beijing, China, 21-26 June 2014}, pages 1278--1286,
+  2014.
 
 \bibitem[Roark(2001)]{roark2001probabilistic}
 Brian Roark.

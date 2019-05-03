@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1556835738 "semisupervised.tex" "semisupervised.pdf" "semisupervised" 1556835738
+["pdflatex"] 1556906413 "semisupervised.tex" "semisupervised.pdf" "semisupervised" 1556906413
   "/usr/local/texlive/2016/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmti10.tfm" 1136768653 1480 aa8e34af0eb6a2941b776984cf1dfdc4 ""
@@ -8,7 +8,7 @@
   "/usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt" 1485894833 3873397 68ff021935db8719c30e28db2297c232 ""
   "/usr/local/texlive/2016/texmf.cnf" 1463979140 577 2938757e76f31531e65cc647e3507693 ""
   "semisupervised.aux" 1548866322 8 a94a2480d3289e625eea47cd1b285758 ""
-  "semisupervised.tex" 1556835737 21567 810ee5dd5c7826920075bf6e260d29f9 ""
+  "semisupervised.tex" 1556906412 26087 128ddff3b7abf040886280a1142a4171 ""
   (generated)
   "semisupervised.pdf"
   "semisupervised.log"

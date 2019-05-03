@@ -72,43 +72,43 @@
 \contentsline {subsection}{\numberline {5.3.1}RNNG posterior}{66}{subsection.5.3.1}
 \contentsline {subsection}{\numberline {5.3.2}CRF posterior}{67}{subsection.5.3.2}
 \contentsline {section}{\numberline {5.4}Related work}{68}{section.5.4}
-\contentsline {chapter}{\numberline {6}Syntactic evaluation}{69}{chapter.6}
-\contentsline {section}{\numberline {6.1}Syntactic evaluation}{69}{section.6.1}
-\contentsline {subsection}{\numberline {6.1.1}Dataset}{70}{subsection.6.1.1}
-\contentsline {subsection}{\numberline {6.1.2}RNNG}{71}{subsection.6.1.2}
-\contentsline {section}{\numberline {6.2}Multitask learning}{73}{section.6.2}
-\contentsline {subsection}{\numberline {6.2.1}Multitask objective}{73}{subsection.6.2.1}
-\contentsline {subsection}{\numberline {6.2.2}Models}{74}{subsection.6.2.2}
-\contentsline {paragraph}{\nonumberline Word labeling}{74}{section*.34}
-\contentsline {paragraph}{\nonumberline Span labeling}{74}{section*.35}
-\contentsline {section}{\numberline {6.3}Experiments}{75}{section.6.3}
-\contentsline {subsection}{\numberline {6.3.1}Setup}{75}{subsection.6.3.1}
-\contentsline {subsection}{\numberline {6.3.2}Results}{76}{subsection.6.3.2}
-\contentsline {section}{\numberline {6.4}Related work}{79}{section.6.4}
-\contentsline {chapter}{\numberline {7}Conclusion}{81}{chapter.7}
-\contentsline {section}{\numberline {7.1}Main contributions}{81}{section.7.1}
-\contentsline {section}{\numberline {7.2}Future work}{82}{section.7.2}
-\contentsline {chapter}{\numberline {A}Implementation}{84}{appendix.A}
-\contentsline {section}{\numberline {A.1}Data}{84}{section.A.1}
-\contentsline {subsection}{\numberline {A.1.1}Datasets}{84}{subsection.A.1.1}
-\contentsline {paragraph}{\nonumberline Penn Treebank}{84}{section*.41}
-\contentsline {paragraph}{\nonumberline CCG supertags}{84}{section*.42}
-\contentsline {paragraph}{\nonumberline One Billion Word Benchmark}{85}{section*.43}
-\contentsline {subsection}{\numberline {A.1.2}Vocabularies}{85}{subsection.A.1.2}
-\contentsline {paragraph}{\nonumberline Unknown words}{85}{section*.44}
-\contentsline {paragraph}{\nonumberline Embeddings}{86}{section*.45}
-\contentsline {section}{\numberline {A.2}Implementation}{86}{section.A.2}
-\contentsline {paragraph}{\nonumberline Optimization}{86}{section*.47}
-\contentsline {chapter}{\numberline {B}Semiring parsing}{88}{appendix.B}
-\contentsline {section}{\numberline {B.1}Hypergraph}{88}{section.B.1}
-\contentsline {section}{\numberline {B.2}Semiring}{89}{section.B.2}
-\contentsline {section}{\numberline {B.3}Semiring parsing}{90}{section.B.3}
-\contentsline {subsection}{\numberline {B.3.1}Inside and outside recursions}{91}{subsection.B.3.1}
-\contentsline {subsection}{\numberline {B.3.2}Instantiated recursions}{92}{subsection.B.3.2}
-\contentsline {chapter}{\numberline {C}Variational inference}{94}{appendix.C}
-\contentsline {section}{\numberline {C.1}Score function estimator}{94}{section.C.1}
-\contentsline {section}{\numberline {C.2}Variance reduction}{95}{section.C.2}
-\contentsline {subsection}{\numberline {C.2.1}Control variate}{95}{subsection.C.2.1}
-\contentsline {subsection}{\numberline {C.2.2}Baseline}{98}{subsection.C.2.2}
-\contentsline {section}{\numberline {C.3}Optimization}{98}{section.C.3}
-\contentsline {chapter}{\numberline {D}Syneval dataset}{100}{appendix.D}
+\contentsline {chapter}{\numberline {6}Syntactic evaluation}{70}{chapter.6}
+\contentsline {section}{\numberline {6.1}Syntactic evaluation}{70}{section.6.1}
+\contentsline {subsection}{\numberline {6.1.1}Dataset}{71}{subsection.6.1.1}
+\contentsline {subsection}{\numberline {6.1.2}RNNG}{72}{subsection.6.1.2}
+\contentsline {section}{\numberline {6.2}Multitask learning}{74}{section.6.2}
+\contentsline {subsection}{\numberline {6.2.1}Multitask objective}{74}{subsection.6.2.1}
+\contentsline {subsection}{\numberline {6.2.2}Models}{75}{subsection.6.2.2}
+\contentsline {paragraph}{\nonumberline Word labeling}{75}{section*.34}
+\contentsline {paragraph}{\nonumberline Span labeling}{75}{section*.35}
+\contentsline {section}{\numberline {6.3}Experiments}{76}{section.6.3}
+\contentsline {subsection}{\numberline {6.3.1}Setup}{76}{subsection.6.3.1}
+\contentsline {subsection}{\numberline {6.3.2}Results}{77}{subsection.6.3.2}
+\contentsline {section}{\numberline {6.4}Related work}{80}{section.6.4}
+\contentsline {chapter}{\numberline {7}Conclusion}{82}{chapter.7}
+\contentsline {section}{\numberline {7.1}Main contributions}{82}{section.7.1}
+\contentsline {section}{\numberline {7.2}Future work}{83}{section.7.2}
+\contentsline {chapter}{\numberline {A}Implementation}{85}{appendix.A}
+\contentsline {section}{\numberline {A.1}Data}{85}{section.A.1}
+\contentsline {subsection}{\numberline {A.1.1}Datasets}{85}{subsection.A.1.1}
+\contentsline {paragraph}{\nonumberline Penn Treebank}{85}{section*.41}
+\contentsline {paragraph}{\nonumberline CCG supertags}{85}{section*.42}
+\contentsline {paragraph}{\nonumberline One Billion Word Benchmark}{86}{section*.43}
+\contentsline {subsection}{\numberline {A.1.2}Vocabularies}{86}{subsection.A.1.2}
+\contentsline {paragraph}{\nonumberline Unknown words}{86}{section*.44}
+\contentsline {paragraph}{\nonumberline Embeddings}{87}{section*.45}
+\contentsline {section}{\numberline {A.2}Implementation}{87}{section.A.2}
+\contentsline {paragraph}{\nonumberline Optimization}{87}{section*.47}
+\contentsline {chapter}{\numberline {B}Semiring parsing}{89}{appendix.B}
+\contentsline {section}{\numberline {B.1}Hypergraph}{89}{section.B.1}
+\contentsline {section}{\numberline {B.2}Semiring}{90}{section.B.2}
+\contentsline {section}{\numberline {B.3}Semiring parsing}{91}{section.B.3}
+\contentsline {subsection}{\numberline {B.3.1}Inside and outside recursions}{92}{subsection.B.3.1}
+\contentsline {subsection}{\numberline {B.3.2}Instantiated recursions}{93}{subsection.B.3.2}
+\contentsline {chapter}{\numberline {C}Variational inference}{95}{appendix.C}
+\contentsline {section}{\numberline {C.1}Score function estimator}{95}{section.C.1}
+\contentsline {section}{\numberline {C.2}Variance reduction}{96}{section.C.2}
+\contentsline {subsection}{\numberline {C.2.1}Control variate}{96}{subsection.C.2.1}
+\contentsline {subsection}{\numberline {C.2.2}Baseline}{99}{subsection.C.2.2}
+\contentsline {section}{\numberline {C.3}Optimization}{99}{section.C.3}
+\contentsline {chapter}{\numberline {D}Syneval dataset}{101}{appendix.D}
