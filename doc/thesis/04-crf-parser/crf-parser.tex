@@ -1,4 +1,4 @@
-In the previous chapter we described how inference with the RNNG can be performed using a discriminative proposal model. We there used a discriminative RNNG; in this chapter we introduce an alternative. We introduce a novel neural Conditional Random Field (CRF) parser. The model is a CRF factored over labeled spans, and is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} from margin-based training to global CRF training. The model is defined over normal form trees, but can deal with $n$-ary trees by binarization using a dummy label, and with unary chains by collapsing them to an atomic label.\footnote{\textit{Cf.} figure \ref{fig:trees-ptb} for this normalization process.}. Each of these labels are in turn treated as any other nonterminal label. This solution is adequate for the supervised training of the CRF and its application as parser, but does pose a challenge for the use of this model as proposal for the RNNG. The indifferent treatment of the dummy label causes derivational ambiguity, which in turn causes a subtle mismatch between the set of trees modelled by the CRF and the set of trees modelled by the RNNG. We discuss the effects of the derivational ambiguity and describe solutions at the end of the chapter.
+In the previous chapter we described how inference with the RNNG can be performed using a discriminative proposal model. We there used a discriminative RNNG; in this chapter we introduce an alternative. We introduce a novel neural conditional random field (CRF) parser. The model is a CRF factored over labeled spans, and is an adaptation of the chart-based parser introduced in \citet{stern2017minimal} from margin-based training to global CRF training. The model is defined over normal form trees, but can deal with $n$-ary trees by binarization using a dummy label, and with unary chains by collapsing them to an atomic label.\footnote{\textit{Cf.} figure \ref{fig:trees-ptb} for this normalization process.}. Each of these labels are in turn treated as any other nonterminal label. This solution is adequate for the supervised training of the CRF and its application as parser, but does pose a challenge for the use of this model as proposal for the RNNG. The indifferent treatment of the dummy label causes derivational ambiguity, which in turn causes a subtle mismatch between the set of trees modelled by the CRF and the set of trees modelled by the RNNG. We discuss the effects of the derivational ambiguity and describe solutions at the end of the chapter.
 
 In this chapter:
 \begin{itemize}
@@ -210,27 +210,6 @@ In this chapter:
       Once an edge is sampled, the process is repeated at the nodes in the tail of that edge. We stop when we reach the nodes that span individual words. The sampled edges together then are guaranteed to form a tree. From a compuational point of view, this sampling is very efficient: the scores for the labeled spans need to be computed only once, followed by a single run of the inside and outside algorithm. Beyond this point, no costly computation is required. In our case, where the scores are predicted by a neural network, this means that we need to perfom just a single forward pass. Compare this with a sequential model such as the discriminative RNNG, where each sample requires an separate forward pass.
 
     \paragraph{Entropy}
-      % To compute the entropy $H(Y \mid X = x)$ we need to first introduce the notion of the \textit{maginal probablity} of a node. The marginal of a node $v = (A, i, j)$ in a hypergraph is the probability that it occurs in a tree $\y$ for the sentence $\x$ as governed by the distribution $p$ that we defined on it. Let $V$ be a random variable with the hypergraph nodes $\mathcal{V}(x)$ as sample space, and define
-      % \begin{align}
-      %   P(V = v \mid X = \x)
-      %     &\defeq \expect_Y[ \indicator_{ \{ v \in Y \} } ]  \nonumber \\
-      %     &= \sum_{ \y \in \yieldx } p(\y \mid \x) \indicator_{ \{ v \in y \} }.
-      % \end{align}
-      %
-      % The marginals can be computed from the inside and outside values computed in the real semiring as
-      % \begin{align}
-      %   P(V = v \mid X = \x) = \frac{\alpha(A, i, j) \, \beta(A, i, j)}{Z(\x)},
-      % \end{align}
-      % a result from \citep{goodman1999semiring}.\footnote{This can also be seen by noting that the product of $\alpha(A, i, j)$ and $\beta(A, i, j)$ is the sum over all trees that contain the node $v$, and $Z(\x)$ the sum over all trees in general.} The entropy can then be written as an expectation with respect to these marginals:
-      % \begin{align}
-      %   H(Y \mid X = x)
-      %     &= - \sum_{ \y \in \yieldx } p(\y \mid \x) \log p(\y \mid \x)  \nonumber \\
-      %     &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{v \in \y} \log \psi(\x, v)  \nonumber \\
-      %     &= \log Z(\x) - \sum_{ \y \in \yieldx } p(\y \mid \x) \sum_{ v \in \mathcal{V}(x) } \indicator_{ \{ v \in y \} } \log \psi(\x, v)  \nonumber \\
-      %     &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v)  \sum_{ \y \in \yieldx } \indicator_{ \{ v \in y \} } p(\y \mid \x)  \nonumber \\
-      %     &= \log Z(\x) - \sum_{ v \in \mathcal{V}(x) } \log \psi(\x, v)  P(V = v \mid X = \x)  \nonumber \\
-      %     &=  \log Z(\x) - \expect_V [ \log \psi(\x, V) ].
-      % \end{align}
       To compute the entropy $\entropy(Y \mid X = x)$ we need to first introduce the notion of a \textit{node maginal}. The marginal of a node $v = (A, i, j)$ in a hypergraph is the probability that it occurs in a tree $\y$ for the sentence $\x$, according to the probability distribution $p$ over trees. The node marginal $\mu(v)$ is defined as the expectation
       \begin{align}
         \label{eq:node-marginal}
@@ -261,8 +240,9 @@ In this chapter:
     \mathcal{L}(\theta)
       &= \sum_{(\x, \y) \in \dataset} \log \ptheta(\y \mid \x)
   \end{align*}
-  with respect to the model parameters $\theta$.
+  with respect to the model parameters $\theta$. We now have a closer look at this objective, followed by an discussion of the speed of training.
 
+  \subsection{Objective}
     Writing out the objective for a single example as
     \begin{align*}
       \log \ptheta(\y \mid \x) = \log \Psi(\x, \y) - \log Z(x)
@@ -277,14 +257,12 @@ In this chapter:
     \end{align*}
     maximizing the score of the correct tree, and minimizing the score of the predicted tree.\footnote{The full objective reported in the paper is minimizing the hinge loss $\max \Big(0, 1 - \log \Psi(\x, \y) + \log \Psi(\x, \hat{\y}) \Big)$, and the above is what the actual implementation comes down to. Note that Viterbi ensures that for all $\y$, $\log \Psi(\x, \hat{\y}) \geq \log \Psi(\x, \y)$.} This objective shows a striking similarity with our CRF objective, with one very particular difference. The goal is still to maximize the score of the gold tree. But the minimization that in the CRF objective concerns all possible trees through $Z(x)$, in this objective concerns just the single tree $\hat{\y}$ that was incorrectly predicted. The scores of all other nodes not observed in either tree are not affected directly.
 
-  % \subsection{Speed and complexity}
-  %   The model is slow. Here we will describe how slow it is, and what can be done about it.
-  %   \begin{itemize}
-  %     \item During training the computation time is dominated by two computations: the forward pass with the neural networks that obtains the node scores, and the time complexity of the inside algorithm. The complexity of the and how it depends on both label size and sentence length
-  %     \item Describe how slow the model is to train of CPU (use Lisa times): around 7 hours per epoch, so around 15 days for convergence (around 50 epochs).
-  %     \item Describe how we can speed up linearly by pruning the labelset: we can remove 70\% of labels while keeping 98\% of the training sentences. These labels are mostly very rare unary chains. The speedup we get from this is linear!
-  %     \item Our model is X times slower than the model of \citet{stern2017minimal}. This difference bust be in the inside algorithm. The inside algorithm used by us and the viterbi algorithm used by \citet{stern2017minimal} have the same structure and time complexity. The difference must be in the computation graph built by either computation. The viterbi algorithm builds a sparse computation graph, connecting only nodes that are in a single tree, whereas the computation graph built by the inside algorithm is dense with all trees.
-  %   \end{itemize}
+  \subsection{Speed and complexity}
+
+    During training the computation time is dominated by two computations: the forward pass with the neural networks to obtain the node scores, and the time complexity of the inside algorithm to obtain the lognormalizer. The general time complexity of the inside recursion for normal form rules is $O(n^3 \lvert\mathcal{E}\rvert)$, where $n$ is the sentence length and $\lvert\mathcal{E}\rvert$ is the number of edges in the parse hypergraph. In our case is $\lvert\mathcal{E}\rvert = O(\lvert \Lambda \rvert^3)$, which means that the complexity is cubic in both the sentence length and the number of labels.
+
+    About the sentence length we cannot change much, but over the size of the set $\Lambda$ we have some control. Recall that we deal with unary chains by collapsing then to single, new labels. This has a great impact on the number of labels we use. In fact, out of the full 112 labels obtained in this way, only 32 occur more than 100 times in the entire dataset, and most of the ones that occur less are collapsed unary chain labels. Experimentally we find that moving from a set $\Lambda$ of size 112 to 32 results in more than a $3\times$ speedup. Removing those trees from our training data (and thus the labels from our labelset) we lose less than 2\% or our trees, showing that the unary chains are a relatively scarce phenomenon. We do not experiment with this pruning, and leave investigation into the effects  of it on the parsing accuracy to future research.
+
 
 \section{Experiments}
   This section reports the results of the experiments performed with the CRF parser. We first train the model on the Penn Treebank and show that it is a strong parser. The CRF obtains a higher F1 than the discriminative RNNG when trained with the same number of parameters; an even higher F1 is obtained when or models is trained with the same hyperparameters as the model in \citet{stern2017minimal}. We then use the CRF as an alternative proposal model for the generative RNNG and perform analyses similar to those in chapter \ref{03-rnng}. This use of the CRF leads to some theoretical challenges. We note these, but discuss them in detail in the next section.
@@ -401,7 +379,7 @@ In this chapter:
       \item Viterbi returns the best derivation, not necessarily the best tree. In other words, if $\hat{d} = \argmax_d p(d \mid \x)$ then $g(\hat{d}) \neq \argmax_y p(\y \mid \x)$ in general. This is a situation similar to decoding in latent variable PCFGs \citep{petrov2006learning}, which is known to be intractable \citep{sima2002computational}.
       \item The entropy is over derivations instead over trees, and it is not clear how one relates to the other.
     \end{itemize}
-    The derivational ambiguity does not affect the samples: the probability that we draw $y$ is precisely the probability that we draw any $d$ in $f^{-1}(y)$.
+    The derivational ambiguity does not affect the samples: the probability that we draw $y$ is precisely the probability that we draw any $d$ in $f^{-1}(y)$. Furthermore, these facts do not directly harm the CRF as a parsing model, although the loss in guarantee of the viterbi with respect to \textit{trees} is an unfortunate loss of certainty.
 
   \subsection{Solutions}
     We propose two solutions to this problem:
@@ -410,7 +388,7 @@ In this chapter:
       \item We keep the dummy label, but prune the hyperforest to only contain derivations that are reachable by the normal form transformation. This means that we assign probability zero to all trees that do not correspond to the cannonical normal form that we commited to by choosing the transformation. Because this transformation is very regular, we can easily incorporate this pruning in the inside and outside algorithms.
     \end{enumerate}
 
-    We now describe either solution, starting with the solution of making the CRF deal directly with $m$-ary trees.
+    We now describe either solution, starting with the solution of making the CRF deal directly with $m$-ary trees. However, we can preview that it is the second solution that is most appealing, because its implementation is a straightforward adaptation of our existing algorithms.
 
   \subsection{Unrestricted parse forest}
     One solution, as noted, is to make the parse-forest deal with $m$-ary trees directly. This requires that for each noterminal node, we add incoming edges that contain more than two children in the tail. This needs to be done for each permissible number of children---determined by the width of the span---and for all possible partitions of that size of the span.
@@ -450,7 +428,7 @@ In this chapter:
         &= \displaystyle\bigoplus_{m = 2}^{n - j + i} \displaystyle\bigoplus_{k_0=0}^{i-1} \displaystyle\bigoplus_{k_m = j}^{n} \displaystyle\bigoplus_{k_0 < \cdots < k_a < k_{a+1} < \cdots < k_m} \sigma'(k_0, k_m) \otimes \displaystyle\bigotimes_{ \substack{1 \leq l \leq n \\ l \neq a } } \sigma(k_{l-1}, k_l).
     \end{align*}
 
-    The above two recursions show that this approach is challenging, despite its elegance. Enumerating the sets of partitions is in itself already a nontrivial task.
+    The above two recursions show that this approach is challenging, despite its elegance. Enumerating the sets of partitions is in itself already a nontrivial task. We put our hopes on the second solution, which we move to now.
 
   \subsection{Pruned parse forest}
     Another solution is to prune the parse forest: to keep only those trees that can be obtained by the normal form transformation. Going back to the example at the beginning of the example, this solution asks us to assign probability zero to the right tree, the tree that we cannot obtain by the normal form transformation. Since the transformation that we apply is very regular, we can easily characterize the set of trees that are impossible to derive. In fact, it boils down to one characteristic: a node can have the label $\varnothing$ only when \textit{either} that node spans a single word \textit{or} that node is the right child of its parent node.\footnote{We binarize \textit{rightwards}, thus introducting the dummy labels in that position, and can only ever introduce the dummy label in the left child position when it spans a single word.} That means we should remove from the parse forest all edges of the form illustrated in figure \ref{fig:illegal-edges}. By this same reasoning we conclude that the parse forest should also be rid of all nodes of the form $(\varnothing, 0, j)$ for $j > 1$, which cannot occur in any tree obtained with our transformation.
@@ -497,14 +475,7 @@ In this chapter:
         \sigma'(i-1, j) \otimes \sigma(i-1, i) \oplus \displaystyle\bigoplus_{k=1}^{i-2} \sigma'(k, j) \otimes \tilde{\sigma}(k, i)
     \end{align}
 
-    % Writing this by case gives us
-    % \begin{align*}
-    %   \beta(A, i, j) =
-    %     \begin{cases}
-    %       \sigma'(i-1, j) \otimes \sigma(i-1, i) \oplus \displaystyle\bigoplus_{k=1}^{i-2} \sigma'(k, j) \otimes \tilde{\sigma}(k, i)  &  \mbox{if } A = \varnothing \text{ and } j > i + 1,  \\
-    %       \sigma'(i-1, j) \otimes \sigma(i-1, i) \oplus \displaystyle\bigoplus_{k=1}^{i-2} \sigma'(k, j) \otimes \tilde{\sigma}(k, i) \oplus \displaystyle\bigoplus_{k=j+1}^{n} \sigma'(i, k) \otimes \sigma(j, k)  & \mbox{otherwise.}
-    %     \end{cases}
-    % \end{align*}
+    As demonstrated, this approach yields inside and outside recursions that bear close resemblance to what we have derived in section \ref{sect:inference}. In fact, we have succeeded in adapting the implementation---requiring only a few adaptations---and experiments show that this solves the problem. Preliminary results for the supervised parser shows little difference, but a full evaluation---due to the considerable training time of the model---is left to future work.
 
 \section{Related work}
   The model that we presented regards a constituency tree as a collection of \textit{labeled spans} over a sentence. Earlier CRF models for constituency parsing, both log-linear and neural, factorize trees over \textit{anchored rules} \citep{finkel2008crf,klein2015crf}. This puts most of the expressiveness of the model in the state space of the dynamic program---modelling interactions between subparts of the trees through their interaction in the rules---instead of at the feature level. The model in \citet{stern2017minimal} removes part of this structure, and puts more expressiveness in the input space by using rich neural feature representations conditioning on the entire sentence. The discrete interaction between the local scores remains only at level of labeled spans. This dramatically improves the speed of this model, which will become evident in the next section.
@@ -514,24 +485,3 @@ In this chapter:
   Contrast this with generative parsing based on treebank grammars, where features are not available because the models are not conditional. These models instead rely entirely on detailed rule information. Basic treebank grammars do not parse well because the rules provide too little context, and good results can only be obtained by enriching grammars. The independence assumptions in the grammar are thus typically weakened, not strengtehened. Such approaches lexicalize rules \citep{collins2003head}, annotate the rule with parent and sibling labels \citep{klein2003accurate}, or automatically learn refinements of nonterminal categories \citep{petrov2006learning}.
 
   In terms of the probabilistic model, the closest predecessor to our model is the neural CRF parser of \citet{klein2015crf}, which predicts local potential for anchored rules using a feedfoward network. It differs from our approach in two ways. Their method requires a grammar, extracted from a treebank beforehand, whereas our approach implictly assumes all rules are possible rules in the grammar. Secondly, their scoring function conditions only on the parts of the sentence directly under the rule, dictated by the use of a feedforward network, whereas our scoring function computes a score bassed on representations computed from the entire sequence.
-
-  % Earlier work on CRF parsing consider a tree as a collection of anchored rule productions productions \cite{finkel2008crf,klein2015crf}, and hence define the score of a tree as the product over clique potentials on anchored rules:
-  % \begin{align}
-  %   \log\psi(A \to B \;C, i, k, j) = \log\psi(A, i, j)\\
-  % \end{align}
-  % discarding the rest of the span information. The function is then defined as
-  % \begin{align}
-  %   \label{eq:span-score}
-  %   \log\psi(A, i, j) &\defeq s(i, j, A),
-  % \end{align}
-  % Note that the potential function as defined in \ref{eq:rule-score} disregards most of the information in a binary rule. In particular we see that $B$, $C$ and $k$, the labels and split-point of the children, are discarded.
-
-  % \section{Related work}
-  %   Here I describe related work, and in particular earlier approaches to (neural) CRF-parsing.
-  %   \begin{enumerate}
-  %     \item Of course \citep{stern2017minimal}
-  %     \item CRFs \citep{sutton2012crf}
-  %     \item CRF parsing with linear and nonlinear features \citep{finkel2008crf,klein2015crf}
-  %     \item Attempts to simplify the grammar and thus the state-space of the dynamic program \citep{hall2014less}.
-  %     \item Recent extension of \citet{stern2017minimal}, with same model but different features \citep{kitaev2018attentive}.
-  %   \end{enumerate}

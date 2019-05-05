@@ -357,7 +357,7 @@ Notes from discussion with Wilker, and other ideas.
 - [ ] FIX SPEED AND COMPLEXITY IN TRAINING
 - [ ] Recall complexity in the training objective, and note dependence also on labelset.
 - [ ] Note that speedup is possible we can speed up by training on less labels. Note though that O(n^3 |G|) = O(n^3 |Lambda|^3)!!! So cubic in the number of
-- [ ] CRF: derivational ambiguity consequences, mention that only really problems as proposal, not really as supervised parser. Mention how Stern et al deal with this (asigning same score to all dummy labels).
+- [X] CRF: derivational ambiguity consequences, mention that only really problems as proposal, not really as supervised parser. Mention how Stern et al deal with this (asigning same score to all dummy labels).
 - [ ] CRF: make nice point about entropy computation: the difference between the weight of all trees (log Z) and the weight of the expected tree sum_v [log psi(v) mu(v)]
 - [ ] CRF: E_{p(y|x)}[ sum_{v in Y} log psi(x, Y)] = E_{p(y|x)}[log Psi(x, y)] is "expected tree"
 
@@ -390,8 +390,9 @@ Notes from discussion with Wilker, and other ideas.
 Order of importance:
 1. - [X] Finish abstract
 2. - [X] Wiler suggestions for semisupervised.
-2. - [ ] Final smoothing of CRF chapter.
+2. - [X] Final smoothing of CRF chapter.
 4. - [ ] Syneval mention bad results, and NPI variability.
+
 5. - [ ] Add that one point about joint models to conclusion.
 6. - [ ] Harmonize intro and conclusion
 7. - [ ] Print thesis

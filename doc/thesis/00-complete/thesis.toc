@@ -48,10 +48,12 @@
 \contentsline {paragraph}{\nonumberline Sample}{47}{section*.24}
 \contentsline {paragraph}{\nonumberline Entropy}{47}{section*.25}
 \contentsline {section}{\numberline {4.4}Training}{48}{section.4.4}
-\contentsline {section}{\numberline {4.5}Experiments}{49}{section.4.5}
-\contentsline {subsection}{\numberline {4.5.1}Setup}{49}{subsection.4.5.1}
+\contentsline {subsection}{\numberline {4.4.1}Objective}{48}{subsection.4.4.1}
+\contentsline {subsection}{\numberline {4.4.2}Speed and complexity}{49}{subsection.4.4.2}
+\contentsline {section}{\numberline {4.5}Experiments}{50}{section.4.5}
+\contentsline {subsection}{\numberline {4.5.1}Setup}{50}{subsection.4.5.1}
 \contentsline {subsection}{\numberline {4.5.2}Results}{50}{subsection.4.5.2}
-\contentsline {subsection}{\numberline {4.5.3}Proposal distribution}{50}{subsection.4.5.3}
+\contentsline {subsection}{\numberline {4.5.3}Proposal distribution}{51}{subsection.4.5.3}
 \contentsline {subsection}{\numberline {4.5.4}Analysis}{51}{subsection.4.5.4}
 \contentsline {section}{\numberline {4.6}Trees and derivations}{54}{section.4.6}
 \contentsline {subsection}{\numberline {4.6.1}Derivational ambiguity}{54}{subsection.4.6.1}
