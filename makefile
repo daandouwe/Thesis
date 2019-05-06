@@ -7,10 +7,10 @@ GEN_EVAL_EVERY ?= 4
 DEV_NUM_SAMPLES ?= 50
 TEST_NUM_SAMPLES ?= 100
 
-SEMISUP_NUM_SAMPLES ?= 1
-SEMISUP_BATCH_SIZE ?= 5
+SEMISUP_NUM_SAMPLES ?= 8
+SEMISUP_BATCH_SIZE ?= 1
 
-UNSUP_NUM_SAMPLES ?= 1
+UNSUP_NUM_SAMPLES ?= 8
 UNSUP_BATCH_SIZE ?= 1
 
 SYN_NUM_SAMPLES ?= 50
@@ -18,6 +18,19 @@ SYN_MAX_LINES ?= 1000
 
 ALPHA ?= 0.8  # temperature for samples (discriminative rnng)
 SEED ?= 42
+
+# Note: use `source scripts/best-models.sh` to set variable names to paths
+# of the best development models, e.g. export GEN_PATH=models/gen-rnng_dev=100.93
+
+
+# list all available actions
+list :
+	grep -o '^.*[^ ]:' Makefile | rev | cut '-c2-' | rev | sort -u
+
+# clear temporary models
+clean :
+	-rm -r models/temp/*
+
 
 # setup and data
 evalb:
@@ -50,20 +63,20 @@ disc-semisup-vocab: vocab-semisup train-disc-vocab
 crf-semisup-vocab: vocab-semisup train-crf-vocab
 gen-semisup-vocab: vocab-semisup train-gen-vocab
 
+proposals-rnng: proposals-rnng-dev proposals-rnng-test
+proposals-crf: proposals-crf-dev proposals-crf-test
+
 semisup-disc: train-semisup-disc
 semisup-crf: train-semisup-crf
 
 fully-unsup-disc: vocab-sup train-fully-unsup-disc
+fully-unsup-crf: vocab-sup train-fully-unsup-crf
 
 
 # build a vocabulary
 vocab-sup:
 	python src/main.py build \
 	    @src/configs/vocab/supervised.txt \
-
-vocab-bootleg:
-	python src/main.py build \
-	    @src/configs/vocab/supervised-bootleg.txt \
 
 vocab-semisup:
 	python src/main.py build \
@@ -78,7 +91,7 @@ train-disc:
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/disc-rnng.txt \
 	    @src/configs/training/sgd.txt \
-			--print-every 1
+	    --print-every 1
 
 train-gen:
 	python src/main.py train \
@@ -93,7 +106,8 @@ train-gen:
 	    --eval-every-epochs=${GEN_EVAL_EVERY} \
 	    --num-dev-samples=${DEV_NUM_SAMPLES} \
 	    --num-test-samples=${TEST_NUM_SAMPLES} \
-			--print-every=1
+	    --unlabeled \
+	    --print-every 1
 
 train-gen-stack-only:
 	python src/main.py train \
@@ -123,7 +137,6 @@ train-gen-silver:
 	    --num-dev-samples=${DEV_NUM_SAMPLES} \
 	    --num-test-samples=${TEST_NUM_SAMPLES}
 
-
 train-crf:
 	python src/main.py train \
 	    --dynet-autobatch=1 \
@@ -132,8 +145,8 @@ train-crf:
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/crf.txt \
 	    @src/configs/training/sgd.txt \
-			--print-every=1
-
+	    --min-label-count 100 \
+	    --print-every=10
 
 train-lm:
 	python src/main.py train \
@@ -157,9 +170,9 @@ train-lm-multitask-span:
 
 train-lm-multitask-ccg:
 	python src/main.py train \
-			--dynet-autobatch=1 \
-			--dynet-mem=1000 \
-			--model-path-base=models/lm-multitask-ccg \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=1000 \
+	    --model-path-base=models/lm-multitask-ccg \
 	    @src/configs/vocab/supervised.txt \
 			@src/configs/data/supervised-ccg.txt \
 			@src/configs/model/lm-multitask-ccg.txt \
@@ -183,7 +196,7 @@ train-gen-gpu:
 
 train-lm-gpu:
 	python src/main.py train \
-			--dynet-gpus=1 \
+	    --dynet-gpus=1 \
 	    --dynet-autobatch=1 \
 	    --dynet-mem=3000 \
 	    --model-path-base=models/lm \
@@ -201,6 +214,17 @@ train-lm-multitask-span-gpu:
 	    @src/configs/vocab/supervised.txt \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/lm-multitask-span.txt \
+	    @src/configs/training/sgd.txt
+
+train-lm-multitask-ccg-gpu:
+	python src/main.py train \
+	    --dynet-gpus=1 \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=3000 \
+	    --model-path-base=models/multitask-ccg-lm \
+	    @src/configs/vocab/supervised.txt \
+	    @src/configs/data/supervised-ccg.txt \
+	    @src/configs/model/lm-multitask-ccg.txt \
 	    @src/configs/training/sgd.txt
 
 
@@ -240,7 +264,7 @@ train-crf-vocab: vocab-semisup
 	    @src/configs/training/adam.txt
 
 
-# semisupervised training
+# semisupervised training from pretrained models
 train-semisup-disc:
 	python src/main.py train \
     	--dynet-autobatch=1 \
@@ -252,13 +276,12 @@ train-semisup-disc:
 	    @src/configs/vocab/semisupervised.txt \
 	    @src/configs/data/semisupervised.txt \
 	    @src/configs/training/adam.txt \
-	    @src/configs/baseline/argmax.txt \
+	    --use-argmax-baseline \
 	    --num-samples=${SEMISUP_NUM_SAMPLES} \
 	    --batch-size=${SEMISUP_BATCH_SIZE} \
 	    --num-dev-samples=${DEV_NUM_SAMPLES} \
 	    --num-test-samples=${TEST_NUM_SAMPLES} \
-			--print-every=1 \
-			--batch-size=1
+	    --print-every=1
 
 train-semisup-crf:
 	python src/main.py train \
@@ -271,31 +294,103 @@ train-semisup-crf:
 	    @src/configs/vocab/semisupervised.txt \
 	    @src/configs/data/semisupervised.txt \
 	    @src/configs/training/adam.txt \
-	    @src/configs/baseline/argmax.txt \
+	    --use-argmax-baseline \
 	    --num-samples=${SEMISUP_NUM_SAMPLES} \
 	    --batch-size=${SEMISUP_BATCH_SIZE} \
 	    --num-dev-samples=${DEV_NUM_SAMPLES} \
 	    --num-test-samples=${TEST_NUM_SAMPLES} \
-	    --print-every=1 \
-			--batch-size=1
+	    --print-every=1
 
-
-# unsupervised training
-train-fully-unsup-disc: sup-vocab
+train-unsup-disc:
 	python src/main.py train \
 	    --dynet-autobatch=1 \
-	    --dynet-mem=4000 \
-	    --model-path-base=models/fully-unsup-disc \
-	    --model-type=fully-unsup-disc \
+	    --dynet-mem=6000 \
+	    --model-path-base=models/unsup-disc \
+	    --model-type=unsup-disc \
+	    --joint-model-path=${GEN_PATH} \
+	    --post-model-path=${DISC_PATH} \
 	    @src/configs/vocab/supervised.txt \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/training/adam.txt \
-	    @src/configs/baseline/mlp.txt \
-			--num-samples=${UNSUP_NUM_SAMPLES} \
+	    --use-argmax-baseline \
+	    --num-samples=${UNSUP_NUM_SAMPLES} \
 	    --batch-size=${UNSUP_BATCH_SIZE} \
 	    --num-dev-samples=${DEV_NUM_SAMPLES} \
 	    --num-test-samples=${TEST_NUM_SAMPLES} \
-			--print-every=1
+	    --print-every=1
+
+train-unsup-crf:
+	python src/main.py train \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=6000 \
+	    --model-path-base=models/unsup-crf \
+	    --model-type=unsup-crf \
+	    --joint-model-path=${GEN_PATH} \
+	    --post-model-path=${CRF_PATH} \
+	    @src/configs/vocab/supervised.txt \
+	    @src/configs/data/supervised.txt \
+	    @src/configs/training/adam.txt \
+	    --use-argmax-baseline \
+	    --num-samples=${UNSUP_NUM_SAMPLES} \
+	    --batch-size=${UNSUP_BATCH_SIZE} \
+	    --num-dev-samples=${DEV_NUM_SAMPLES} \
+	    --num-test-samples=${TEST_NUM_SAMPLES} \
+	    --exact-entropy \
+	    --print-every=1
+
+# semisupervised and unsupervised without pretraining
+train-fully-unsup-crf:
+	python src/main.py train \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=9000 \
+	    --model-path-base=models/fully-unsup-crf \
+	    --model-type=unsup-crf \
+	    @src/configs/vocab/supervised.txt \
+	    @src/configs/data/supervised.txt \
+	    @src/configs/training/adam.txt \
+	    --unlabeled \
+	    --num-samples=${UNSUP_NUM_SAMPLES} \
+	    --batch-size=${UNSUP_BATCH_SIZE} \
+	    --num-dev-samples=${DEV_NUM_SAMPLES} \
+	    --num-test-samples=${TEST_NUM_SAMPLES} \
+	    --print-every=1 \
+	    --anneal-entropy \
+	    --num-anneal-epochs 1
+
+
+train-fully-unsup-disc:
+	python src/main.py train \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=6000 \
+	    --model-path-base=models/fully-unsup-disc \
+	    --model-type=unsup-disc \
+	    @src/configs/vocab/supervised.txt \
+	    @src/configs/data/supervised.txt \
+	    @src/configs/training/adam.txt \
+	    --use-argmax-baseline \
+	    --unlabeled \
+	    --num-samples=${UNSUP_NUM_SAMPLES} \
+	    --batch-size=${UNSUP_BATCH_SIZE} \
+	    --num-dev-samples=${DEV_NUM_SAMPLES} \
+	    --num-test-samples=${TEST_NUM_SAMPLES} \
+	    --print-every=1
+
+train-fully-semisup-crf:
+	python src/main.py train \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=9000 \
+	    --model-path-base=models/fully-semisup-crf \
+	    --model-type=semisup-crf \
+	    @src/configs/vocab/supervised.txt \
+	    @src/configs/data/semisupervised.txt \
+	    --unlabeled-path=${PTB} \
+	    @src/configs/training/adam.txt \
+	    --unlabeled \
+	    --num-samples=${UNSUP_NUM_SAMPLES} \
+	    --batch-size=${UNSUP_BATCH_SIZE} \
+	    --num-dev-samples=${DEV_NUM_SAMPLES} \
+	    --num-test-samples=${TEST_NUM_SAMPLES} \
+	    --print-every=1
 
 
 # resume training a model
@@ -304,24 +399,10 @@ resume-train:
 	cat "${RESUME_PATH}/log/args.txt" | grep -v 'False' > 'args_.txt' | mv 'args_.txt' "${RESUME_PATH}/log/args.txt" | sed -i '' 's/_/-/g' "${RESUME_PATH}/log/args.txt"
 	python src/main.py train \
 			@${RESUME_PATH}/log/args.txt \
-			--resume=${RESUME_PATH}
-
-resume-lm:
-	python src/main.py train \
-	    --dynet-autobatch=1 \
-	    --dynet-mem=3000 \
-	    --model-path-base=models/lm \
-	    @src/configs/vocab/supervised.txt \
-	    @src/configs/data/supervised.txt \
-	    @src/configs/model/lm.txt \
-	    @src/configs/training/sgd.txt \
-			--resume=${RESUME_PATH}
+	    --resume=${RESUME_PATH}
 
 
 # sample proposals
-proposals-rnng: proposals-rnng-dev proposals-rnng-test
-proposals-crf: proposals-crf-dev proposals-crf-test
-
 proposals-rnng-dev:
 	python src/main.py predict \
 	    --checkpoint=${DISC_PATH} \
@@ -353,6 +434,8 @@ predict-silver:
 	    --infile=data/unlabeled/${OBW} \
 	    --outfile=data/silver/${OBW}.trees
 
+
+# predict from terminal input
 predict-input-disc:
 	python src/main.py predict \
 	    --from-input \
@@ -382,7 +465,7 @@ predict-input-gen-crf:
 	    --proposal-model=${CRF_PATH}
 
 
-# Compute entropies
+# compute entropies
 predict-entropy-crf:
 	python src/main.py predict \
 	    --entropy \
@@ -390,7 +473,7 @@ predict-entropy-crf:
 	    --infile=${INFILE} \
 	    --outfile=${OUTFILE} \
 	    --checkpoint=${CRF_PATH} \
-			--num-samples=${NUM_SAMPLES}
+	    --num-samples=${NUM_SAMPLES}
 
 
 # evaluate perplexity
@@ -404,6 +487,7 @@ perplexity-test:
 		  --proposal-samples=${PROP_PATH} \
 		  --num-samples=${TEST_NUM_SAMPLES} \
 		  --outfile=${GEN_PATH}/output/results.tsv
+
 
 # syneval
 syneval-lm:
@@ -441,6 +525,20 @@ syneval-rnng:
 	    --num-samples=${SYN_NUM_SAMPLES} \
 	    --syneval-max-lines=${SYN_MAX_LINES} \
 
+syneval-rnng-crf:
+	python src/main.py syneval \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=5000 \
+	    --model-type=gen-rnng \
+	    --checkpoint=${GEN_PATH} \
+	    --proposal-model=${CRF_PATH} \
+	    --indir=${SYN} \
+	    --alpha=1.0 \
+	    --num-samples=${SYN_NUM_SAMPLES} \
+	    --syneval-max-lines=${SYN_MAX_LINES} \
+
+
+# experimental: syneval classification with entropy
 syneval-disc:
 	python src/main.py syneval \
 	    --dynet-autobatch=1 \
@@ -450,11 +548,13 @@ syneval-disc:
 	    --indir=${SYN} \
 	    --num-samples=${SYN_NUM_SAMPLES}
 
-
-# list all available actions
-list :
-	grep -o '^.*[^ ]:' Makefile | rev | cut '-c2-' | rev | sort -u
-
-# clear temporary models
-clean :
-	-rm -r models/temp/*
+syneval-crf:
+	python src/main.py syneval \
+	    --dynet-autobatch=1 \
+	    --dynet-mem=3000 \
+	    --model-type=disc-rnng \
+	    --checkpoint=${CRF_PATH} \
+	    --indir=${SYN} \
+	    --num-samples=0 \
+	    --exact-entropy \
+	    --syneval-short
