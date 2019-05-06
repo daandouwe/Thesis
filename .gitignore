@@ -4,9 +4,9 @@ __pycache__
 
 EVALB
 
-doc
-old
-notebooks
+/doc
+/old
+/notebooks
 models
 data
 out
