@@ -450,6 +450,7 @@ class SemiSupervisedTrainer:
             'joint': [],
             'post-viterbi': [],
             'anneal-entropy': [],
+            'unique-samples': [],
         }
 
     def batchify(self, data):
@@ -545,7 +546,7 @@ class SemiSupervisedTrainer:
             return batch
 
         labeled_batches = self.batchify(self.train_treebank)
-        self.num_batches = len(batches)
+        self.num_batches = len(labeled_batches)
 
         # We loop over the labeled_batches and request an unlabeled batch
         for i, labeled_batch in enumerate(labeled_batches, 1):
@@ -676,6 +677,7 @@ class SemiSupervisedTrainer:
             self.logger['post'].append(np.mean([logprob.value() for logprob in post_logprobs]))
             self.logger['post-viterbi'].append(parse_logprob.value())
             self.logger['anneal-entropy'].append(anneal)
+            self.logger['unique-samples'].append(len(set([tree.linearize(False) for tree, _ in samples])))
 
             # print(post_entropy.value())
             # print(-np.mean([logprob.value() for logprob in post_logprobs]))
@@ -839,6 +841,10 @@ class SemiSupervisedTrainer:
             self.tensorboard_writer.add_scalar(
                 'unsup/posterior-viterbi',
                 np.mean(self.logger['post-viterbi'][-self.print_every:]),
+                self.num_updates)
+            self.tensorboard_writer.add_scalar(
+                'unsup/unique-samples',
+                np.mean(self.logger['unique-samples'][-self.print_every:]),
                 self.num_updates)
             self.tensorboard_writer.add_scalar(
                 'unsup/anneal-entropy',

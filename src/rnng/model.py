@@ -336,7 +336,6 @@ class GenRNNG(GenParser):
                 nll += dy.pickneglogsoftmax(nt_logits, self._get_nt_id(action_id))
             elif self._is_gen_id(action_id):
                 word_logits = self.f_word(u)
-                # nll += softmax.css(word_logits, self._get_word_id(action_id), self.word_vocab)
                 nll += dy.pickneglogsoftmax(word_logits, self._get_word_id(action_id))
             self.parse_step(action_id)
         tree.substitute_leaves(iter(words))  # restore original leaves

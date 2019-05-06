@@ -3,6 +3,7 @@ import json
 import itertools
 from math import inf
 from collections import Counter
+from pprint import pprint
 
 import numpy as np
 import dynet as dy
@@ -65,6 +66,8 @@ class SupervisedTrainer:
             eval_every_epochs=1,
             num_dev_samples=None,
             num_test_samples=None,
+            min_label_count=1,
+            max_sent_len=-1,
     ):
         assert model_type in ('disc-rnng', 'gen-rnng', 'crf'), model_type
 
@@ -119,6 +122,8 @@ class SupervisedTrainer:
         self.print_every = print_every
         self.num_dev_samples = num_dev_samples
         self.num_test_samples = num_test_samples
+        self.min_label_count = min_label_count
+        self.max_sent_len = max_sent_len
         self.resume = False
 
         # Training bookkeeping
@@ -211,6 +216,29 @@ class SupervisedTrainer:
         else:
             words = [word for tree in train_treebank for word in tree.words()]
 
+        if self.max_sent_len > 0:
+            filtered_treebank = [tree for tree in train_treebank
+                if len(tree.words()) <= self.max_sent_len]
+
+            print("Using sentences with length <= {}: {:.1%} of all training trees.".format(
+                self.max_sent_len, len(filtered_treebank) / len(train_treebank)))
+
+            train_treebank = filtered_treebank
+
+        if self.min_label_count > 1:
+            counted_labels = Counter([label for tree in train_treebank for label in tree.labels()])
+            filtered_labels = [label for label, count in counted_labels.most_common()
+                if count >= self.min_label_count]
+            filtered_treebank = [tree for tree in train_treebank
+                if all(label in filtered_labels for label in tree.labels())]
+
+            print("Using labels with count >= {}: {}/{} ({:.1%}) of all labels and {:.1%} of all training trees.".format(
+                self.min_label_count, len(filtered_labels), len(counted_labels),
+                len(filtered_labels) / len(counted_labels),
+                len(filtered_treebank) / len(train_treebank)))
+
+            train_treebank = filtered_treebank
+
         labels = [label for tree in train_treebank for label in tree.labels()]
 
         if self.model_type == 'crf':
@@ -221,8 +249,13 @@ class SupervisedTrainer:
         word_vocab = Vocabulary.fromlist(words, unk_value=UNK)
         label_vocab = Vocabulary.fromlist(labels)
 
+        ##
+        # counted_labels = Counter(label_vocab.counts).most_common()
+        # pprint(counted_labels)
+        ##
+
         if self.model_type.endswith('rnng'):
-            # Order is very important! See DiscParser/GenParser classes for why
+            # Order is very important! See DiscParser/GenParser classes to know why.
             if self.model_type == 'disc-rnng':
                 actions = [SHIFT, REDUCE] + [NT(label) for label in label_vocab]
             elif self.model_type == 'gen-rnng':

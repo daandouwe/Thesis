@@ -76,7 +76,6 @@ def main():
                         help='dimension of label feedforward')
 
     rnng = parser.add_argument_group('Model (RNNG)')
-
     rnng.add_argument('--label-emb-dim', type=int, default=100,
                         help='dim of nonterminal embeddings')
     rnng.add_argument('--action-emb-dim', type=int, default=100,
@@ -141,6 +140,10 @@ def main():
                         help='number of samples to estimate the test fscore and perplexity')
     training.add_argument('--resume', default='',
                         help='resume training from this checkpoint')
+    training.add_argument('--min-label-count', type=int, default=1,
+                        help='mimimum count of label in training data')
+    training.add_argument('--max-sent-len', type=int, default=-1,
+                        help='maximum length of training sentences')
     training.add_argument('--unlabeled', action='store_true',
                         help='train on unlabeled trees (trees will be converted)')
 

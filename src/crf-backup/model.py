@@ -37,6 +37,7 @@ class ChartParser(object):
         self.label_vocab = label_vocab
         self.lstm_dim = lstm_dim
 
+        # TODO: use the embedding classes
         self.word_embedding = self.model.add_lookup_parameters(
             (word_vocab.size, word_embedding_dim))
 
@@ -137,12 +138,12 @@ class ChartParser(object):
                         split_sum)
 
                 # the dummy node cannot be the top node
-                if length == len(words):
-                    chart[left, right, self.label_vocab.values[0]] = semiring.zero()
+                # start = 0 if length < len(words) else 1
+                start = 0
 
                 summed[left, right] = semiring.sums([
                     chart[left, right, label]
-                    for label in self.label_vocab.values
+                    for label in self.label_vocab.values[start:]
                 ])
 
         # implicit top node that expands to all but the dummy node
@@ -160,11 +161,16 @@ class ChartParser(object):
                 right = left + length
 
                 if left == 0 and right == len(words):
+
+                    # All edges from TOP have the same weight:
+                    # for label in self.label_vocab.values:
+                    #     chart[left, right, label] = semiring.division(
+                    #         semiring.one(),
+                    #         np.log(len(self.label_vocab.indices)))
+
                     for label, label_index in self.label_vocab.indices.items():
-                        if label_index == 0:  # dummy label
-                            chart[left, right, label] = semiring.zero()
-                        else:
-                            chart[left, right, label] = semiring.one()
+                        chart[left, right, label] = semiring.one()
+
                 else:
                     if left == 0:
                         left_split_sum = semiring.zero()
@@ -246,26 +252,40 @@ class ChartParser(object):
         return tree, score
 
     def marginals(self, inside_chart, outside_chart, lognormalizer, semiring=LogProbSemiring):
+        # assert set(inside_chart) == set(outside_chart)  # must contain the same nodes
+
         marginals = {}
         for node in inside_chart:
+
             marginals[node] = dy.exp(
                 semiring.division(
                     semiring.product(
                         inside_chart[node],
                         outside_chart[node]),
                     lognormalizer))
+
+        # TODO: normalization should not be needed!
+        # total = dy.esum(list(marginals.values()))
+        # for node, value in marginals.items():
+        #     marginals[node] = dy.cdiv(value, total)
+
         return marginals
 
-    def compute_entropy(self, marginals, label_scores, lognormalizer):
+    def entropy(self, marginals, label_scores, lognormalizer):
+
+        all_scores = [label_scores[left, right][self.label_vocab.index(label)]
+            for left, right, label in marginals]
 
         expected_scores = [
             marginals[left, right, label] * label_scores[left, right][self.label_vocab.index(label)]
             for left, right, label in marginals
         ]
 
-        entropy = lognormalizer - dy.esum(expected_scores)
+        expected_score = dy.esum(expected_scores)
 
-        return entropy
+        entropy = lognormalizer - expected_score
+
+        return entropy, expected_score
 
     def forward(self, tree, is_train=True, return_entropy=False):
         assert isinstance(tree, trees.SpanNode)
@@ -279,25 +299,40 @@ class ChartParser(object):
         label_scores = self.get_node_scores(unked_words)
         score = self.score_tree(tree, label_scores)
         inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
+
         logprob = score - lognormalizer
         nll = -logprob
 
         if return_entropy:
+
             outside_chart = self.outside(words, label_scores, inside_chart, inside_summed)
             marginals = self.marginals(inside_chart, outside_chart, lognormalizer)
-            entropy = self.compute_entropy(marginals, label_scores, lognormalizer)
+            entropy, expected_score = self.entropy(marginals, label_scores, lognormalizer)
+
+            score_sum = dy.esum([
+                label_scores[left, right][self.label_vocab.index(label)]
+                for left, right, label in marginals
+            ])
+
+            print(
+                'sent-length', len(words),
+                'tree-score', round(score.value(), 4),
+                'expected-score', round(expected_score.value(), 4),
+                'num-scores', len(marginals),
+                'score-sum', round(score_sum.value(), 2),
+                'entropy', round(entropy.value(), 2),
+                'marginal-sum', round(dy.esum(list(marginals.values())).value(), 2),
+                'lognormalizer', round(lognormalizer.value(), 2),
+            )
+
             return nll, entropy
         else:
-            return nll
+            score_sum = dy.esum([
+                label_scores[left, right][self.label_vocab.index(label)]
+                for left, right, label in inside_chart
+            ])
 
-    def entropy(self, words):
-        unked_words = self.word_vocab.process(words)
-        label_scores = self.get_node_scores(unked_words)
-        inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
-        outside_chart = self.outside(words, label_scores, inside_chart, inside_summed)
-        marginals = self.marginals(inside_chart, outside_chart, lognormalizer)
-        entropy = self.compute_entropy(marginals, label_scores, lognormalizer)
-        return entropy
+            return nll
 
     def parse(self, words):
         unked_words = self.word_vocab.process(words)
@@ -311,24 +346,7 @@ class ChartParser(object):
 
         return tree.un_cnf(), nll
 
-    def parse_entropy(self, words):
-        # shared computation
-        unked_words = self.word_vocab.process(words)
-        label_scores = self.get_node_scores(unked_words)
-        inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
-
-        # entropy computation
-        outside_chart = self.outside(words, label_scores, inside_chart, inside_summed)
-        marginals = self.marginals(inside_chart, outside_chart, lognormalizer)
-        entropy = self.compute_entropy(marginals, label_scores, lognormalizer)
-
-        # parse computation
-        parse, _ = self.viterbi(words, label_scores)
-        parse = parse.un_cnf()
-
-        return parse, entropy
-
-    def _sample(self, words, inside_chart, label_scores, lognormalizer, num_samples):
+    def sample(self, words, num_samples=1):
         semiring = LogProbSemiring
 
         @functools.lru_cache(maxsize=None)
@@ -361,8 +379,12 @@ class ChartParser(object):
                 subtree = trees.InternalSpanNode(label, children)
             return subtree
 
+        unked_words = self.word_vocab.process(words)
+        label_scores = self.get_node_scores(unked_words)
+        chart_dy, _, lognormalizer = self.inside(words, label_scores)
+
         chart_np = {node: score.value()
-            for node, score in inside_chart.items()}
+            for node, score in chart_dy.items()}
 
         top_label_logscores = [chart_np[0, len(words), label]
             for label in self.label_vocab.values[1:]]  # dummy label is excluded from top
@@ -386,80 +408,9 @@ class ChartParser(object):
             nll = -logprob
 
             samples.append((tree.un_cnf(), nll))
-            # samples.append((tree, nll))
-
-        return samples
-
-    def sample(self, words, num_samples=1, alpha=1.0):
-
-        unked_words = self.word_vocab.process(words)
-        label_scores = self.get_node_scores(unked_words)
-        if alpha != 1.0:
-            label_scores = {node: score / alpha for node, score in label_scores.items()}
-        inside_chart, _, lognormalizer = self.inside(unked_words, label_scores)
-        samples = self._sample(
-            words, inside_chart, label_scores, lognormalizer, num_samples)
 
         if num_samples == 1:
             tree, nll = samples.pop()
             return tree, nll
         else:
             return samples
-
-    def parse_sample(self, words, num_samples, alpha=1.0):
-        # shared computation
-        unked_words = self.word_vocab.process(words)
-        label_scores = self.get_node_scores(unked_words)
-        if alpha != 1.0:
-            label_scores = {node: score / alpha for node, score in label_scores.items()}
-        inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
-
-        # parse computation
-        parse, _ = self.viterbi(words, label_scores)
-        parse = parse.un_cnf()
-
-        # sample computation
-        samples = self._sample(words, inside_chart, label_scores, lognormalizer, num_samples)
-
-        return parse, samples
-
-    def sample_entropy(self, words, num_samples, alpha=1.0):
-        # shared computation
-        unked_words = self.word_vocab.process(words)
-        label_scores = self.get_node_scores(unked_words)
-        if alpha != 1.0:
-            label_scores = {node: score / alpha for node, score in label_scores.items()}
-        inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
-
-        # entropy computation
-        outside_chart = self.outside(words, label_scores, inside_chart, inside_summed)
-        marginals = self.marginals(inside_chart, outside_chart, lognormalizer)
-        entropy = self.compute_entropy(marginals, label_scores, lognormalizer)
-
-        # sample computation
-        samples = self._sample(words, inside_chart, label_scores, lognormalizer, num_samples)
-
-        return samples, entropy
-
-    def parse_sample_entropy(self, words, num_samples, alpha=1.0):
-        # shared computation
-        unked_words = self.word_vocab.process(words)
-        label_scores = self.get_node_scores(unked_words)
-        if alpha != 1.0:
-            label_scores = {node: score / alpha for node, score in label_scores.items()}
-        inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
-
-        # entropy computation
-        outside_chart = self.outside(words, label_scores, inside_chart, inside_summed)
-        marginals = self.marginals(inside_chart, outside_chart, lognormalizer)
-        entropy = self.compute_entropy(marginals, label_scores, lognormalizer)
-
-        # parse computation
-        parse, parse_score = self.viterbi(words, label_scores)
-        parse_logprob = parse_score - lognormalizer
-        parse = parse.un_cnf()
-
-        # sample computation
-        samples = self._sample(words, inside_chart, label_scores, lognormalizer, num_samples)
-
-        return parse, parse_logprob, samples, entropy

@@ -1,3 +1,6 @@
+"""
+CRF parser with pruned hyperforest avoiding derivational ambiguity.
+"""
 import time
 import functools
 import math
@@ -116,6 +119,7 @@ class ChartParser(object):
 
         chart = {}
         summed = {}
+        summed_left = {}
 
         for length in range(1, len(words) + 1):
             for left in range(0, len(words) + 1 - length):
@@ -126,9 +130,13 @@ class ChartParser(object):
                 else:
                     split_sum = semiring.sums([
                         semiring.product(
-                            summed[left, split],
+                            summed[left, left + 1],
+                            summed[left + 1, right])
+                        ] + [
+                        semiring.product(
+                            summed_left[left, split],
                             summed[split, right])
-                        for split in range(left + 1, right)
+                        for split in range(left + 2, right)
                     ])
 
                 for label, label_index in self.label_vocab.indices.items():
@@ -140,6 +148,14 @@ class ChartParser(object):
                 if length == len(words):
                     chart[left, right, self.label_vocab.values[0]] = semiring.zero()
 
+                # the dummy node cannot exist in this position
+                if left == 0 and right > left + 1:
+                    chart[left, right, self.label_vocab.values[0]] = semiring.zero()
+
+                summed_left[left, right] = semiring.sums([
+                    chart[left, right, label]
+                    for label in self.label_vocab.values[1:]
+                ])
                 summed[left, right] = semiring.sums([
                     chart[left, right, label]
                     for label in self.label_vocab.values
@@ -148,9 +164,9 @@ class ChartParser(object):
         # implicit top node that expands to all but the dummy node
         lognormalizer = summed[0, len(words)]
 
-        return chart, summed, lognormalizer
+        return chart, summed, summed_left, lognormalizer
 
-    def outside(self, words, label_scores, inside_chart, inside_summed, semiring=LogProbSemiring):
+    def outside(self, words, label_scores, inside_chart, inside_summed, inside_summed_left, semiring=LogProbSemiring):
 
         chart = {}
         outside_summed = {}
@@ -171,9 +187,13 @@ class ChartParser(object):
                     else:
                         left_split_sum = semiring.sums([
                             semiring.product(
-                                inside_summed[start, left],
+                                inside_summed[left - 1, left],
+                                outside_summed[left - 1, right])
+                        ] + [
+                            semiring.product(
+                                inside_summed_left[start, left],
                                 outside_summed[start, right])
-                            for start in range(0, left)
+                            for start in range(0, left - 1)
                         ])
 
                     if right == len(words):
@@ -187,8 +207,17 @@ class ChartParser(object):
                         ])
 
                     split_sum = semiring.sum(left_split_sum, right_split_sum)
-                    for label in self.label_vocab.values:
-                        chart[left, right, label] = split_sum
+                    if right > left + 1:
+                        chart[left, right, self.label_vocab.values[0]] = left_split_sum
+                        for label in self.label_vocab.values[1:]:
+                            chart[left, right, label] = split_sum
+                    else:
+                        for label in self.label_vocab.values:
+                            chart[left, right, label] = split_sum
+
+                # the dummy node cannot exist in this position
+                if left == 0 and right > left + 1:
+                    chart[left, right, self.label_vocab.values[0]] = semiring.zero()
 
                 outside_summed[left, right] = semiring.sums([
                     semiring.product(
@@ -202,44 +231,63 @@ class ChartParser(object):
     def viterbi(self, words, label_scores, semiring=LogProbSemiring, tag='*'):
 
         chart = {}
+        chart_excluded = {}
 
         for length in range(1, len(words) + 1):
             for left in range(0, len(words) + 1 - length):
                 right = left + length
 
-                # Determine best label
                 label_scores_np = label_scores[left, right].npvalue()
+
+                # Determine best label with dummy
                 label_index = int(
                     label_scores_np.argmax() if length < len(words) else
                     label_scores_np[1:].argmax() + 1)  # cannot choose dummy node as top node
                 label = self.label_vocab.value(label_index)
                 label_score = label_scores[left, right][label_index]
 
+                # Determine best label without dummy
+                label_excluded_index = int(label_scores_np[1:].argmax() + 1)
+                label_excluded = self.label_vocab.value(label_excluded_index)
+                label_excluded_score = label_scores[left, right][label_excluded_index]
+
                 # Determine the best split point
                 if right == left + 1:
                     best_split_score = semiring.one()
                     children = [trees.LeafSpanNode(left, tag, words[left])]
                     subtree = trees.InternalSpanNode(label, children)
+                    subtree_excluded = trees.InternalSpanNode(label_excluded, children)
                 else:
-                    best_split = max(
-                        range(left + 1, right),
-                        key=lambda split:
-                            chart[left, split][1].value() +
-                            chart[split, right][1].value())
+                    # Build chart tree
+                    split_values = [
+                        semiring.product(
+                            chart[left, left + 1][1],
+                            chart[left + 1, right][1]).value()
+                        ] + [
+                        semiring.product(
+                            chart_excluded[left, split][1],
+                            chart[split, right][1]).value()
+                        for split in range(left + 2, right)
+                    ]
+                    best_split = range(left + 1, right)[np.argmax(split_values)]
 
                     left_subtree, left_score = chart[left, best_split]
                     right_subtree, right_score = chart[best_split, right]
 
                     children = [left_subtree, right_subtree]
                     subtree = trees.InternalSpanNode(label, children)
+                    subtree_excluded = trees.InternalSpanNode(label_excluded, children)
 
                     best_split_score = semiring.product(
                         left_score, right_score)
 
                 score = semiring.product(
                     label_score, best_split_score)
+                score_excluded = semiring.product(
+                    label_excluded_score, best_split_score)
 
                 chart[left, right] = subtree, score
+                chart_excluded[left, right] = subtree_excluded, score_excluded
 
         tree, score = chart[0, len(words)]
 
@@ -262,7 +310,6 @@ class ChartParser(object):
             marginals[left, right, label] * label_scores[left, right][self.label_vocab.index(label)]
             for left, right, label in marginals
         ]
-
         entropy = lognormalizer - dy.esum(expected_scores)
 
         return entropy
@@ -278,12 +325,12 @@ class ChartParser(object):
 
         label_scores = self.get_node_scores(unked_words)
         score = self.score_tree(tree, label_scores)
-        inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
+        inside_chart, inside_summed, inside_summed_left, lognormalizer = self.inside(unked_words, label_scores)
         logprob = score - lognormalizer
         nll = -logprob
 
         if return_entropy:
-            outside_chart = self.outside(words, label_scores, inside_chart, inside_summed)
+            outside_chart = self.outside(words, label_scores, inside_chart, inside_summed, inside_summed_left)
             marginals = self.marginals(inside_chart, outside_chart, lognormalizer)
             entropy = self.compute_entropy(marginals, label_scores, lognormalizer)
             return nll, entropy
@@ -293,8 +340,8 @@ class ChartParser(object):
     def entropy(self, words):
         unked_words = self.word_vocab.process(words)
         label_scores = self.get_node_scores(unked_words)
-        inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
-        outside_chart = self.outside(words, label_scores, inside_chart, inside_summed)
+        inside_chart, inside_summed, inside_summed_left, lognormalizer = self.inside(unked_words, label_scores)
+        outside_chart = self.outside(words, label_scores, inside_chart, inside_summed, inside_summed_left)
         marginals = self.marginals(inside_chart, outside_chart, lognormalizer)
         entropy = self.compute_entropy(marginals, label_scores, lognormalizer)
         return entropy
@@ -304,7 +351,7 @@ class ChartParser(object):
 
         label_scores = self.get_node_scores(unked_words)
         tree, score = self.viterbi(words, label_scores)
-        _, _, lognormalizer = self.inside(words, label_scores)
+        _, _, _, lognormalizer = self.inside(words, label_scores)
 
         logprob = score - lognormalizer
         nll = -logprob
@@ -315,10 +362,10 @@ class ChartParser(object):
         # shared computation
         unked_words = self.word_vocab.process(words)
         label_scores = self.get_node_scores(unked_words)
-        inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
+        inside_chart, inside_summed, inside_summed_left, lognormalizer = self.inside(unked_words, label_scores)
 
         # entropy computation
-        outside_chart = self.outside(words, label_scores, inside_chart, inside_summed)
+        outside_chart = self.outside(words, label_scores, inside_chart, inside_summed, inside_summed_left)
         marginals = self.marginals(inside_chart, outside_chart, lognormalizer)
         entropy = self.compute_entropy(marginals, label_scores, lognormalizer)
 
@@ -334,8 +381,12 @@ class ChartParser(object):
         @functools.lru_cache(maxsize=None)
         def get_child_probs(left, right, label):
             splits, scores = [], []
-            for split in range(left+1, right):
-                for left_label in self.label_vocab.values:
+            for split in range(left + 1, right):
+                if split == left + 1:
+                    left_labels = self.label_vocab.values
+                else:
+                    left_labels = self.label_vocab.values[1:]
+                for left_label in left_labels:
                     for right_label in self.label_vocab.values:
                         left_node = (left, split, left_label)
                         right_node = (split, right, right_label)
@@ -386,7 +437,6 @@ class ChartParser(object):
             nll = -logprob
 
             samples.append((tree.un_cnf(), nll))
-            # samples.append((tree, nll))
 
         return samples
 
@@ -396,7 +446,7 @@ class ChartParser(object):
         label_scores = self.get_node_scores(unked_words)
         if alpha != 1.0:
             label_scores = {node: score / alpha for node, score in label_scores.items()}
-        inside_chart, _, lognormalizer = self.inside(unked_words, label_scores)
+        inside_chart, _, _, lognormalizer = self.inside(unked_words, label_scores)
         samples = self._sample(
             words, inside_chart, label_scores, lognormalizer, num_samples)
 
@@ -412,7 +462,7 @@ class ChartParser(object):
         label_scores = self.get_node_scores(unked_words)
         if alpha != 1.0:
             label_scores = {node: score / alpha for node, score in label_scores.items()}
-        inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
+        inside_chart, inside_summed, _, lognormalizer = self.inside(unked_words, label_scores)
 
         # parse computation
         parse, _ = self.viterbi(words, label_scores)
@@ -429,10 +479,10 @@ class ChartParser(object):
         label_scores = self.get_node_scores(unked_words)
         if alpha != 1.0:
             label_scores = {node: score / alpha for node, score in label_scores.items()}
-        inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
+        inside_chart, inside_summed, inside_summed_left, lognormalizer = self.inside(unked_words, label_scores)
 
         # entropy computation
-        outside_chart = self.outside(words, label_scores, inside_chart, inside_summed)
+        outside_chart = self.outside(words, label_scores, inside_chart, inside_summed, inside_summed_left)
         marginals = self.marginals(inside_chart, outside_chart, lognormalizer)
         entropy = self.compute_entropy(marginals, label_scores, lognormalizer)
 
@@ -447,12 +497,30 @@ class ChartParser(object):
         label_scores = self.get_node_scores(unked_words)
         if alpha != 1.0:
             label_scores = {node: score / alpha for node, score in label_scores.items()}
-        inside_chart, inside_summed, lognormalizer = self.inside(unked_words, label_scores)
+        inside_chart, inside_summed, inside_summed_left, lognormalizer = self.inside(unked_words, label_scores)
 
         # entropy computation
-        outside_chart = self.outside(words, label_scores, inside_chart, inside_summed)
+        outside_chart = self.outside(words, label_scores, inside_chart, inside_summed, inside_summed_left)
         marginals = self.marginals(inside_chart, outside_chart, lognormalizer)
         entropy = self.compute_entropy(marginals, label_scores, lognormalizer)
+
+        # NOTE: printing and checking for debugging
+        _label_scores = {(left, right, label): label_scores[left, right][self.label_vocab.index(label)]
+            for left, right, label in marginals.keys()}
+
+        for node in sorted(_label_scores, key=lambda node: _label_scores[node].value()):
+            left, right, label = node
+            print(
+                node,
+                # round(label_scores[left, right][self.label_vocab.index(label)].value(), 3),
+                round(_label_scores[node].value(), 3),
+                round(inside_chart[node].value(), 3),
+                round(outside_chart[node].value(), 3),
+                round(lognormalizer.value(), 3),
+                marginals[node].value(),
+            )
+        print(entropy.value())
+        print()
 
         # parse computation
         parse, parse_score = self.viterbi(words, label_scores)

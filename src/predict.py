@@ -356,6 +356,10 @@ def sample_proposals(args):
                 samples.append(
                     ' ||| '.join(
                         (str(i), str(-nll.value()), tree.linearize(with_tag=False))))
+                print(
+                    ' ||| '.join(
+                        (str(i), str(-nll.value()), tree.linearize(with_tag=False))))
+
     else:
         for i, words in enumerate(tqdm(sentences)):
             for _ in range(args.num_samples):

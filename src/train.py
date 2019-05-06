@@ -56,6 +56,8 @@ def main(args):
             max_time=args.max_time,
             num_dev_samples=args.num_dev_samples,
             num_test_samples=args.num_test_samples,
+            min_label_count=args.min_label_count,
+            max_sent_len=args.max_sent_len,
         )
     elif args.model_type in ('semisup-disc', 'semisup-crf', 'unsup-disc', 'unsup-crf'):
         trainer = SemiSupervisedTrainer(
