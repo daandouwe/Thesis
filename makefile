@@ -114,7 +114,7 @@ train-gen-stack-only:
 	    --dynet-autobatch=1 \
 	    --dynet-mem=3000 \
 	    --model-path-base=models/gen-rnng_stack-only \
-			@src/configs/vocab/supervised.txt \
+	    @src/configs/vocab/supervised.txt \
 	    @src/configs/data/supervised.txt \
 	    @src/configs/model/gen-rnng-stack-only.txt \
 	    @src/configs/training/sgd.txt \
@@ -174,9 +174,9 @@ train-lm-multitask-ccg:
 	    --dynet-mem=1000 \
 	    --model-path-base=models/lm-multitask-ccg \
 	    @src/configs/vocab/supervised.txt \
-			@src/configs/data/supervised-ccg.txt \
-			@src/configs/model/lm-multitask-ccg.txt \
-			@src/configs/training/sgd.txt
+	    @src/configs/data/supervised-ccg.txt \
+	    @src/configs/model/lm-multitask-ccg.txt \
+	    @src/configs/training/sgd.txt
 
 # gpu models
 train-gen-gpu:
@@ -398,7 +398,7 @@ resume-train:
 	# get rid of eplicit switches, e.g. `--lowercase=False`, and replace `_` by `-`.
 	cat "${RESUME_PATH}/log/args.txt" | grep -v 'False' > 'args_.txt' | mv 'args_.txt' "${RESUME_PATH}/log/args.txt" | sed -i '' 's/_/-/g' "${RESUME_PATH}/log/args.txt"
 	python src/main.py train \
-			@${RESUME_PATH}/log/args.txt \
+	    @${RESUME_PATH}/log/args.txt \
 	    --resume=${RESUME_PATH}
 
 
