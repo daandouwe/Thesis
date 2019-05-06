@@ -36,6 +36,10 @@ source scripts/best-models.sh
 ```
 
 ## Models
-Models are saved to folder `models` with their name and development scores. We have included our best models by development score as zip. To use them run `unzip zipped/<filename.zip>` from the `models` directory.
+Models are saved to folder `models` with their name and development scores. We have included our best models by development score as zip. To use them run `unzip zipped/file.zip` from the `models` directory.
 
 ## Acknowledgements
+I have relied on some excellent implementations for inspiration and help with my own implementation:
+* [pytorch-rnng](https://github.com/kmkurn/pytorch-rnng) inspired the representation of the [RNNG parser class](https://github.com/daandouwe/Thesis/blob/master/src/rnng/parser/parser.py)
+* [minimal-span-parser](https://github.com/mitchellstern/minimal-span-parser) provided the foundations of the [tree classes](https://github.com/daandouwe/Thesis/blob/master/src/utils/trees.py), the [vocabulary class](https://github.com/daandouwe/Thesis/blob/master/src/utils/vocabulary.py) and of the [CRF parser](https://github.com/daandouwe/Thesis/blob/master/src/crf/model.py)
+Make sure to check them out!
