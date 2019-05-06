@@ -1,5 +1,5 @@
 # Neural language models with latent syntax
-Code for my thesis.
+Code for my thesis. Written in python and using [dynet](https://dynet.readthedocs.io/en/latest/index.html).
 
 ## Setup
 Use `make` to obtain the data and install EVALB:
