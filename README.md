@@ -23,9 +23,9 @@ You can list all the options with:
 make list
 ```
 
-Alternatively, you use command line arguments:
+Alternatively, you can use command line arguments:
 ```bash
-python src/main.py train --parser-type=disc-rnng --model-path-base=models/disc-rnng
+python src/main.py train --model-type=disc-rnng --model-path-base=models/disc-rnng
 ```
 For all available options use:
 ```bash
@@ -44,6 +44,6 @@ Models are saved to folder `models` with their name and development scores. We h
 I have relied on some excellent implementations for inspiration and help with my own implementation:
 * [pytorch-rnng](https://github.com/kmkurn/pytorch-rnng) inspired the representation of the [RNNG parser class](https://github.com/daandouwe/Thesis/blob/master/src/rnng/parser/parser.py)
 * [minimal-span-parser](https://github.com/mitchellstern/minimal-span-parser) provided the foundations of the [tree classes](https://github.com/daandouwe/Thesis/blob/master/src/utils/trees.py), the [vocabulary class](https://github.com/daandouwe/Thesis/blob/master/src/utils/vocabulary.py) and of the [CRF parser](https://github.com/daandouwe/Thesis/blob/master/src/crf/model.py)
-* [im2latex](https://github.com/guillaumegenthial/im2latex) inspired me to use a [makefile](https://github.com/daandouwe/Thesis/blob/master/makefile) to organize experiments
+* [im2latex](https://github.com/guillaumegenthial/im2latex) inspired the use of a [makefile](https://github.com/daandouwe/Thesis/blob/master/makefile) to organize experiments
 
 Make sure to check them out!
