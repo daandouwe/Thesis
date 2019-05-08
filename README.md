@@ -1,5 +1,5 @@
 # Neural language models with latent syntax
-Code for my thesis, written in python using [dynet](https://dynet.readthedocs.io/en/latest/index.html).
+Code for my thesis, written in Python 3.6 using [dynet](https://dynet.readthedocs.io/en/latest/index.html).
 
 [Link to thesis pdf forthcoming]
 
