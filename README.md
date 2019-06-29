@@ -1,7 +1,7 @@
 # Neural language models with latent syntax
 Code for my thesis, written in Python 3.6 using [dynet](https://dynet.readthedocs.io/en/latest/index.html).
 
-[Link to thesis pdf forthcoming]
+The thesis can be found [here](https://eprints.illc.uva.nl/1683/1/MoL-2019-02.text.pdf).
 
 ## Setup
 Use `make` to obtain the data and install EVALB:
